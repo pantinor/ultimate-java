@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Sentri" pronoun="He" turnAwayProb="0">
+    <description>A stately baron</description>
+    <topic query="job">I rule this province.</topic>
+    <topic query="health">Very well.</topic>
+    <topic query="PROV">Yes, these islands and much more.</topic>
+    <topic query="WORD">I know but one of three syllables-'cor'.<question type="0">Dost thou know the four cities of courage?<yes>Very good.</yes><no>They are Jhelom, Minoc, Trinsic and Skara Brae.</no></question></topic>
+  </person>
+  <person id="1" name="the gate guard." pronoun="He" turnAwayProb="0">
+    <description>A very big guard.</description>
+    <topic query="job">Guard the gates, of course.</topic>
+    <topic query="health">Very strong!</topic>
+    <topic query="GATE">These are the gates to Serpent castle.</topic>
+    <topic query="GUAR">Guard, watch, protect.<question type="0">Art thou here to find courage?<yes>Then thou art at the right place.</yes><no>Then perhaps to become a guard!</no></question></topic>
+  </person>
+  <person id="2" name="Lassorn" pronoun="He" turnAwayProb="0">
+    <description>A wounded sailor</description>
+    <topic query="job">I am a sailor.</topic>
+    <topic query="health">I alone survived the shipwreck.</topic>
+    <topic query="SHIP">The H.M.S. Cape.<question type="0">Ever heard of her?<yes>She was a mighty vessel!</yes><no>She was a mighty vessel!</no></question></topic>
+    <topic query="WHEE">She went down in the deep waters of the bay in the Cape of Heroes!</topic>
+  </person>
+  <person id="3" name="Roark" pronoun="He" turnAwayProb="0">
+    <description>A seasoned fighter.</description>
+    <topic query="job">I fight for Britannia!</topic>
+    <topic query="health">Just healed.<question type="0">Art thou well?<yes>Then strive to find the secrets of the abyss.</yes><no>Thou hast come to the right place.</no></question></topic>
+    <topic query="ABYS">The Great Stygian Abyss holds the codex of ultimate wisdom!</topic>
+    <topic query="CODE">I know little.</topic>
+  </person>
+  <person id="4" name="a ranger." pronoun="He" turnAwayProb="0">
+    <description>A ranger engrossed in training.</description>
+    <topic query="job">I am training!</topic>
+    <topic query="health">Excellent.</topic>
+    <topic query="TRAI">I train so that I might survive the dungeons!</topic>
+    <topic query="DUNG">I plan to conquer the secret of the altar rooms.<question type="0">Dost thou?<yes>Ask our teacher about the rooms for she knowns much!</yes><no>Wimp.</no></question></topic>
+  </person>
+  <person id="5" name="Shyra" pronoun="She" turnAwayProb="0">
+    <description>The training master.</description>
+    <topic query="job">I train warriors to fight with courage!</topic>
+    <topic query="health">Prime.</topic>
+    <topic query="TRAI">Train well and thy courage can grow with confidence.<question type="0">Wilt thou train?<yes>Bravo!</yes><no>Pity.</no></question></topic>
+    <topic query="ROOM">In the altar room of courage use the red, orange, purple and white stones!</topic>
+  </person>
+  <person id="6" name="a baronial guard" pronoun="She" turnAwayProb="0">
+    <description>A stern guard.</description>
+    <topic query="job">I guard our lord</topic>
+    <topic query="health">Most good.</topic>
+    <topic query="LORD">Sentri rules this castle.<question type="0">Dost thou wish an audience with Sentri?<yes>Granted, enter.</yes><no>Then do not disturb him.</no></question></topic>
+    <topic query="CAST">This castle is built on courage.</topic>
+  </person>
+  <person id="7" name="a treasure guard" pronoun="He" turnAwayProb="0">
+    <description>A burly guard</description>
+    <topic query="job">We guard our lord's treasure.</topic>
+    <topic query="health">Excellent.</topic>
+    <topic query="TREA">This treasure is not for thee<question type="0">Dost thou intend to steal our lord's treasure?<yes>Fool!</yes><no>Wise move!</no></question></topic>
+    <topic query="DUNG">Seek out Durham for knowledge of dungeons.</topic>
+  </person>
+  <person id="8" name="Garam" pronoun="He" turnAwayProb="0">
+    <description>A bold fighter.</description>
+    <topic query="job">I fight with courage!<question type="0">Dost thou?<yes>Good.</yes><no>Then train!</no></question></topic>
+    <topic query="health">Quite well.</topic>
+    <topic query="COUR">Courage makes kings out of knaves!</topic>
+    <topic query="BELL">The bell of courage lies at the bottom of a deep well at sea found at lat-N'A" long-L'A"</topic>
+  </person>
+  <person id="9" name="Durham" pronoun="He" turnAwayProb="0">
+    <description>A tall fighter.</description>
+    <topic query="job">I quest for glory!</topic>
+    <topic query="health">Fairly well.</topic>
+    <topic query="QUES">I feel that when on a quest my life has purpose!<question type="0">Art thou on a quest?<yes>Then thy life has meaning!</yes><no>What a loss.</no></question></topic>
+    <topic query="DUNG">The altar room of courage gives the third part of a key.</topic>
+  </person>
+  <person id="10" name="Lori" pronoun="She" turnAwayProb="0">
+    <description>A buxom guard.</description>
+    <topic query="job">I guard this passage.<question type="0">Art thou looking for someone?<yes>Who?</yes><no>Then be on thy way!</no></question></topic>
+    <topic query="health">So far, so good.</topic>
+    <topic query="GARA">He is in the west chamber.</topic>
+    <topic query="DURH">He is in the east chamber.</topic>
+  </person>
+  <person id="11" name="Samuel" pronoun="He" turnAwayProb="0">
+    <description>A handsome guard</description>
+    <topic query="job">I guard this passage.<question type="0">Art thou looking for someone?<yes>Who?</yes><no>Then be on thy way!</no></question></topic>
+    <topic query="health">So far, so good.</topic>
+    <topic query="GARA">He is in the west chamber.</topic>
+    <topic query="DURH">He is in the east chamber.</topic>
+  </person>
+  <person id="12" name="Roderick" pronoun="He" turnAwayProb="0">
+    <description>A destitute, stinking beggar.</description>
+    <topic query="job">I cannot work.</topic>
+    <topic query="health">I've lost a hand!</topic>
+    <topic query="HAND">It was eaten by a zorn.<question type="0">Wilt thou give me gold?<yes>Thou art kind.</yes><no>Stingy!</no></question></topic>
+    <topic query="ORBS">An orb of blue light will raise thy strength, dexterity or intelligence, but at a cost!</topic>
+  </person>
+  <person id="13" name="Sister Antos" pronoun="She" turnAwayProb="0">
+    <description>A wise druid.</description>
+    <topic query="job">I have important information.</topic>
+    <topic query="health">Well enough.</topic>
+    <topic query="INFO">On what subject?</topic>
+    <topic query="BELL">The bell of courage is needed to enter the abyss.<question type="0">Dost thou have it?<yes>Very good.</yes><no>Then ask the fighter Garam for he knows where it lies!</no></question></topic>
+  </person>
+  <person id="14" name="Noxum" pronoun="He" turnAwayProb="0">
+    <description>A spiny nixie!</description>
+    <topic query="job">I swim the seas!</topic>
+    <topic query="health">Nice and wet!</topic>
+    <topic query="SEAS">There are many ships at the bottom!</topic>
+    <topic query="SHIP">A survivor would know where to search.<question type="0">Hast thou heard of the H.M.S. Cape?<yes>She had a magical wheel that would strengthen her hull!</yes><no>A great ship!</no></question></topic>
+  </person>
+  <person id="15" name="Michelle" pronoun="She" turnAwayProb="0">
+    <description>A beautiful paladin!</description>
+    <topic query="job">I welcome thee unto Serpent Castle!</topic>
+    <topic query="health">Very well.<question type="0">Art thou well?<yes>Very good, perhaps thou seeks Sentri.</yes><no>Then thou should visit our healer!</no></question></topic>
+    <topic query="SENT">He is the lord here, take the west passage.</topic>
+    <topic query="HEAL">Take the east passage.</topic>
+  </person>
+</dialogue>

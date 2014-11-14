@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Mariah" pronoun="She" turnAwayProb="0">
+    <description>A young mage</description>
+    <topic query="job">I seek adventure!</topic>
+    <topic query="health">Quite good.</topic>
+    <topic query="ADVE">Yes, I hope to go on a great quest!<question type="0">Art thou on a quest?<yes>I wish I could join thee!</yes><no>Wish thou were!</no></question></topic>
+    <topic query="QUES">The quest of the avatar is noble indeed!</topic>
+  </person>
+  <person id="1" name="Tracie" pronoun="She" turnAwayProb="0">
+    <description>Starving journalist</description>
+    <topic query="job">I am a writer.</topic>
+    <topic query="health">I feel fine... if I could just quit smoking!</topic>
+    <topic query="WRIT">It's low paid, but glamorous!</topic>
+    <topic query="SMOK">Cough...cough...<question type="0">Do you smoke?<yes>I can tell by the smell!</yes><no>Don't start!</no></question></topic>
+  </person>
+  <person id="2" name="Cromwell" pronoun="He" turnAwayProb="0">
+    <description>A regal paladin.</description>
+    <topic query="job">I speak of the virtues of honesty!</topic>
+    <topic query="health">Well indeed.</topic>
+    <topic query="HONE">A few honest men are better than numbers!<question type="0">Dost thou strive to be honest?<yes>Then you will need the mantra.</yes><no>Shame!</no></question></topic>
+    <topic query="MANT">The mantra of the shrine of honesty is 'AHM'.</topic>
+  </person>
+  <person id="3" name="Rebelias" pronoun="He" turnAwayProb="0">
+    <description>A mystic wizard.</description>
+    <topic query="job">I live an honest life.</topic>
+    <topic query="health">I've been better</topic>
+    <topic query="HONE">Speak the truth and shame the evil forces!</topic>
+    <topic query="EVIL">Evil still exists in our hearts and souls!<question type="0">Dost thou seek to conquer thine own evil?<yes>The quest of a lifetime!</yes><no>Wretch!</no></question></topic>
+  </person>
+  <person id="4" name="Christen" pronoun="She" turnAwayProb="0">
+    <description>A playful child.</description>
+    <topic query="job">I am your friend.</topic>
+    <topic query="health">Feeling good.</topic>
+    <topic query="FRIE">Honest friends are few!<question type="0">Art thou my friend?<yes>That makes me happy.</yes><no>I am sad.</no></question></topic>
+    <topic query="HONE">My friend William knows where the rune of honesty is.</topic>
+  </person>
+  <person id="5" name="Patric the&#10;Humble Shepherd" pronoun="He" turnAwayProb="0">
+    <description>A meek shepherd.</description>
+    <topic query="job">I am shepherd.</topic>
+    <topic query="health">Pretty good.</topic>
+    <topic query="HUMB">Humility is not derived from the direct combination of truth, love or courage.</topic>
+    <topic query="HUMI">Humility is to act and be humble.<question type="1">Art thou totally humble?<yes>Doubtful!</yes><no>Strive to be.</no></question></topic>
+  </person>
+  <person id="6" name="Shazom" pronoun="He" turnAwayProb="0">
+    <description>A dying young wizard.</description>
+    <topic query="job">I am apprentice to the great wizard Nigel!</topic>
+    <topic query="health">I will soon die.</topic>
+    <topic query="NIGE">I will soon need to use the spell he calls 'recall'.<question type="0">Hast thou met Nigel?<yes>Seek him out for he will teach thee.</yes><no>He lives at the Lycaeum.</no></question></topic>
+    <topic query="DIE ">Pass on.</topic>
+  </person>
+  <person id="7" name="Shakespeare" pronoun="He" turnAwayProb="0">
+    <description>A wise wizard.</description>
+    <topic query="job">I create tales of honesty.</topic>
+    <topic query="health">Getting on.</topic>
+    <topic query="HONE">Remember, there is no terror in threats for I am strong in honesty!<question type="0">Dost thou strive to be honest?<yes>Beware corruption!</yes><no>Fool!</no></question></topic>
+    <topic query="CORR">Corruption wins not more than honesty!</topic>
+  </person>
+  <person id="8" name="Browning" pronoun="He" turnAwayProb="0">
+    <description>A tall mage.</description>
+    <topic query="job">I strive to live an honest life!</topic>
+    <topic query="health">Been better.</topic>
+    <topic query="HONE">An honest soul need remember no lies!<question type="0">Hast thou never lied?<yes>That seems unlikely!</yes><no>Truth never hurts the teller!</no></question></topic>
+    <topic query="TRUT">Truth is the root of honesty!</topic>
+  </person>
+  <person id="9" name="Cosima" pronoun="She" turnAwayProb="0">
+    <description>An elderly woman</description>
+    <topic query="job">I am an alchemist.</topic>
+    <topic query="health">Tired, so tired.</topic>
+    <topic query="ALCH">I know how best to mix reagents!<question type="0">Dost thou know how to best mix spells?<yes>Good!</yes><no>The secret's in the reagents!</no></question></topic>
+    <topic query="REAG">A sleep spell actually requires but one part spider silk!</topic>
+  </person>
+  <person id="10" name="Daranor" pronoun="He" turnAwayProb="32">
+    <description>A hunched, insane looking man!</description>
+    <topic query="job">I move the sun!</topic>
+    <topic query="health">Health?</topic>
+    <topic query="SUN ">The moons are my enemies!</topic>
+    <topic query="MOON">When I die the world will end!<question type="0">Do you believe my story!?!?...<yes>Then we must fell the moons!</yes><no>Idiot, you must think I am insane!</no></question></topic>
+  </person>
+  <person id="11" name="Inoo" pronoun="She" turnAwayProb="0">
+    <description>An old gypsy.</description>
+    <topic query="job">I am a fortune teller, I read palms.</topic>
+    <topic query="health">I predict I will be fine today!</topic>
+    <topic query="PALM">Palms tell fortunes!</topic>
+    <topic query="FORT">Give thy palm.<question type="0">Dost thou wish thy destiny?<yes>A great quest will lead thee into the abyss where the codex awaits!</yes><no>Wise choice.</no></question></topic>
+  </person>
+  <person id="12" name="Calabrini" pronoun="He" turnAwayProb="0">
+    <description>A tall mage.</description>
+    <topic query="job">I bear greetings from the fair city of Moonglow.<question type="0">Dost thou seek an inn or healing?<yes>Which?</yes><no>Perhaps, the shrine which lies on an isle to the north!</no></question></topic>
+    <topic query="health">Fine.</topic>
+    <topic query="INN ">We have an excellent inn.</topic>
+    <topic query="HEAL">Our healer is one of the best!</topic>
+  </person>
+  <person id="13" name="Dekker" pronoun="He" turnAwayProb="0">
+    <description>A bouncy jester</description>
+    <topic query="job">I earn an honest living, jesting!</topic>
+    <topic query="health">Very good.</topic>
+    <topic query="HONE">Honest labor bears a lovely face!</topic>
+    <topic query="JEST">I love a good jest.<question type="0">Dost thou?<yes>We ought to exchange jokes sometime!</yes><no>Thou art probably a sourpuss!</no></question></topic>
+  </person>
+  <person id="14" name="William" pronoun="He" turnAwayProb="0">
+    <description>A child eating a sandwich.</description>
+    <topic query="job">Oh, not much.</topic>
+    <topic query="health">Pretty good.</topic>
+    <topic query="SAND">It's a peanut butter and grape jelly on lightly toasted bread!<question type="0">Wouldst thou like a bite?<yes>Yummy, huh!</yes><no>It's awful yummy!</no></question></topic>
+    <topic query="RUNE">Search for the rune of honesty by Mariah's gold!</topic>
+  </person>
+  <person id="15" name="Tyrone" pronoun="He" turnAwayProb="0">
+    <description>A battered mage.</description>
+    <topic query="job">I used to search for the blue stone.</topic>
+    <topic query="health">Fading.</topic>
+    <topic query="STON">The stone of honesty is found on an altar in the dungeon of Deceit.<question type="0">Wilt thou search?<yes>Know its uses!</yes><no>Hmm.</no></question></topic>
+    <topic query="USE ">It is used within the dungeon altar rooms and in the abyss.</topic>
+  </person>
+</dialogue>

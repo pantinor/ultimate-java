@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Wilmoore" pronoun="He" turnAwayProb="0">
+    <description>A very big guard.</description>
+    <topic query="job">I am the chief guard in the village of Paws!</topic>
+    <topic query="health">Excellent.</topic>
+    <topic query="GUAR">Paws is a great village and we keep it safe!<question type="0">Dost thou mean to cause trouble?<yes>Then thou had best leave!</yes><no>Good.</no></question></topic>
+    <topic query="TROU">Pirates come from an isle to the east!</topic>
+  </person>
+  <person id="1" name="Francesca" pronoun="She" turnAwayProb="0">
+    <description>A tough girl.</description>
+    <topic query="job">I am the stable hand.</topic>
+    <topic query="health">Right good.</topic>
+    <topic query="STAB">I saw the way ya dealt with ol' Red Eye!<question type="0">Ya haven't come to steal a horse I hope?<yes>Well the master ain't gonna like that much!</yes><no>Then must be to see Smith!</no></question></topic>
+    <topic query="SMIT">The talking horse!</topic>
+  </person>
+  <person id="2" name="Sven" pronoun="He" turnAwayProb="0">
+    <description>A tall burly man.</description>
+    <topic query="job">I'm a lumberjack, ya.</topic>
+    <topic query="health">Fine, thanks.</topic>
+    <topic query="LUMB">Wit' my axe, I can chop'm down quick, ya.</topic>
+    <topic query="AXE ">It's a big axe, ya.<question type="0">Art ya a lumberjack?<yes>Good for you, ya.</yes><no>Build up those arms, ya!</no></question></topic>
+  </person>
+  <person id="3" name="Zair the Wise" pronoun="He" turnAwayProb="0">
+    <description>A man of many years.</description>
+    <topic query="job">I've been near the codex!</topic>
+    <topic query="health">Well.</topic>
+    <topic query="CODE">Its secrets are boundless!<question type="0">Seen it?<yes>Wow!</yes><no>Seek it!</no></question></topic>
+    <topic query="WORD">A three part key and a word of passage are needed to enter the chamber. Ask my brother beyond Lock Lake of the word!</topic>
+  </person>
+  <person id="4" name="Sal" pronoun="She" turnAwayProb="0">
+    <description>A very large woman.</description>
+    <topic query="job">I am the barmaid I serve the ale!</topic>
+    <topic query="health">Stronger every day!</topic>
+    <topic query="ALE ">We have the finest brew in Britannia!</topic>
+    <topic query="BREW">We serve only Folley on tap!<question type="0">Dost thou favor Folley?<yes>A great mug if I may say so!</yes><no>Too bad, it's the best!</no></question></topic>
+  </person>
+  <person id="5" name="Jingles" pronoun="He" turnAwayProb="0">
+    <description>A young mage!</description>
+    <topic query="job">I seek the wisdom of magic.</topic>
+    <topic query="health">Fine.</topic>
+    <topic query="MAGI">My master knows the gate travel spell!</topic>
+    <topic query="MAST">My master is Mentorian.<question type="0">Dost thou know him?<yes>Good.</yes><no>He lives in a hidden village in Lock Lake reachable only by ship, ask of the gate spell!</no></question></topic>
+  </person>
+  <person id="6" name="Sir Hobie" pronoun="He" turnAwayProb="0">
+    <description>A tall muscular knight.</description>
+    <topic query="job">I serve Lord British.</topic>
+    <topic query="health">Tired and hungry but always faithful.</topic>
+    <topic query="FAIT">I quest always for Britannia!</topic>
+    <topic query="QUES">My quest is to defeat the evils of the world.<question type="0">'tis thy quest also?<yes>We are as one.</yes><no>A shame it is!</no></question></topic>
+  </person>
+  <person id="7" name="Damsel" pronoun="She" turnAwayProb="0">
+    <description>A small druid.</description>
+    <topic query="job">I am here to buy food.</topic>
+    <topic query="health">A bit hungry.</topic>
+    <topic query="FOOD">Yes, I hear they have the best rations here.</topic>
+    <topic query="RATI">Rations are used in dungeons.<question type="0">Dost thou travel in the depths?<yes>In the great castle there is a secret entrance!</yes><no>Probably a wimp.</no></question></topic>
+  </person>
+  <person id="8" name="Wheatpin" pronoun="He" turnAwayProb="0">
+    <description>A meek shepherd.</description>
+    <topic query="job">I just sit here.</topic>
+    <topic query="health">Fine.<question type="0">Art thou looking for something?<yes>What?</yes><no>I see.</no></question></topic>
+    <topic query="RUNE">Around there in the nook of the mountains!</topic>
+    <topic query="A   ">A</topic>
+  </person>
+  <person id="9" name="Barren" pronoun="He" turnAwayProb="0">
+    <description>A hooded ranger.</description>
+    <topic query="job">I travel the land.</topic>
+    <topic query="health">I am well.</topic>
+    <topic query="LAND">Britannia.<question type="0">Art thou dim?<yes>I thought so.</yes><no>We shall see.</no></question></topic>
+    <topic query="RUNE">Search the hills in the south-east corner of town!</topic>
+  </person>
+  <person id="10" name="Pix" pronoun="She" turnAwayProb="0">
+    <description>A small girl.</description>
+    <topic query="job">What's a job?</topic>
+    <topic query="health">Good, thanks.<question type="0">And thee?<yes>Good.</yes><no>Too bad.</no></question></topic>
+    <topic query="A   ">A</topic>
+    <topic query="A   ">A</topic>
+  </person>
+  <person id="11" name="Sir Simon" pronoun="He" turnAwayProb="0">
+    <description>A wise lord.</description>
+    <topic query="job">I am the keeper.</topic>
+    <topic query="health">I am fine.</topic>
+    <topic query="KEEP">Of what I cannot say!</topic>
+    <topic query="MYST">Mystics can be found by an eight parts avatar!<question type="0">Hast thou attained enlightenment in all eight virtues?<yes>The mystic armour lies in the center of the oak grove!</yes><no>Alas.</no></question></topic>
+  </person>
+  <person id="12" name="Lady Tessa" pronoun="She" turnAwayProb="0">
+    <description>A wise lady.</description>
+    <topic query="job">I am the keeper.</topic>
+    <topic query="health">Well.</topic>
+    <topic query="KEEP">I cannot say.</topic>
+    <topic query="MYST">Mystics can be found by an eight parts avatar!<question type="0">Hast thou attained enlightenment in all eight virtues?<yes>The mystic weapons lie in the training room of Serpent castle!</yes><no>Alas.</no></question></topic>
+  </person>
+  <person id="13" name="Asemly" pronoun="He" turnAwayProb="0">
+    <description>A short jester.</description>
+    <topic query="job">I am here to serve thee.</topic>
+    <topic query="health">Jolly good.</topic>
+    <topic query="SERV">Well, I can dance and sing!<question type="0">Does that interest thee?<yes>Good!</yes><no>Well then, I guess I'm no help at all then.</no></question></topic>
+    <topic query="DANC">And sing, tra la la...</topic>
+  </person>
+  <person id="14" name="Little Jon" pronoun="He" turnAwayProb="0">
+    <description>A singing bard.</description>
+    <topic query="job">I sing of Britannia.</topic>
+    <topic query="health">Quite well indeed!</topic>
+    <topic query="BRIT">Britannia is a land so fair, to other lands I would not dare!<question type="0">I hear that thou art from another world?<yes>What is it called?</yes><no>Just a rumor.</no></question></topic>
+    <topic query="EART">I hope someday thou may return!</topic>
+  </person>
+  <person id="15" name="Smith" pronoun="He" turnAwayProb="0">
+    <description>A white stallion</description>
+    <topic query="job">Oh, not much.</topic>
+    <topic query="health">Good, good.</topic>
+    <topic query="A   ">A</topic>
+    <topic query="A   ">A</topic>
+  </person>
+</dialogue>

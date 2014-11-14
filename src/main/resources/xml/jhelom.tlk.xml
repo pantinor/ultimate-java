@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Geoffrey" pronoun="He" turnAwayProb="0">
+    <description>A 6 foot 5, great warrior.</description>
+    <topic query="job">I lead into battle!</topic>
+    <topic query="health">I am good and strong!</topic>
+    <topic query="WARR">A great warrior is a valiant warrior!<question type="0">Art thou valiant!<yes>Perhaps I could someday join thee!</yes><no>To flee battle shows cowardice!</no></question></topic>
+    <topic query="BATT">I desire to fight again in battle!</topic>
+  </person>
+  <person id="1" name="Lord Robert" pronoun="He" turnAwayProb="0">
+    <description>A mysterious warrior.</description>
+    <topic query="job">I battle for Lord British!<question type="0">Are you a valiant warrior?<yes>Thou dost deserve the rune, ask Nostro!</yes><no>Thou art a wimp!</no></question></topic>
+    <topic query="health">Outstanding!</topic>
+    <topic query="WARR">Thou must battle long and hard to be a warrior.</topic>
+    <topic query="BATT">Battles are few and too many!</topic>
+  </person>
+  <person id="2" name="Lady Donna" pronoun="She" turnAwayProb="0">
+    <description>A 5 foot pregnant woman</description>
+    <topic query="job">I watch over my sheep.</topic>
+    <topic query="health">Fine, all but the lump in my stomach.</topic>
+    <topic query="PREG">It's no fun to be pregnant.<question type="0">Why, art thou the father?<yes>Wait till I tell my husband!</yes><no>Thank god!</no></question></topic>
+    <topic query="SHEE">I can't stand sheep!</topic>
+  </person>
+  <person id="3" name="Bengrod" pronoun="He" turnAwayProb="0">
+    <description>A wounded fighter!</description>
+    <topic query="job">I search the dungeons!</topic>
+    <topic query="health">Poor.</topic>
+    <topic query="DUNG">I fell in the dungeon 'Destard'.<question type="0">Hast thou found its altar room?<yes>It connects with Covetous, Shame and Hythloth!</yes><no>Find it!</no></question></topic>
+    <topic query="ROOM">Therein use the stones found in the connecting dungeons!</topic>
+  </person>
+  <person id="4" name="Sir William" pronoun="He" turnAwayProb="0">
+    <description>A noble fighter.</description>
+    <topic query="job">I search for valiant fighters!<question type="0">Art thou valiant?<yes>Strive ye to defeat all evil!</yes><no>I see.</no></question></topic>
+    <topic query="health">Very well.</topic>
+    <topic query="EVIL">Kill not non-evil creatures but still always stand thy ground!</topic>
+    <topic query="KILL">Let them flee instead. never flee uninjured!</topic>
+  </person>
+  <person id="5" name="Sir Hrothgar" pronoun="He" turnAwayProb="0">
+    <description>A mighty warrior!</description>
+    <topic query="job">I fight for valor!</topic>
+    <topic query="health">Excellent.</topic>
+    <topic query="VALO">The valiant soul fears not its own visage!<question type="1">Art thou the most valiant of souls?<yes>This is not likely!</yes><no>Thou should seek the shrine of valor!</no></question></topic>
+    <topic query="SHRI">The mantra need be known, ask Aesop!</topic>
+  </person>
+  <person id="6" name="a guard" pronoun="He" turnAwayProb="32">
+    <description>A stern guard.</description>
+    <topic query="job">We guard the gates and these passages!</topic>
+    <topic query="health">Well.</topic>
+    <topic query="GATE">The gates of Jhelom.</topic>
+    <topic query="PASS">These passages are restricted.</topic>
+  </person>
+  <person id="7" name="Aesop" pronoun="He" turnAwayProb="0">
+    <description>A small man.</description>
+    <topic query="job">I search for valor!</topic>
+    <topic query="health">Well enough.</topic>
+    <topic query="VALO">I find that 'tis easy to be brave from a safe distance!<question type="0">Know what I mean?<yes>Thats my problem.</yes><no>Thou art brave!</no></question></topic>
+    <topic query="MANT">The mantra of valor is 'RA' use it in the shrine on the next isle!</topic>
+  </person>
+  <person id="8" name="Gravnor" pronoun="He" turnAwayProb="0">
+    <description>A grave fighter.</description>
+    <topic query="job">I search the dungeons.</topic>
+    <topic query="health">So so.</topic>
+    <topic query="DUNG">I seek the red stone.</topic>
+    <topic query="STON">It is found on an altar!<question type="0">Dost thou have it?<yes>No wonder I can't find it!</yes><no>It lies in the dungeon Destard!</no></question></topic>
+  </person>
+  <person id="9" name="Senora" pronoun="She" turnAwayProb="0">
+    <description>A beautiful mage</description>
+    <topic query="job">I am locked up in this tower.</topic>
+    <topic query="health">Well enough.</topic>
+    <topic query="TOWE">I am being punished for my crimes.</topic>
+    <topic query="CRIM">Does not matter, I can help thee!<question type="0">Dost thou have a ship?<yes>Then thou dost need a sextant ask the barkeep for he knows more!</yes><no>Too bad.</no></question></topic>
+  </person>
+  <person id="10" name="Nostro" pronoun="He" turnAwayProb="0">
+    <description>A withering soul</description>
+    <topic query="job">I built these passages and they walled me in!</topic>
+    <topic query="health">Very near death!</topic>
+    <topic query="PASS">This passage runs around the city!<question type="0">Wilt thou lead me out?<yes>I am saved!</yes><no>Thou art a cad! and I will still follow!</no></question></topic>
+    <topic query="RUNE">The rune is buried in a tower!</topic>
+  </person>
+  <person id="11" name="Luke" pronoun="He" turnAwayProb="0">
+    <description>A ranger with a far away look.</description>
+    <topic query="job">I seek the inner light!</topic>
+    <topic query="health">Quite well.</topic>
+    <topic query="LIGH">I come from Skara Brae and am on my way to Yew.<question type="0">Hast thou been to Skara Brae?<yes>A fine city!</yes><no>'tis a spiritual city!</no></question></topic>
+    <topic query="YEW ">'tis a city based in the virtue of justice!</topic>
+  </person>
+  <person id="12" name="Max" pronoun="He" turnAwayProb="0">
+    <description>The housekeeper.</description>
+    <topic query="job">I am the housekeeper.</topic>
+    <topic query="health">Good!</topic>
+    <topic query="HOUS">I clean the rooms.<question type="0">Is there some problem with thy room?<yes>I am very sorry I will correct it right away!</yes><no>Oh, thou had me worried!</no></question></topic>
+    <topic query="ROOM">That's a strange one at the end. People often disappear.</topic>
+  </person>
+  <person id="13" name="X" pronoun="He" turnAwayProb="0">
+    <description>A strange person</description>
+    <topic query="job">I seek the stone</topic>
+    <topic query="health">O.K.</topic>
+    <topic query="STON">The red stone.</topic>
+    <topic query="RED ">Red is for valor a virtue of the avatar!<question type="1">Art thou an avatar?<yes>Wow!</yes><no>Then thou shalt need the red stone in one altar room to get the third part of a key!</no></question></topic>
+  </person>
+  <person id="14" name="Slithe" pronoun="He" turnAwayProb="0">
+    <description>A valiant warrior.</description>
+    <topic query="job">I fight battles!</topic>
+    <topic query="health">Only minor wounds!</topic>
+    <topic query="BATT">True valor is seen not in the force of arms, but in the force of will!<question type="0">Art thou valiant?<yes>Then never flee unless the need is dire!</yes><no>Coward.</no></question></topic>
+    <topic query="VALO">I display my valor in battle.</topic>
+  </person>
+  <person id="15" name="Timrod" pronoun="He" turnAwayProb="0">
+    <description>A thin fighter.</description>
+    <topic query="job">I fight with valor!</topic>
+    <topic query="health">Couldn't be better!</topic>
+    <topic query="VALO">There is no holier spot of ground than where defeated valor lies.<question type="0">Art thou brave?<yes>Fortune helps the brave!</yes><no>Coward.</no></question></topic>
+    <topic query="BRAV">Be brave for there is much to dare!</topic>
+  </person>
+</dialogue>

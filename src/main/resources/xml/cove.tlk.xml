@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Allen" pronoun="He" turnAwayProb="0">
+    <description>A small boy.</description>
+    <topic query="job">I know how to enter the abyss!</topic>
+    <topic query="health">I am fine.</topic>
+    <topic query="ABYS">The abyss may only be approached by ship!</topic>
+    <topic query="SHIP">The ship must have a magically strengthened hull!<question type="0">Hast thou such a vessel?<yes>Ask Blissful of the abyss.</yes><no>Ask Blissful of the abyss.</no></question></topic>
+  </person>
+  <person id="1" name="Frontis" pronoun="He" turnAwayProb="0">
+    <description>A small druid.</description>
+    <topic query="job">Welcome to Cove, the hidden city of wisdom.</topic>
+    <topic query="health">I am well.<question type="0">Art thou well?<yes>Very good.</yes><no>Visit our healers, I am sure they can help thee!</no></question></topic>
+    <topic query="WISD">Herein is found much wisdom and peace.</topic>
+    <topic query="PEAC">Find peace in our shrine.</topic>
+  </person>
+  <person id="2" name="Sloven" pronoun="He" turnAwayProb="0">
+    <description>An old hermit.</description>
+    <topic query="job">I am a recluse.</topic>
+    <topic query="health">I am well.</topic>
+    <topic query="RECL">I have withdrawn from society.</topic>
+    <topic query="STON">Only the ghost of Isaac who haunts the inn at Skara Brae can tell thee.<question type="0">Hast thou seen him?<yes>Ask him!</yes><no>Stay at the inn until he shows himself!</no></question></topic>
+  </person>
+  <person id="3" name="Mentorian" pronoun="He" turnAwayProb="0">
+    <description>A tall wizard.</description>
+    <topic query="job">I study the magical arts.</topic>
+    <topic query="health">Well indeed.</topic>
+    <topic query="ARTS">There is truth in magic!<question type="0">Dost thou disagree?<yes>Well then, begone!</yes><no>Good.</no></question></topic>
+    <topic query="GATE">Since thou dost bear the ankh I shall tell thee. A gate spell requires ash, pearl, and mandrake root!</topic>
+  </person>
+  <person id="4" name="the ankh" pronoun="It" turnAwayProb="0">
+    <description>A shining ankh!</description>
+    <topic query="job">I resonate with thoughts.<question type="0">Dost thou seek help?<yes>What are thy thoughts?</yes><no>Oh.</no></question></topic>
+    <topic query="health">Bright.</topic>
+    <topic query="CODE">To enter the codex chamber.</topic>
+    <topic query="CHAM">One must be 8 parts avatar, have the key of 3 parts, the word of passage and know the pure axiom!</topic>
+  </person>
+  <person id="5" name="Paul" pronoun="He" turnAwayProb="0">
+    <description>A strangely familiar bard.</description>
+    <topic query="job">I play of love.<question type="0">Wilt thou listen?<yes>About love.</yes><no>Too bad.</no></question></topic>
+    <topic query="health">I am well.</topic>
+    <topic query="LOVE">I light a candle to our love, in love our problems disappear.</topic>
+    <topic query="PROB">But all in all we soon discover that one and one is all we long to hear!</topic>
+  </person>
+  <person id="6" name="Linda" pronoun="She" turnAwayProb="0">
+    <description>A singer.</description>
+    <topic query="job">I sing of the children.</topic>
+    <topic query="health">Fine.</topic>
+    <topic query="CHIL">All round the world, little children being born to the world.</topic>
+    <topic query="WORL">Got to give them all we can 'til the quest is won, then will the work be done!<question type="0">Wilt thou help?<yes>Teach them songs of joy!</yes><no>Hmm.</no></question></topic>
+  </person>
+  <person id="7" name="Merlin" pronoun="He" turnAwayProb="0">
+    <description>A mystical wizard.</description>
+    <topic query="job">I use magic.<question type="0">Dost thou study magic?<yes>Best of luck with thy studies!</yes><no>Too bad.</no></question></topic>
+    <topic query="health">Fine.</topic>
+    <topic query="STON">The black stone is caught in a moon gate!</topic>
+    <topic query="GATE">Stand where the gate of both moons dark shall appear. Search when the moons go dark!</topic>
+  </person>
+  <person id="8" name="Draconian" pronoun="He" turnAwayProb="0">
+    <description>An old druid.</description>
+    <topic query="job">I teach the relation.<question type="0">Knew ye this?<yes>Very good!</yes><no>Learn the towns and castles!</no></question></topic>
+    <topic query="health">I am well.</topic>
+    <topic query="RELA">There are eight possible combinations of truth, love and courage. Each of the eight virtues is one of those combinations!</topic>
+    <topic query="A   ">A</topic>
+  </person>
+  <person id="9" name="Blissful" pronoun="She" turnAwayProb="0">
+    <description>A majestic seahorse!</description>
+    <topic query="job">I know much of the codex!</topic>
+    <topic query="health">I am doing well.</topic>
+    <topic query="CODE">The shrine ankh knows how to enter the chamber of the codex!</topic>
+    <topic query="ABYS">Meditate at the shrines of honesty, compassion and valor for 3 cycles to know how to enter!</topic>
+  </person>
+  <person id="10" name="Rabindranath&#10;tagore" pronoun="He" turnAwayProb="0">
+    <description>A wise man.</description>
+    <topic query="job">I speak of love.<question type="0">Dost thou seek to carry love in thy heart?<yes>Thou art a good soul.</yes><no>Thou art a fool.</no></question></topic>
+    <topic query="health">I am old but strong!</topic>
+    <topic query="LOVE">In love, all life's contradictions dissolve and disappear.</topic>
+    <topic query="HEAR">Carry love within it!</topic>
+  </person>
+  <person id="11" name="Brother Zair" pronoun="He" turnAwayProb="0">
+    <description>An old druid.</description>
+    <topic query="job">I sit and watch the river.</topic>
+    <topic query="health">I am well.</topic>
+    <topic query="RIVE">It flows endlessly.<question type="0">Agree?<yes>Good.</yes><no>Indeed.</no></question></topic>
+    <topic query="WORD">The kings of the castles which represent the three principles of virtue each know but one syllable of the word of passage!</topic>
+  </person>
+  <person id="12" name="Spellbind" pronoun="She" turnAwayProb="0">
+    <description>A slender mage.</description>
+    <topic query="job">I know of the codex.</topic>
+    <topic query="health">Well indeed.</topic>
+    <topic query="CODE">One must know the combination of the three principles of virtue!</topic>
+    <topic query="COMB">The combination of the three principles of virtue equals the measure of time and space!</topic>
+  </person>
+  <person id="13" name="Shaman" pronoun="He" turnAwayProb="0">
+    <description>A tall mage.</description>
+    <topic query="job">I study the 'one' thing that is the secret to the codex!</topic>
+    <topic query="health">Quite well.</topic>
+    <topic query="STUD">I study of the codex!</topic>
+    <topic query="CODE">The one pure axiom is more endless than the changing tides, more eternal than day and night!</topic>
+  </person>
+  <person id="14" name="Charm" pronoun="She" turnAwayProb="0">
+    <description>A fair sorceress.</description>
+    <topic query="job">I ponder the key to the axiom.</topic>
+    <topic query="health">Well enough.</topic>
+    <topic query="KEY ">To the axiom.</topic>
+    <topic query="AXIO">The 1 pure axiom encompasses all things.</topic>
+  </person>
+  <person id="15" name="Circe" pronoun="He" turnAwayProb="0">
+    <description>A wise mage.</description>
+    <topic query="job">I teach of the axiom!</topic>
+    <topic query="health">Well.</topic>
+    <topic query="AXIO">The whole of the axiom is greater than all its parts!</topic>
+    <topic query="PART">The measure of unending love, the limitless courage needed to face all obstacles,the truth which encompasses all things!</topic>
+  </person>
+</dialogue>

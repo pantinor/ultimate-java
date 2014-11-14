@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Dupre" pronoun="He" turnAwayProb="0">
+    <description>Handsome fighter</description>
+    <topic query="job">I am towne leader</topic>
+    <topic query="health">Very well.</topic>
+    <topic query="LEAD">'tis an honor!<question type="0">Dost thou try to live honorably?<yes>It is a constant quest. Honor is like finely polished armour. Without constant care, it will soon tarnish!</yes><no>Fool!</no></question></topic>
+    <topic query="HONO">It gives life meaning!</topic>
+  </person>
+  <person id="1" name="Virgil" pronoun="He" turnAwayProb="0">
+    <description>A mystic wizard.</description>
+    <topic query="job">I create magical fields.</topic>
+    <topic query="health">I am well.</topic>
+    <topic query="FIEL">Poison is my favorite.<question type="0">'tis it thine?<yes>Bravo!</yes><no>Well I don't care!</no></question></topic>
+    <topic query="NIGH">Nightshade may be found only near lat-J'F" long-C'O" only on the darkest of nights!</topic>
+  </person>
+  <person id="2" name="Publius" pronoun="He" turnAwayProb="0">
+    <description>A sleepy fighter</description>
+    <topic query="job">I drink a toast to honor!</topic>
+    <topic query="health">Tired.</topic>
+    <topic query="HONO">What is left when honor is lost?</topic>
+    <topic query="NOTH">Right, take honor from me and my life is done!<question type="0">Dost thou strive to live an honorable life?<yes>Honor gives greatness.</yes><no>No honor, no meaning!</no></question></topic>
+  </person>
+  <person id="3" name="Skitle" pronoun="It" turnAwayProb="0">
+    <description>A bony skeleton</description>
+    <topic query="job">I hail from dungeon deep.</topic>
+    <topic query="health">What do you mean?</topic>
+    <topic query="DUNG">I come from the dungeon 'Shame'!</topic>
+    <topic query="STON">I have seen the purple stone used in the altars of truth and courage!<question type="0">Ever been there?<yes>Good.</yes><no>It holds items thou shalt need.</no></question></topic>
+  </person>
+  <person id="4" name="Sailor Sam" pronoun="He" turnAwayProb="0">
+    <description>An ugly sailor.</description>
+    <topic query="job">I sail the the seas of Britannia!</topic>
+    <topic query="health">A bit waterlogged.</topic>
+    <topic query="SEAS">My specialty is navigation!<question type="0">Is it thy specialty?<yes>Good show mate!</yes><no>Thou must not own a sextant, eh?</no></question></topic>
+    <topic query="SEXT">Go to the pub in Jhelom and ask of sextants.</topic>
+  </person>
+  <person id="5" name="Aristotle" pronoun="He" turnAwayProb="0">
+    <description>A dignified paladin.</description>
+    <topic query="job">I search for honor.</topic>
+    <topic query="health">I am well.</topic>
+    <topic query="HONO">Dignity consists not in possessing honors, but in deserving them.</topic>
+    <topic query="DIGN">Honor no one, but honor itself!<question type="0">Art thou honorable at all times?<yes>That is impressive.</yes><no>Strive to be as such.</no></question></topic>
+  </person>
+  <person id="6" name="Terrin" pronoun="He" turnAwayProb="0">
+    <description>A cowering child</description>
+    <topic query="job">I ran from the bull!</topic>
+    <topic query="health">Scared!</topic>
+    <topic query="BULL">A big one, with long, pointy horns!<question type="0">Is it gone yet?<yes>Whew, I thought it would get me!</yes><no>Save me!</no></question></topic>
+    <topic query="RUNE">It is buried in the southwest corner of towne.</topic>
+  </person>
+  <person id="7" name="Rigmore" pronoun="He" turnAwayProb="0">
+    <description>A strong paladin.</description>
+    <topic query="job">I am the welcomer.</topic>
+    <topic query="health">Extra good.</topic>
+    <topic query="WELC">Yes, welcome to Trinsic city of honor!</topic>
+    <topic query="HONO">Wisdom on the virtue of honor is found throughout this towne.<question type="0">Dost thou seek this wisdom?<yes>Enter and find thy path.</yes><no>This is the wrong place!</no></question></topic>
+  </person>
+  <person id="8" name="Winthrop" pronoun="He" turnAwayProb="0">
+    <description>A scruffy merchant.</description>
+    <topic query="job">A trade in rumors.</topic>
+    <topic query="health">A bit ragged out.</topic>
+    <topic query="RUMO">About what?</topic>
+    <topic query="RUNE">There is a small child who knew named... Terrin.<question type="0">Dost thou know him?<yes>Ask him of the rune.</yes><no>Find him and ask of the rune!</no></question></topic>
+  </person>
+  <person id="9" name="Swindrik" pronoun="He" turnAwayProb="0">
+    <description>A tall wizard.</description>
+    <topic query="job">I cast spells.</topic>
+    <topic query="health">Fully healed.</topic>
+    <topic query="SPEL">Spells of great power.<question type="0">Dost thou cast spells of great power?<yes>What is the most powerful reagent?</yes><no>Dost thou know their main ingredient?</no></question></topic>
+    <topic query="MAND">Ask at the Folley tavern of mandrake.</topic>
+  </person>
+  <person id="10" name="Kline" pronoun="He" turnAwayProb="0">
+    <description>A searching paladin!</description>
+    <topic query="job">I seek entry to the shrine of honor!<question type="0">Know ye the two requirements to enter and use the shrine?<yes>What are they?</yes><no>What dost thou think?</no></question></topic>
+    <topic query="health">Well.</topic>
+    <topic query="MANT">The mantra is 'SUMM'.</topic>
+    <topic query="RUNE">A man named Winthrop knows of the rune!</topic>
+  </person>
+  <person id="11" name="Lexington" pronoun="He" turnAwayProb="0">
+    <description>A shining paladin.</description>
+    <topic query="job">I am warlord of Trinsic.</topic>
+    <topic query="health">Superb.</topic>
+    <topic query="WARL">I have solved many quests!</topic>
+    <topic query="QUES">The solving of quests brings ye honor!<question type="0">Strive ye for honor?<yes>Then solve quests but attack not non-evil creatures, and get not others gold!</yes><no>Oh.</no></question></topic>
+  </person>
+  <person id="12" name="Dergin" pronoun="He" turnAwayProb="0">
+    <description>A soulful fighter.</description>
+    <topic query="job">I seek a place to rest.</topic>
+    <topic query="health">Tired.</topic>
+    <topic query="REST">I have quested long and hard.</topic>
+    <topic query="QUES">I seek enlightenment at the shrine of honor!<question type="0">Art thou enlightened in honor?<yes>Good.</yes><no>The shrine lies to the south and west beyond the swamps!</no></question></topic>
+  </person>
+  <person id="13" name="a guard" pronoun="He" turnAwayProb="0">
+    <description>A big guard.</description>
+    <topic query="job">We guard the gate.</topic>
+    <topic query="health">Excellent.</topic>
+    <topic query="GATE">Into and out of Trinsic.</topic>
+    <topic query="GUAR">'tis an honorable job!<question type="0">Dost thou strive to bring honor upon the peers?<yes>Dupre, the leader of our towne, joins many honorable quests!</yes><no>Dolt.</no></question></topic>
+  </person>
+  <person id="14" name="Quix" pronoun="She" turnAwayProb="0">
+    <description>A wandering mage</description>
+    <topic query="job">I seek the skeleton!</topic>
+    <topic query="health">Adequate.</topic>
+    <topic query="SKEL">It knows a great secret.</topic>
+    <topic query="SECR">About the purple stone of honor!<question type="0">Dost thou have the purple stone?<yes>Use it wisely!</yes><no>Seek it for it is very useful!</no></question></topic>
+  </person>
+  <person id="15" name="a guard" pronoun="She" turnAwayProb="64">
+    <description>A strong guard.</description>
+    <topic query="job">To guard.</topic>
+    <topic query="health">Guarded.</topic>
+    <topic query="GUAR">Guarding.</topic>
+    <topic query="STRO">Guard</topic>
+  </person>
+</dialogue>

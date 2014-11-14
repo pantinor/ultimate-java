@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Jaana" pronoun="She" turnAwayProb="0">
+    <description>A quiet druid</description>
+    <topic query="job">I strive to understand justice.</topic>
+    <topic query="health">I am well.</topic>
+    <topic query="JUST">True justice satisfies all, false none.</topic>
+    <topic query="UNDE">Let justice be thy calling not thy excuse!<question type="0">Art thou just?<yes>Many a grave has been unjustly filled in the name of justice.</yes><no>Alas.</no></question></topic>
+  </person>
+  <person id="1" name="a guard" pronoun="She" turnAwayProb="0">
+    <description>A tall guard</description>
+    <topic query="job">To guard the court.</topic>
+    <topic query="health">Yes.</topic>
+    <topic query="JUST">A good life is inspired by love and guided by knowledge.</topic>
+    <topic query="COUR">Within this chamber justice is served.<question type="0">Dost thou have business before the court?<yes>Then enter.</yes><no>Then do not disturb the proceedings!</no></question></topic>
+  </person>
+  <person id="2" name="a guard" pronoun="He" turnAwayProb="0">
+    <description>A big guard.</description>
+    <topic query="job">We guard the jail.<question type="0">Hast thou come to turn thyself in?<yes>In which cell dost thou belong, felonies or misdemeanors.</yes><no>Just visiting, eh.</no></question></topic>
+    <topic query="health">Fit.</topic>
+    <topic query="MISD">That'll be the left cell.</topic>
+    <topic query="FELO">That'll be the right hand cell. careful in there!</topic>
+  </person>
+  <person id="3" name="Calumny" pronoun="He" turnAwayProb="0">
+    <description>A solemn druid.</description>
+    <topic query="job">I make spells.</topic>
+    <topic query="health">Well.</topic>
+    <topic query="SPEL">I invented quickness!<question type="0">Can thou cast it?<yes>It requires but one bloodmoss!</yes><no>Adept.</no></question></topic>
+    <topic query="MAND">Mandrake root is found only in the Fens of the Dead and in the Bloody Plains where the ground is always damp.</topic>
+  </person>
+  <person id="4" name="Talfourd" pronoun="He" turnAwayProb="0">
+    <description>A wise judge.</description>
+    <topic query="job">I decide justice.</topic>
+    <topic query="health">Well.</topic>
+    <topic query="JUST">Justice is truth in action!</topic>
+    <topic query="RUNE">It is hidden well!<question type="1">Can thou honestly claim to be guilty of no crime ever?<yes>Doubtful.</yes><no>Then do thy penance in a cell, and with the felon search ye well.</no></question></topic>
+  </person>
+  <person id="5" name="Flamis" pronoun="It" turnAwayProb="0">
+    <description>A burning fire.</description>
+    <topic query="job">I hold the fabric of the true nature of justice.</topic>
+    <topic query="health">Bright.</topic>
+    <topic query="JUST">The virtue of justice draws its nature from the principles of truth and love!</topic>
+    <topic query="FABR">Of justice.<question type="1">Hast thou always been just?<yes>Unlikely.</yes><no>At least thou art honest.</no></question></topic>
+  </person>
+  <person id="6" name="Silent" pronoun="He" turnAwayProb="32">
+    <description>A chanting druid</description>
+    <topic query="job">Beh... Beh...</topic>
+    <topic query="health">Beh... Beh...</topic>
+    <topic query="BEH.">Beh... Beh...</topic>
+    <topic query="BEH ">Beh... Beh...</topic>
+  </person>
+  <person id="7" name="Dwp" pronoun="He" turnAwayProb="0">
+    <description>A wise druid.</description>
+    <topic query="job">Welcome thee to Yew city of justice!</topic>
+    <topic query="health">I am well.</topic>
+    <topic query="JUST">Love no one more than the truth, for justice seeks no favors. Temper thy justice with understanding.</topic>
+    <topic query="YEW ">Yes 'tis a fair city!<question type="0">Dost thou like it?<yes>Let it be as thine!</yes><no>A pity.</no></question></topic>
+  </person>
+  <person id="8" name="a poor beggar." pronoun="He" turnAwayProb="0">
+    <description>A poor beggar.</description>
+    <topic query="job">I have sinned.</topic>
+    <topic query="health">Well treated.</topic>
+    <topic query="SINE">I have gotten chests in the townes and killed non-evil creatures.<question type="0">Should thou be in with the felon?<yes>Thou art in the wrong cell.</yes><no>Good.</no></question></topic>
+    <topic query="FELO">He is a mean nasty ugly villain!</topic>
+  </person>
+  <person id="9" name="Vorpal" pronoun="He" turnAwayProb="96">
+    <description>A mean nasty ugly villain!</description>
+    <topic query="job">I eat people who bug me!</topic>
+    <topic query="health">Hungry!</topic>
+    <topic query="VILL">That's me alright!</topic>
+    <topic query="PEOP">Like thee!<question type="0">Art thou here to bug me?<yes>Eat death, scum puppy!</yes><no>Well thou art!</no></question></topic>
+  </person>
+  <person id="10" name="a ranger" pronoun="She" turnAwayProb="0">
+    <description>A sleek ranger.</description>
+    <topic query="job">I search for a home.</topic>
+    <topic query="health">O.K.</topic>
+    <topic query="HOME">On the range!</topic>
+    <topic query="RANG">Where the deer and the antelope play.<question type="0">Ever heard of such a place?<yes>Seldom is heard a discouraging word!</yes><no>Ah, what'ya have to ruin it for!</no></question></topic>
+  </person>
+  <person id="11" name="Short Round" pronoun="He" turnAwayProb="0">
+    <description>A small child</description>
+    <topic query="job">I work for Jones.</topic>
+    <topic query="health">I am fine.</topic>
+    <topic query="JONE">I think Indi's on a quest!</topic>
+    <topic query="QUES">I'm not so sure, but it should be fun!<question type="0">Art thou having fun?<yes>Write to Lord British and tell him!!!</yes><no>I am so sorry we all wish you would!</no></question></topic>
+  </person>
+  <person id="12" name="Frida" pronoun="She" turnAwayProb="0">
+    <description>A withered form.</description>
+    <topic query="job">See my poor baby I beg for him.</topic>
+    <topic query="health">I am starving and sick.</topic>
+    <topic query="BABY">Oh, no, my baby is dying!<question type="0">Wilt thou give me money so that I can get my baby healed?<yes>Thou art kind and just!</yes><no>Evil wretch, curse thee!</no></question></topic>
+    <topic query="JUST">Jaana may join thee!</topic>
+  </person>
+  <person id="13" name="Pinrod" pronoun="He" turnAwayProb="0">
+    <description>A thin man.</description>
+    <topic query="job">I take council.</topic>
+    <topic query="health">Fine.</topic>
+    <topic query="COUN">On justice.<question type="0">Fight ye for justice?<yes>Good, the druids chant the mantra!</yes><no>Cad.</no></question></topic>
+    <topic query="JUST">Justice is hardest to find at the point of a sword, the steel is an agent of justice, humanity the perpetrator!</topic>
+  </person>
+  <person id="14" name="a guard" pronoun="He" turnAwayProb="0">
+    <description>A big guard</description>
+    <topic query="job">To preserve the peace and insure justice!</topic>
+    <topic query="health">O.K.</topic>
+    <topic query="PEAC">A good life is inspired by love and guided by truth!<question type="1">Art thou always just?<yes>Unlikely!</yes><no>Strive to be!</no></question></topic>
+    <topic query="JUST">Justice means not only to punish the bad but also to reward the good!</topic>
+  </person>
+  <person id="15" name="Druid" pronoun="She" turnAwayProb="0">
+    <description>A wandering druid.</description>
+    <topic query="job">I seek justice.</topic>
+    <topic query="health">Well.</topic>
+    <topic query="JUST">Learn at the shrine!</topic>
+    <topic query="SHRI">The shrine is to the east then north!<question type="0">Dost thou have the rune?<yes>Now learn the mantra, and seek the green stone in 'Wrong'!</yes><no>Ask Talfourd for he knows of the rune.</no></question></topic>
+  </person>
+</dialogue>

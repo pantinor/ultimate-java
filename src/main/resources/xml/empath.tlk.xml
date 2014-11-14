@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Lord Robert" pronoun="He" turnAwayProb="0">
+    <description>A stately baron</description>
+    <topic query="job">I rule this province.</topic>
+    <topic query="health">Very well.</topic>
+    <topic query="PROV">My Lady Marcy can tell thee more!</topic>
+    <topic query="WORD">I know but one of three syllables.<question type="0">Dost thou wish to know it now?<yes>It is 'amo' seek ye now the other parts!</yes><no>Perhaps another time.</no></question></topic>
+  </person>
+  <person id="1" name="Lady Marcy" pronoun="She" turnAwayProb="0">
+    <description>A charming lady</description>
+    <topic query="job">I rule with my Lord.</topic>
+    <topic query="health">Well.</topic>
+    <topic query="RULE">This province.</topic>
+    <topic query="PROV">Our people believe in love as a way of life and live it to the fullest!<question type="0">Dost thou seek love?<yes>Then may thou find it!</yes><no>Then thou shalt not find it!</no></question></topic>
+  </person>
+  <person id="2" name="Suzanna" pronoun="She" turnAwayProb="64">
+    <description>A lovely lady</description>
+    <topic query="job">I am a lady in waiting.</topic>
+    <topic query="health">Overworked!</topic>
+    <topic query="LADY">I serve Marcy.<question type="0">Art thou allowed to be in here?<yes>I doubt it! Thou should leave!</yes><no>Thou should leave!</no></question></topic>
+    <topic query="HORN">There is a paladin by the name of Malchor. He can lead thee to the silver horn!</topic>
+  </person>
+  <person id="3" name="Life." pronoun="It" turnAwayProb="0">
+    <description>An ankh</description>
+    <topic query="job">I resonate thoughts.</topic>
+    <topic query="health">I exist.</topic>
+    <topic query="RESO">What are thy thoughts?</topic>
+    <topic query="LOVE">Seek ye the candle of love for only with it and two other parts might thou enter the abyss!<question type="0">Dost thou have it?<yes>Good.</yes><no>Ask the bard beyond the secret passage!</no></question></topic>
+  </person>
+  <person id="4" name="the pass guard" pronoun="She" turnAwayProb="0">
+    <description>A guard</description>
+    <topic query="job">I guard the passages.</topic>
+    <topic query="health">Fine.</topic>
+    <topic query="PASS">There is no danger.</topic>
+    <topic query="DANG">Well not compared to a dungeon altar room!<question type="0">Hast thou solved the altars?<yes>Good.</yes><no>From them a three part key is gained, needed to enter the chamber of the codex!</no></question></topic>
+  </person>
+  <person id="5" name="a gate guard" pronoun="He" turnAwayProb="0">
+    <description>A guard</description>
+    <topic query="job">A gate guard</topic>
+    <topic query="health">Top notch.</topic>
+    <topic query="GATE">To the abbey.</topic>
+    <topic query="ABBE">Here, in the oak grove many find the meaning of peace and love!<question type="1">Art thou saturated with love?<yes>Then thou need not be here!</yes><no>Visit the small shrine within the abbey!</no></question></topic>
+  </person>
+  <person id="6" name="Derek the Bard" pronoun="He" turnAwayProb="0">
+    <description>A young bard playing a lute.</description>
+    <topic query="job">I am a bard, I sing songs.</topic>
+    <topic query="health">Pretty good.</topic>
+    <topic query="SONG">Oh, all types.<question type="0">Dost thou like this one?<yes>Thanks, I just wrote it!</yes><no>Alas, it was new.</no></question></topic>
+    <topic query="CAND">The candle of love is found in a secret place hidden off Lock Lake!</topic>
+  </person>
+  <person id="7" name="Chinup" pronoun="He" turnAwayProb="0">
+    <description>A small but stately child.</description>
+    <topic query="job">I welcome thee unto the Abbey!<question type="0">Art thou here in search of love?<yes>Perhaps then the oak grove!</yes><no>Perhaps then the oak grove.</no></question></topic>
+    <topic query="health">Very well, thank you!</topic>
+    <topic query="GROV">A grove of oak.</topic>
+    <topic query="OAK ">There four profession types seek truth!</topic>
+  </person>
+  <person id="8" name="Diane" pronoun="She" turnAwayProb="0">
+    <description>A tall woman.</description>
+    <topic query="job">I counsel those who enter the grove.</topic>
+    <topic query="health">Good.</topic>
+    <topic query="COUN">Herein thou may find insights into love, within thyself or the others here in the grove.</topic>
+    <topic query="LOVE">Ask the others.<question type="1">Art thou the most loving person?<yes>Doubtful!</yes><no>Strive for love!</no></question></topic>
+  </person>
+  <person id="9" name="Benjamin" pronoun="He" turnAwayProb="0">
+    <description>A solemn bard.</description>
+    <topic query="job">I relate love and compassion.</topic>
+    <topic query="health">Fine.<question type="0">Art thou well?<yes>Very good.</yes><no>Too bad...</no></question></topic>
+    <topic query="LOVE">When the three combine in eight ways love alone is compassion.</topic>
+    <topic query="COMP">Of the eight avatar attributes compassion is derived from love alone.</topic>
+  </person>
+  <person id="10" name="Deirdre" pronoun="She" turnAwayProb="0">
+    <description>A druid, lost in thought.</description>
+    <topic query="job">I ponder love and justice.</topic>
+    <topic query="health">Fine.<question type="0">Art thou?<yes>Most good.</yes><no>I see.</no></question></topic>
+    <topic query="LOVE">When three build eight, truth tempered by love becomes justice!</topic>
+    <topic query="JUST">Justice is one of the eight avatar virtues and derives from truth and love.</topic>
+  </person>
+  <person id="11" name="Thomas" pronoun="He" turnAwayProb="0">
+    <description>A hearty tinker.</description>
+    <topic query="job">I am thinking of love's part in sacrifice.</topic>
+    <topic query="health">Fine<question type="0">Thyself?<yes>Good.</yes><no>Shame.</no></question></topic>
+    <topic query="LOVE">Love of others and the courage to face even death is self-sacrifice.</topic>
+    <topic query="SACR">Sacrifice is built upon the motive of love and the ability of courage.</topic>
+  </person>
+  <person id="12" name="Lastro" pronoun="He" turnAwayProb="0">
+    <description>A solemn ranger.</description>
+    <topic query="job">I follow the spiritual path.</topic>
+    <topic query="health">Most well.<question type="0">And thee?<yes>Good.</yes><no>So sad.</no></question></topic>
+    <topic query="SPIR">My spirituality is not a religion, but a searching to know and improve my own inner being.</topic>
+    <topic query="BEIN">My being is based on my own truth, love and courage.</topic>
+  </person>
+  <person id="13" name="Humlock" pronoun="He" turnAwayProb="0">
+    <description>A mumbling beggar.</description>
+    <topic query="job">I seek salvation</topic>
+    <topic query="health">Not so good.</topic>
+    <topic query="MUMB">The...ankh... spoke to me!</topic>
+    <topic query="SALV">I am but a poor destitute beggar I have nothing!<question type="0">Will you give me some money?<yes>I would be soooo grateful....</yes><no>But I am in most dire need!</no></question></topic>
+  </person>
+  <person id="14" name="Malchor" pronoun="He" turnAwayProb="0">
+    <description>A bold paladin.</description>
+    <topic query="job">I solve quests</topic>
+    <topic query="health">Just now fully healed!</topic>
+    <topic query="QUES">My last quest took me near Spiritwood.<question type="0">Art thou on a quest?<yes>Best of luck to thee!</yes><no>Oh.</no></question></topic>
+    <topic query="HORN">Some say that the silver horn is buried on a small isle off the tip of Spiritwood.</topic>
+  </person>
+  <person id="15" name="Brother Antos" pronoun="He" turnAwayProb="0">
+    <description>A wise druid.</description>
+    <topic query="job">I hold great wisdom.</topic>
+    <topic query="health">I am getting old and frail.</topic>
+    <topic query="WISD">What dost thou ask of me?</topic>
+    <topic query="CAND">Thou dost need the candle of love to enter the abyss.<question type="0">Dost thou know where to find it?<yes>Very good.</yes><no>Meditate on love at our shrine.</no></question></topic>
+  </person>
+</dialogue>
