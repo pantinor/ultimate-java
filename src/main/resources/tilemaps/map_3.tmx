@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="32" height="32" tilewidth="16" tileheight="16" backgroundcolor="#000000">
 <tileset firstgid="1" name="empath.ult" tilewidth="16" tileheight="16">
-<image source="tiles.png" width="32" height="32"/>
+<image source="tiles.png" width="256" height="256"/>
 </tileset>
 <layer name="Map Layer" width="32" height="32">
 <data encoding="csv">
@@ -79,7 +79,7 @@
 <object name="8" type="person" x="464" y="416" width="16" height="16">
 <properties>
 <property name="tileType" value="druid"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="29"/>
 <property name="startY" value="26"/>
 <property name="dialogId" value="16"/>
@@ -88,7 +88,7 @@
 <object name="9" type="person" x="288" y="192" width="16" height="16">
 <properties>
 <property name="tileType" value="paladin"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="18"/>
 <property name="startY" value="12"/>
 <property name="dialogId" value="15"/>
@@ -97,7 +97,7 @@
 <object name="10" type="person" x="144" y="384" width="16" height="16">
 <properties>
 <property name="tileType" value="beggar"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="9"/>
 <property name="startY" value="24"/>
 <property name="dialogId" value="14"/>
@@ -106,7 +106,7 @@
 <object name="11" type="person" x="448" y="96" width="16" height="16">
 <properties>
 <property name="tileType" value="ranger"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="28"/>
 <property name="startY" value="6"/>
 <property name="dialogId" value="13"/>
@@ -115,7 +115,7 @@
 <object name="12" type="person" x="464" y="32" width="16" height="16">
 <properties>
 <property name="tileType" value="tinker"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="29"/>
 <property name="startY" value="2"/>
 <property name="dialogId" value="12"/>
@@ -124,7 +124,7 @@
 <object name="13" type="person" x="352" y="144" width="16" height="16">
 <properties>
 <property name="tileType" value="druid"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="22"/>
 <property name="startY" value="9"/>
 <property name="dialogId" value="11"/>
@@ -133,7 +133,7 @@
 <object name="14" type="person" x="336" y="32" width="16" height="16">
 <properties>
 <property name="tileType" value="bard"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="21"/>
 <property name="startY" value="2"/>
 <property name="dialogId" value="10"/>
@@ -142,7 +142,7 @@
 <object name="15" type="person" x="256" y="80" width="16" height="16">
 <properties>
 <property name="tileType" value="villager"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="16"/>
 <property name="startY" value="5"/>
 <property name="dialogId" value="9"/>
@@ -151,7 +151,7 @@
 <object name="16" type="person" x="240" y="336" width="16" height="16">
 <properties>
 <property name="tileType" value="child"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="15"/>
 <property name="startY" value="21"/>
 <property name="dialogId" value="8"/>
@@ -160,7 +160,7 @@
 <object name="17" type="person" x="32" y="320" width="16" height="16">
 <properties>
 <property name="tileType" value="bard_singing"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="2"/>
 <property name="startY" value="20"/>
 <property name="dialogId" value="7"/>
@@ -169,7 +169,7 @@
 <object name="18" type="person" x="192" y="192" width="16" height="16">
 <properties>
 <property name="tileType" value="guard"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="12"/>
 <property name="startY" value="12"/>
 <property name="dialogId" value="6"/>
@@ -178,7 +178,7 @@
 <object name="19" type="person" x="144" y="192" width="16" height="16">
 <properties>
 <property name="tileType" value="guard"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="9"/>
 <property name="startY" value="12"/>
 <property name="dialogId" value="6"/>
@@ -187,7 +187,7 @@
 <object name="20" type="person" x="272" y="416" width="16" height="16">
 <properties>
 <property name="tileType" value="guard"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="17"/>
 <property name="startY" value="26"/>
 <property name="dialogId" value="6"/>
@@ -196,7 +196,7 @@
 <object name="21" type="person" x="208" y="416" width="16" height="16">
 <properties>
 <property name="tileType" value="guard"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="13"/>
 <property name="startY" value="26"/>
 <property name="dialogId" value="6"/>
@@ -205,7 +205,7 @@
 <object name="22" type="person" x="96" y="256" width="16" height="16">
 <properties>
 <property name="tileType" value="guard"/>
-<property name="movement" value="MOVEMENT_WANDER"/>
+<property name="movement" value="WANDER"/>
 <property name="startX" value="6"/>
 <property name="startY" value="16"/>
 <property name="dialogId" value="5"/>
@@ -214,7 +214,7 @@
 <object name="23" type="person" x="432" y="224" width="16" height="16">
 <properties>
 <property name="tileType" value="guard"/>
-<property name="movement" value="MOVEMENT_WANDER"/>
+<property name="movement" value="WANDER"/>
 <property name="startX" value="27"/>
 <property name="startY" value="14"/>
 <property name="dialogId" value="5"/>
@@ -223,7 +223,7 @@
 <object name="24" type="person" x="416" y="432" width="16" height="16">
 <properties>
 <property name="tileType" value="guard"/>
-<property name="movement" value="MOVEMENT_WANDER"/>
+<property name="movement" value="WANDER"/>
 <property name="startX" value="26"/>
 <property name="startY" value="27"/>
 <property name="dialogId" value="5"/>
@@ -232,7 +232,7 @@
 <object name="25" type="person" x="64" y="432" width="16" height="16">
 <properties>
 <property name="tileType" value="guard"/>
-<property name="movement" value="MOVEMENT_WANDER"/>
+<property name="movement" value="WANDER"/>
 <property name="startX" value="4"/>
 <property name="startY" value="27"/>
 <property name="dialogId" value="5"/>
@@ -241,7 +241,7 @@
 <object name="26" type="person" x="32" y="32" width="16" height="16">
 <properties>
 <property name="tileType" value="guard"/>
-<property name="movement" value="MOVEMENT_WANDER"/>
+<property name="movement" value="WANDER"/>
 <property name="startX" value="2"/>
 <property name="startY" value="2"/>
 <property name="dialogId" value="5"/>
@@ -250,7 +250,7 @@
 <object name="27" type="person" x="144" y="352" width="16" height="16">
 <properties>
 <property name="tileType" value="ankh"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="9"/>
 <property name="startY" value="22"/>
 <property name="dialogId" value="4"/>
@@ -259,7 +259,7 @@
 <object name="28" type="person" x="352" y="368" width="16" height="16">
 <properties>
 <property name="tileType" value="villager"/>
-<property name="movement" value="MOVEMENT_WANDER"/>
+<property name="movement" value="WANDER"/>
 <property name="startX" value="22"/>
 <property name="startY" value="23"/>
 <property name="dialogId" value="3"/>
@@ -277,7 +277,7 @@
 <object name="30" type="person" x="176" y="112" width="16" height="16">
 <properties>
 <property name="tileType" value="avatar"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="11"/>
 <property name="startY" value="7"/>
 <property name="dialogId" value="2"/>
@@ -286,7 +286,7 @@
 <object name="31" type="person" x="160" y="112" width="16" height="16">
 <properties>
 <property name="tileType" value="avatar"/>
-<property name="movement" value="MOVEMENT_FIXED"/>
+<property name="movement" value="FIXED"/>
 <property name="startX" value="10"/>
 <property name="startY" value="7"/>
 <property name="dialogId" value="1"/>

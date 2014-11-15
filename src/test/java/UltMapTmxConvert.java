@@ -199,7 +199,7 @@ public class UltMapTmxConvert {
 		String template = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
 				"<map version=\"1.0\" orientation=\"orthogonal\" width=\"%s\" height=\"%s\" tilewidth=\"%s\" tileheight=\"%s\" backgroundcolor=\"#000000\">\n" +
 						"<tileset firstgid=\"1\" name=\"%s\" tilewidth=\"%s\" tileheight=\"%s\">\n" + 
-						"<image source=\"%s\" width=\"%s\" height=\"%s\"/>\n</tileset>\n" + 
+						"<image source=\"%s\" width=\"256\" height=\"256\"/>\n</tileset>\n" + 
 		
 						"<layer name=\"Map Layer\" width=\"%s\" height=\"%s\">\n" + 
 						"<data encoding=\"csv\">\n%s\n</data>\n</layer>\n" + 
@@ -211,7 +211,7 @@ public class UltMapTmxConvert {
 		
 		return String.format(template,  mapWidth, mapHeight, tileWidth, tileHeight, 
 				tilesetName, tileWidth, tileHeight, 
-				imageSource, mapWidth, mapHeight, 
+				imageSource, 
 				mapWidth, mapHeight, data,
 				mapWidth, mapHeight, people, 
 				mapWidth, mapHeight, personsString.toString());		
@@ -288,13 +288,13 @@ public class UltMapTmxConvert {
 				continue;
 			}
 			if (m == 0)
-				p.setMovement(ObjectMovementBehavior.MOVEMENT_FIXED);
+				p.setMovement(ObjectMovementBehavior.FIXED);
 			else if (m == 1)
-				p.setMovement(ObjectMovementBehavior.MOVEMENT_WANDER);
+				p.setMovement(ObjectMovementBehavior.WANDER);
 			else if (m == 0x80)
-				p.setMovement(ObjectMovementBehavior.MOVEMENT_FOLLOW_AVATAR);
+				p.setMovement(ObjectMovementBehavior.FOLLOW_AVATAR);
 			else if (m == 0xFF)
-				p.setMovement(ObjectMovementBehavior.MOVEMENT_ATTACK_AVATAR);
+				p.setMovement(ObjectMovementBehavior.ATTACK_AVATAR);
 
 			count++;
 		}

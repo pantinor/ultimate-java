@@ -27,6 +27,17 @@ import objects.WeaponSet;
 import org.apache.commons.io.FileUtils;
 import org.testng.annotations.Test;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+
 
 public class TestJaxb {
 	
@@ -144,7 +155,7 @@ public class TestJaxb {
 		System.out.println(sb.toString());
 		
 	}
-	@Test
+	//@Test
 	public void makeDialogXml() throws Exception {
 		File dir = new File("src/main/resources/xml");
 		File[] tlkxmlFiles = dir.listFiles(new FilenameFilter() {
@@ -160,4 +171,6 @@ public class TestJaxb {
 		}
 		
 	}
+	
+
 }

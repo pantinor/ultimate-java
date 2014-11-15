@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="11" height="11" tilewidth="16" tileheight="16" backgroundcolor="#000000">
+<tileset firstgid="1" name="dng6.con" tilewidth="16" tileheight="16">
+<image source="tiles.png" width="256" height="256"/>
+</tileset>
+<layer name="Map Layer" width="11" height="11">
+<data encoding="csv">
+162,162,162,162,162,162,162,162,162,162,162,
+162,162,162,162,162,162,162,162,162,162,162,
+120,120,120,184,184,184,184,184,120,120,120,
+0,0,120,162,162,162,162,162,120,0,0,
+0,0,120,162,162,162,162,162,120,0,0,
+0,0,120,162,162,162,162,162,120,0,0,
+0,0,120,162,162,162,162,162,120,0,0,
+0,0,120,162,162,162,162,162,120,0,0,
+120,120,120,184,184,184,184,184,120,120,120,
+162,162,162,162,162,162,162,162,162,162,162,
+162,162,162,162,162,162,162,162,162,162,162
+</data>
+</layer>
+<objectgroup name="Monster Positions" width="11" height="11">
+<object name="position" type="position" x="48" y="0" width="16" height="16">
+<properties>
+<property name="index" value="0"/>
+<property name="startX" value="3"/>
+<property name="startY" value="0"/>
+</properties>
+</object>
+<object name="position" type="position" x="80" y="0" width="16" height="16">
+<properties>
+<property name="index" value="1"/>
+<property name="startX" value="5"/>
+<property name="startY" value="0"/>
+</properties>
+</object>
+<object name="position" type="position" x="112" y="0" width="16" height="16">
+<properties>
+<property name="index" value="2"/>
+<property name="startX" value="7"/>
+<property name="startY" value="0"/>
+</properties>
+</object>
+<object name="position" type="position" x="32" y="16" width="16" height="16">
+<properties>
+<property name="index" value="3"/>
+<property name="startX" value="2"/>
+<property name="startY" value="1"/>
+</properties>
+</object>
+<object name="position" type="position" x="64" y="16" width="16" height="16">
+<properties>
+<property name="index" value="4"/>
+<property name="startX" value="4"/>
+<property name="startY" value="1"/>
+</properties>
+</object>
+<object name="position" type="position" x="80" y="16" width="16" height="16">
+<properties>
+<property name="index" value="5"/>
+<property name="startX" value="5"/>
+<property name="startY" value="1"/>
+</properties>
+</object>
+<object name="position" type="position" x="96" y="16" width="16" height="16">
+<properties>
+<property name="index" value="6"/>
+<property name="startX" value="6"/>
+<property name="startY" value="1"/>
+</properties>
+</object>
+<object name="position" type="position" x="128" y="16" width="16" height="16">
+<properties>
+<property name="index" value="7"/>
+<property name="startX" value="8"/>
+<property name="startY" value="1"/>
+</properties>
+</object>
+<object name="position" type="position" x="48" y="48" width="16" height="16">
+<properties>
+<property name="index" value="8"/>
+<property name="startX" value="3"/>
+<property name="startY" value="3"/>
+</properties>
+</object>
+<object name="position" type="position" x="64" y="48" width="16" height="16">
+<properties>
+<property name="index" value="9"/>
+<property name="startX" value="4"/>
+<property name="startY" value="3"/>
+</properties>
+</object>
+<object name="position" type="position" x="80" y="48" width="16" height="16">
+<properties>
+<property name="index" value="10"/>
+<property name="startX" value="5"/>
+<property name="startY" value="3"/>
+</properties>
+</object>
+<object name="position" type="position" x="96" y="48" width="16" height="16">
+<properties>
+<property name="index" value="11"/>
+<property name="startX" value="6"/>
+<property name="startY" value="3"/>
+</properties>
+</object>
+<object name="position" type="position" x="112" y="48" width="16" height="16">
+<properties>
+<property name="index" value="12"/>
+<property name="startX" value="7"/>
+<property name="startY" value="3"/>
+</properties>
+</object>
+<object name="position" type="position" x="48" y="64" width="16" height="16">
+<properties>
+<property name="index" value="13"/>
+<property name="startX" value="3"/>
+<property name="startY" value="4"/>
+</properties>
+</object>
+<object name="position" type="position" x="80" y="64" width="16" height="16">
+<properties>
+<property name="index" value="14"/>
+<property name="startX" value="5"/>
+<property name="startY" value="4"/>
+</properties>
+</object>
+<object name="position" type="position" x="112" y="64" width="16" height="16">
+<properties>
+<property name="index" value="15"/>
+<property name="startX" value="7"/>
+<property name="startY" value="4"/>
+</properties>
+</object>
+
+</objectgroup>
+<objectgroup name="Player Positions" width="11" height="11">
+<object name="position" type="position" x="80" y="96" width="16" height="16">
+<properties>
+<property name="index" value="0"/>
+<property name="startX" value="5"/>
+<property name="startY" value="6"/>
+</properties>
+</object>
+<object name="position" type="position" x="64" y="96" width="16" height="16">
+<properties>
+<property name="index" value="1"/>
+<property name="startX" value="4"/>
+<property name="startY" value="6"/>
+</properties>
+</object>
+<object name="position" type="position" x="96" y="96" width="16" height="16">
+<properties>
+<property name="index" value="2"/>
+<property name="startX" value="6"/>
+<property name="startY" value="6"/>
+</properties>
+</object>
+<object name="position" type="position" x="48" y="112" width="16" height="16">
+<properties>
+<property name="index" value="3"/>
+<property name="startX" value="3"/>
+<property name="startY" value="7"/>
+</properties>
+</object>
+<object name="position" type="position" x="112" y="112" width="16" height="16">
+<properties>
+<property name="index" value="4"/>
+<property name="startX" value="7"/>
+<property name="startY" value="7"/>
+</properties>
+</object>
+<object name="position" type="position" x="80" y="112" width="16" height="16">
+<properties>
+<property name="index" value="5"/>
+<property name="startX" value="5"/>
+<property name="startY" value="7"/>
+</properties>
+</object>
+<object name="position" type="position" x="64" y="112" width="16" height="16">
+<properties>
+<property name="index" value="6"/>
+<property name="startX" value="4"/>
+<property name="startY" value="7"/>
+</properties>
+</object>
+<object name="position" type="position" x="96" y="112" width="16" height="16">
+<properties>
+<property name="index" value="7"/>
+<property name="startX" value="6"/>
+<property name="startY" value="7"/>
+</properties>
+</object>
+
+</objectgroup>
+</map>

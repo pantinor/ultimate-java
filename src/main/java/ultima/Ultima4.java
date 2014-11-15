@@ -114,7 +114,9 @@ public class Ultima4 extends SimpleGame implements Constants {
 			
 			atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
 			player = new Animation(0.25f, atlas.findRegions("avatar"));
+			//textures for the moongates
 			moongateTextures = atlas.findRegions("moongate");
+			//textures for the phases of  the moon
 			moonAtlas = new TextureAtlas(Gdx.files.classpath("graphics/moon-atlas.txt"));
 
 
