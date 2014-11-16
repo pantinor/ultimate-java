@@ -1,7 +1,5 @@
 package ultima;
 
-import graphics.GraphicSet;
-
 import java.io.InputStream;
 
 import javax.xml.bind.JAXBContext;
@@ -21,12 +19,9 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -47,7 +42,6 @@ public class Ultima4 extends SimpleGame implements Constants {
 	
 	TileSet baseTileSet;
 	TileSet dungeonTileSet;
-	GraphicSet graphics;
 	TileRules tileRules;
 	MapSet maps;
 	WeaponSet weapons;
@@ -63,12 +57,9 @@ public class Ultima4 extends SimpleGame implements Constants {
 	Batch mapBatch, batch2;
 	
 	BitmapFont font;
-	BitmapFont bigFont;
 
-	public static int SCREEN_WIDTH = 1200;
-	public static int SCREEN_HEIGHT = 800;
-	public static int MAP_VIEW_BOUNDS_WIDTH = 700;
-	public static int MAP_VIEW_BOUNDS_HEIGHT = 700;
+	public static int SCREEN_WIDTH = 800;
+	public static int SCREEN_HEIGHT = 600;
 	int tilePixelWidth;
 	int tilePixelHeight;
 	int mapPixelWidth;
@@ -78,12 +69,9 @@ public class Ultima4 extends SimpleGame implements Constants {
 	Vector3 currentMapPixelCoords;
 	Vector2 currentMousePos;
 
-	static Texture background;
-	static Sprite sprBg;
 	Array<AtlasRegion> moongateTextures = new Array<AtlasRegion>();
 	int phase = 0, trammelphase = 0, trammelSubphase = 0, feluccaphase = 0;
 
-	LogScrollPane logScrollPane;
 	DungeonViewer dungeonViewer;
 
 	public static void main(String[] args) {
@@ -103,17 +91,12 @@ public class Ultima4 extends SimpleGame implements Constants {
 			
 			baseTileSet = (TileSet) loadXml("tileset-base.xml", TileSet.class);			
 			dungeonTileSet = (TileSet) loadXml("tileset-dungeon.xml", TileSet.class);
-			//graphics = (GraphicSet) loadXml("graphics.xml", GraphicSet.class);
 			tileRules = (TileRules) loadXml("tileRules.xml", TileRules.class);
 			maps = (MapSet) loadXml("maps.xml", MapSet.class);
 			maps.setMapTable();
 			weapons = (WeaponSet) loadXml("weapons.xml", WeaponSet.class);
 			armors = (ArmorSet) loadXml("armors.xml", ArmorSet.class);
 			creatures = (CreatureSet) loadXml("creatures.xml", CreatureSet.class);
-			
-			background = new Texture(Gdx.files.classpath("graphics/frame.png"));
-			background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-			sprBg = new Sprite(background, 0, 0, background.getWidth(), background.getHeight());
 			
 			atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
 			player = new Animation(0.25f, atlas.findRegions("avatar"));
@@ -129,15 +112,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 			
 			font = new BitmapFont();
 			font.setColor(Color.WHITE);
-			bigFont = new BitmapFont(Gdx.files.classpath("fonts/corsiva.fnt"), false);
 			
-			logScrollPane = new LogScrollPane(skin);
-			logScrollPane.setBounds(630, 80, 400, 350);
-			stage.addActor(logScrollPane);
-			
-			for (int i=0;i<100;i++) {
-				logScrollPane.add("testing");
-			}
 			
 			batch2 = new SpriteBatch();
 
@@ -181,14 +156,10 @@ public class Ultima4 extends SimpleGame implements Constants {
 			
 			mapCamera.update();
 			renderer.setView(mapCamera);
-			renderer.getViewBounds().set(mapCamera.position.x - 550,
-										 mapCamera.position.y - 375, 
-										 MAP_VIEW_BOUNDS_WIDTH, 
-										 MAP_VIEW_BOUNDS_HEIGHT);
 			renderer.render();
 	
 			mapBatch.begin();
-			mapBatch.draw(player.getKeyFrame(time, true), mapCamera.position.x - 225, mapCamera.position.y, tilePixelWidth, tilePixelHeight);
+			mapBatch.draw(player.getKeyFrame(time, true), mapCamera.position.x, mapCamera.position.y, tilePixelWidth, tilePixelHeight);
 			mapBatch.end();
 			
 			if (context.getCurrentMap().getMoongates() != null) {
@@ -198,14 +169,13 @@ public class Ultima4 extends SimpleGame implements Constants {
 					TextureRegion t = g.getCurrentTexture();
 					if (t != null) {
 						Vector3 v = getMapPixelCoords(g.getX(),g.getY());
-						mapBatch.draw(t, v.x - 225, v.y, tilePixelWidth, tilePixelHeight);
+						mapBatch.draw(t, v.x, v.y, tilePixelWidth, tilePixelHeight);
 					}
 				}
 				mapBatch.end();
 			}
 	
 			batch2.begin();
-			sprBg.draw(batch2);
 			font.draw(batch2, "current map coords: " + getCurrentMapCoords(), 10, 40);
 			font.draw(batch2, "current mouse pos: " + currentMousePos, 10, 20);
 			batch2.draw(moonAtlas.findRegion("phase_" + trammelphase),375,SCREEN_HEIGHT-25,25,25);
@@ -214,8 +184,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 		
 		}
 		
-		stage.act(delta);
-		stage.draw();
+
 		
 	}
 	
@@ -239,7 +208,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 		}
 		mapCamera.update();
 		
-		currentMapPixelCoords = mapCamera.unproject(new Vector3(375, 400, 0));
+		currentMapPixelCoords = mapCamera.unproject(new Vector3(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 0));
 		
 		Vector3 cc = getCurrentMapCoords();
 		//check for active moongate portal
@@ -269,7 +238,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 	public Vector3 getMapPixelCoords(int x, int y) {
 		
 		Vector3 v = new Vector3(
-				x * tilePixelWidth + 225, 
+				x * tilePixelWidth, 
 				yDownPixel((y) * tilePixelHeight), 
 				0);
 		
@@ -278,7 +247,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 	
 	public Vector3 getCurrentMapCoords() {
 		
-		Vector3 v = mapCamera.unproject(new Vector3(375, 400, 0));
+		Vector3 v = mapCamera.unproject(new Vector3(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 0));
 		
 		return new Vector3(
 				Math.round((v.x) / tilePixelWidth), 
