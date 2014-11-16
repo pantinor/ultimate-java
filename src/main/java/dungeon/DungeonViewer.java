@@ -19,7 +19,6 @@ import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -37,10 +36,15 @@ import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
+import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
+import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader.Config;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.UBJsonReader;
 
@@ -48,8 +52,8 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 	
 	public Environment environment;
 	public ModelBatch modelBatch;
-	public ModelBatch shadowBatch;
-	public SpriteBatch spriteBatch;
+	private SpriteBatch batch;
+
 	public CameraInputController inputController;
 	public PerspectiveCamera cam;
 	public AssetManager assets;
@@ -61,20 +65,25 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 	public static Model chestModel;
 	public static Model orbModel;
 	public static Model altarModel;
-
-
+	
+	private PointLight circlingLight;
+	private float lightPosition = 0;
+	private Vector3 lightPathCenter = new Vector3(4, 4, 4);
+	private float lightPathRadius = 3f;
+	
 	public static final int DUNGEON_MAP = 8;
 	public DungeonTile[][][] dungeonTiles = new DungeonTile[DUNGEON_MAP][DUNGEON_MAP][DUNGEON_MAP];
 
 	public List<DungeonTileModelInstance> modelInstances = new ArrayList<DungeonTileModelInstance>();
 	public List<ModelInstance> floor = new ArrayList<ModelInstance>();
-	
+	public List<ModelInstance> ceiling = new ArrayList<ModelInstance>();
+
 	public static Texture MINI_MAP_TEXTURE;
-	private SpriteBatch batch;
-	private int currentLevel = 4;
+	private int currentLevel = 0;
 	private Vector3 currentPos;
 	public enum Direction {NORTH, SOUTH, EAST, WEST};
 	public Direction currentDir = Direction.EAST;
+	
 
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
@@ -102,22 +111,31 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		chestModel = gloader.loadModel(Gdx.files.classpath("graphics/chest.g3db"));
 		orbModel = gloader.loadModel(Gdx.files.classpath("graphics/orb.g3db"));
 		altarModel = gloader.loadModel(Gdx.files.classpath("graphics/altar.g3db"));
-
-		
+				
 		MINI_MAP_TEXTURE = assets.get("graphics/map.png", Texture.class);
 		font = new BitmapFont();
 		font.setColor(Color.WHITE);
 		
 		environment = new Environment();
-		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1.f));
-		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+		
+		DefaultShader.Config config = new Config();
+		config.numDirectionalLights = 1;
+		config.numPointLights = 1;
+		config.numSpotLights = 0;
+		
+		circlingLight = new PointLight().set(1, .8f, .6f, 0f, 4f, 0f, 10);
+		environment.add(circlingLight);
+		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, 4f, 4f, 4f));
+		
+		modelBatch = new ModelBatch(new DefaultShaderProvider(config));
+		batch = new SpriteBatch();
 		
 		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		cam.near = 0.1f;
 		cam.far = 1000f;
 		cam.update();
 		
-		batch = new SpriteBatch();
 
 		
 		inputController = new CameraInputController(cam);
@@ -126,18 +144,14 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		
 		Gdx.input.setInputProcessor(new InputMultiplexer(this, inputController));
 
-
-		modelBatch = new ModelBatch();
-		spriteBatch = new SpriteBatch();
-		
 		ModelBuilder builder = new ModelBuilder();
 		for (int x=0;x<12;x++) {
 			for (int y=0;y<12;y++) {
 				Model sf = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("graphics/dirt.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);
 				floor.add(new ModelInstance(sf, new Vector3(x-1.5f,-.5f,y-1.5f)));
+				ceiling.add(new ModelInstance(sf, new Vector3(x-1.5f,1.5f,y-1.5f)));
 			}
 		}
-		
 		
 		try {
 			
@@ -213,9 +227,19 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		Gdx.gl.glClearColor(0,0,0,0);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
 		
+		lightPosition += Gdx.graphics.getDeltaTime() * 1.0f;
+		float lx = (float) (lightPathRadius * Math.cos(lightPosition));
+		float ly = (float) (lightPathRadius * Math.sin(lightPosition));
+		Vector3 lightVector = new Vector3(lx, 0, ly).add(lightPathCenter);
+		circlingLight.set(0.8f, 0.8f, 0.8f, lightVector, 10);
+
+				
 		modelBatch.begin(cam);
 		
 		for (ModelInstance i : floor) {
+			modelBatch.render(i, environment);
+		}
+		for (ModelInstance i : ceiling) {
 			modelBatch.render(i, environment);
 		}
 						
@@ -225,17 +249,12 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 			}
 		}
 		
-		
         //modelBatch.render(axesInstance);
 
 		modelBatch.end();
-		
+
 		drawMiniMap();
 
-		
-		//for (int k : PRESSED_KEYS) {
-		//	if (Gdx.input.isKeyPressed(k)) keyDown(k);
-		//}
 							
 	}
 	
@@ -301,13 +320,18 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 			ModelInstance instance = new ModelInstance(model, tx, 0, tz);
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
+		} else if (tile.getValue() >= 208 && tile.getValue() <= 223) { //room indicator
+			Model model = builder.createBox(1, 1, 1, new Material(ColorAttribute.createDiffuse(Color.DARK_GRAY), ColorAttribute.createSpecular(Color.DARK_GRAY), new BlendingAttribute(0.4f)), Usage.Position | Usage.Normal);		
+			ModelInstance instance = new ModelInstance(model, tx, .5f, tz);
+			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+			modelInstances.add(in);
 		} else if (tile == DungeonTile.DOOR || tile == DungeonTile.SECRET_DOOR) {
 			Model model = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("graphics/rock.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
 			ModelInstance instance = new ModelInstance(model, tx, ty, tz);
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
 			
-			String texture = tile == DungeonTile.DOOR?"graphics/dirt.png":"graphics/Stone_Masonry.jpg";
+			String texture = tile == DungeonTile.DOOR?"graphics/dirt.png":"graphics/rock.png";
 			
 			model = builder.createBox(1.04f, .85f, .6f, new Material(TextureAttribute.createDiffuse(assets.get(texture, Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
 			instance = new ModelInstance(model, tx, .40f, tz);
@@ -421,7 +445,11 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 	@Override
 	public boolean keyDown (int keycode) {
 		
+		int x = (Math.round(currentPos.x)-1);
+		int y = (Math.round(currentPos.z)-1);
+		
 		if (keycode == Keys.LEFT) {
+			
 			if (currentDir == Direction.EAST) {
 				cam.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
 				currentDir = Direction.NORTH;
@@ -435,7 +463,9 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 				cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
 				currentDir = Direction.EAST;
 			}
+			
 		} else if (keycode == Keys.RIGHT) {
+			
 			if (currentDir == Direction.EAST) {
 				cam.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
 				currentDir = Direction.SOUTH;
@@ -449,9 +479,9 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 				cam.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
 				currentDir = Direction.WEST;
 			}
+			
 		} else if (keycode == Keys.UP) {
-			int x = (Math.round(currentPos.x)-1);
-			int y = (Math.round(currentPos.z)-1);
+			
 			//forward
 			if (currentDir == Direction.EAST) {
 				x=x+1;if(x>7)x=0; 
@@ -462,6 +492,7 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 			} else if (currentDir == Direction.SOUTH) {
 				y=y+1;if(y>7)y=0; 
 			}
+			
 			DungeonTile tile = dungeonTiles[currentLevel][x][y];
 			if (tile != DungeonTile.WALL) {
 				currentPos = new Vector3(x+.5f,.5f,y+.5f);
@@ -478,11 +509,43 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 			}
 
 		} else if (keycode == Keys.DOWN) {
+
 			//backwards
+			if (currentDir == Direction.EAST) {
+				x=x-1;if(x<0)x=7; 
+			} else if (currentDir == Direction.WEST) {
+				x=x+1;if(x>7)x=0; 
+			} else if (currentDir == Direction.NORTH) {
+				y=y+1;if(y>7)y=0; 
+			} else if (currentDir == Direction.SOUTH) {
+				y=y-1;if(y<0)y=7; 
+			}
+			
+			DungeonTile tile = dungeonTiles[currentLevel][x][y];
+			if (tile != DungeonTile.WALL) {
+				currentPos = new Vector3(x+.5f,.5f,y+.5f);
+				cam.position.set(currentPos);
+				if (currentDir == Direction.EAST) {
+					cam.lookAt(currentPos.x+1, currentPos.y, currentPos.z);
+				} else if (currentDir == Direction.WEST) {
+					cam.lookAt(currentPos.x-1, currentPos.y, currentPos.z);
+				} else if (currentDir == Direction.NORTH) {
+					cam.lookAt(currentPos.x, currentPos.y, currentPos.z-1);
+				} else if (currentDir == Direction.SOUTH) {
+					cam.lookAt(currentPos.x, currentPos.y, currentPos.z+1);
+				}
+			}
+			
+			
 		} else if (keycode == Keys.K) {
 			//klimb
+			currentLevel --;
+			if (currentLevel < 0) currentLevel = 0;
+
 		} else if (keycode == Keys.D) {
 			//descend
+			currentLevel ++;
+			if (currentLevel > DUNGEON_MAP) currentLevel = DUNGEON_MAP;
 		}
 			
 		return false;
@@ -565,7 +628,9 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		
 	}
 	
-	
+	private Vector3 randomPosition () {
+		return new Vector3(MathUtils.random(0f, 8f), MathUtils.random(2f, 3f), MathUtils.random(0f, 8f));
+	}
 	
 	final float GRID_MIN = -1*1000;
 	final float GRID_MAX = 1*1000;
