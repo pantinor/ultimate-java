@@ -136,16 +136,17 @@ public class TestJaxb {
 		}
 	}
 	
-	//@Test
+	@Test
 	public void makeXml2() throws Exception {
 
-		String t = FileUtils.readFileToString(new File("src/main/resources/xml/tileset-base.xml"));
-		
+		//String t = FileUtils.readFileToString(new File("src/main/resources/xml/tileset-base.xml"));
+		String t = FileUtils.readFileToString(new File("beasts.txt"));
+
 		String r = t.replaceAll("index=\"([0-9]+/*\\.*[0-9]*)\"","|");
 		
 		StringTokenizer st = new StringTokenizer(r,"|");
 		StringBuffer sb = new StringBuffer();
-		int count=0;
+		int count=128;
 		while (st.hasMoreTokens()) {
 			sb.append(st.nextToken());
 			sb.append("index=\""+count+"\"");
@@ -155,6 +156,7 @@ public class TestJaxb {
 		System.out.println(sb.toString());
 		
 	}
+	
 	//@Test
 	public void makeDialogXml() throws Exception {
 		File dir = new File("src/main/resources/xml");

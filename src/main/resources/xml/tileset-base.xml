@@ -136,135 +136,135 @@
 <tile name="spacer_square" rule="spacers" index="125" /> <!-- sign spacers -->
 <tile name="blank" rule="spacers" index="126" /> <!-- black square -->
 <tile name="brick_wall" rule="walls" opaque="true" index="127" />
-<tile name="blank" rule="spacers" index="129" /> <!-- black square -->
 
-
+<tile name="pirate_ship" rule="monster" directions="wnes" animation="pirateflag" index="128"/>
+<tile name="pirate_ship" rule="monster" directions="wnes" animation="pirateflag" index="129"/>
+<tile name="pirate_ship" rule="monster" directions="wnes" animation="pirateflag" index="130"/>
 <tile name="pirate_ship" rule="monster" directions="wnes" animation="pirateflag" index="131"/>
-<tile name="pirate_ship" rule="monster" directions="wnes" animation="pirateflag" index="132"/>
-<tile name="pirate_ship" rule="monster" directions="wnes" animation="pirateflag" index="133"/>
-<tile name="pirate_ship" rule="monster" directions="wnes" animation="pirateflag" index="134"/>
-<tile name="nixie" rule="monster" animation="frame" index="135"/>
-<tile name="nixie" rule="monster" animation="frame" index="136"/>
-<tile name="giant_squid" rule="monster" animation="frame" index="137"/>
-<tile name="giant_squid" rule="monster" animation="frame" index="138"/>
-<tile name="sea_serpent" rule="monster" animation="frame" index="139"/>
-<tile name="sea_serpent" rule="monster" animation="frame" index="140"/>
-<tile name="sea_horse" rule="monster" animation="frame" index="141"/>
-<tile name="sea_horse" rule="monster" animation="frame" index="142"/>
-<tile name="whirlpool" rule="monster" animation="frame" index="143"/>
-<tile name="whirlpool" rule="monster" animation="frame" index="144"/>
-
+<tile name="nixie" rule="monster" animation="frame" index="132"/>
+<tile name="nixie" rule="monster" animation="frame" index="133"/>
+<tile name="giant_squid" rule="monster" animation="frame" index="134"/>
+<tile name="giant_squid" rule="monster" animation="frame" index="135"/>
+<tile name="sea_serpent" rule="monster" animation="frame" index="136"/>
+<tile name="sea_serpent" rule="monster" animation="frame" index="137"/>
+<tile name="sea_horse" rule="monster" animation="frame" index="138"/>
+<tile name="sea_horse" rule="monster" animation="frame" index="139"/>
+<tile name="whirlpool" rule="monster" animation="frame" index="140"/>
+<tile name="whirlpool" rule="monster" animation="frame" index="141"/>
+<tile name="twister" rule="monster" animation="frame" index="142"/>
+<tile name="twister" rule="monster" animation="frame" index="143"/>
+<tile name="rat" rule="monster" animation="frame" index="144"/>
 <tile name="rat" rule="monster" animation="frame" index="145"/>
 <tile name="rat" rule="monster" animation="frame" index="146"/>
 <tile name="rat" rule="monster" animation="frame" index="147"/>
-<tile name="rat" rule="monster" animation="frame" index="148"/>
+<tile name="bat" rule="monster" animation="frame" index="148"/>
 <tile name="bat" rule="monster" animation="frame" index="149"/>
 <tile name="bat" rule="monster" animation="frame" index="150"/>
 <tile name="bat" rule="monster" animation="frame" index="151"/>
-<tile name="bat" rule="monster" animation="frame" index="152"/>
+<tile name="spider" rule="monster" animation="frame" index="152"/>
 <tile name="spider" rule="monster" animation="frame" index="153"/>
 <tile name="spider" rule="monster" animation="frame" index="154"/>
 <tile name="spider" rule="monster" animation="frame" index="155"/>
-<tile name="spider" rule="monster" animation="frame" index="156"/>
+<tile name="ghost" rule="monster" animation="frame" index="156"/>
 <tile name="ghost" rule="monster" animation="frame" index="157"/>
 <tile name="ghost" rule="monster" animation="frame" index="158"/>
 <tile name="ghost" rule="monster" animation="frame" index="159"/>
-<tile name="ghost" rule="monster" animation="frame" index="160"/>
+<tile name="slime" rule="monster" animation="frame" index="160"/>
 <tile name="slime" rule="monster" animation="frame" index="161"/>
 <tile name="slime" rule="monster" animation="frame" index="162"/>
 <tile name="slime" rule="monster" animation="frame" index="163"/>
-<tile name="slime" rule="monster" animation="frame" index="164"/>
+<tile name="troll" rule="monster" animation="frame" index="164"/>
 <tile name="troll" rule="monster" animation="frame" index="165"/>
 <tile name="troll" rule="monster" animation="frame" index="166"/>
 <tile name="troll" rule="monster" animation="frame" index="167"/>
-<tile name="troll" rule="monster" animation="frame" index="168"/>
+<tile name="gremlin" rule="monster" animation="frame" index="168"/>
 <tile name="gremlin" rule="monster" animation="frame" index="169"/>
 <tile name="gremlin" rule="monster" animation="frame" index="170"/>
 <tile name="gremlin" rule="monster" animation="frame" index="171"/>
-<tile name="gremlin" rule="monster" animation="frame" index="172"/>
+<tile name="mimic" rule="monster" animation="frame" index="172"/>
 <tile name="mimic" rule="monster" animation="frame" index="173"/>
 <tile name="mimic" rule="monster" animation="frame" index="174"/>
 <tile name="mimic" rule="monster" animation="frame" index="175"/>
-<tile name="mimic" rule="monster" animation="frame" index="176"/>
+<tile name="reaper" rule="monster" animation="frame" index="176"/>
 <tile name="reaper" rule="monster" animation="frame" index="177"/>
 <tile name="reaper" rule="monster" animation="frame" index="178"/>
 <tile name="reaper" rule="monster" animation="frame" index="179"/>
-<tile name="reaper" rule="monster" animation="frame" index="180"/>
+<tile name="insect_swarm" rule="monster" animation="frame" index="180"/>
 <tile name="insect_swarm" rule="monster" animation="frame" index="181"/>
 <tile name="insect_swarm" rule="monster" animation="frame" index="182"/>
 <tile name="insect_swarm" rule="monster" animation="frame" index="183"/>
-<tile name="insect_swarm" rule="monster" animation="frame" index="184"/>
+<tile name="gazer" rule="monster" animation="frame" index="184"/>
 <tile name="gazer" rule="monster" animation="frame" index="185"/>
 <tile name="gazer" rule="monster" animation="frame" index="186"/>
 <tile name="gazer" rule="monster" animation="frame" index="187"/>
-<tile name="gazer" rule="monster" animation="frame" index="188"/>
+<tile name="phantom" rule="monster" animation="frame" index="188"/>
 <tile name="phantom" rule="monster" animation="frame" index="189"/>
 <tile name="phantom" rule="monster" animation="frame" index="190"/>
 <tile name="phantom" rule="monster" animation="frame" index="191"/>
-<tile name="phantom" rule="monster" animation="frame" index="192"/>
+<tile name="orc" rule="monster" animation="frame" index="192"/>
 <tile name="orc" rule="monster" animation="frame" index="193"/>
 <tile name="orc" rule="monster" animation="frame" index="194"/>
 <tile name="orc" rule="monster" animation="frame" index="195"/>
-<tile name="orc" rule="monster" animation="frame" index="196"/>
+<tile name="skeleton" rule="monster" animation="frame" index="196"/>
 <tile name="skeleton" rule="monster" animation="frame" index="197"/>
 <tile name="skeleton" rule="monster" animation="frame" index="198"/>
 <tile name="skeleton" rule="monster" animation="frame" index="199"/>
-<tile name="skeleton" rule="monster" animation="frame" index="200"/>
+<tile name="rogue" rule="monster" animation="frame" index="200"/>
 <tile name="rogue" rule="monster" animation="frame" index="201"/>
 <tile name="rogue" rule="monster" animation="frame" index="202"/>
 <tile name="rogue" rule="monster" animation="frame" index="203"/>
-<tile name="rogue" rule="monster" animation="frame" index="204"/>
+<tile name="python" rule="monster" animation="frame" index="204"/>
 <tile name="python" rule="monster" animation="frame" index="205"/>
 <tile name="python" rule="monster" animation="frame" index="206"/>
 <tile name="python" rule="monster" animation="frame" index="207"/>
-<tile name="python" rule="monster" animation="frame" index="208"/>
+<tile name="ettin" rule="monster" animation="frame" index="208"/>
 <tile name="ettin" rule="monster" animation="frame" index="209"/>
 <tile name="ettin" rule="monster" animation="frame" index="210"/>
 <tile name="ettin" rule="monster" animation="frame" index="211"/>
-<tile name="ettin" rule="monster" animation="frame" index="212"/>
+<tile name="headless" rule="monster" animation="frame" index="212"/>
 <tile name="headless" rule="monster" animation="frame" index="213"/>
 <tile name="headless" rule="monster" animation="frame" index="214"/>
 <tile name="headless" rule="monster" animation="frame" index="215"/>
-<tile name="headless" rule="monster" animation="frame" index="216"/>
+<tile name="cyclops" rule="monster" animation="frame" index="216"/>
 <tile name="cyclops" rule="monster" animation="frame" index="217"/>
 <tile name="cyclops" rule="monster" animation="frame" index="218"/>
 <tile name="cyclops" rule="monster" animation="frame" index="219"/>
-<tile name="cyclops" rule="monster" animation="frame" index="220"/>
+<tile name="wisp" rule="monster" animation="frame" index="220"/>
 <tile name="wisp" rule="monster" animation="frame" index="221"/>
 <tile name="wisp" rule="monster" animation="frame" index="222"/>
 <tile name="wisp" rule="monster" animation="frame" index="223"/>
-<tile name="wisp" rule="monster" animation="frame" index="224"/>
+<tile name="evil_mage" rule="monster" animation="frame" index="224"/>
 <tile name="evil_mage" rule="monster" animation="frame" index="225"/>
 <tile name="evil_mage" rule="monster" animation="frame" index="226"/>
 <tile name="evil_mage" rule="monster" animation="frame" index="227"/>
-<tile name="evil_mage" rule="monster" animation="frame" index="228"/>
+<tile name="liche" rule="monster" animation="frame" index="228"/>
 <tile name="liche" rule="monster" animation="frame" index="229"/>
 <tile name="liche" rule="monster" animation="frame" index="230"/>
 <tile name="liche" rule="monster" animation="frame" index="231"/>
-<tile name="liche" rule="monster" animation="frame" index="232"/>
+<tile name="lava_lizard" rule="monster" animation="frame" index="232"/>
 <tile name="lava_lizard" rule="monster" animation="frame" index="233"/>
 <tile name="lava_lizard" rule="monster" animation="frame" index="234"/>
 <tile name="lava_lizard" rule="monster" animation="frame" index="235"/>
-<tile name="lava_lizard" rule="monster" animation="frame" index="236"/>
+<tile name="zorn" rule="monster" animation="frame" index="236"/>
 <tile name="zorn" rule="monster" animation="frame" index="237"/>
 <tile name="zorn" rule="monster" animation="frame" index="238"/>
 <tile name="zorn" rule="monster" animation="frame" index="239"/>
-<tile name="zorn" rule="monster" animation="frame" index="240"/>
+<tile name="daemon" rule="monster" animation="frame" index="240"/>
 <tile name="daemon" rule="monster" animation="frame" index="241"/>
 <tile name="daemon" rule="monster" animation="frame" index="242"/>
 <tile name="daemon" rule="monster" animation="frame" index="243"/>
-<tile name="daemon" rule="monster" animation="frame" index="244"/>
+<tile name="hydra" rule="monster" animation="frame" index="244"/>
 <tile name="hydra" rule="monster" animation="frame" index="245"/>
 <tile name="hydra" rule="monster" animation="frame" index="246"/>
 <tile name="hydra" rule="monster" animation="frame" index="247"/>
-<tile name="hydra" rule="monster" animation="frame" index="248"/>
+<tile name="dragon" rule="monster" animation="frame" index="248"/>
 <tile name="dragon" rule="monster" animation="frame" index="249"/>
 <tile name="dragon" rule="monster" animation="frame" index="250"/>
 <tile name="dragon" rule="monster" animation="frame" index="251"/>
-<tile name="dragon" rule="monster" animation="frame" index="252"/>
+<tile name="balron" rule="monster" animation="frame" index="252"/>
 <tile name="balron" rule="monster" animation="frame" index="253"/>
 <tile name="balron" rule="monster" animation="frame" index="254"/>
 <tile name="balron" rule="monster" animation="frame" index="255"/>
-<tile name="balron" rule="monster" animation="frame" index="256"/>
+
 </tileset>
 

@@ -39,6 +39,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
+import dungeon.DungeonViewer;
+
 public class Ultima4 extends SimpleGame implements Constants {
 	
 	Context context;
@@ -82,6 +84,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 	int phase = 0, trammelphase = 0, trammelSubphase = 0, feluccaphase = 0;
 
 	LogScrollPane logScrollPane;
+	DungeonViewer dungeonViewer;
 
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
@@ -165,47 +168,54 @@ public class Ultima4 extends SimpleGame implements Constants {
 
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		if (changeMapPosition) {
-			mapCamera.position.set(currentMapPixelCoords);
-			changeMapPosition = false;
+		if (dungeonViewer != null) {
+			
+			dungeonViewer.render();
+			
+		} else {
+		
+			if (changeMapPosition) {
+				mapCamera.position.set(currentMapPixelCoords);
+				changeMapPosition = false;
+			}
+			
+			mapCamera.update();
+			renderer.setView(mapCamera);
+			renderer.getViewBounds().set(mapCamera.position.x - 550,
+										 mapCamera.position.y - 375, 
+										 MAP_VIEW_BOUNDS_WIDTH, 
+										 MAP_VIEW_BOUNDS_HEIGHT);
+			renderer.render();
+	
+			mapBatch.begin();
+			mapBatch.draw(player.getKeyFrame(time, true), mapCamera.position.x - 225, mapCamera.position.y, tilePixelWidth, tilePixelHeight);
+			mapBatch.end();
+			
+			if (context.getCurrentMap().getMoongates() != null) {
+				mapBatch.begin();
+	
+				for (Moongate g : context.getCurrentMap().getMoongates()) {
+					TextureRegion t = g.getCurrentTexture();
+					if (t != null) {
+						Vector3 v = getMapPixelCoords(g.getX(),g.getY());
+						mapBatch.draw(t, v.x - 225, v.y, tilePixelWidth, tilePixelHeight);
+					}
+				}
+				mapBatch.end();
+			}
+	
+			batch2.begin();
+			sprBg.draw(batch2);
+			font.draw(batch2, "current map coords: " + getCurrentMapCoords(), 10, 40);
+			font.draw(batch2, "current mouse pos: " + currentMousePos, 10, 20);
+			batch2.draw(moonAtlas.findRegion("phase_" + trammelphase),375,SCREEN_HEIGHT-25,25,25);
+			batch2.draw(moonAtlas.findRegion("phase_" + feluccaphase),400,SCREEN_HEIGHT-25,25,25);
+			batch2.end();
+		
 		}
 		
-		mapCamera.update();
-		renderer.setView(mapCamera);
-		renderer.getViewBounds().set(mapCamera.position.x - 550,
-									 mapCamera.position.y - 375, 
-									 MAP_VIEW_BOUNDS_WIDTH, 
-									 MAP_VIEW_BOUNDS_HEIGHT);
-		renderer.render();
-
-		mapBatch.begin();
-		mapBatch.draw(player.getKeyFrame(time, true), mapCamera.position.x - 225, mapCamera.position.y, tilePixelWidth, tilePixelHeight);
-		mapBatch.end();
-
 		stage.act(delta);
 		stage.draw();
-		
-		if (context.getCurrentMap().getMoongates() != null) {
-			mapBatch.begin();
-
-			for (Moongate g : context.getCurrentMap().getMoongates()) {
-				TextureRegion t = g.getCurrentTexture();
-				if (t != null) {
-					Vector3 v = getMapPixelCoords(g.getX(),g.getY());
-					mapBatch.draw(t, v.x - 225, v.y, tilePixelWidth, tilePixelHeight);
-				}
-			}
-			mapBatch.end();
-		}
-
-		batch2.begin();
-		sprBg.draw(batch2);
-		font.draw(batch2, "current map coords: " + getCurrentMapCoords(), 10, 40);
-		font.draw(batch2, "current mouse pos: " + currentMousePos, 10, 20);
-		//font.draw(batch2, "moons trammelphase:" + trammelphase+" feluccaphase:" + feluccaphase , 10, 20);
-		batch2.draw(moonAtlas.findRegion("phase_" + trammelphase),375,SCREEN_HEIGHT-25,25,25);
-		batch2.draw(moonAtlas.findRegion("phase_" + feluccaphase),400,SCREEN_HEIGHT-25,25,25);
-		batch2.end();
 		
 	}
 	

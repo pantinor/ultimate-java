@@ -1011,6 +1011,20 @@ whirlpool
   orig: 16, 16
   offset: 0, 0
   index: 1
+twister
+  rotate: false
+  xy: 80, 64
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: 0
+twister
+  rotate: false
+  xy: 96, 80
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: 1
 rat
   rotate: false
   xy: 112, 96

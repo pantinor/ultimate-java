@@ -12,7 +12,6 @@ import ultima.Constants;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
@@ -40,21 +39,19 @@ import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader.Config;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.UBJsonReader;
 
 public class DungeonViewer implements ApplicationListener, InputProcessor, Constants {
 	
+	private String dungeonFileName;
+	
 	public Environment environment;
 	public ModelBatch modelBatch;
 	private SpriteBatch batch;
 
-	public CameraInputController inputController;
 	public PerspectiveCamera cam;
 	public AssetManager assets;
 	BitmapFont font;
@@ -90,7 +87,11 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		cfg.title = "DungeonViewer";
 		cfg.width = 1000;
 		cfg.height = 800;
-		new LwjglApplication(new DungeonViewer(), cfg);
+		new LwjglApplication(new DungeonViewer("/data/despise.dng"), cfg);
+	}
+	
+	public DungeonViewer(String dungeonFileName) {
+		this.dungeonFileName = dungeonFileName;
 	}
 	
 
@@ -105,7 +106,7 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 
 		assets.update(2000);
 		
-		ModelLoader gloader = new G3dModelLoader(new UBJsonReader(), new ClasspathFileHandleResolver());
+		ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader(), new ClasspathFileHandleResolver());
 		fountainModel = gloader.loadModel(Gdx.files.classpath("graphics/fountain2.g3db"));
 		ladderModel = gloader.loadModel(Gdx.files.classpath("graphics/ladder.g3db"));
 		chestModel = gloader.loadModel(Gdx.files.classpath("graphics/chest.g3db"));
@@ -135,14 +136,8 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		cam.near = 0.1f;
 		cam.far = 1000f;
 		cam.update();
-		
-
-		
-		inputController = new CameraInputController(cam);
-		inputController.rotateLeftKey = inputController.rotateRightKey = inputController.forwardKey = inputController.backwardKey = 0;
-		inputController.translateUnits = 30f;
-		
-		Gdx.input.setInputProcessor(new InputMultiplexer(this, inputController));
+				
+		Gdx.input.setInputProcessor(this);
 
 		ModelBuilder builder = new ModelBuilder();
 		for (int x=0;x<12;x++) {
@@ -155,7 +150,7 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		
 		try {
 			
-			InputStream is = DungeonViewer.class.getResourceAsStream("/data/despise.dng");
+			InputStream is = DungeonViewer.class.getResourceAsStream(dungeonFileName);
 			byte[] bytes = IOUtils.toByteArray(is);	
 						
 			int pos = 0 ;
@@ -178,7 +173,7 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 			//cam.position.set(4,10,4);
 			//cam.lookAt(4,0,4);
 			
-			//not sure how to do the wrapping stuff yet, this will have to do for now
+			//duplicate some of the outer edge tiles around the outside so that the wrapping is not so naked on the sides
 			for (int i = 0;i<DUNGEON_MAP;i++) {
 				{
 					int y = 0;
@@ -209,13 +204,14 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-
+				
 		
-							
-		createAxes();
-		
-		
+	}
+	
+	@Override
+	public void dispose() {
+		modelBatch.dispose();
+		batch.dispose();
 	}
 	
 	@Override
@@ -249,8 +245,6 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 			}
 		}
 		
-        //modelBatch.render(axesInstance);
-
 		modelBatch.end();
 
 		drawMiniMap();
@@ -379,11 +373,15 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 	public void drawMiniMap() {
 		
 		Pixmap pixmap = new Pixmap(MINI_MAP_TEXTURE.getWidth(), MINI_MAP_TEXTURE.getHeight(), Format.RGBA8888);
-		pixmap.setColor(0.3f, 0.3f, 0.3f, 0.7f);
 		for (int y = 0; y < DUNGEON_MAP; y++) {
 			for (int x = 0; x < DUNGEON_MAP; x++) {
 				DungeonTile tile = dungeonTiles[currentLevel][x][y];
-				if (tile == DungeonTile.WALL) {
+				if (tile == DungeonTile.WALL || tile == DungeonTile.SECRET_DOOR  ) {
+					pixmap.setColor(0.3f, 0.3f, 0.3f, 0.7f);
+					pixmap.fillRectangle(35 + (x * 12), 35 + (y * 12), 12, 12);
+				}
+				if (tile == DungeonTile.DOOR) {
+					pixmap.setColor(0.6f, 0.6f, 0.6f, 0.7f);
 					pixmap.fillRectangle(35 + (x * 12), 35 + (y * 12), 12, 12);
 				}
 			}
@@ -417,8 +415,8 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		batch.draw(texture, 16, 10, 16, 16, MINI_MAP_TEXTURE.getWidth(), MINI_MAP_TEXTURE.getHeight(), 
 				1f, 1f, 0, 0, 0, MINI_MAP_TEXTURE.getWidth(), MINI_MAP_TEXTURE.getHeight(), false, false);
 		
-		font.draw(batch, "current x,y: " + (Math.round(currentPos.x)-1) + ", " + (Math.round(currentPos.z)-1), 10, 40);
-		font.draw(batch, "current direction: " + currentDir , 10, 20);
+		font.draw(batch, "Level: " + (currentLevel+1) + " x,y: " + (Math.round(currentPos.x)-1) + ", " + (Math.round(currentPos.z)-1), 10, 40);
+		font.draw(batch, "Direction: " + currentDir , 10, 20);
 
 		
 		batch.end();
@@ -622,42 +620,8 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 	}
 
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	private Vector3 randomPosition () {
-		return new Vector3(MathUtils.random(0f, 8f), MathUtils.random(2f, 3f), MathUtils.random(0f, 8f));
-	}
-	
-	final float GRID_MIN = -1*1000;
-	final float GRID_MAX = 1*1000;
-	final float GRID_STEP = 1;
-	public Model axesModel;
-	public ModelInstance axesInstance;
 
-	private void createAxes() {
-		ModelBuilder modelBuilder = new ModelBuilder();
-		modelBuilder.begin();
-		// grid
-		MeshPartBuilder builder = modelBuilder.part("grid", GL30.GL_LINES, Usage.Position | Usage.ColorUnpacked, new Material());
-		builder.setColor(Color.LIGHT_GRAY);
-		for (float t = GRID_MIN; t <= GRID_MAX; t += GRID_STEP) {
-			builder.line(t, 0, GRID_MIN, t, 0, GRID_MAX);
-			builder.line(GRID_MIN, 0, t, GRID_MAX, 0, t);
-		}
-		// axes
-		builder = modelBuilder.part("axes", GL30.GL_LINES, Usage.Position | Usage.ColorUnpacked, new Material());
-		builder.setColor(Color.RED);
-		builder.line(0, 0, 0, 500, 0, 0);
-		builder.setColor(Color.GREEN);
-		builder.line(0, 0, 0, 0, 500, 0);
-		builder.setColor(Color.BLUE);
-		builder.line(0, 0, 0, 0, 0, 500);
-		axesModel = modelBuilder.end();
-		axesInstance = new ModelInstance(axesModel);
-	}	
+	
+
 
 }
