@@ -15,14 +15,16 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -31,13 +33,16 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.UBJsonReader;
 
 public class DungeonViewer implements ApplicationListener, InputProcessor, Constants {
 	
@@ -49,16 +54,24 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 	public PerspectiveCamera cam;
 	public AssetManager assets;
 	BitmapFont font;
+	
+	//3d models
+	public static Model fountainModel;
+	public static Model ladderModel;
+	public static Model chestModel;
+	public static Model orbModel;
+	public static Model altarModel;
+
 
 	public static final int DUNGEON_MAP = 8;
 	public DungeonTile[][][] dungeonTiles = new DungeonTile[DUNGEON_MAP][DUNGEON_MAP][DUNGEON_MAP];
 
 	public List<DungeonTileModelInstance> modelInstances = new ArrayList<DungeonTileModelInstance>();
-	public ModelInstance floor;
+	public List<ModelInstance> floor = new ArrayList<ModelInstance>();
 	
 	public static Texture MINI_MAP_TEXTURE;
 	private SpriteBatch batch;
-	private int currentLevel = 0;
+	private int currentLevel = 4;
 	private Vector3 currentPos;
 	public enum Direction {NORTH, SOUTH, EAST, WEST};
 	public Direction currentDir = Direction.EAST;
@@ -76,13 +89,20 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 	public void create() {
 		
 		assets = new AssetManager(new ClasspathFileHandleResolver());
-		//assets.load("skydome.g3db", Model.class);
 		assets.load("graphics/dirt.png", Texture.class);
 		assets.load("graphics/rock.png", Texture.class);
 		assets.load("graphics/map.png", Texture.class);
+		assets.load("graphics/Stone_Masonry.jpg", Texture.class);
 
 		assets.update(2000);
-		//skydome = new ModelInstance(assets.get("skydome.g3db", Model.class));
+		
+		ModelLoader gloader = new G3dModelLoader(new UBJsonReader(), new ClasspathFileHandleResolver());
+		fountainModel = gloader.loadModel(Gdx.files.classpath("graphics/fountain2.g3db"));
+		ladderModel = gloader.loadModel(Gdx.files.classpath("graphics/ladder.g3db"));
+		chestModel = gloader.loadModel(Gdx.files.classpath("graphics/chest.g3db"));
+		orbModel = gloader.loadModel(Gdx.files.classpath("graphics/orb.g3db"));
+		altarModel = gloader.loadModel(Gdx.files.classpath("graphics/altar.g3db"));
+
 		
 		MINI_MAP_TEXTURE = assets.get("graphics/map.png", Texture.class);
 		font = new BitmapFont();
@@ -111,9 +131,12 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		spriteBatch = new SpriteBatch();
 		
 		ModelBuilder builder = new ModelBuilder();
-		Model sf = builder.createBox(12, 1, 12, new Material(ColorAttribute.createDiffuse(Color.GRAY)), Usage.Position | Usage.Normal);
-		//Model sf = builder.createBox(100, 2, 100, new Material(TextureAttribute.createDiffuse(assets.get("graphics/dirt.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);
-		floor = new ModelInstance(sf, new Vector3(4,-.5f,4));
+		for (int x=0;x<12;x++) {
+			for (int y=0;y<12;y++) {
+				Model sf = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("graphics/dirt.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);
+				floor.add(new ModelInstance(sf, new Vector3(x-1.5f,-.5f,y-1.5f)));
+			}
+		}
 		
 		
 		try {
@@ -138,33 +161,34 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 			
 			cam.position.set(currentPos);
 			cam.lookAt(currentPos.x+1, currentPos.y, currentPos.z);
+			//cam.position.set(4,10,4);
+			//cam.lookAt(4,0,4);
 			
-			
-			//not sure how to do the wrapping stuff yet
-//			for (int i = 0;i<DUNGEON_MAP;i++) {
-//				{
-//					int y = 0;
-//					for (int x = 0; x < DUNGEON_MAP; x++) {
-//						DungeonTile tile = dungeonTiles[i][x][y + DUNGEON_MAP - 1];
-//						addBlock(i, tile, x+.5f,.5f,y-.5f);
-//					}
-//					for (int x = 0; x < DUNGEON_MAP; x++) {
-//						DungeonTile tile = dungeonTiles[i][x][y];
-//						addBlock(i, tile, x+.5f,.5f,y+.5f+DUNGEON_MAP);
-//					}
-//				}
-//				{
-//					int x = 0;
-//					for (int y = 0; y < DUNGEON_MAP; y++) {
-//						DungeonTile tile = dungeonTiles[i][x][y];
-//						addBlock(i, tile, x+.5f+DUNGEON_MAP,.5f,y+.5f);
-//					}
-//					for (int y = 0; y < DUNGEON_MAP; y++) {
-//						DungeonTile tile = dungeonTiles[i][x+DUNGEON_MAP-1][y];
-//						addBlock(i, tile, x-.5f,.5f,y+.5f);
-//					}
-//				}
-//			}
+			//not sure how to do the wrapping stuff yet, this will have to do for now
+			for (int i = 0;i<DUNGEON_MAP;i++) {
+				{
+					int y = 0;
+					for (int x = 0; x < DUNGEON_MAP; x++) {
+						DungeonTile tile = dungeonTiles[i][x][y + DUNGEON_MAP - 1];
+						addBlock(i, tile, x+.5f,.5f,y-.5f);
+					}
+					for (int x = 0; x < DUNGEON_MAP; x++) {
+						DungeonTile tile = dungeonTiles[i][x][y];
+						addBlock(i, tile, x+.5f,.5f,y+.5f+DUNGEON_MAP);
+					}
+				}
+				{
+					int x = 0;
+					for (int y = 0; y < DUNGEON_MAP; y++) {
+						DungeonTile tile = dungeonTiles[i][x][y];
+						addBlock(i, tile, x+.5f+DUNGEON_MAP,.5f,y+.5f);
+					}
+					for (int y = 0; y < DUNGEON_MAP; y++) {
+						DungeonTile tile = dungeonTiles[i][x+DUNGEON_MAP-1][y];
+						addBlock(i, tile, x-.5f,.5f,y+.5f);
+					}
+				}
+			}
 			
 
 		
@@ -191,7 +215,9 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		
 		modelBatch.begin(cam);
 		
-		modelBatch.render(floor, environment);
+		for (ModelInstance i : floor) {
+			modelBatch.render(i, environment);
+		}
 						
 		for (DungeonTileModelInstance i : modelInstances) {
 			if (i.getLevel() == currentLevel) {
@@ -200,7 +226,7 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		}
 		
 		
-        modelBatch.render(axesInstance);
+        //modelBatch.render(axesInstance);
 
 		modelBatch.end();
 		
@@ -214,12 +240,85 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 	}
 	
 	public void addBlock(int level, DungeonTile tile, float tx, float ty, float tz) {
-		if (tile != DungeonTile.WALL) return;
 		ModelBuilder builder = new ModelBuilder();
-		Model model = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("graphics/rock.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
-		ModelInstance instance = new ModelInstance(model, tx, ty, tz);
-		DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
-		modelInstances.add(in);
+		if (tile == DungeonTile.WALL) {
+			Model model = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("graphics/rock.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
+			ModelInstance instance = new ModelInstance(model, tx, ty, tz);
+			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+			modelInstances.add(in);
+		} else if (tile.getValue() >= 144 && tile.getValue() <= 148) {
+			ModelInstance instance = new ModelInstance(fountainModel, tx-.15f, 0, tz+.2f);
+			instance.nodes.get(0).scale.set(.010f, .010f, .010f);
+			instance.calculateTransforms();
+			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+			modelInstances.add(in);
+		} else if (tile.getValue() >= 10 && tile.getValue() <= 48) {
+			ModelInstance instance = new ModelInstance(ladderModel, tx-.15f, 0, tz+.2f);
+			//instance.transform.setToRotation(Vector3.Y, 45);
+			instance.nodes.get(0).scale.set(.060f, .060f, .060f);
+			instance.calculateTransforms();
+			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+			modelInstances.add(in);
+			
+			Model manhole = builder.createCylinder(.75f, .02f, .75f, 32, new Material(ColorAttribute.createDiffuse(Color.DARK_GRAY)), Usage.Position | Usage.Normal);
+			if (tile == DungeonTile.LADDER_DOWN) {
+				instance = new ModelInstance(manhole, tx, 0, tz);
+				modelInstances.add(new DungeonTileModelInstance(instance, tile, level));
+			} else if (tile == DungeonTile.LADDER_UP) {
+				instance = new ModelInstance(manhole, tx, 1, tz);
+				modelInstances.add(new DungeonTileModelInstance(instance, tile, level));
+			} else if (tile == DungeonTile.LADDER_UP_DOWN) {
+				instance = new ModelInstance(manhole, tx, 0, tz);
+				modelInstances.add(new DungeonTileModelInstance(instance, tile, level));
+				instance = new ModelInstance(manhole, tx, 1, tz);
+				modelInstances.add(new DungeonTileModelInstance(instance, tile, level));
+			}
+			
+		} else if (tile == DungeonTile.CHEST) {
+			ModelInstance instance = new ModelInstance(chestModel, tx-.15f, 0, tz+.2f);
+			instance.nodes.get(0).scale.set(.010f, .010f, .010f);
+			instance.calculateTransforms();
+			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+			modelInstances.add(in);
+		} else if (tile == DungeonTile.ORB) {
+			ModelInstance instance = new ModelInstance(orbModel, tx, .5f, tz);
+			instance.nodes.get(0).scale.set(.0025f, .0025f, .0025f);
+			instance.calculateTransforms();
+			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+			modelInstances.add(in);
+		} else if (tile == DungeonTile.ALTAR) {
+			ModelInstance instance = new ModelInstance(altarModel, tx-.40f, 0, tz+.45f);
+			instance.nodes.get(0).scale.set(.0040f, .0040f, .0040f);
+			instance.calculateTransforms();
+			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+			modelInstances.add(in);
+		} else if (tile.getValue() >= 160 && tile.getValue() <= 163) {
+			Color c = Color.GREEN;
+			if (tile == DungeonTile.FIELD_ENERGY) c = Color.ORANGE;
+			if (tile == DungeonTile.FIELD_FIRE) c = Color.RED;
+			if (tile == DungeonTile.FIELD_SLEEP) c = Color.YELLOW;
+			Model model = builder.createBox(1, .02f, 1, new Material(ColorAttribute.createDiffuse(c), ColorAttribute.createSpecular(c), new BlendingAttribute(0.4f)), Usage.Position | Usage.Normal);		
+			ModelInstance instance = new ModelInstance(model, tx, 0, tz);
+			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+			modelInstances.add(in);
+		} else if (tile == DungeonTile.DOOR || tile == DungeonTile.SECRET_DOOR) {
+			Model model = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("graphics/rock.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
+			ModelInstance instance = new ModelInstance(model, tx, ty, tz);
+			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+			modelInstances.add(in);
+			
+			String texture = tile == DungeonTile.DOOR?"graphics/dirt.png":"graphics/Stone_Masonry.jpg";
+			
+			model = builder.createBox(1.04f, .85f, .6f, new Material(TextureAttribute.createDiffuse(assets.get(texture, Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
+			instance = new ModelInstance(model, tx, .40f, tz);
+			in = new DungeonTileModelInstance(instance, tile, level);
+			modelInstances.add(in);
+			
+			model = builder.createBox(.6f, .85f, 1.04f, new Material(TextureAttribute.createDiffuse(assets.get(texture, Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
+			instance = new ModelInstance(model, tx, .40f, tz);
+			in = new DungeonTileModelInstance(instance, tile, level);
+			modelInstances.add(in);
+		}
 	}
 	
 	public class DungeonTileModelInstance {
@@ -305,6 +404,9 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		for (int y = 0; y < DUNGEON_MAP; y++) {
 			for (int x = 0; x < DUNGEON_MAP; x++) {
 				DungeonTile tile = dungeonTiles[currentLevel][x][y];
+				if (tile == DungeonTile.NOTHING && currentPos == null) {
+					currentPos = new Vector3(x+.5f,.5f,y+.5f);
+				}
 				if (tile == DungeonTile.LADDER_UP) {
 					currentPos = new Vector3(x+.5f,.5f,y+.5f);
 				}
