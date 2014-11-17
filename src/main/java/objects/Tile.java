@@ -123,7 +123,24 @@ public class Tile {
 		return String.format("Tile [name=%s, index=%s]", name, index);
 	}
 	
-
+	public boolean enterable() {
+		switch(index) {
+		case 9:
+		case 10:
+		case 11:
+		case 12:
+		case 14:
+		case 29:
+		case 30:
+		{
+			return true;
+		}
+		default:
+			
+		}
+		
+		return false;
+	}
 	
 
 }

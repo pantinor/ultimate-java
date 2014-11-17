@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 
 import ultima.Constants;
+import ultima.Ultima4;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -47,6 +48,7 @@ import com.badlogic.gdx.utils.UBJsonReader;
 public class DungeonViewer implements ApplicationListener, InputProcessor, Constants {
 	
 	private String dungeonFileName;
+	private Ultima4 mainGame;
 	
 	public Environment environment;
 	public ModelBatch modelBatch;
@@ -92,6 +94,10 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 	
 	public DungeonViewer(String dungeonFileName) {
 		this.dungeonFileName = dungeonFileName;
+	}
+
+	public void setMainGame(Ultima4 mainGame) {
+		this.mainGame = mainGame;
 	}
 	
 
@@ -538,7 +544,12 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		} else if (keycode == Keys.K) {
 			//klimb
 			currentLevel --;
-			if (currentLevel < 0) currentLevel = 0;
+			if (currentLevel < 0) {
+				currentLevel = 0;
+				if (mainGame != null) {
+					mainGame.resurfaceFromDungeon();
+				}
+			}
 
 		} else if (keycode == Keys.D) {
 			//descend
@@ -618,8 +629,6 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		// TODO Auto-generated method stub
 		
 	}
-
-
 
 	
 

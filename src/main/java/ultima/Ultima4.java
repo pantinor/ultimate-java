@@ -1,14 +1,12 @@
 package ultima;
 
-import java.io.InputStream;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
 import objects.ArmorSet;
+import objects.BaseMap;
 import objects.CreatureSet;
 import objects.MapSet;
 import objects.Moongate;
+import objects.Portal;
+import objects.Tile;
 import objects.TileRules;
 import objects.TileSet;
 import objects.WeaponSet;
@@ -19,6 +17,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -41,7 +40,6 @@ public class Ultima4 extends SimpleGame implements Constants {
 	Context context;
 	
 	TileSet baseTileSet;
-	TileSet dungeonTileSet;
 	TileRules tileRules;
 	MapSet maps;
 	WeaponSet weapons;
@@ -60,10 +58,10 @@ public class Ultima4 extends SimpleGame implements Constants {
 
 	public static int SCREEN_WIDTH = 800;
 	public static int SCREEN_HEIGHT = 600;
-	int tilePixelWidth;
-	int tilePixelHeight;
-	int mapPixelWidth;
+	public static int tilePixelWidth = 32;
+	public static int tilePixelHeight = 32;
 	int mapPixelHeight;
+
 	boolean changeMapPosition = true;
 	
 	Vector3 currentMapPixelCoords;
@@ -72,7 +70,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 	Array<AtlasRegion> moongateTextures = new Array<AtlasRegion>();
 	int phase = 0, trammelphase = 0, trammelSubphase = 0, feluccaphase = 0;
 
-	DungeonViewer dungeonViewer;
+	public DungeonViewer dungeonViewer;
 
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
@@ -89,44 +87,35 @@ public class Ultima4 extends SimpleGame implements Constants {
 		try {
 			
 			
-			baseTileSet = (TileSet) loadXml("tileset-base.xml", TileSet.class);			
-			dungeonTileSet = (TileSet) loadXml("tileset-dungeon.xml", TileSet.class);
-			tileRules = (TileRules) loadXml("tileRules.xml", TileRules.class);
-			maps = (MapSet) loadXml("maps.xml", MapSet.class);
+			baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	
+			baseTileSet.setMaps();
+			
+			tileRules = (TileRules) Utils.loadXml("tileRules.xml", TileRules.class);
+			
+			maps = (MapSet) Utils.loadXml("maps.xml", MapSet.class);
 			maps.setMapTable();
-			weapons = (WeaponSet) loadXml("weapons.xml", WeaponSet.class);
-			armors = (ArmorSet) loadXml("armors.xml", ArmorSet.class);
-			creatures = (CreatureSet) loadXml("creatures.xml", CreatureSet.class);
+			
+			weapons = (WeaponSet) Utils.loadXml("weapons.xml", WeaponSet.class);
+			armors = (ArmorSet) Utils.loadXml("armors.xml", ArmorSet.class);
+			creatures = (CreatureSet) Utils.loadXml("creatures.xml", CreatureSet.class);
 			
 			atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
 			player = new Animation(0.25f, atlas.findRegions("avatar"));
+			
 			//textures for the moongates
 			moongateTextures = atlas.findRegions("moongate");
 			//textures for the phases of  the moon
 			moonAtlas = new TextureAtlas(Gdx.files.classpath("graphics/moon-atlas.txt"));
 
-
-			map = new TmxMapLoader().load("tilemaps/map_0.tmx");
-			renderer = new OrthogonalTiledMapRenderer(map, 2f);
-			mapBatch = renderer.getSpriteBatch();
-			
 			font = new BitmapFont();
-			font.setColor(Color.WHITE);
-			
-			
+			font.setColor(Color.WHITE);		
 			batch2 = new SpriteBatch();
-
-			MapProperties prop = map.getProperties();
-			tilePixelWidth = prop.get("tilewidth", Integer.class) * 2;
-			tilePixelHeight = prop.get("tileheight", Integer.class) * 2;
-			mapPixelWidth = prop.get("width", Integer.class) * tilePixelWidth;
-			mapPixelHeight = prop.get("height", Integer.class) * tilePixelWidth;
-			
-			currentMapPixelCoords = getMapPixelCoords(86,108);
 			
 			context = new Context();
-			context.setCurrentMap(maps.getMapById(0));
-			context.setCurrentTiledMap(map);
+			
+			mapCamera = new OrthographicCamera();
+
+			loadNextMap(Maps.WORLD.getId(),86,108);
 			
 			new Thread(new GameTimer()).start();
 					
@@ -134,6 +123,46 @@ public class Ultima4 extends SimpleGame implements Constants {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public void loadNextMap(int id, int startx, int starty) {
+		
+		BaseMap bm = maps.getMapById(id);
+		context.setCurrentMap(bm);
+		
+		if (bm.getType().equals("dungeon")) {
+			
+			dungeonViewer = new DungeonViewer("/data/"+bm.getFname());
+			dungeonViewer.setMainGame(this);
+			dungeonViewer.create();
+			
+		} else if (bm.getType().equals("shrine")) {
+			
+		} else {
+			if (bm.getTiles() == null) {
+				try {
+					Utils.setMapTiles(context.getCurrentMap(), baseTileSet);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+					
+			map = new TmxMapLoader().load("tilemaps/map_"+id+".tmx");
+			context.setCurrentTiledMap(map);
+	
+			if (renderer != null) renderer.dispose();
+			renderer = new OrthogonalTiledMapRenderer(map, 2f);
+			
+			//if (mapBatch != null) mapBatch.dispose();
+			mapBatch = renderer.getSpriteBatch();
+	
+			MapProperties prop = map.getProperties();
+			mapPixelHeight = prop.get("height", Integer.class) * tilePixelWidth;
+			
+			currentMapPixelCoords = getMapPixelCoords(startx, starty);
+			changeMapPosition = true;
+		}
+						
 	}
 
 	@Override
@@ -176,8 +205,9 @@ public class Ultima4 extends SimpleGame implements Constants {
 			}
 	
 			batch2.begin();
-			font.draw(batch2, "current map coords: " + getCurrentMapCoords(), 10, 40);
-			font.draw(batch2, "current mouse pos: " + currentMousePos, 10, 20);
+			Vector3 v = getCurrentMapCoords();
+			font.draw(batch2, "map coords: " + v, 10, 40);
+			//font.draw(batch2, "current tile: " + context.getCurrentMap().getTile(v), 10, 20);
 			batch2.draw(moonAtlas.findRegion("phase_" + trammelphase),375,SCREEN_HEIGHT-25,25,25);
 			batch2.draw(moonAtlas.findRegion("phase_" + feluccaphase),400,SCREEN_HEIGHT-25,25,25);
 			batch2.end();
@@ -197,32 +227,76 @@ public class Ultima4 extends SimpleGame implements Constants {
 	@Override
 	public boolean keyUp (int keycode) {
 		
+		Vector3 v = getCurrentMapCoords();
+		Tile ct = context.getCurrentMap().getTile(v);
+		
 		if (keycode == Keys.UP) {
+			if (!preMove(new Vector3(v.x,v.y-1,0))) return false;
 			mapCamera.position.y = mapCamera.position.y + tilePixelHeight;
+			postMove();
 		} else if (keycode == Keys.RIGHT) {
+			if (!preMove(new Vector3(v.x+1,v.y,0))) return false;
 			mapCamera.position.x = mapCamera.position.x + tilePixelWidth;
+			postMove();
 		} else if (keycode == Keys.LEFT) {
+			if (!preMove(new Vector3(v.x-1,v.y,0))) return false;
 			mapCamera.position.x = mapCamera.position.x - tilePixelWidth;
+			postMove();
 		} else if (keycode == Keys.DOWN) {
+			if (!preMove(new Vector3(v.x,v.y+1,0))) return false;
 			mapCamera.position.y = mapCamera.position.y - tilePixelHeight;
-		}
-		mapCamera.update();
-		
-		currentMapPixelCoords = mapCamera.unproject(new Vector3(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 0));
-		
-		Vector3 cc = getCurrentMapCoords();
-		//check for active moongate portal
-		for (Moongate g : context.getCurrentMap().getMoongates()) {
-			if (g.getCurrentTexture() != null && cc.x == g.getX() && cc.y == g.getY()) {
-				Sounds.play(Sound.MOONGATE);
-				Vector3 d = getDestinationForMoongate(g);
-				currentMapPixelCoords = getMapPixelCoords((int)d.x,(int)d.y);
-				changeMapPosition = true;
+			postMove();
+		} else if (keycode == Keys.E) {
+			if (ct.enterable()) {
+				Portal p = context.getCurrentMap().getPortal(v.x, v.y);
+				loadNextMap(p.getDestmapid(), p.getStartx(), p.getStarty());
 			}
 		}
+
 		return false;
 
 	}
+	
+	private boolean preMove(Vector3 nextTile) {
+		
+		BaseMap bm = context.getCurrentMap();
+		
+		if (bm.getBorderbehavior().equals("exit")) {
+			if (nextTile.x > bm.getWidth()-1 || nextTile.x < 0 || nextTile.y > bm.getHeight()-1 || nextTile.y < 0) {
+				Portal p = maps.getMapById(Maps.WORLD.getId()).getPortal(bm.getId());
+				loadNextMap(Maps.WORLD.getId(), p.getX(), p.getY());
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	private void postMove() {
+		
+		currentMapPixelCoords = mapCamera.unproject(new Vector3(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 0));
+		
+		//check if entering moongate
+		if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
+			Vector3 cc = getCurrentMapCoords();
+			//check for active moongate portal
+			for (Moongate g : context.getCurrentMap().getMoongates()) {
+				if (g.getCurrentTexture() != null && cc.x == g.getX() && cc.y == g.getY()) {
+					Sounds.play(Sound.MOONGATE);
+					Vector3 d = getDestinationForMoongate(g);
+					currentMapPixelCoords = getMapPixelCoords((int)d.x,(int)d.y);
+					changeMapPosition = true;
+				}
+			}
+		}
+	}
+	
+	public void resurfaceFromDungeon() {
+		dungeonViewer = null;
+		Gdx.input.setInputProcessor(this);
+		context.setCurrentMap(maps.getMapById(Maps.WORLD.getId()));
+	}
+	
 	
 	@Override
 	public void resize(int width, int height) {
@@ -234,7 +308,9 @@ public class Ultima4 extends SimpleGame implements Constants {
 		return mapPixelHeight - Math.round(y) - tilePixelHeight;
 	}
 	
-	//translate map tile coords to world pixel coords
+	/**
+	 * translate map tile coords to world pixel coords
+	 */
 	public Vector3 getMapPixelCoords(int x, int y) {
 		
 		Vector3 v = new Vector3(
@@ -245,6 +321,9 @@ public class Ultima4 extends SimpleGame implements Constants {
 		return v;
 	}
 	
+	/**
+	 * get the map coords at the camera center
+	 */
 	public Vector3 getCurrentMapCoords() {
 		
 		Vector3 v = mapCamera.unproject(new Vector3(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 0));
@@ -255,12 +334,6 @@ public class Ultima4 extends SimpleGame implements Constants {
 				0);
 	}
 	
-	public Object loadXml(String fname, Class<?> clazz) throws Exception {
-		InputStream is = Ultima4.class.getResourceAsStream("/xml/"+fname);
-		JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		return jaxbUnmarshaller.unmarshal(is);
-	}
 	
 	public void updateMoons(boolean showmoongates) {
 		

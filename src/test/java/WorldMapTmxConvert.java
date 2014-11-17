@@ -1,5 +1,4 @@
 import java.io.File;
-import java.io.InputStream;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -14,10 +13,10 @@ import objects.Tile;
 import objects.TileSet;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import ultima.Constants;
+import ultima.Utils;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData;
@@ -57,29 +56,8 @@ public class WorldMapTmxConvert {
 		int TILE_SIZE = 16;
 
 		BaseMap map = ms.getMapById(0);
-
-		InputStream is = TestMain.class.getResourceAsStream("/data/" + map.getFname());
-		byte[] bytes = IOUtils.toByteArray(is);
-
-		Tile[] tiles = new Tile[map.getWidth() * map.getHeight()];
-		int pos = 0;
-	    for(int ych = 0; ych < map.getHeight() / 32; ych++) {
-	        for(int xch = 0; xch < map.getWidth() / 32; xch++) {
-                for(int y = 0; y < 32; y++) {
-                    for(int x = 0; x < 32; x++) {                    
-        				int index = bytes[pos] & 0xff;
-						pos++;
-						Tile tile = ts.getTileByIndex(index);
-						if (tile == null) {
-							System.out.println("Tile index cannot be found: " + index + " using index 129 for black space.");
-							tile = ts.getTileByIndex(129);
-						}
-                        tiles[x + (y * map.getWidth()) + (xch * 32) + (ych * 32 * map.getWidth())] = tile;
-                    }
-                }
-	            
-	        }
-	    }
+		Utils.setMapTiles(map, ts);
+		Tile[] tiles = map.getTiles();
 
 
 		// load the atlas and determine the tile indexes per tilemap position

@@ -24,8 +24,6 @@ public abstract class SimpleGame extends InputAdapter implements ApplicationList
 	public abstract void draw(float delta);
 
 	public void create() {
-
-		mapCamera = new OrthographicCamera();
 		
 		stage = new Stage(new ScreenViewport());
 		skin = new Skin(Gdx.files.classpath("skin/uiskin.json"));

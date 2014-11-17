@@ -12,6 +12,8 @@ public class Portal implements Constants {
 	private String name;
 	private int x;
 	private int y;
+	private int startx;
+	private int starty;
 	private int destmapid;
 	private int startlevel;
 	private String action;
@@ -123,6 +125,20 @@ public class Portal implements Constants {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	@XmlAttribute
+	public int getStartx() {
+		return startx;
+	}
+	@XmlAttribute
+	public int getStarty() {
+		return starty;
+	}
+	public void setStartx(int startx) {
+		this.startx = startx;
+	}
+	public void setStarty(int starty) {
+		this.starty = starty;
 	}
 	
 	

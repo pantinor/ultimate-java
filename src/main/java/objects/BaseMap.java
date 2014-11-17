@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.badlogic.gdx.math.Vector3;
+
 import ultima.Constants;
 
 @XmlRootElement(name = "map")
@@ -35,12 +37,31 @@ public class BaseMap implements Constants {
 	private Dungeon dungeon;
 	private Shrine shrine;
 	private List<Moongate> moongates;
+	private Tile[] tiles;
 	
 	public Moongate getMoongate(int phase) {
 		if (moongates == null) return null;
 		for (Moongate m : moongates) {
 			if (m.getPhase() == phase) 
 				return m;
+		}
+		return null;
+	}
+	
+	public Portal getPortal(int id) {
+		if (portals == null) return null;
+		for (Portal p : portals) {
+			if (p.getDestmapid() == id) 
+				return p;
+		}
+		return null;
+	}
+	
+	public Portal getPortal(float x, float y) {
+		if (portals == null) return null;
+		for (Portal p : portals) {
+			if (p.getX() == x && p.getY() == y) 
+				return p;
 		}
 		return null;
 	}
@@ -227,7 +248,21 @@ public class BaseMap implements Constants {
 		return String.format("BaseMap [id=%s, fname=%s, portals=%s]", id, fname, portals);
 	}
 
+	public Tile[] getTiles() {
+		return tiles;
+	}
 
+	public void setTiles(Tile[] tiles) {
+		this.tiles = tiles;
+	}
+
+	public Tile getTile(int x, int y) {
+		return tiles[x + (y * width)];
+	}
+	
+	public Tile getTile(Vector3 v) {
+		return tiles[(int)v.x + ((int)v.y * width)];
+	}
 
 
 	
