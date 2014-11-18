@@ -47,7 +47,7 @@ public class CombatMapTmxConvert {
 		jaxbContext = JAXBContext.newInstance(MapSet.class);
 		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 		MapSet ms = (MapSet) jaxbUnmarshaller.unmarshal(file3);
-		ms.setMapTable();
+		ms.init(ts);
 		
 		int TILE_SIZE = 16;
 		boolean foundShrine = false;

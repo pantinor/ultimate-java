@@ -6,9 +6,16 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector3;
 
 import ultima.Constants;
+import ultima.Ultima4;
 
 @XmlRootElement(name = "map")
 public class BaseMap implements Constants {
@@ -265,11 +272,78 @@ public class BaseMap implements Constants {
 	}
 
 
+	public void setSprites(Ultima4 mainGame, TextureAtlas atlas) {
+		if (city != null) {
+			
+			for(Person p : city.getPeople()) {
+				if (p == null) continue;
+				String tname = p.getTile().getName();
+				p.setAnim(new Animation(0.5f, atlas.findRegions(tname)));
+				Vector3 pixelPos = mainGame.getMapPixelCoords(p.getStart_x(), p.getStart_y());
+				p.setCurrentPos(pixelPos);
+			}
+			
+		}
+	}
 	
 	
-	
+	public void renderObjects(Ultima4 mainGame, Batch mapBatch, float time) {
+		if (city != null) {
+			
+			for(Person p : city.getPeople()) {
+				if (p == null) continue;
+				mapBatch.draw(p.getAnim().getKeyFrame(time, true), p.getCurrentPos().x, p.getCurrentPos().y, Ultima4.tilePixelWidth, Ultima4.tilePixelHeight);
 
+			}
+			
+		}
+	}
 
+	public void moveObjects() {
+		
+		if (city != null) {
+			
+			for(Person p : city.getPeople()) {
+				if (p == null) continue;
+				if (p.getMovement() == ObjectMovementBehavior.WANDER) {
+					
+				}
+			}
+			
+		}
+		
+	}
+	
+	public int getValidMovesMask(int x, int y) {
+		
+		int mask = 0;
+		
+		Tile north = getTile(x,y-1);
+		Tile south = getTile(x,y+1);
+		Tile east = getTile(x+1,y);
+		Tile west = getTile(x-1,y);
+		
+		Rule northRule = Ultima4.tileRules.getRule(north.getRule());
+		Rule southRule = Ultima4.tileRules.getRule(south.getRule());
+		Rule eastRule = Ultima4.tileRules.getRule(east.getRule());
+		Rule westRule = Ultima4.tileRules.getRule(west.getRule());
+
+		if (northRule == null || !StringUtils.equals(northRule.getCantwalkon(),"all")) {
+			mask = Direction.addToMask(Direction.NORTH, mask);
+		}
+		if (southRule == null || !StringUtils.equals(southRule.getCantwalkon(),"all")) {
+			mask = Direction.addToMask(Direction.SOUTH, mask);
+		}
+		if (eastRule == null || !StringUtils.equals(eastRule.getCantwalkon(),"all")) {
+			mask = Direction.addToMask(Direction.EAST, mask);
+		}
+		if (westRule == null || !StringUtils.equals(westRule.getCantwalkon(),"all")) {
+			mask = Direction.addToMask(Direction.WEST, mask);
+		}
+
+		return mask;
+		
+	}
 	
 
 	

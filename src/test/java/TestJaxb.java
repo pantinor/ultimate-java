@@ -27,6 +27,9 @@ import objects.WeaponSet;
 import org.apache.commons.io.FileUtils;
 import org.testng.annotations.Test;
 
+import ultima.Utils;
+import ultima.Constants.Direction;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -136,7 +139,7 @@ public class TestJaxb {
 		}
 	}
 	
-	@Test
+	//@Test
 	public void makeXml2() throws Exception {
 
 		//String t = FileUtils.readFileToString(new File("src/main/resources/xml/tileset-base.xml"));
@@ -168,10 +171,36 @@ public class TestJaxb {
 		
 		for (File f : tlkxmlFiles) {
 			String t = FileUtils.readFileToString(f);
-			t = t.replaceAll("&#xA;", " ");
+			Utils.getDialogs(f.getName());
 			FileUtils.writeStringToFile(f, t);
 		}
 		
+	}
+	
+	//@Test
+	public void parseTlkFiles() throws Exception {
+		Utils.getPeople("britain.ult", null);
+		Utils.getDialogs("britain.tlk");
+
+	}
+	
+	@Test
+	public void testDirectionMask() throws Exception {
+		
+		Direction dir = Direction.WEST;
+		
+		int mask = Direction.addToMask(Direction.NORTH, 0);
+		assert(!Direction.isDirInMask(dir, mask));
+		
+		mask = Direction.addToMask(Direction.EAST, mask);
+		assert(!Direction.isDirInMask(dir, mask));
+
+		mask = Direction.addToMask(Direction.WEST, mask);
+		assert(Direction.isDirInMask(dir, mask));
+		
+		mask = Direction.removeFromMask(Direction.WEST, mask);
+		assert(!Direction.isDirInMask(dir, mask));
+
 	}
 	
 

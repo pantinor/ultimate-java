@@ -19,5 +19,17 @@ public class TileRules {
 		this.rules = rules;
 	}
 	
+	public Rule getRule(String name) {
+		if (name == null) {
+			return null;
+		}
+		for (Rule r : rules) {
+			if (r.getName().equals(name)) {
+				return r;
+			}
+		}
+		return null;
+	}
+	
 
 }

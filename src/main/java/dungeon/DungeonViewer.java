@@ -109,6 +109,8 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		assets.load("graphics/rock.png", Texture.class);
 		assets.load("graphics/map.png", Texture.class);
 		assets.load("graphics/Stone_Masonry.jpg", Texture.class);
+		assets.load("graphics/door.png", Texture.class);
+
 
 		assets.update(2000);
 		
@@ -331,7 +333,7 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
 			
-			String texture = tile == DungeonTile.DOOR?"graphics/dirt.png":"graphics/rock.png";
+			String texture = tile == DungeonTile.DOOR?"graphics/door.png":"graphics/rock.png";
 			
 			model = builder.createBox(1.04f, .85f, .6f, new Material(TextureAttribute.createDiffuse(assets.get(texture, Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
 			instance = new ModelInstance(model, tx, .40f, tz);

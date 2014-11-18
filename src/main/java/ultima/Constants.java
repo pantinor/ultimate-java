@@ -104,14 +104,43 @@ public interface Constants {
 	public static int MOON_CHAR = 20;
 	
 	enum Direction {
-	    NONE,
-	    WEST,
-	    NORTH,
-	    EAST,
-	    SOUTH,
-	    ADVANCE,
-	    RETREAT
+	    NONE(0),
+	    WEST(1),
+	    NORTH(2),
+	    EAST(3),
+	    SOUTH(4);
+	    
+	    private int val;
+	    
+	    private Direction(int v) {
+	    	this.val = v;
+	    }
+
+		public int getVal() {
+			return val;
+		}
+		
+		public static int getMask(Direction dir) {
+			return (1 << (dir.getVal()));
+		}
+		
+		public static boolean isDirInMask(Direction dir, int mask) {
+			int v = ((1 << (dir.getVal())) & (mask));
+			return (v>0);
+		}
+		
+		public static int addToMask(Direction dir, int mask) {
+			return ((1 << (dir.getVal())) | (mask));
+		}
+		
+		public static int removeFromMask(Direction dir, int mask) {
+			return ((~(1 << (dir.getVal()))) & (mask));
+		}
+
 	};
+	
+	
+	
 	
 
 	

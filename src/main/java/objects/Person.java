@@ -2,7 +2,11 @@ package objects;
 
 import ultima.Constants;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.math.Vector3;
+
 public class Person implements Constants {
+	
 	private int id;
 	private int start_x;
 	private int start_y;
@@ -10,6 +14,11 @@ public class Person implements Constants {
 	private Tile tile;
 	private int tileMapId;
 	private int dialogId;
+	private int tileIndex;
+	
+	private Animation anim;
+	private Vector3 currentPos;
+	private Conversation conversation;
 	
 	public int getId() {
 		return id;
@@ -68,6 +77,31 @@ public class Person implements Constants {
 		
 		return String.format(template, 
 				id, start_x*16, start_y*16, tile.getName(), movement, start_x, start_y, dialogId);
+	}
+	public int getTileIndex() {
+		return tileIndex;
+	}
+	public void setTileIndex(int tileIndex) {
+		this.tileIndex = tileIndex;
+	}
+
+	public Vector3 getCurrentPos() {
+		return currentPos;
+	}
+	public Conversation getConversation() {
+		return conversation;
+	}
+	public void setCurrentPos(Vector3 currentPos) {
+		this.currentPos = currentPos;
+	}
+	public void setConversation(Conversation conversation) {
+		this.conversation = conversation;
+	}
+	public Animation getAnim() {
+		return anim;
+	}
+	public void setAnim(Animation anim) {
+		this.anim = anim;
 	}
 	
 	

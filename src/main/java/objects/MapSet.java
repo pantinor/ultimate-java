@@ -7,6 +7,8 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import ultima.Utils;
+
 @XmlRootElement(name = "maps")
 public class MapSet {
 	
@@ -22,9 +24,31 @@ public class MapSet {
 		this.maps = maps;
 	}
 	
-	public void setMapTable() {
+	public void init(TileSet ts) {
 		for (BaseMap m : maps) {
+			
 			mapMap.put(m.getId(), m);
+			
+			String tlkName = m.getCity()==null?null:m.getCity().getTlk_fname();
+			if (tlkName != null) {
+				
+				List<Conversation> conv = Utils.getDialogs(tlkName);
+				m.getCity().setConversations(conv);
+				
+				Person[] people = Utils.getPeople(m.getFname(), ts);
+				m.getCity().setPeople(people);
+				for (Person p: people) {
+					if (p != null) {
+						for (Conversation c : conv) {
+							if (c.getIndex() == p.getDialogId()) {
+								p.setConversation(c);
+							}
+						}
+					}
+				}
+				
+			}
+
 		}
 	}
 	

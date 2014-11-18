@@ -51,7 +51,7 @@ public class WorldMapTmxConvert {
 		jaxbContext = JAXBContext.newInstance(MapSet.class);
 		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 		MapSet ms = (MapSet) jaxbUnmarshaller.unmarshal(file3);
-		ms.setMapTable();
+		ms.init(ts);
 
 		int TILE_SIZE = 16;
 
@@ -246,15 +246,15 @@ public class WorldMapTmxConvert {
 				"<layer name=\"Map Layer\" width=\"%s\" height=\"%s\">\n" + 
 				"<data encoding=\"csv\">\n%s\n</data>\n</layer>\n" +
 				
-				//"<layer name=\"Portal Layer\" width=\"%s\" height=\"%s\">\n" + 
-				//"<data encoding=\"csv\">\n%s\n</data>\n</layer>\n" + 
+				"<layer name=\"Portal Layer\" width=\"%s\" height=\"%s\">\n" + 
+				"<data encoding=\"csv\">\n%s\n</data>\n</layer>\n" + 
 				
-				//"<layer name=\"Moongate Layer\" width=\"%s\" height=\"%s\">\n" + 
-				//"<data encoding=\"csv\">\n%s\n</data>\n</layer>\n" + 
+				"<layer name=\"Moongate Layer\" width=\"%s\" height=\"%s\">\n" + 
+				"<data encoding=\"csv\">\n%s\n</data>\n</layer>\n" + 
 				
-				//"<objectgroup name=\"Portal Properties\" width=\"%s\" height=\"%s\">\n%s\n</objectgroup>\n" +
-				//"<objectgroup name=\"Moongate Properties\" width=\"%s\" height=\"%s\">\n%s\n</objectgroup>\n" +
-				//"<objectgroup name=\"Label Properties\" width=\"%s\" height=\"%s\">\n%s\n</objectgroup>\n" + 
+				"<objectgroup name=\"Portal Properties\" width=\"%s\" height=\"%s\">\n%s\n</objectgroup>\n" +
+				"<objectgroup name=\"Moongate Properties\" width=\"%s\" height=\"%s\">\n%s\n</objectgroup>\n" +
+				"<objectgroup name=\"Label Properties\" width=\"%s\" height=\"%s\">\n%s\n</objectgroup>\n" + 
 				
 				"</map>";
 

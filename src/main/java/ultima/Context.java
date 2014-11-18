@@ -22,8 +22,9 @@ public class Context implements Constants {
     private int horseSpeed;
     private int opacity;
     private TransportContext transportContext;
-    private long lastCommandTime;
+    private long lastCommandTime = System.currentTimeMillis();
     private Object lastShip;
+    
 	public int getLine() {
 		return line;
 	}
