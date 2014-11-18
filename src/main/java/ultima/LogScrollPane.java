@@ -12,7 +12,7 @@ public class LogScrollPane extends ScrollPane {
 	private static Label.LabelStyle labelStyle;
 
 	public LogScrollPane(Skin skin) {
-		super(log, skin, "transparent-background");
+		super(log, skin, "gray-background");
 		
 		labelStyle = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
 		labelStyle.fontColor = Color.WHITE;

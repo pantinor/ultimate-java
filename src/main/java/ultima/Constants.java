@@ -1,5 +1,7 @@
 package ultima;
 
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
@@ -104,7 +106,7 @@ public interface Constants {
 	public static int MOON_CHAR = 20;
 	
 	enum Direction {
-	    NONE(0),
+		
 	    WEST(1),
 	    NORTH(2),
 	    EAST(3),
@@ -135,6 +137,20 @@ public interface Constants {
 		
 		public static int removeFromMask(Direction dir, int mask) {
 			return ((~(1 << (dir.getVal()))) & (mask));
+		}
+		
+		public static Direction getRandomValidDirection(int mask) {
+			int n = 0;
+			Direction d[] = new Direction[4];
+			for (Direction dir : values()) {
+				if (isDirInMask(dir, mask)) {
+					d[n] = dir;
+					n++;
+				}
+			}
+			if (n==0) return null;
+			int rand = new Random().nextInt(n);
+			return d[rand];
 		}
 
 	};

@@ -264,10 +264,12 @@ public class BaseMap implements Constants {
 	}
 
 	public Tile getTile(int x, int y) {
+		if (x + (y * width) >= tiles.length) return null;
 		return tiles[x + (y * width)];
 	}
 	
 	public Tile getTile(Vector3 v) {
+		if ((int)v.x + ((int)v.y * width) >= tiles.length) return null;
 		return tiles[(int)v.x + ((int)v.y * width)];
 	}
 
@@ -281,6 +283,8 @@ public class BaseMap implements Constants {
 				p.setAnim(new Animation(0.5f, atlas.findRegions(tname)));
 				Vector3 pixelPos = mainGame.getMapPixelCoords(p.getStart_x(), p.getStart_y());
 				p.setCurrentPos(pixelPos);
+				p.setX(p.getStart_x());
+				p.setY(p.getStart_y());
 			}
 			
 		}
@@ -299,14 +303,24 @@ public class BaseMap implements Constants {
 		}
 	}
 
-	public void moveObjects() {
+	public void moveObjects(Ultima4 mainGame) {
 		
 		if (city != null) {
 			
 			for(Person p : city.getPeople()) {
 				if (p == null) continue;
 				if (p.getMovement() == ObjectMovementBehavior.WANDER) {
-					
+					Direction dir = Direction.getRandomValidDirection(getValidMovesMask(p.getX(), p.getY()));
+					if (dir == null) continue; 
+					Vector3 pos = null;
+					if (dir == Direction.NORTH) pos = new Vector3(p.getX(), p.getY()-1, 0);
+					if (dir == Direction.SOUTH) pos = new Vector3(p.getX(), p.getY()+1, 0);
+					if (dir == Direction.EAST) pos = new Vector3(p.getX()+1, p.getY(), 0);
+					if (dir == Direction.WEST) pos = new Vector3(p.getX()-1, p.getY(), 0);
+					Vector3 pixelPos = mainGame.getMapPixelCoords((int)pos.x, (int)pos.y);
+					p.setCurrentPos(pixelPos);
+					p.setX((int)pos.x);
+					p.setY((int)pos.y);
 				}
 			}
 			
@@ -323,23 +337,31 @@ public class BaseMap implements Constants {
 		Tile east = getTile(x+1,y);
 		Tile west = getTile(x-1,y);
 		
-		Rule northRule = Ultima4.tileRules.getRule(north.getRule());
-		Rule southRule = Ultima4.tileRules.getRule(south.getRule());
-		Rule eastRule = Ultima4.tileRules.getRule(east.getRule());
-		Rule westRule = Ultima4.tileRules.getRule(west.getRule());
+		if (north != null) {
+			Rule northRule = Ultima4.tileRules.getRule(north.getRule());
+			if (northRule == null || !StringUtils.equals(northRule.getCantwalkon(),"all")) {
+				mask = Direction.addToMask(Direction.NORTH, mask);
+			}
+		}
+		if (south != null) {
+			Rule southRule = Ultima4.tileRules.getRule(south.getRule());
+			if (southRule == null || !StringUtils.equals(southRule.getCantwalkon(),"all")) {
+				mask = Direction.addToMask(Direction.SOUTH, mask);
+			}
+		}
+		if (east != null) {
+			Rule eastRule = Ultima4.tileRules.getRule(east.getRule());
+			if (eastRule == null || !StringUtils.equals(eastRule.getCantwalkon(),"all")) {
+				mask = Direction.addToMask(Direction.EAST, mask);
+			}
+		}
+		if (west != null) {
+			Rule westRule = Ultima4.tileRules.getRule(west.getRule());
+			if (westRule == null || !StringUtils.equals(westRule.getCantwalkon(),"all")) {
+				mask = Direction.addToMask(Direction.WEST, mask);
+			}
+		}
 
-		if (northRule == null || !StringUtils.equals(northRule.getCantwalkon(),"all")) {
-			mask = Direction.addToMask(Direction.NORTH, mask);
-		}
-		if (southRule == null || !StringUtils.equals(southRule.getCantwalkon(),"all")) {
-			mask = Direction.addToMask(Direction.SOUTH, mask);
-		}
-		if (eastRule == null || !StringUtils.equals(eastRule.getCantwalkon(),"all")) {
-			mask = Direction.addToMask(Direction.EAST, mask);
-		}
-		if (westRule == null || !StringUtils.equals(westRule.getCantwalkon(),"all")) {
-			mask = Direction.addToMask(Direction.WEST, mask);
-		}
 
 		return mask;
 		

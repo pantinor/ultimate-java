@@ -12,6 +12,7 @@ import ultima.Ultima4;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
@@ -43,13 +44,14 @@ import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader.Config;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.UBJsonReader;
 
 public class DungeonViewer implements ApplicationListener, InputProcessor, Constants {
 	
 	private String dungeonFileName;
 	private Ultima4 mainGame;
-	
+	private Stage stage;
 	public Environment environment;
 	public ModelBatch modelBatch;
 	private SpriteBatch batch;
@@ -95,11 +97,12 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 	public DungeonViewer(String dungeonFileName) {
 		this.dungeonFileName = dungeonFileName;
 	}
-
-	public void setMainGame(Ultima4 mainGame) {
-		this.mainGame = mainGame;
-	}
 	
+	public DungeonViewer(Stage stage, Ultima4 mainGame, String dungeonFileName) {
+		this.dungeonFileName = dungeonFileName;
+		this.mainGame = mainGame;
+		this.stage = stage;
+	}
 
 	@Override
 	public void create() {
@@ -145,7 +148,11 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		cam.far = 1000f;
 		cam.update();
 				
-		Gdx.input.setInputProcessor(this);
+		if (stage != null) {
+			Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
+		} else {
+			Gdx.input.setInputProcessor(this);
+		}
 
 		ModelBuilder builder = new ModelBuilder();
 		for (int x=0;x<12;x++) {
@@ -256,6 +263,11 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		modelBatch.end();
 
 		drawMiniMap();
+		
+		if (stage != null) {
+			stage.act();
+			stage.draw();
+		}
 
 							
 	}

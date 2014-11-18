@@ -12,6 +12,7 @@ import objects.TileSet;
 import objects.WeaponSet;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
@@ -72,6 +73,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 	int phase = 0, trammelphase = 0, trammelSubphase = 0, feluccaphase = 0;
 
 	public DungeonViewer dungeonViewer;
+	public DialogWindow hud;
 
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
@@ -118,6 +120,9 @@ public class Ultima4 extends SimpleGame implements Constants {
 
 			loadNextMap(Maps.WORLD.getId(),86,108);
 			
+			hud = new DialogWindow(stage, this, skin);
+			stage.addActor(hud);
+			
 			new Thread(new GameTimer(this)).start();
 					
 		} catch(Exception e) {
@@ -133,8 +138,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 		
 		if (bm.getType().equals("dungeon")) {
 			
-			dungeonViewer = new DungeonViewer("/data/"+bm.getFname());
-			dungeonViewer.setMainGame(this);
+			dungeonViewer = new DungeonViewer(stage, this, "/data/"+bm.getFname());
 			dungeonViewer.create();
 			
 		} else if (bm.getType().equals("shrine")) {
@@ -160,7 +164,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 			renderer = new OrthogonalTiledMapRenderer(map, 2f);
 			
 			//if (mapBatch != null) mapBatch.dispose();
-			mapBatch = renderer.getSpriteBatch();
+			mapBatch = renderer.getBatch();
 	
 			MapProperties prop = map.getProperties();
 			mapPixelHeight = prop.get("height", Integer.class) * tilePixelWidth;
@@ -224,6 +228,9 @@ public class Ultima4 extends SimpleGame implements Constants {
 				batch2.draw(moonAtlas.findRegion("phase_" + feluccaphase),400,SCREEN_HEIGHT-25,25,25);
 			}
 			batch2.end();
+			
+			stage.act();
+			stage.draw();
 		
 		}
 		
@@ -294,6 +301,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 		
 		int mask = bm.getValidMovesMask((int)currentTile.x, (int)currentTile.y);
 		if (!Direction.isDirInMask(dir, mask)) {
+			Sounds.play(Sound.BLOCKED);
 			return false;
 		}
 		
@@ -323,13 +331,13 @@ public class Ultima4 extends SimpleGame implements Constants {
 		
 		
 		if (true) { //TODO is not party flying
-			context.getCurrentMap().moveObjects();
+			context.getCurrentMap().moveObjects(this);
 		}
 	}
 	
 	public void resurfaceFromDungeon() {
 		dungeonViewer = null;
-		Gdx.input.setInputProcessor(this);
+		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
 		context.setCurrentMap(maps.getMapById(Maps.WORLD.getId()));
 	}
 	

@@ -10,6 +10,8 @@ public class Person implements Constants {
 	private int id;
 	private int start_x;
 	private int start_y;
+	private int x;
+	private int y;
 	private ObjectMovementBehavior movement;
 	private Tile tile;
 	private int tileMapId;
@@ -102,6 +104,18 @@ public class Person implements Constants {
 	}
 	public void setAnim(Animation anim) {
 		this.anim = anim;
+	}
+	public int getX() {
+		return x;
+	}
+	public int getY() {
+		return y;
+	}
+	public void setX(int x) {
+		this.x = x;
+	}
+	public void setY(int y) {
+		this.y = y;
 	}
 	
 	

@@ -200,6 +200,9 @@ public class TestJaxb {
 		
 		mask = Direction.removeFromMask(Direction.WEST, mask);
 		assert(!Direction.isDirInMask(dir, mask));
+		
+		Direction dir2 = Direction.getRandomValidDirection(mask);
+		assert(true);
 
 	}
 	

@@ -4,6 +4,7 @@ package ultima;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -28,8 +29,8 @@ public abstract class SimpleGame extends InputAdapter implements ApplicationList
 		stage = new Stage(new ScreenViewport());
 		skin = new Skin(Gdx.files.classpath("skin/uiskin.json"));
 
-		Gdx.input.setInputProcessor(this);
-		
+		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
+
 		init();
 
 	}

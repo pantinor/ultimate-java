@@ -12,7 +12,7 @@ public enum Sound {
 	MAGIC ("sound/magic.ogg", false, 0.3f), 
 	ATTACK ("sound/attack.ogg", false, 0.3f), 
 	MOONGATE ("sound/moongate_flash.ogg", false, 0.3f), 
-	SUMMONED ("sound/summon1.ogg", false, 0.3f);
+	BLOCKED ("sound/blocked.ogg", false, 0.3f);
 	
 	String file;
 	boolean looping;

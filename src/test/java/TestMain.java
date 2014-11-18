@@ -1,22 +1,10 @@
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
-import objects.Tile;
-import objects.TileSet;
-
-import org.apache.commons.io.IOUtils;
+import ultima.DialogWindow;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
@@ -27,33 +15,23 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.Map;
-import com.badlogic.gdx.maps.MapLayers;
-import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileSets;
-import com.badlogic.gdx.maps.tiled.TiledMapTile.BlendMode;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class TestMain extends InputAdapter implements ApplicationListener {
 	TextureAtlas atlas;
 	Animation player;
 	float time = 0;
-	private CustomTiledMap map;
 	private TiledMap map2;
 	private OrthogonalTiledMapRenderer renderer;
 	Batch mapBatch, batch2;
-	
+	Stage stage;
+	DialogWindow dialog;
+	Skin skin;
 	static int screenWidth = 1200;
 	static int screenHeight = 800;
 	int tilePixelWidth;
@@ -77,67 +55,15 @@ public class TestMain extends InputAdapter implements ApplicationListener {
 		atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
 		player = new Animation(0.25f, atlas.findRegions("avatar"));
 		
-		List<CustomTiledMap> maps = new ArrayList<CustomTiledMap>();
+		skin = new Skin(Gdx.files.classpath("skin/uiskin.json"));
 
-		try {
-			
-			map2 = new TmxMapLoader().load("tilemaps/map_0.tmx");
-
-			
-			File file2 = new File("target/classes/xml/tileset-base.xml");
-			JAXBContext jaxbContext = JAXBContext.newInstance(TileSet.class);
-			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			TileSet ts = (TileSet) jaxbUnmarshaller.unmarshal(file2);
-			ts.setMaps();
-			
-			File dir = new File("target/classes/data");
-			File[] conFiles = dir.listFiles(new FilenameFilter() {
-				public boolean accept(File dir, String name) {
-					return name.toLowerCase().endsWith(".con");
-				}
-			});
-			for (File f : conFiles) {
-				InputStream is = TestMain.class.getResourceAsStream("/data/" + f.getName());
-				byte[] bytes = IOUtils.toByteArray(is);	
-				int pos = 64;
-				
-				CustomTiledMap combatMap = new CustomTiledMap();
-				combatMap.setTilesets(map2.getTileSets());
-				
-				MapLayers combatLayers = combatMap.getLayers();
-				TiledMapTileLayer combatLayer = new TiledMapTileLayer(11, 11, 16, 16);
-				for (int y = 0; y < 11; y++) {
-					for (int x = 0; x < 11; x++) {
-						int index = bytes[pos] & 0xff;pos++;
-						Tile tile = ts.getTileByIndex(index);
-						AtlasRegion region = atlas.findRegion(tile.getName());
-						if (region == null) {
-							System.out.println(f.getName() + "Tile index cannot be found: " + tile.getName());
-						}
-						Cell cell = new Cell();
-						cell.setTile(new StaticTiledMapTile(region));
-						combatLayer.setCell(x, y, cell);
-					}
-				}
-				combatLayers.add(combatLayer);
-				
-				maps.add(combatMap);
-			}
-		
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		map = maps.get(3);
-		map2 = new TmxMapLoader().load("tilemaps/map_0.tmx");
-		renderer = new OrthogonalTiledMapRenderer(map, 2f);
-		mapBatch = renderer.getSpriteBatch();
 		
 		font = new BitmapFont();
 		font.setColor(Color.WHITE);
 		batch2 = new SpriteBatch();
-
-		
+		stage = new Stage();
+		dialog = new DialogWindow(stage,null, skin);
+		stage.addActor(dialog);
 //		TiledMapTileLayer mgLayer = (TiledMapTileLayer)map.getLayers().get("Moongate Layer");
 //		MapLayer mgLayerProperties = map.getLayers().get("Moongate Properties");
 //		Iterator<MapObject> objs = mgLayerProperties.getObjects().iterator();
@@ -155,7 +81,8 @@ public class TestMain extends InputAdapter implements ApplicationListener {
 		mapCamera = new OrthographicCamera();
 		
 
-		Gdx.input.setInputProcessor(this);
+		//Gdx.input.setInputProcessor(this);
+		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
 
 	}
 
@@ -168,18 +95,18 @@ public class TestMain extends InputAdapter implements ApplicationListener {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		mapCamera.update();
-
-		renderer.setView(mapCamera);
-		renderer.render();
 		
-		mapBatch.begin();
-		mapBatch.draw(player.getKeyFrame(time, true), mapCamera.position.x, mapCamera.position.y, 32, 32);
-		mapBatch.end();
+		stage.act();
+		stage.draw();
+		
+		batch2.begin();
+		//batch2.draw(player.getKeyFrame(time, true), mapCamera.position.x, mapCamera.position.y, 32, 32);
+		batch2.end();
 		
 		
 		batch2.begin();
-		font.draw(batch2, "current map coords: " + getCurrentMapCoords().toString(), 10, 40);
-		font.draw(batch2, "current mouse pos: " + currentMousePos, 10, 20);
+		//font.draw(batch2, "current map coords: " + getCurrentMapCoords().toString(), 10, 40);
+		//font.draw(batch2, "current mouse pos: " + currentMousePos, 10, 20);
 		batch2.end();
 	}
 	
@@ -254,30 +181,7 @@ public class TestMain extends InputAdapter implements ApplicationListener {
 	}
 	
 	
-	public class CustomTiledMap extends TiledMap {
-		private TiledMapTileSets tilesets;
-		private Array<? extends Disposable> ownedResources;
-		public CustomTiledMap () {
-			setTilesets(new TiledMapTileSets());
-		}
-		public void setOwnedResources (Array<? extends Disposable> resources) {
-			this.ownedResources = resources;
-		}
-		@Override
-		public void dispose () {
-			if (ownedResources != null) {
-				for (Disposable resource : ownedResources) {
-					resource.dispose();
-				}
-			}
-		}
-		public TiledMapTileSets getTilesets() {
-			return tilesets;
-		}
-		public void setTilesets(TiledMapTileSets tilesets) {
-			this.tilesets = tilesets;
-		}
-	}
+
 	
 	
 }
