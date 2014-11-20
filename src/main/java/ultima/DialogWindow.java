@@ -1,19 +1,28 @@
 package ultima;
 
+import java.util.Observable;
+import java.util.Observer;
+
+import objects.Party;
+import objects.Party.PartyMember;
+
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class DialogWindow extends Window {
+public class DialogWindow extends Window implements Observer {
 	
 	private Ultima4 mainGame;
+	
 	public static int width = 120;
+	public static int height = 120;
+	
 	private Label topText;
 	private Label middleText;
 	private TextField input;
@@ -35,12 +44,17 @@ public class DialogWindow extends Window {
 					toggleCollapsed();
 			}
 		});
+		
+		topText = new Label("",skin,"gray-background");
+		topText.setAlignment(Align.topLeft);
 
+		middleText = new Label("",skin,"gray-background");
 
-		topText = new Label("player1\nplayer2\nplayer3\nplayer4\nplayer5\nplayer6\nplayer7\nplayer8",skin,"gray-background");
-		middleText = new Label("middle middle",skin,"gray-background");
-		scrollPane = new LogScrollPane(skin);
-		for (int i=0;i<20;i++) scrollPane.add("scroller");
+		setPartyText(mainGame.party); 
+
+		scrollPane = new LogScrollPane(skin, width);
+		for (int i=0;i<4;i++) 
+			scrollPane.add("dogs and cats do not always play well together.");
 		
 		input = new TextField("",skin);
 		
@@ -49,20 +63,20 @@ public class DialogWindow extends Window {
 		defaults().padTop(2).padBottom(2).padLeft(2).padRight(2).left();
 		
 		Table top = new Table();
-		top.defaults().padTop(0).padBottom(0).padLeft(0).padRight(0).left();
-		top.add(topText).maxWidth(width).width(width).maxHeight(120).height(120);	
+		//top.defaults().padTop(0).padBottom(0).padLeft(0).padRight(0).left();
+		top.add(topText).maxWidth(width).width(width).maxHeight(height).height(height);	
 		add(top);
 		row();
 		
 		Table middle = new Table();
-		middle.defaults().padTop(0).padBottom(0).padLeft(0).padRight(0).left();
-		middle.add(middleText).maxWidth(width).width(width).space(3);	
+		//middle.defaults().padTop(0).padBottom(0).padLeft(0).padRight(0).left();
+		middle.add(middleText).maxWidth(width).width(width);	
 		add(middle);
 		row();
 		
 		Table bottom = new Table();
-		bottom.defaults().padTop(0).padBottom(0).padLeft(0).padRight(0).left();
-		bottom.add(scrollPane).maxWidth(width).width(width).maxHeight(120).height(120);	
+		//bottom.defaults().padTop(0).padBottom(0).padLeft(0).padRight(0).left();
+		bottom.add(scrollPane).maxWidth(width).width(width).maxHeight(height).height(height);	
 		add(bottom);
 		row();
 
@@ -75,6 +89,18 @@ public class DialogWindow extends Window {
 		setPosition(700, 500);
 
 
+	}
+	
+	public void setPartyText(Party party) {
+		StringBuffer sb = new StringBuffer();
+		int index=1;
+		for(PartyMember pm : party.getMembers()) {
+			sb.append(index + "-" +pm.getPlayer().name + "   " + pm.getPlayer().hp + "" + pm.getPlayer().status.getValue());
+			index++;
+		}
+		topText.setText(sb.toString());
+		
+		middleText.setText("F: " +party.getSaveGame().food + "    G: " +party.getSaveGame().gold);
 	}
 	
 	public void expand () {
@@ -103,6 +129,12 @@ public class DialogWindow extends Window {
 	public boolean isCollapsed () {
 		return collapsed;
 	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		setPartyText(mainGame.party); 
+	}
+	
 
 
 }

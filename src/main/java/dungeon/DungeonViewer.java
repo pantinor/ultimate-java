@@ -82,7 +82,6 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 	public static Texture MINI_MAP_TEXTURE;
 	private int currentLevel = 0;
 	private Vector3 currentPos;
-	public enum Direction {NORTH, SOUTH, EAST, WEST};
 	public Direction currentDir = Direction.EAST;
 	
 

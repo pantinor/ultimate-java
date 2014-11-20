@@ -4,6 +4,7 @@ package ultima;
 import java.io.InputStream;
 import java.nio.CharBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -225,5 +226,239 @@ public class Utils implements Constants {
 	}
 	
 
+	
+	 
+			
+	/**
+	 * Needs Fixing! :)
+	 */
+	public static int[][] screenFindLineOfSight(Tile[][] viewportTiles, int row1, int row2, int col1, int col2) {
+
+		int x, y;
+
+		int VIEWPORT_W = row2 - row1 + 1;
+		int VIEWPORT_H = col2 - col1;
+		int[][] screenLos = new int[VIEWPORT_W + 1][VIEWPORT_H];
+
+		int _OCTANTS = 8;
+		int _NUM_RASTERS_COLS = 4;
+
+		int octant = 0;
+		int xOrigin = 0, yOrigin = 0, xSign = 0, ySign = 0, xTile = 0, yTile = 0, xTileOffset = 0, yTileOffset = 0;
+		boolean reflect = false;
+		for (octant = 0; octant < _OCTANTS; octant++) {
+			switch (octant) {
+			case 0:
+				xSign = 1;
+				ySign = 1;
+				reflect = false;
+				break; // lower-right
+			case 1:
+				xSign = 1;
+				ySign = 1;
+				reflect = true;
+				break;
+			case 2:
+				xSign = 1;
+				ySign = -1;
+				reflect = true;
+				break; // lower-left
+			case 3:
+				xSign = -1;
+				ySign = 1;
+				reflect = false;
+				break;
+			case 4:
+				xSign = -1;
+				ySign = -1;
+				reflect = false;
+				break; // upper-left
+			case 5:
+				xSign = -1;
+				ySign = -1;
+				reflect = true;
+				break;
+			case 6:
+				xSign = -1;
+				ySign = 1;
+				reflect = true;
+				break; // upper-right
+			case 7:
+				xSign = 1;
+				ySign = -1;
+				reflect = false;
+				break;
+			}
+
+			// determine the origin point for the current LOS octant
+			xOrigin = VIEWPORT_W / 2;
+			yOrigin = VIEWPORT_H / 2;
+
+			// make sure the segment doesn't reach out of bounds
+			int maxWidth = xOrigin;
+			int maxHeight = yOrigin;
+			int currentRaster = 0;
+
+			// just in case the viewport isn't square, swap the width and height
+			if (reflect) {
+				// swap height and width for later use
+				maxWidth ^= maxHeight;
+				maxHeight ^= maxWidth;
+				maxWidth ^= maxHeight;
+			}
+
+			// check the visibility of each tile
+			for (int currentCol = 1; currentCol <= _NUM_RASTERS_COLS; currentCol++) {
+				for (int currentRow = 0; currentRow <= currentCol; currentRow++) {
+					// swap X and Y to reflect the octant rasters
+					if (reflect) {
+						xTile = xOrigin + (currentRow * ySign);
+						yTile = yOrigin + (currentCol * xSign);
+					} else {
+						xTile = xOrigin + (currentCol * xSign);
+						yTile = yOrigin + (currentRow * ySign);
+					}
+
+					if (viewportTiles[xTile][yTile].isOpaque()) {
+						// a wall was detected, so go through the raster for
+						// this wall
+						// segment and mark everything behind it with the
+						// appropriate
+						// shadow bitmask.
+						//
+						// first, get the correct raster
+						//
+						if ((currentCol == 1) && (currentRow == 0)) {
+							currentRaster = 0;
+						} else if ((currentCol == 1) && (currentRow == 1)) {
+							currentRaster = 1;
+						} else if ((currentCol == 2) && (currentRow == 0)) {
+							currentRaster = 2;
+						} else if ((currentCol == 2) && (currentRow == 1)) {
+							currentRaster = 3;
+						} else if ((currentCol == 2) && (currentRow == 2)) {
+							currentRaster = 4;
+						} else if ((currentCol == 3) && (currentRow == 0)) {
+							currentRaster = 5;
+						} else if ((currentCol == 3) && (currentRow == 1)) {
+							currentRaster = 6;
+						} else if ((currentCol == 3) && (currentRow == 2)) {
+							currentRaster = 7;
+						} else if ((currentCol == 3) && (currentRow == 3)) {
+							currentRaster = 8;
+						} else if ((currentCol == 4) && (currentRow == 0)) {
+							currentRaster = 9;
+						} else if ((currentCol == 4) && (currentRow == 1)) {
+							currentRaster = 10;
+						} else if ((currentCol == 4) && (currentRow == 2)) {
+							currentRaster = 11;
+						} else if ((currentCol == 4) && (currentRow == 3)) {
+							currentRaster = 12;
+						} else {
+							currentRaster = 13;
+						}
+
+						xTileOffset = 0;
+						yTileOffset = 0;
+
+						for (int currentSegment = 0; currentSegment < shadowRaster[currentRaster][0]; currentSegment++) {
+							// each shadow segment is 2 bytes
+							int shadowType = shadowRaster[currentRaster][currentSegment * 2 + 1];
+							int shadowLength = shadowRaster[currentRaster][currentSegment * 2 + 2];
+
+							// update the raster length to make sure it fits in the viewport
+							shadowLength = (shadowLength + 1 + yTileOffset > maxWidth ? maxWidth : shadowLength);
+
+							// check to see if we should move up a row
+							if ((shadowType & 0x80) > 0) {
+								// remove the flag from the shadowType
+								shadowType ^= _N___;
+								// if (currentRow + yTileOffset >= maxHeight) {
+								if (currentRow + yTileOffset > maxHeight) {
+									break;
+								}
+								xTileOffset = yTileOffset;
+								yTileOffset++;
+							}
+
+
+							for (int currentShadow = 1; currentShadow <= shadowLength; currentShadow++) {
+								// apply the shadow to the shadowMap
+								if (reflect) {
+									screenLos[xTile + ((yTileOffset) * ySign)][yTile + ((currentShadow + xTileOffset) * xSign)] |= shadowType;
+								} else {
+									screenLos[xTile + ((currentShadow + xTileOffset) * xSign)][yTile + ((yTileOffset) * ySign)] |= shadowType;
+								}
+							}
+							xTileOffset += shadowLength;
+						} 
+					} 
+				} 
+			} 
+		} 
+
+		// go through all tiles on the viewable area and set the appropriate visibility
+		for (y = 0; y < VIEWPORT_H; y++) {
+			for (x = 0; x < VIEWPORT_W; x++) {
+				// if the shadow flags equal __VCH, hide it, otherwise it's fully visible
+				if ((screenLos[x][y] & __VCH) == __VCH) {
+					screenLos[x][y] = 0;
+				} else {
+					screenLos[x][y] = 1;
+				}
+			}
+		}
+
+		return screenLos;
+	}
+	
+	
+	public static void adjustValueMax(int v, int val, int max) {
+		v += val;
+		if (v > max) {
+			v = max;
+		}
+	}
+
+	public static void adjustValueMin(int v, int val, int min) {
+		v += val;
+		if (v < min) {
+			v = min;
+		}
+	}
+
+	public static void adjustValue(int v, int val, int max, int min) {
+		v += val;
+		if (v > max) {
+			v = max;
+		}
+		if (v < min) {
+			v = min;
+		}
+	}
+
+	public static void adjustValueMax(short v, int val, int max) {
+		v += val;
+		if (v > max) {
+			v = (short) max;
+		}
+	}
+
+	public static void adjustValueMin(short v, int val, int min) {
+		v += val;
+		if (v < min) {
+			v = (short) min;
+		}
+	}
+
+	public static void adjustValue(short v, int val, int max, int min) {
+		v += val;
+		if (v > max) {
+			v = (short) max;
+		}
+		if (v < min) {
+			v = (short) min;
+		}
+	}
 
 }

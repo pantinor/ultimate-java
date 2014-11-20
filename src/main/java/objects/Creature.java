@@ -1,32 +1,39 @@
 package objects;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "creature")
-public class Creature {
+import ultima.Constants;
+import ultima.Utils;
 
-	private int id;
-	private int encounterSize;
-	private String name;
-	private String tile;
-	private int basehp;
-	private int exp;
-	private int leader;
+@XmlRootElement(name = "creature")
+public class Creature implements Constants {
+
 	private boolean ambushes;
+	private int basehp;
 	private boolean camouflage;
 	private String camouflageTile;
 	private boolean canMoveOntoAvatar;
 	private boolean canMoveOntoCreatures;
 	private boolean cantattack;
 	private String casts;
+	private CreatureStatus damageStatus = CreatureStatus.FINE;
 	private boolean divides;
-	private boolean spawnsOnDeath;
+	private int encounterSize;
+	private int exp;
 	private boolean flies;
+	private boolean forceOfNature;
 	private boolean good;
+	private int hp;
+	private int id;
 	private boolean incorporeal;
+	private int leader;
 	private boolean leavestile;
 	private String movement;
+	private String name;
 	private boolean nochest;
 	private boolean poisons;
 	private boolean ranged;
@@ -34,46 +41,37 @@ public class Creature {
 	private String rangedmisstile;
 	private String resists;
 	private boolean sails;
+	private boolean spawnsOnDeath;
 	private String spawntile;
+	private List<StatusType> status = new ArrayList<StatusType>();
 	private String steals;
 	private boolean swims;
 	private boolean teleports;
+	private String tile;
+	
 	private boolean undead;
 	private boolean wontattack;
 	private String worldrangedtile;
-	private boolean forceOfNature;
 	
-	@XmlAttribute
-	public int getId() {
-		return id;
+	/* combat methods */
+	public void act() {
 	}
-	@XmlAttribute
-	public int getEncounterSize() {
-		return encounterSize;
+	public void addStatus(StatusType status) {
+		this.status.add(status);
 	}
-	@XmlAttribute
-	public String getName() {
-		return name;
+	public void applyDamage(int damage) {
+		Utils.adjustValueMin(this.hp, damage, 0);
 	}
-	@XmlAttribute
-	public String getTile() {
-		return tile;
-	}
-	@XmlAttribute
-	public int getBasehp() {
-		return basehp;
-	}
-	@XmlAttribute
-	public int getExp() {
-		return exp;
-	}
-	@XmlAttribute
-	public int getLeader() {
-		return leader;
+	public void dealDamage(Creature m, int damage) {
+		m.applyDamage(damage);
 	}
 	@XmlAttribute
 	public boolean getAmbushes() {
 		return ambushes;
+	}
+	@XmlAttribute
+	public int getBasehp() {
+		return basehp;
 	}
 	@XmlAttribute
 	public boolean getCamouflage() {
@@ -99,25 +97,44 @@ public class Creature {
 	public String getCasts() {
 		return casts;
 	}
+	public CreatureStatus getDamageStatus() {
+		return damageStatus;
+	}
 	@XmlAttribute
 	public boolean getDivides() {
 		return divides;
 	}
 	@XmlAttribute
-	public boolean getSpawnsOnDeath() {
-		return spawnsOnDeath;
+	public int getEncounterSize() {
+		return encounterSize;
+	}
+	@XmlAttribute
+	public int getExp() {
+		return exp;
 	}
 	@XmlAttribute
 	public boolean getFlies() {
 		return flies;
 	}
 	@XmlAttribute
+	public boolean getForceOfNature() {
+		return forceOfNature;
+	}
+	@XmlAttribute
 	public boolean getGood() {
 		return good;
 	}
 	@XmlAttribute
+	public int getId() {
+		return id;
+	}
+	@XmlAttribute
 	public boolean getIncorporeal() {
 		return incorporeal;
+	}
+	@XmlAttribute
+	public int getLeader() {
+		return leader;
 	}
 	@XmlAttribute
 	public boolean getLeavestile() {
@@ -126,6 +143,10 @@ public class Creature {
 	@XmlAttribute
 	public String getMovement() {
 		return movement;
+	}
+	@XmlAttribute
+	public String getName() {
+		return name;
 	}
 	@XmlAttribute
 	public boolean getNochest() {
@@ -156,6 +177,10 @@ public class Creature {
 		return sails;
 	}
 	@XmlAttribute
+	public boolean getSpawnsOnDeath() {
+		return spawnsOnDeath;
+	}
+	@XmlAttribute
 	public String getSpawntile() {
 		return spawntile;
 	}
@@ -167,9 +192,17 @@ public class Creature {
 	public boolean getSwims() {
 		return swims;
 	}
+	
+	
+	
+	
 	@XmlAttribute
 	public boolean getTeleports() {
 		return teleports;
+	}
+	@XmlAttribute
+	public String getTile() {
+		return tile;
 	}
 	@XmlAttribute
 	public boolean getUndead() {
@@ -183,37 +216,25 @@ public class Creature {
 	public String getWorldrangedtile() {
 		return worldrangedtile;
 	}
-	@XmlAttribute
-	public boolean getForceOfNature() {
-		return forceOfNature;
+	public boolean isAsleep() {
+		return status.contains(StatusType.STAT_SLEEPING);
 	}
-	
-	
-	
-	
-	public void setId(int id) {
-		this.id = id;
+	public Creature nearestOpponent(int dist, boolean ranged) {
+		return null;
 	}
-	public void setEncounterSize(int encounterSize) {
-		this.encounterSize = encounterSize;
+	public void putToSleep() {
+		if (!status.contains(StatusType.STAT_DEAD)) {
+			status.add(StatusType.STAT_SLEEPING);
+		}
 	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public void setTile(String tile) {
-		this.tile = tile;
-	}
-	public void setBasehp(int basehp) {
-		this.basehp = basehp;
-	}
-	public void setExp(int exp) {
-		this.exp = exp;
-	}
-	public void setLeader(int leader) {
-		this.leader = leader;
+	public void removeStatus(StatusType status) {
+		this.status.remove(status);
 	}
 	public void setAmbushes(boolean ambushes) {
 		this.ambushes = ambushes;
+	}
+	public void setBasehp(int basehp) {
+		this.basehp = basehp;
 	}
 	public void setCamouflage(boolean camouflage) {
 		this.camouflage = camouflage;
@@ -233,26 +254,44 @@ public class Creature {
 	public void setCasts(String casts) {
 		this.casts = casts;
 	}
+	public void setDamageStatus(CreatureStatus damageStatus) {
+		this.damageStatus = damageStatus;
+	}
 	public void setDivides(boolean divides) {
 		this.divides = divides;
 	}
-	public void setSpawnsOnDeath(boolean spawnsOnDeath) {
-		this.spawnsOnDeath = spawnsOnDeath;
+	public void setEncounterSize(int encounterSize) {
+		this.encounterSize = encounterSize;
+	}
+	public void setExp(int exp) {
+		this.exp = exp;
 	}
 	public void setFlies(boolean flies) {
 		this.flies = flies;
 	}
+	public void setForceOfNature(boolean forceOfNature) {
+		this.forceOfNature = forceOfNature;
+	}
 	public void setGood(boolean good) {
 		this.good = good;
 	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public void setIncorporeal(boolean incorporeal) {
 		this.incorporeal = incorporeal;
+	}
+	public void setLeader(int leader) {
+		this.leader = leader;
 	}
 	public void setLeavestile(boolean leavestile) {
 		this.leavestile = leavestile;
 	}
 	public void setMovement(String movement) {
 		this.movement = movement;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	public void setNochest(boolean nochest) {
 		this.nochest = nochest;
@@ -275,39 +314,45 @@ public class Creature {
 	public void setSails(boolean sails) {
 		this.sails = sails;
 	}
+	public void setSpawnsOnDeath(boolean spawnsOnDeath) {
+		this.spawnsOnDeath = spawnsOnDeath;
+	}
+	
 	public void setSpawntile(String spawntile) {
 		this.spawntile = spawntile;
 	}
+
 	public void setSteals(String steals) {
 		this.steals = steals;
 	}
+	
 	public void setSwims(boolean swims) {
 		this.swims = swims;
 	}
+	
 	public void setTeleports(boolean teleports) {
 		this.teleports = teleports;
 	}
+
+	public void setTile(String tile) {
+		this.tile = tile;
+	}
+
 	public void setUndead(boolean undead) {
 		this.undead = undead;
 	}
+
 	public void setWontattack(boolean wontattack) {
 		this.wontattack = wontattack;
 	}
+
 	public void setWorldrangedtile(String worldrangedtile) {
 		this.worldrangedtile = worldrangedtile;
 	}
-	public void setForceOfNature(boolean forceOfNature) {
-		this.forceOfNature = forceOfNature;
+
+	public void wakeUp() {
+		this.status.remove(StatusType.STAT_SLEEPING);
 	}
-	
-	@Override
-	public String toString() {
-		return String
-				.format("Creature [id=%s, encounterSize=%s, name=%s, tile=%s, basehp=%s, exp=%s, leader=%s, ambushes=%s, camouflage=%s, camouflageTile=%s, canMoveOntoAvatar=%s, canMoveOntoCreatures=%s, cantattack=%s, casts=%s, divides=%s, spawnsOnDeath=%s, flies=%s, good=%s, incorporeal=%s, leavestile=%s, movement=%s, nochest=%s, poisons=%s, ranged=%s, rangedhittile=%s, rangedmisstile=%s, resists=%s, sails=%s, spawntile=%s, steals=%s, swims=%s, teleports=%s, undead=%s, wontattack=%s, worldrangedtile=%s, forceOfNature=%s]",
-						id, encounterSize, name, tile, basehp, exp, leader, ambushes, camouflage, camouflageTile, canMoveOntoAvatar, canMoveOntoCreatures, cantattack, casts, divides, spawnsOnDeath, flies, good, incorporeal, leavestile, movement,
-						nochest, poisons, ranged, rangedhittile, rangedmisstile, resists, sails, spawntile, steals, swims, teleports, undead, wontattack, worldrangedtile, forceOfNature);
-	}
-	
-	
+
 
 }

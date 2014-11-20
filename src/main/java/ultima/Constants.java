@@ -308,13 +308,579 @@ public interface Constants {
 		
 	}
 	
+	/*
+	 * bitmasks for LOS shadows
+	 */
+	public static int ____H = 0x01; // obscured along the horizontal face
+	public static int ___C_ = 0x02; // obscured at the center
+	public static int __V__ = 0x04; // obscured along the vertical face
+	public static int _N___ = 0x80; // start of new raster
+
+	public static int ___CH = 0x03;
+	public static int __VCH = 0x07;
+	public static int __VC_ = 0x06;
+
+	public static int _N__H = 0x81;
+	public static int _N_CH = 0x83;
+	public static int _NVCH = 0x87;
+	public static int _NVC_ = 0x86;
+	public static int _NV__ = 0x84;
 	
+    public static final int shadowRaster[][] = {
+	        { 6, __VCH, 4, _N_CH, 1, __VCH, 3, _N___, 1, ___CH, 1, __VCH, 1 },    // raster_1_0
+	        { 6, __VC_, 1, _NVCH, 2, __VC_, 1, _NVCH, 3, _NVCH, 2, _NVCH, 1 },    // raster_1_1
+	        //
+	        { 4, __VCH, 3, _N__H, 1, ___CH, 1, __VCH, 1,     0, 0,     0, 0 },    // raster_2_0
+	        { 6, __VC_, 2, _N_CH, 1, __VCH, 2, _N_CH, 1, __VCH, 1, _N__H, 1 },    // raster_2_1
+	        { 6, __V__, 1, _NVCH, 1, __VC_, 1, _NVCH, 1, __VC_, 1, _NVCH, 1 },    // raster_2_2
+	        //
+	        { 2, __VCH, 2, _N__H, 2,     0, 0,     0, 0,     0, 0,     0, 0 },    // raster_3_0
+	        { 3, __VC_, 2, _N_CH, 1, __VCH, 1,     0, 0,     0, 0,     0, 0 },    // raster_3_1
+	        { 3, __VC_, 1, _NVCH, 2, _N_CH, 1,     0, 0,     0, 0,     0, 0 },    // raster_3_2
+	        { 3, _NVCH, 1, __V__, 1, _NVCH, 1,     0, 0,     0, 0,     0, 0 },    // raster_3_3
+	        //
+	        { 2, __VCH, 1, _N__H, 1,     0, 0,     0, 0,     0, 0,     0, 0 },    // raster_4_0
+	        { 2, __VC_, 1, _N__H, 1,     0, 0,     0, 0,     0, 0,     0, 0 },    // raster_4_1
+	        { 2, __VC_, 1, _N_CH, 1,     0, 0,     0, 0,     0, 0,     0, 0 },    // raster_4_2
+	        { 2, __V__, 1, _NVCH, 1,     0, 0,     0, 0,     0, 0,     0, 0 },    // raster_4_3
+	        { 2, __V__, 1, _NVCH, 1,     0, 0,     0, 0,     0, 0,     0, 0 }     // raster_4_4
+	    };
+    
 	public class ClasspathFileHandleResolver implements FileHandleResolver {
 		public FileHandle resolve (String fileName) {
 			return Gdx.files.classpath(fileName);
 		}
 	}
+	
+	
+	public static final String PARTY_SAV_BASE_FILENAME = "party.sav";
+	public static final String MONSTERS_SAV_BASE_FILENAME = "monsters.sav";
+	public static final String OUTMONST_SAV_BASE_FILENAME = "outmonst.sav";
+	public static final int MONSTERTABLE_SIZE = 32;
+	public static final int MONSTERTABLE_CREATURES_SIZE = 8;
+	
+	
+	public enum WeaponType {
+		WEAP_HANDS,
+		WEAP_STAFF,
+		WEAP_DAGGER,
+		WEAP_SLING,
+		WEAP_MACE,
+		WEAP_AXE,
+		WEAP_SWORD,
+		WEAP_BOW,
+		WEAP_CROSSBOW,
+		WEAP_OIL,
+		WEAP_HALBERD,
+		WEAP_MAGICAXE,
+		WEAP_MAGICSWORD,
+		WEAP_MAGICBOW,
+		WEAP_MAGICWAND,
+		WEAP_MYSTICSWORD,
+		WEAP_MAX;
+		public static WeaponType get(int v) {
+			for (WeaponType x : values()) {
+				if (x.ordinal() == (v&0xff)) {
+					return x;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public enum ArmorType {
+		ARMR_NONE,
+		ARMR_CLOTH,
+		ARMR_LEATHER,
+		ARMR_CHAIN,
+		ARMR_PLATE,
+		ARMR_MAGICCHAIN,
+		ARMR_MAGICPLATE,
+		ARMR_MYSTICROBES,
+		ARMR_MAX;
+		public static ArmorType get(int v) {
+			for (ArmorType x : values()) {
+				if (x.ordinal() == (v&0xff)) {
+					return x;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public enum ClassType {
+		CLASS_MAGE,
+		CLASS_BARD,
+		CLASS_FIGHTER,
+		CLASS_DRUID,
+		CLASS_TINKER,
+		CLASS_PALADIN,
+		CLASS_RANGER,
+		CLASS_SHEPHERD;
+		public static ClassType get(int v) {
+			for (ClassType x : values()) {
+				if (x.ordinal() == (v&0xff)) {
+					return x;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public enum SexType {
+		
+		SEX_MALE(0xB),
+		SEX_FEMALE(0xC);
 
+		private int b;
 
+		private SexType(int value) {
+			b = value;
+		}
+
+		public int getValue() {
+			return b;
+		}
+		
+		public static SexType get(byte v) {
+			for (SexType x : values()) {
+				if (x.getValue() == (v&0xff)) {
+					return x;
+				}
+			}
+			return null;
+		}
+
+	}
+	
+	public enum StatusType {
+		STAT_GOOD('G'),
+		STAT_POISONED('P'),
+		STAT_SLEEPING('S'),
+		STAT_DEAD('D');
+
+		private char intValue;
+
+		private StatusType(char value) {
+			intValue = value;
+		}
+
+		public char getValue() {
+			return intValue;
+		}
+		
+		public static StatusType get(byte v) {
+			for (StatusType x : values()) {
+				if (x.getValue() == (char)(v&0xff)) {
+					return x;
+				}
+			}
+			return null;
+		}
+
+	}
+	
+	public enum Virtue {
+		VIRT_HONESTY,
+		VIRT_COMPASSION,
+		VIRT_VALOR,
+		VIRT_JUSTICE,
+		VIRT_SACRIFICE,
+		VIRT_HONOR,
+		VIRT_SPIRITUALITY,
+		VIRT_HUMILITY,
+		VIRT_MAX;
+		public static Virtue get(int v) {
+			for (Virtue x : values()) {
+				if (x.ordinal() == (v&0xff)) {
+					return x;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public enum Reagent {
+		REAG_ASH,
+		REAG_GINSENG,
+		REAG_GARLIC,
+		REAG_SILK,
+		REAG_MOSS,
+		REAG_PEARL,
+		REAG_NIGHTSHADE,
+		REAG_MANDRAKE,
+		REAG_MAX;
+		
+		public static Reagent get(int v) {
+			for (Reagent x : values()) {
+				if (x.ordinal() == (v&0xff)) {
+					return x;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public enum BaseVirtue {
+		VIRT_NONE(0x00),
+		VIRT_TRUTH(0x01),
+		VIRT_LOVE(0x02),
+		VIRT_COURAGE(0x04);
+
+		private int intValue;
+
+		private BaseVirtue(int value) {
+			intValue = value;
+		}
+
+		public int getValue() {
+			return intValue;
+		}
+		
+		public static BaseVirtue get(int v) {
+			for (BaseVirtue x : values()) {
+				if (x.getValue() == (v&0xff)) {
+					return x;
+				}
+			}
+			return null;
+		}
+
+	}
+	
+	
+	public enum Item {
+		ITEM_SKULL(0x01),
+		ITEM_SKULL_DESTROYED(0x02),
+		ITEM_CANDLE(0x04),
+		ITEM_BOOK(0x08),
+		ITEM_BELL(0x10),
+		ITEM_KEY_C(0x20),
+		ITEM_KEY_L(0x40),
+		ITEM_KEY_T(0x80),
+		ITEM_HORN(0x100),
+		ITEM_WHEEL(0x200),
+		ITEM_CANDLE_USED(0x400),
+		ITEM_BOOK_USED(0x800),
+		ITEM_BELL_USED(0x1000);
+
+		private int intValue;
+
+		private Item(int value) {
+			intValue = value;
+		}
+
+		public int getValue() {
+			return intValue;
+		}
+		
+		public static Item get(int v) {
+			for (Item x : values()) {
+				if (x.getValue() == (v&0xff)) {
+					return x;
+				}
+			}
+			return null;
+		}
+
+	}
+
+	public enum Stone {
+		STONE_BLUE(0x01),
+		STONE_YELLOW(0x02),
+		STONE_RED(0x04),
+		STONE_GREEN(0x08),
+		STONE_ORANGE(0x10),
+		STONE_PURPLE(0x20),
+		STONE_WHITE(0x40),
+		STONE_BLACK(0x80);
+
+		private int intValue;
+
+		private Stone(int value) {
+			intValue = value;
+		}
+
+		public int getValue() {
+			return intValue;
+		}
+		
+		public static Stone get(int v) {
+			for (Stone x : values()) {
+				if (x.getValue() == (v&0xff)) {
+					return x;
+				}
+			}
+			return null;
+		}
+
+	}
+
+	public enum Rune {
+		RUNE_HONESTY(0x01),
+		RUNE_COMPASSION(0x02),
+		RUNE_VALOR(0x04),
+		RUNE_JUSTICE(0x08),
+		RUNE_SACRIFICE(0x10),
+		RUNE_HONOR(0x20),
+		RUNE_SPIRITUALITY(0x40),
+		RUNE_HUMILITY(0x80);
+
+		private int intValue;
+
+		private Rune(int value) {
+			intValue = value;
+		}
+
+		public int getValue() {
+			return intValue;
+		}
+		
+		public static Rune get(int v) {
+			for (Rune x : values()) {
+				if (x.getValue() == (v&0xff)) {
+					return x;
+				}
+			}
+			return null;
+		}
+
+	}
+
+	public static final int SPELL_MAX = 26;
+	
+	
+	public enum KarmaAction {
+		KA_FOUND_ITEM,
+		KA_STOLE_CHEST,
+		KA_GAVE_TO_BEGGAR,
+		KA_GAVE_ALL_TO_BEGGAR,
+		KA_BRAGGED,
+		KA_HUMBLE,
+		KA_HAWKWIND,
+		KA_MEDITATION,
+		KA_BAD_MANTRA,
+		KA_ATTACKED_GOOD,
+		KA_FLED_EVIL,
+		KA_FLED_GOOD,
+		KA_HEALTHY_FLED_EVIL,
+		KA_KILLED_EVIL,
+		KA_SPARED_GOOD,
+		KA_DONATED_BLOOD,
+		KA_DIDNT_DONATE_BLOOD,
+		KA_CHEAT_REAGENTS,
+		KA_DIDNT_CHEAT_REAGENTS,
+		KA_USED_SKULL,
+		KA_DESTROYED_SKULL;
+	}
+
+	public enum HealType {
+		HT_NONE,
+		HT_CURE,
+		HT_FULLHEAL,
+		HT_RESURRECT,
+		HT_HEAL,
+		HT_CAMPHEAL,
+		HT_INNHEAL;
+	}
+
+	public enum InventoryItem {
+		INV_NONE,
+		INV_WEAPON,
+		INV_ARMOR,
+		INV_FOOD,
+		INV_REAGENT,
+		INV_GUILDITEM,
+		INV_HORSE;
+	}
+
+	public enum CannotJoinError {
+		JOIN_SUCCEEDED,
+		JOIN_NOT_EXPERIENCED,
+		JOIN_NOT_VIRTUOUS;
+	}
+
+	public enum EquipError {
+		EQUIP_SUCCEEDED,
+		EQUIP_NONE_LEFT,
+		EQUIP_CLASS_RESTRICTED;
+	}
+	
+	public enum PartyEventType {
+		GENERIC,
+		LOST_EIGHTH,
+		ADVANCED_LEVEL,
+		STARVING,
+		TRANSPORT_CHANGED,
+		PLAYER_KILLED,
+		ACTIVE_PLAYER_CHANGED,
+		MEMBER_JOINED,
+		PARTY_REVIVED,
+		INVENTORY_ADDED;
+	}
+
+	public enum CreatureAttrib {
+		MATTR_STEALFOOD(0x1),
+		MATTR_STEALGOLD(0x2),
+		MATTR_CASTS_SLEEP(0x4),
+		MATTR_UNDEAD(0x8),
+		MATTR_GOOD(0x10),
+		MATTR_WATER(0x20),
+		MATTR_NONATTACKABLE(0x40),
+		MATTR_NEGATE(0x80),
+		MATTR_CAMOUFLAGE(0x100),
+		MATTR_NOATTACK(0x200),
+		MATTR_AMBUSHES(0x400),
+		MATTR_RANDOMRANGED(0x800),
+		MATTR_INCORPOREAL(0x1000),
+		MATTR_NOCHEST(0x2000),
+		MATTR_DIVIDES(0x4000),
+		MATTR_SPAWNSONDEATH(0x8000),
+		MATTR_FORCE_OF_NATURE(0x10000);
+
+		private int intValue;
+
+		private CreatureAttrib(int value) {
+			intValue = value;
+		}
+
+		public int getValue() {
+			return intValue;
+		}
+
+	}
+
+	public enum CreatureMovementAttrib {
+		MATTR_STATIONARY(0x1),
+		MATTR_WANDERS(0x2),
+		MATTR_SWIMS(0x4),
+		MATTR_SAILS(0x8),
+		MATTR_FLIES(0x10),
+		MATTR_TELEPORT(0x20),
+		MATTR_CANMOVECREATURES(0x40),
+		MATTR_CANMOVEAVATAR(0x80);
+
+		private int intValue;
+
+		private CreatureMovementAttrib(int value) {
+			intValue = value;
+		}
+
+		public int getValue() {
+			return intValue;
+		}
+	}
+
+	public enum CreatureStatus {
+		FINE,
+		DEAD,
+		FLEEING,
+		CRITICAL,
+		HEAVILYWOUNDED,
+		LIGHTLYWOUNDED,
+		BARELYWOUNDED;
+	}
+	
+	public enum CreatureType {
+		HORSE1_ID(0),
+		HORSE2_ID(1),
+
+		MAGE_ID(2),
+		BARD_ID(3),
+		FIGHTER_ID(4),
+		DRUID_ID(5),
+		TINKER_ID(6),
+		PALADIN_ID(7),
+		RANGER_ID(8),
+		SHEPHERD_ID(9),
+
+		GUARD_ID(10),
+		VILLAGER_ID(11),
+		SINGINGBARD_ID(12),
+		JESTER_ID(13),
+		BEGGAR_ID(14),
+		CHILD_ID(15),
+		BULL_ID(16),
+		LORDBRITISH_ID(17),
+
+		PIRATE_ID(18),
+		NIXIE_ID(19),
+		GIANT_SQUID_ID(20),
+		SEA_SERPENT_ID(21),
+		SEAHORSE_ID(22),
+		WHIRLPOOL_ID(23),
+		STORM_ID(24),
+		RAT_ID(25),
+		BAT_ID(26),
+		GIANT_SPIDER_ID(27),
+		GHOST_ID(28),
+		SLIME_ID(29),
+		TROLL_ID(30),
+		GREMLIN_ID(31),
+		MIMIC_ID(32),
+		REAPER_ID(33),
+		INSECT_SWARM_ID(34),
+		GAZER_ID(35),
+		PHANTOM_ID(36),
+		ORC_ID(37),
+		SKELETON_ID(38),
+		ROGUE_ID(39),
+		PYTHON_ID(40),
+		ETTIN_ID(41),
+		HEADLESS_ID(42),
+		CYCLOPS_ID(43),
+		WISP_ID(44),
+		EVILMAGE_ID(45),
+		LICH_ID(46),
+		LAVA_LIZARD_ID(47),
+		ZORN_ID(48),
+		DAEMON_ID(49),
+		HYDRA_ID(50),
+		DRAGON_ID(51),
+		BALRON_ID(52);
+
+		private int intValue;
+
+		private CreatureType(int value) {
+			intValue = value;
+		}
+
+		public int getValue() {
+			return intValue;
+		}
+	}
+
+	public static final int MAX_CREATURES_ON_MAP = 4;
+	public static final int MAX_CREATURE_DISTANCE = 16;
+	
+	
+	public enum SlowedType {
+		SLOWED_BY_NOTHING,
+		SLOWED_BY_TILE,
+		SLOWED_BY_WIND;
+	}
+
+	public enum MoveResult {
+		MOVE_SUCCEEDED(0x0001),
+		MOVE_END_TURN(0x0002),
+		MOVE_BLOCKED(0x0004),
+		MOVE_MAP_CHANGE(0x0008),
+		MOVE_TURNED(0x0010), // dungeons and ship movement
+		MOVE_DRIFT_ONLY(0x0020), // balloon -- no movement
+		MOVE_EXIT_TO_PARENT(0x0040),
+		MOVE_SLOWED(0x0080),
+		MOVE_MUST_USE_SAME_EXIT(0x0100);
+
+		private int intValue;
+
+		private MoveResult(int value) {
+			intValue = value;
+		}
+
+		public int getValue() {
+			return intValue;
+		}
+
+	}
 
 }

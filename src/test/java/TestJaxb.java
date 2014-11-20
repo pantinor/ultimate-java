@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,7 +18,9 @@ import objects.BaseMap;
 import objects.Creature;
 import objects.CreatureSet;
 import objects.MapSet;
+import objects.Party;
 import objects.Rule;
+import objects.SaveGame;
 import objects.Tile;
 import objects.TileRules;
 import objects.TileSet;
@@ -25,8 +28,11 @@ import objects.Weapon;
 import objects.WeaponSet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.testng.annotations.Test;
 
+import ultima.Constants;
+import ultima.Constants.Reagent;
 import ultima.Utils;
 import ultima.Constants.Direction;
 
@@ -184,7 +190,7 @@ public class TestJaxb {
 
 	}
 	
-	@Test
+	//@Test
 	public void testDirectionMask() throws Exception {
 		
 		Direction dir = Direction.WEST;
@@ -202,6 +208,46 @@ public class TestJaxb {
 		assert(!Direction.isDirInMask(dir, mask));
 		
 		Direction dir2 = Direction.getRandomValidDirection(mask);
+		assert(true);
+
+	}
+	
+	//@Test
+	public void testReadSaveGame() throws Exception {
+		
+		SaveGame sg = new SaveGame();
+		sg.read("D:\\ultima\\ULTIMA4\\"+Constants.PARTY_SAV_BASE_FILENAME);
+		
+		
+		SaveGame sg2 = new SaveGame();
+		
+		SaveGame.SaveGamePlayerRecord avatar = sg2.new SaveGamePlayerRecord();
+		avatar.name = "paul";
+		avatar.hp = 199;
+		
+		sg2.food = 30000;
+		sg2.gold = 200;
+		sg2.reagents[Reagent.REAG_GINSENG.ordinal()] = 3;
+		sg2.reagents[Reagent.REAG_GARLIC.ordinal()] = 4;
+		sg2.torches = 2;
+		
+		sg2.players[0] = avatar;
+		
+		sg2.write("mysave.sav");
+				
+		//byte[] bytes1 = IOUtils.toByteArray(new FileReader(new File("D:\\ultima\\ULTIMA4\\"+Constants.PARTY_SAV_BASE_FILENAME)));
+		//byte[] bytes2 = IOUtils.toByteArray(new FileReader(new File("mysave.sav")));
+		
+	}
+	
+	@Test
+	public void testCreateParty() throws Exception {
+		
+		SaveGame sg = new SaveGame();
+		sg.read("D:\\ultima\\ULTIMA4\\"+Constants.PARTY_SAV_BASE_FILENAME);
+		
+		Party p = new Party(sg);
+		
 		assert(true);
 
 	}

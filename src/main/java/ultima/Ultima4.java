@@ -5,15 +5,17 @@ import objects.BaseMap;
 import objects.CreatureSet;
 import objects.MapSet;
 import objects.Moongate;
+import objects.Party;
 import objects.Portal;
+import objects.SaveGame;
 import objects.Tile;
 import objects.TileRules;
 import objects.TileSet;
 import objects.WeaponSet;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
@@ -30,7 +32,6 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -39,6 +40,7 @@ import dungeon.DungeonViewer;
 
 public class Ultima4 extends SimpleGame implements Constants {
 	
+	Party party;
 	Context context;
 	
 	public static TileSet baseTileSet;
@@ -53,7 +55,8 @@ public class Ultima4 extends SimpleGame implements Constants {
 	Animation player;
 	float time = 0;
 	TiledMap map;
-	OrthogonalTiledMapRenderer renderer;
+	//OrthogonalTiledMapRenderer renderer;
+	UltimaMapRenderer renderer;
 	Batch mapBatch, batch2;
 	
 	BitmapFont font;
@@ -117,8 +120,8 @@ public class Ultima4 extends SimpleGame implements Constants {
 			context = new Context();
 			
 			mapCamera = new OrthographicCamera();
-
-			loadNextMap(Maps.WORLD.getId(),86,108);
+			
+			initGame();
 			
 			hud = new DialogWindow(stage, this, skin);
 			stage.addActor(hud);
@@ -128,6 +131,24 @@ public class Ultima4 extends SimpleGame implements Constants {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+		
+	}
+	
+	public void initGame() {
+		
+		
+		SaveGame sg = new SaveGame();
+		try {
+			sg.read(PARTY_SAV_BASE_FILENAME);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		party = new Party(sg);
+		phase = sg.trammelphase * 3;
+		
+		loadNextMap(Maps.WORLD.getId(), sg.x, sg.y);
+
 		
 	}
 	
@@ -161,8 +182,9 @@ public class Ultima4 extends SimpleGame implements Constants {
 			map.getLayers().get("Map Layer").setVisible(true);
 
 			if (renderer != null) renderer.dispose();
-			renderer = new OrthogonalTiledMapRenderer(map, 2f);
-			
+			//renderer = new OrthogonalTiledMapRenderer(map, 2f);
+			renderer = new UltimaMapRenderer(bm, map, 2f);
+
 			//if (mapBatch != null) mapBatch.dispose();
 			mapBatch = renderer.getBatch();
 	
@@ -273,6 +295,18 @@ public class Ultima4 extends SimpleGame implements Constants {
 				Portal p = context.getCurrentMap().getPortal(v.x, v.y);
 				loadNextMap(p.getDestmapid(), p.getStartx(), p.getStarty());
 			}
+		} else if (keycode == Keys.Q) {
+			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
+				party.getSaveGame().x = (int)v.x;
+				party.getSaveGame().y = (int)v.y;
+				party.getSaveGame().trammelphase = this.trammelphase;
+				party.getSaveGame().feluccaphase = this.feluccaphase;
+				try {
+					party.getSaveGame().write(PARTY_SAV_BASE_FILENAME);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		
 		finishTurn();
@@ -333,6 +367,8 @@ public class Ultima4 extends SimpleGame implements Constants {
 		if (true) { //TODO is not party flying
 			context.getCurrentMap().moveObjects(this);
 		}
+		
+		party.getSaveGame().moves++;
 	}
 	
 	public void resurfaceFromDungeon() {
