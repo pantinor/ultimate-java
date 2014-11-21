@@ -1,12 +1,5 @@
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FilenameFilter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.xml.bind.JAXBContext;
@@ -28,24 +21,13 @@ import objects.Weapon;
 import objects.WeaponSet;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.testng.annotations.Test;
 
 import ultima.Constants;
-import ultima.Constants.Reagent;
-import ultima.Utils;
 import ultima.Constants.Direction;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapLayers;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTile;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import ultima.Constants.Reagent;
+import util.ShadowFOV;
+import util.Utils;
 
 
 public class TestJaxb {
@@ -240,7 +222,7 @@ public class TestJaxb {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testCreateParty() throws Exception {
 		
 		SaveGame sg = new SaveGame();
@@ -251,6 +233,128 @@ public class TestJaxb {
 		assert(true);
 
 	}
+	
+	//@Test
+	public void testLOS() throws Exception {
+		
+		long t = System.currentTimeMillis();
+
+		
+		int dim = 13;
+		
+		Tile[][] vt = new Tile[dim][dim];
+		for (int x=0;x<dim;x++) {
+			for (int y=0;y<dim;y++) {
+				vt[x][y] = new Tile();
+				//vt[x][y].setOpaque(true);
+			}
+		}
+		
+		vt[2][2].setOpaque(true);
+		vt[1][8].setOpaque(true);
+		vt[8][1].setOpaque(true);
+		vt[8][8].setOpaque(true);
+		vt[8][7].setOpaque(true);
+		vt[8][6].setOpaque(true);
+
+		int[][] los = Utils.screenFindLineOfSight(vt, 0, dim-1, 0, dim-1) ;
+		
+		for (int y=0;y<dim;y++) {
+			for (int x=0;x<dim;x++) {
+				System.out.print(los[x][y] == 1?"O":"X");
+			}
+			System.out.println("");
+
+		}
+		
+		System.out.println("testLOS time: " + (System.currentTimeMillis() - t));
+
+
+
+	}
+	
+	//@Test
+	public void testLOS2() throws Exception {
+		
+		long t = System.currentTimeMillis();
+		
+		int dim = 21;
+		
+		float[][] vt = new float[dim][dim];
+		for (int x=0;x<dim;x++) {
+			for (int y=0;y<dim;y++) {
+				//vt[x][y] = new Tile();
+				//vt[x][y].setOpaque(true);
+			}
+		}
+		
+		vt[12][2] = 1f;
+		vt[11][8] = 1f;
+		vt[18][1] = 1f;
+		vt[18][8] = 1f;
+		vt[18][7] = 1f;
+		vt[18][6] = 1f;
+		
+		ShadowFOV fov = new ShadowFOV();
+
+		float[][] los = fov.calculateFOV(vt, 10, 10, dim);
+		
+		for (int y=0;y<dim;y++) {
+			for (int x=0;x<dim;x++) {
+				System.out.print(los[x][y] <= 0?"X":"0");
+				//System.out.print("|"+los[x][y]);
+			}
+			System.out.println("");
+
+		}
+		
+		System.out.println("testLOS2 time: " + (System.currentTimeMillis() - t));
+
+
+
+	}
+	
+	@Test
+	public void testMapShadows() throws Exception {
+				
+		File file2 = new File("target/classes/xml/tileset-base.xml");
+		JAXBContext jaxbContext = JAXBContext.newInstance(TileSet.class);
+		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		TileSet ts = (TileSet) jaxbUnmarshaller.unmarshal(file2);
+		ts.setMaps();
+		
+		File file3 = new File("target/classes/xml/maps.xml");
+		jaxbContext = JAXBContext.newInstance(MapSet.class);
+		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		MapSet ms = (MapSet) jaxbUnmarshaller.unmarshal(file3);
+		ms.init(ts);
+		
+		BaseMap m = ms.getMapById(0);
+
+		int startx = 56;
+		int starty = 65;
+		
+		long t = System.currentTimeMillis();
+
+		
+		ShadowFOV fov = new ShadowFOV();
+
+		float[][] lightMap = fov.calculateFOV(m.getShadownMap(), startx, starty, 20);
+		
+		for (int y=0;y<256;y++) {
+			for (int x=0;x<256;x++) {
+				System.out.print(lightMap[x][y] <= 0?"X":"0");
+				//System.out.print("|"+los[x][y]);
+			}
+			System.out.println("");
+
+		}
+		
+		System.out.println("testLOS2 time: " + (System.currentTimeMillis() - t));
+
+	}
+	
+
 	
 
 }

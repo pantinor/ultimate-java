@@ -8,14 +8,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.badlogic.gdx.graphics.Camera;
+import ultima.Constants;
+import ultima.Ultima4;
+
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector3;
-
-import ultima.Constants;
-import ultima.Ultima4;
 
 @XmlRootElement(name = "map")
 public class BaseMap implements Constants {
@@ -45,7 +44,9 @@ public class BaseMap implements Constants {
 	private Shrine shrine;
 	private List<Moongate> moongates;
 	private Tile[] tiles;
+	private float[][] shadownMap;
 	
+
 	public Moongate getMoongate(int phase) {
 		if (moongates == null) return null;
 		for (Moongate m : moongates) {
@@ -272,6 +273,14 @@ public class BaseMap implements Constants {
 		if ((int)v.x + ((int)v.y * width) >= tiles.length) return null;
 		return tiles[(int)v.x + ((int)v.y * width)];
 	}
+	
+	public float[][] getShadownMap() {
+		return shadownMap;
+	}
+
+	public void setShadownMap(float[][] shadownMap) {
+		this.shadownMap = shadownMap;
+	}
 
 
 	public void setSprites(Ultima4 mainGame, TextureAtlas atlas) {
@@ -291,17 +300,16 @@ public class BaseMap implements Constants {
 	}
 	
 	
-	public void renderObjects(Ultima4 mainGame, Batch mapBatch, float time) {
-		if (city != null) {
-			
-			for(Person p : city.getPeople()) {
-				if (p == null) continue;
-				mapBatch.draw(p.getAnim().getKeyFrame(time, true), p.getCurrentPos().x, p.getCurrentPos().y, Ultima4.tilePixelWidth, Ultima4.tilePixelHeight);
-
-			}
-			
-		}
-	}
+//	public void renderObjects(Ultima4 mainGame, Batch mapBatch, float time) {
+//		if (city != null) {
+//			
+//			for(Person p : city.getPeople()) {
+//				if (p == null) continue;
+//				mapBatch.draw(p.getAnim().getKeyFrame(time, true), p.getCurrentPos().x, p.getCurrentPos().y, Ultima4.tilePixelWidth, Ultima4.tilePixelHeight);
+//			}
+//			
+//		}
+//	}
 
 	public void moveObjects(Ultima4 mainGame) {
 		

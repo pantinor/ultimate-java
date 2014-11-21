@@ -1,14 +1,15 @@
 package ultima;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.Vector3;
 
 import objects.BaseMap;
+import objects.Party;
 
 
 public class Context implements Constants {
 	
-    //private Party party;
-    //private SaveGame saveGame;
+    private Party party;
     private BaseMap currentMap;
     private TiledMap currentTiledMap;
 
@@ -103,8 +104,28 @@ public class Context implements Constants {
 	public void setCurrentMap(BaseMap currentMap) {
 		this.currentMap = currentMap;
 	}
+	public Party getParty() {
+		return party;
+	}
+	public void setParty(Party party) {
+		this.party = party;
+	}
 
+    public void saveGame(Ultima4 game, Vector3 currentPos) {
+		party.getSaveGame().x = (int)currentPos.x;
+		party.getSaveGame().y = (int)currentPos.y;
+		party.getSaveGame().trammelphase = game.trammelphase;
+		party.getSaveGame().feluccaphase = game.feluccaphase;
+		try {
+			party.getSaveGame().write(PARTY_SAV_BASE_FILENAME);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
     
+    public void incrementMoves() {
+		party.getSaveGame().moves++;
+    }
     
 
 }

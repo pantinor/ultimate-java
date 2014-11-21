@@ -309,7 +309,8 @@ public interface Constants {
 	}
 	
 	/*
-	 * bitmasks for LOS shadows
+	 * bitmasks for LOS shadows on a 13x13 (or smaller, for odd size dimensions only) grid, 
+	 * will not work for larger grids.
 	 */
 	public static int ____H = 0x01; // obscured along the horizontal face
 	public static int ___C_ = 0x02; // obscured at the center

@@ -12,6 +12,7 @@ import objects.Tile;
 import objects.TileRules;
 import objects.TileSet;
 import objects.WeaponSet;
+import util.Utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -40,7 +41,6 @@ import dungeon.DungeonViewer;
 
 public class Ultima4 extends SimpleGame implements Constants {
 	
-	Party party;
 	Context context;
 	
 	public static TileSet baseTileSet;
@@ -69,7 +69,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 
 	boolean changeMapPosition = true;
 	
-	Vector3 currentMapPixelCoords;
+	Vector3 newMapPixelCoords;
 	Vector2 currentMousePos;
 
 	Array<AtlasRegion> moongateTextures = new Array<AtlasRegion>();
@@ -117,8 +117,6 @@ public class Ultima4 extends SimpleGame implements Constants {
 			font.setColor(Color.WHITE);		
 			batch2 = new SpriteBatch();
 			
-			context = new Context();
-			
 			mapCamera = new OrthographicCamera();
 			
 			initGame();
@@ -136,7 +134,8 @@ public class Ultima4 extends SimpleGame implements Constants {
 	
 	public void initGame() {
 		
-		
+		context = new Context();
+
 		SaveGame sg = new SaveGame();
 		try {
 			sg.read(PARTY_SAV_BASE_FILENAME);
@@ -144,11 +143,12 @@ public class Ultima4 extends SimpleGame implements Constants {
 			e.printStackTrace();
 		}
 		
-		party = new Party(sg);
+		Party party = new Party(sg);
+		context.setParty(party);
+		
 		phase = sg.trammelphase * 3;
 		
 		loadNextMap(Maps.WORLD.getId(), sg.x, sg.y);
-
 		
 	}
 	
@@ -165,14 +165,6 @@ public class Ultima4 extends SimpleGame implements Constants {
 		} else if (bm.getType().equals("shrine")) {
 			
 		} else {
-			
-			if (bm.getTiles() == null) {
-				try {
-					Utils.setMapTiles(context.getCurrentMap(), baseTileSet);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
 					
 			map = new TmxMapLoader().load("tilemaps/map_"+id+".tmx");
 			context.setCurrentTiledMap(map);
@@ -193,7 +185,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 			
 			bm.setSprites(this, atlas);
 			
-			currentMapPixelCoords = getMapPixelCoords(startx, starty);
+			newMapPixelCoords = getMapPixelCoords(startx, starty);
 			changeMapPosition = true;
 		}
 						
@@ -213,7 +205,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 		} else {
 		
 			if (changeMapPosition) {
-				mapCamera.position.set(currentMapPixelCoords);
+				mapCamera.position.set(newMapPixelCoords);
 				changeMapPosition = false;
 			}
 			
@@ -222,15 +214,10 @@ public class Ultima4 extends SimpleGame implements Constants {
 			renderer.render();
 	
 			mapBatch.begin();
+			
 			mapBatch.draw(player.getKeyFrame(time, true), mapCamera.position.x, mapCamera.position.y, tilePixelWidth, tilePixelHeight);
 			
-			context.getCurrentMap().renderObjects(this, mapBatch, time);
-			
-			mapBatch.end();
-			
 			if (context.getCurrentMap().getMoongates() != null) {
-				mapBatch.begin();
-	
 				for (Moongate g : context.getCurrentMap().getMoongates()) {
 					TextureRegion t = g.getCurrentTexture();
 					if (t != null) {
@@ -238,13 +225,15 @@ public class Ultima4 extends SimpleGame implements Constants {
 						mapBatch.draw(t, v.x, v.y, tilePixelWidth, tilePixelHeight);
 					}
 				}
-				mapBatch.end();
 			}
+			
+			mapBatch.end();
+
 	
 			batch2.begin();
 			Vector3 v = getCurrentMapCoords();
 			font.draw(batch2, "map coords: " + v, 10, 40);
-			//font.draw(batch2, "current tile: " + context.getCurrentMap().getTile(v), 10, 20);
+			font.draw(batch2, "fps: " + Gdx.graphics.getFramesPerSecond(), 0, 20);
 			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
 				batch2.draw(moonAtlas.findRegion("phase_" + trammelphase),375,SCREEN_HEIGHT-25,25,25);
 				batch2.draw(moonAtlas.findRegion("phase_" + feluccaphase),400,SCREEN_HEIGHT-25,25,25);
@@ -277,19 +266,19 @@ public class Ultima4 extends SimpleGame implements Constants {
 		if (keycode == Keys.UP) {
 			if (!preMove(v, Direction.NORTH)) return false;
 			mapCamera.position.y = mapCamera.position.y + tilePixelHeight;
-			postMove();
+			postMove((int)v.x,(int)v.y-1);
 		} else if (keycode == Keys.RIGHT) {
 			if (!preMove(v, Direction.EAST)) return false;
 			mapCamera.position.x = mapCamera.position.x + tilePixelWidth;
-			postMove();
+			postMove((int)v.x+1,(int)v.y);
 		} else if (keycode == Keys.LEFT) {
 			if (!preMove(v, Direction.WEST)) return false;
 			mapCamera.position.x = mapCamera.position.x - tilePixelWidth;
-			postMove();
+			postMove((int)v.x-1,(int)v.y);
 		} else if (keycode == Keys.DOWN) {
 			if (!preMove(v, Direction.SOUTH)) return false;
 			mapCamera.position.y = mapCamera.position.y - tilePixelHeight;
-			postMove();
+			postMove((int)v.x,(int)v.y+1);
 		} else if (keycode == Keys.E) {
 			if (ct.enterable()) {
 				Portal p = context.getCurrentMap().getPortal(v.x, v.y);
@@ -297,15 +286,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 			}
 		} else if (keycode == Keys.Q) {
 			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
-				party.getSaveGame().x = (int)v.x;
-				party.getSaveGame().y = (int)v.y;
-				party.getSaveGame().trammelphase = this.trammelphase;
-				party.getSaveGame().feluccaphase = this.feluccaphase;
-				try {
-					party.getSaveGame().write(PARTY_SAV_BASE_FILENAME);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				context.saveGame(this, v);
 			}
 		}
 		
@@ -342,19 +323,16 @@ public class Ultima4 extends SimpleGame implements Constants {
 		return true;
 	}
 	
-	private void postMove() {
-		
-		currentMapPixelCoords = mapCamera.unproject(new Vector3(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 0));
-		
+	private void postMove(int newx, int newy) {
+				
 		//check if entering moongate
 		if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
-			Vector3 cc = getCurrentMapCoords();
 			//check for active moongate portal
 			for (Moongate g : context.getCurrentMap().getMoongates()) {
-				if (g.getCurrentTexture() != null && cc.x == g.getX() && cc.y == g.getY()) {
+				if (g.getCurrentTexture() != null && newx == g.getX() && newy == g.getY()) {
 					Sounds.play(Sound.MOONGATE);
 					Vector3 d = getDestinationForMoongate(g);
-					currentMapPixelCoords = getMapPixelCoords((int)d.x,(int)d.y);
+					newMapPixelCoords = getMapPixelCoords((int)d.x,(int)d.y);
 					changeMapPosition = true;
 				}
 			}
@@ -368,7 +346,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 			context.getCurrentMap().moveObjects(this);
 		}
 		
-		party.getSaveGame().moves++;
+		context.incrementMoves();
 	}
 	
 	public void resurfaceFromDungeon() {

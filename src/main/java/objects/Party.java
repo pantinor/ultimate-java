@@ -7,7 +7,7 @@ import java.util.Random;
 
 import objects.SaveGame.SaveGamePlayerRecord;
 import ultima.Constants;
-import ultima.Utils;
+import util.Utils;
 
 
 public class Party extends Observable implements Constants {

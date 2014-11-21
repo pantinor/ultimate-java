@@ -1,10 +1,9 @@
-package ultima;
+package util;
 
 
 import java.io.InputStream;
 import java.nio.CharBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -18,6 +17,8 @@ import objects.TileSet;
 
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.BufferUtils;
+
+import ultima.Constants;
 
 public class Utils implements Constants {
 	
@@ -230,23 +231,25 @@ public class Utils implements Constants {
 	 
 			
 	/**
-	 * Needs Fixing! :)
+	 * Only works with a 13x13 or smaller grid, must use odd number grid only, as avatar is at the center of it.  
+	 * Limited by the size of the raster shadow table.
 	 */
 	public static int[][] screenFindLineOfSight(Tile[][] viewportTiles, int row1, int row2, int col1, int col2) {
 
 		int x, y;
 
 		int VIEWPORT_W = row2 - row1 + 1;
-		int VIEWPORT_H = col2 - col1;
+		int VIEWPORT_H = col2 - col1 + 1;
 		int[][] screenLos = new int[VIEWPORT_W + 1][VIEWPORT_H];
 
-		int _OCTANTS = 8;
-		int _NUM_RASTERS_COLS = 4;
+		int OCTANTS = 8;
+		int NUM_RASTERS_COLS = 4;
 
 		int octant = 0;
 		int xOrigin = 0, yOrigin = 0, xSign = 0, ySign = 0, xTile = 0, yTile = 0, xTileOffset = 0, yTileOffset = 0;
 		boolean reflect = false;
-		for (octant = 0; octant < _OCTANTS; octant++) {
+		
+		for (octant = 0; octant < OCTANTS; octant++) {
 			switch (octant) {
 			case 0:
 				xSign = 1;
@@ -308,7 +311,7 @@ public class Utils implements Constants {
 			}
 
 			// check the visibility of each tile
-			for (int currentCol = 1; currentCol <= _NUM_RASTERS_COLS; currentCol++) {
+			for (int currentCol = 1; currentCol <= NUM_RASTERS_COLS; currentCol++) {
 				for (int currentRow = 0; currentRow <= currentCol; currentRow++) {
 					// swap X and Y to reflect the octant rasters
 					if (reflect) {
@@ -320,14 +323,12 @@ public class Utils implements Constants {
 					}
 
 					if (viewportTiles[xTile][yTile].isOpaque()) {
-						// a wall was detected, so go through the raster for
-						// this wall
+						
+						// a wall was detected, so go through the raster for this wall
 						// segment and mark everything behind it with the
-						// appropriate
-						// shadow bitmask.
-						//
+						// appropriate shadow bitmask.
 						// first, get the correct raster
-						//
+						
 						if ((currentCol == 1) && (currentRow == 0)) {
 							currentRaster = 0;
 						} else if ((currentCol == 1) && (currentRow == 1)) {

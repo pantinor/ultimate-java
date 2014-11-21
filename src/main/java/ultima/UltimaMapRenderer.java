@@ -22,8 +22,10 @@ import static com.badlogic.gdx.graphics.g2d.Batch.Y2;
 import static com.badlogic.gdx.graphics.g2d.Batch.Y3;
 import static com.badlogic.gdx.graphics.g2d.Batch.Y4;
 import objects.BaseMap;
-import objects.Tile;
+import objects.Person;
+import util.ShadowFOV;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -35,7 +37,9 @@ import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
 public class UltimaMapRenderer extends BatchTiledMapRenderer {
 	
 	private BaseMap bm;
-	
+	private ShadowFOV fov = new ShadowFOV();
+	float stateTime = 0;
+
 	public UltimaMapRenderer(BaseMap bm, TiledMap map, float unitScale) {
 		super(map, unitScale);
 		this.bm = bm;
@@ -43,6 +47,9 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 
 	@Override
 	public void renderTileLayer(TiledMapTileLayer layer) {
+		
+		stateTime += Gdx.graphics.getDeltaTime();
+
 		final Color batchColor = batch.getColor();
 		final float color = Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, batchColor.a * layer.getOpacity());
 
@@ -62,28 +69,18 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 		float xStart = col1 * layerTileWidth;
 		final float[] vertices = this.vertices;
 		
-//		Tile[][] currentTilesInView = new Tile[row2-row1+1][col2-col1];
-//		int rx=1;
-//		for (int row = row2; row >= row1; row--) {
-//			int ry=1;
-//			for (int col = col1; col < col2; col++) {
-//				System.out.println(""+(rx-1)+" "+(ry-1));
-//				currentTilesInView[rx-1][ry-1] = bm.getTile(row, col);
-//				ry++;
-//			}
-//			rx++;
-//		}
-//		
-//		int[][] screenLos = Utils.screenFindLineOfSight(currentTilesInView,row1,row2,col1,col2);
-		
+		int startx = (col2-col1)/2 + col1 ;
+		int starty = (row2-row1)/2 + row1 ;
+		float[][] lightMap = null;
+		if (bm.getShadownMap() != null) {
+			lightMap = fov.calculateFOV(bm.getShadownMap(), startx, starty, 15);	
+		}
 
 		for (int row = row2; row >= row1; row--) {
 			float x = xStart;
 			for (int col = col1; col < col2; col++) {
 				final TiledMapTileLayer.Cell cell = layer.getCell(col, row);
-				//System.out.println(""+(row2-row)+" "+(col-col1));
-				//int visible = screenLos[row2-row][col-col1];
-				if (cell == null) {// || visible == 0) {
+				if (cell == null || (lightMap != null && lightMap[col][row] <= 0)) {
 					x += layerTileWidth;
 					continue;
 				}
@@ -198,6 +195,24 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 				x += layerTileWidth;
 			}
 			y -= layerTileHeight;
+		}
+		
+		
+		//render person objects on map
+		if (bm.getCity() != null) {
+			for(Person p : bm.getCity().getPeople()) {
+				if (p == null) {
+					continue;
+				}
+				//see if person is in shadow
+				int px = Math.round((p.getCurrentPos().x) / Ultima4.tilePixelWidth);
+				int py = Math.round(p.getCurrentPos().y / Ultima4.tilePixelHeight);
+				if (lightMap != null && lightMap[px][py] <= 0) {
+					continue;
+				}
+				batch.draw(p.getAnim().getKeyFrame(stateTime, true), p.getCurrentPos().x, p.getCurrentPos().y, Ultima4.tilePixelWidth, Ultima4.tilePixelHeight);
+			}
+			
 		}
 	}
 }

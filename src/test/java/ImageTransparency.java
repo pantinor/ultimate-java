@@ -6,21 +6,17 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.FilteredImageSource;
-import java.awt.image.ImageConsumer;
 import java.awt.image.ImageFilter;
 import java.awt.image.ImageProducer;
 import java.awt.image.RGBImageFilter;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.util.Arrays;
-import java.util.Hashtable;
 
 import javax.imageio.ImageIO;
 
-import static java.lang.System.out;
-
+@SuppressWarnings("restriction")
 public class ImageTransparency {
 
 	public static int MARKER_RED;

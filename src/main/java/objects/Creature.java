@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import ultima.Constants;
-import ultima.Utils;
+import util.Utils;
 
 @XmlRootElement(name = "creature")
 public class Creature implements Constants {

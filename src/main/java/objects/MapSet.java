@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import ultima.Utils;
+import util.Utils;
 
 @XmlRootElement(name = "maps")
 public class MapSet {
@@ -48,6 +48,26 @@ public class MapSet {
 				}
 				
 			}
+			
+			try {
+				Utils.setMapTiles(m, ts);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			if (!m.getType().equals("dungeon") && !m.getType().equals("shrine") && !m.getType().equals("combat")) {
+				
+				//use ydown scheme here same as gdx rendering
+				float[][] shadowMap = new float[m.getWidth()][m.getHeight()];
+				for (int x=0;x<m.getWidth();x++) {
+					for (int y=0;y<m.getHeight();y++) {
+						//System.out.println(m.getFname() +" "+(row)+" "+(col));
+						shadowMap[x][y] = (m.getTile(x, m.getHeight()-1-y).isOpaque()?1:0);
+					}
+				}
+				m.setShadownMap(shadowMap);
+			}
+
 
 		}
 	}

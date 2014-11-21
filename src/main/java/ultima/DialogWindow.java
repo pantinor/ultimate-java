@@ -21,7 +21,7 @@ public class DialogWindow extends Window implements Observer {
 	private Ultima4 mainGame;
 	
 	public static int width = 120;
-	public static int height = 120;
+	public static int height = 130;
 	
 	private Label topText;
 	private Label middleText;
@@ -50,7 +50,7 @@ public class DialogWindow extends Window implements Observer {
 
 		middleText = new Label("",skin,"gray-background");
 
-		setPartyText(mainGame.party); 
+		setPartyText(mainGame.context.getParty()); 
 
 		scrollPane = new LogScrollPane(skin, width);
 		for (int i=0;i<4;i++) 
@@ -63,19 +63,16 @@ public class DialogWindow extends Window implements Observer {
 		defaults().padTop(2).padBottom(2).padLeft(2).padRight(2).left();
 		
 		Table top = new Table();
-		//top.defaults().padTop(0).padBottom(0).padLeft(0).padRight(0).left();
 		top.add(topText).maxWidth(width).width(width).maxHeight(height).height(height);	
 		add(top);
 		row();
 		
 		Table middle = new Table();
-		//middle.defaults().padTop(0).padBottom(0).padLeft(0).padRight(0).left();
 		middle.add(middleText).maxWidth(width).width(width);	
 		add(middle);
 		row();
 		
 		Table bottom = new Table();
-		//bottom.defaults().padTop(0).padBottom(0).padLeft(0).padRight(0).left();
 		bottom.add(scrollPane).maxWidth(width).width(width).maxHeight(height).height(height);	
 		add(bottom);
 		row();
@@ -132,7 +129,7 @@ public class DialogWindow extends Window implements Observer {
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		setPartyText(mainGame.party); 
+		setPartyText(mainGame.context.getParty()); 
 	}
 	
 
