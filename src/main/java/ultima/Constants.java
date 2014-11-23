@@ -10,15 +10,71 @@ import com.badlogic.gdx.files.FileHandle;
 public interface Constants {
 	
 	public enum Maps {
-		NONE(255), WORLD(0), CASTLE_OF_LORD_BRITISH_1(1), CASTLE_OF_LORD_BRITISH_2(100), LYCAEUM(2), EMPATH_ABBEY(3), SERPENTS_HOLD(4), MOONGLOW(5), BRITAIN(6), JHELOM(7), YEW(8), MINOC(9), TRINSIC(10), SKARABRAE(11), MAGINCIA(12), PAWS(13), BUCCANEERS_DEN(
-				14), VESPER(15), COVE(16), DECEIT(17), DESPISE(18), DESTARD(19), WRONG(20), COVETOUS(21), SHAME(22), HYTHLOTH(23), ABYSS(24), SHRINE_HONESTY(25), SHRINE_COMPASSION(26), SHRINE_VALOR(27), SHRINE_JUSTICE(28), SHRINE_SACRIFICE(29), SHRINE_HONOR(
-				30), SHRINE_SPIRITUALITY(31), SHRINE_HUMILITY(32), BRICK_CON(33), BRIDGE_CON(34), BRUSH_CON(35), CAMP_CON(36), DNG0_CON(37), DNG1_CON(38), DNG2_CON(39), DNG3_CON(40), DNG4_CON(41), DNG5_CON(42), DNG6_CON(43), DUNGEON_CON(44), FOREST_CON(
-				45), GRASS_CON(46), HILL_CON(47), INN_CON(48), MARSH_CON(49), SHIPSEA_CON(50), SHIPSHIP_CON(51), SHIPSHOR_CON(52), SHORE_CON(53), SHORSHIP_CON(54), CAMP_DNG(55);
+		NONE(255,"None"),
+		WORLD(0,"Brittania"),
+		CASTLE_OF_LORD_BRITISH_1(1,"Castle of Lord British"),
+		CASTLE_OF_LORD_BRITISH_2(100,"Castle of Lord British"),
+		LYCAEUM(2,"Lycaeum"),
+		EMPATH_ABBEY(3,"Empath Abbey"),
+		SERPENTS_HOLD(4,"Serpents Hold"),
+		MOONGLOW(5,"Moonglow"),
+		BRITAIN(6,"Britain"),
+		JHELOM(7,"Jhelom"),
+		YEW(8,"Yew"),
+		MINOC(9,"Minoc"),
+		TRINSIC(10,"Trinsic"),
+		SKARABRAE(11,"Skara Brae"),
+		MAGINCIA(12,"Magincia"),
+		PAWS(13,"Paws"),
+		BUCCANEERS_DEN(14,"Buccaneers Den"),
+		VESPER(15,"Vesper"),
+		COVE(16,"Cove"),
+		DECEIT(17,"Dungeon of Deceit"),
+		DESPISE(18,"Dungeon of Despise"),
+		DESTARD(19,"Dungeon of Destard"),
+		WRONG(20,"Dungeon of Wrong"),
+		COVETOUS(21,"Dungeon of Covetous"),
+		SHAME(22,"Dungeon of Shame"),
+		HYTHLOTH(23,"Dungeon of Hythloth"),
+		ABYSS(24,"The Abyss"),
+		SHRINE_HONESTY(25,"Shrine of Honesty"),
+		SHRINE_COMPASSION(26,"Shrine of Compassion"),
+		SHRINE_VALOR(27,"Shrine of Valor"),
+		SHRINE_JUSTICE(28,"Shrine of Justice"),
+		SHRINE_SACRIFICE(29,"Shrine of Sacrifice"),
+		SHRINE_HONOR(30,"Shrine of Honor"),
+		SHRINE_SPIRITUALITY(31,"Shrine of Sprituality"),
+		SHRINE_HUMILITY(32,"Shrine of Humility"),
+		BRICK_CON(33,""),
+		BRIDGE_CON(34,""),
+		BRUSH_CON(35,""),
+		CAMP_CON(36,""),
+		DNG0_CON(37,""),
+		DNG1_CON(38,""),
+		DNG2_CON(39,""),
+		DNG3_CON(40,""),
+		DNG4_CON(41,""),
+		DNG5_CON(42,""),
+		DNG6_CON(43,""),
+		DUNGEON_CON(44,""),
+		FOREST_CON(45,""),
+		GRASS_CON(46,""),
+		HILL_CON(47,""),
+		INN_CON(48,""),
+		MARSH_CON(49,""),
+		SHIPSEA_CON(50,""),
+		SHIPSHIP_CON(51,""),
+		SHIPSHOR_CON(52,""),
+		SHORE_CON(53,""),
+		SHORSHIP_CON(54,""),
+		CAMP_DNG(55,"");
 		
 		private int id;
-
-		private Maps(int id) {
-			this.setId(id);
+		private String label;
+		
+		private Maps(int id, String label) {
+			this.id = id;
+			this.label = label;
 		}
 
 		public int getId() {
@@ -27,6 +83,10 @@ public interface Constants {
 
 		public void setId(int id) {
 			this.id = id;
+		}
+		
+		public String getLabel() {
+			return label;
 		}
 
 		public static Maps convert(int id) {
@@ -201,20 +261,6 @@ public interface Constants {
 		public int getIntValue() {
 			return intValue;
 		}
-	}
-	
-	public enum MusicType {
-		NONE,
-		OUTSIDE,
-		TOWNS,
-		SHRINES,
-		SHOPPING,
-		RULEBRIT,
-		FANFARE,
-		DUNGEON,
-		COMBAT,
-		CASTLES,
-		MAX;
 	}
 	
 	
@@ -409,15 +455,55 @@ public interface Constants {
 		}
 	}
 	
+//    static const char * const virtueNames[] = {
+//        "Blue", "Yellow", "Red", 
+//        "Green", "Orange", "Purple", 
+//        "White", "Black"
+//    };
+	
+	public enum Virtue {
+		VIRT_HONESTY("honest"),
+		VIRT_COMPASSION("compassionate"),
+		VIRT_VALOR("valiant"),
+		VIRT_JUSTICE("just"),
+		VIRT_SACRIFICE("sacrificial"),
+		VIRT_HONOR("honorable"),
+		VIRT_SPIRITUALITY("spiritual"),
+		VIRT_HUMILITY("humble"),
+		VIRT_MAX("");
+		
+		private String description;
+		private Virtue(String d) {
+			this.description = d;
+		}
+		public static Virtue get(int v) {
+			for (Virtue x : values()) {
+				if (x.ordinal() == (v&0xff)) {
+					return x;
+				}
+			}
+			return null;
+		}
+		public String getDescription() {
+			return description;
+		}
+	}
+	
 	public enum ClassType {
-		CLASS_MAGE,
-		CLASS_BARD,
-		CLASS_FIGHTER,
-		CLASS_DRUID,
-		CLASS_TINKER,
-		CLASS_PALADIN,
-		CLASS_RANGER,
-		CLASS_SHEPHERD;
+		
+		CLASS_MAGE(Virtue.VIRT_HONESTY),
+		CLASS_BARD(Virtue.VIRT_COMPASSION),
+		CLASS_FIGHTER(Virtue.VIRT_VALOR),
+		CLASS_DRUID(Virtue.VIRT_JUSTICE),
+		CLASS_TINKER(Virtue.VIRT_SACRIFICE),
+		CLASS_PALADIN(Virtue.VIRT_HONOR),
+		CLASS_RANGER(Virtue.VIRT_SPIRITUALITY),
+		CLASS_SHEPHERD(Virtue.VIRT_HUMILITY);
+		
+		private Virtue virtue;
+		private ClassType(Virtue v) {
+			this.virtue = v;
+		}
 		public static ClassType get(int v) {
 			for (ClassType x : values()) {
 				if (x.ordinal() == (v&0xff)) {
@@ -426,7 +512,12 @@ public interface Constants {
 			}
 			return null;
 		}
+		
+		public Virtue getVirtue() {
+			return virtue;
+		}
 	}
+
 	
 	public enum SexType {
 		
@@ -481,25 +572,29 @@ public interface Constants {
 
 	}
 	
-	public enum Virtue {
-		VIRT_HONESTY,
-		VIRT_COMPASSION,
-		VIRT_VALOR,
-		VIRT_JUSTICE,
-		VIRT_SACRIFICE,
-		VIRT_HONOR,
-		VIRT_SPIRITUALITY,
-		VIRT_HUMILITY,
-		VIRT_MAX;
-		public static Virtue get(int v) {
-			for (Virtue x : values()) {
-				if (x.ordinal() == (v&0xff)) {
-					return x;
-				}
-			}
-			return null;
-		}
+	/** Different states the conversation may be in */
+	public enum ConvState {
+		INTRO, //*< The initial state of the conversation, before anything is said
+		TALK, //*< The "default" state of the conversation
+		ASK, //*< The talker is asking the player a question
+		ASKYESNO, //*< The talker is asking the player a yes/no question
+		VENDORQUESTION, //*< A vendor is asking the player a question
+		BUY_ITEM, //*< Asked which item to buy
+		SELL_ITEM, //*< Asked which item to sell
+		BUY_QUANTITY, //*< Asked how many items to buy
+		SELL_QUANTITY, //*< Asked how many items to sell
+		BUY_PRICE, //*< Asked how much money to give someone
+		CONFIRMATION, //*< Asked by a vendor to confirm something
+		CONTINUEQUESTION, //*< Asked whether or not to continue
+		TOPIC, //*< Asked a topic to speak about
+		PLAYER, //*< Input for which player is required
+		FULLHEAL, //*< Heal the entire party before continuing conversation
+		ADVANCELEVELS, //*< Check and advance the party's levels before continuing
+		GIVEBEGGAR, //*< Asked how much to give a beggar
+		ATTACK, //*< The conversation ends with the talker attacking you
+		DONE; //*< The conversation is over
 	}
+
 	
 	public enum Reagent {
 		REAG_ASH,

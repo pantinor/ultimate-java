@@ -2,18 +2,23 @@ package ultima;
 
 public enum Sound {
 		
-	BACKGROUND1 ("sound/combat1.ogg", false, 0.1f), 
-	BACKGROUND2 ("sound/combat2.ogg", false, 0.1f), 
-	BACKGROUND3 ("sound/combat3.ogg", false, 0.1f), 
-	
-	POSITIVE_EFFECT ("sound/PositiveEffect.ogg", false, 0.3f),
-	NEGATIVE_EFFECT ("sound/NegativeEffect.ogg", false, 0.3f),
-
 	MAGIC ("sound/magic.ogg", false, 0.3f), 
 	ATTACK ("sound/attack.ogg", false, 0.3f), 
 	MOONGATE ("sound/moongate_flash.ogg", false, 0.3f), 
-	BLOCKED ("sound/blocked.ogg", false, 0.3f);
+	BLOCKED ("sound/blocked.ogg", false, 0.3f),
 	
+	//music
+	OUTSIDE ("sound/Wanderer.mp3", false, 0.1f), 
+	TOWNS ("sound/Towns.mp3", false, 0.1f), 
+	SHRINES ("sound/Shrines.mp3", false, 0.1f), 
+	SHOPPING ("sound/Shopping.mp3", false, 0.1f), 
+	RULEBRIT ("sound/Rule_Britannia.mp3", false, 0.1f), 
+	FANFARE ("sound/Fanfare_Of_Lord_British.mp3", false, 0.1f), 
+	DUNGEON ("sound/Dungeon.mp3", false, 0.1f), 
+	COMBAT ("sound/Combat.mp3", false, 0.1f), 
+	CASTLES ("sound/Castles.mp3", false, 0.1f);
+	
+
 	String file;
 	boolean looping;
 	float volume;

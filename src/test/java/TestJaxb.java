@@ -28,9 +28,22 @@ import ultima.Constants.Direction;
 import ultima.Constants.Reagent;
 import util.ShadowFOV;
 import util.Utils;
+import vendor.Script;
+import vendor.ScriptSet;
 
 
 public class TestJaxb {
+	
+	@Test
+	public void testScript() throws Exception {
+		File file = new File("target/classes/xml/vendorScript.xml");
+		JAXBContext jaxbContext = JAXBContext.newInstance(ScriptSet.class);
+		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		ScriptSet ss = (ScriptSet) jaxbUnmarshaller.unmarshal(file);
+		for (Script s : ss.getScripts()) {
+			System.out.println(s);
+		}
+	}
 	
 	//@Test
 	public void testTileSetBase() throws Exception {
@@ -314,7 +327,7 @@ public class TestJaxb {
 
 	}
 	
-	@Test
+	//@Test
 	public void testMapShadows() throws Exception {
 				
 		File file2 = new File("target/classes/xml/tileset-base.xml");

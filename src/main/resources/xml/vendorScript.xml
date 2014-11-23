@@ -13,14 +13,15 @@
             <music type="shopping"/>
 
 
-
+			<text type="choice" options="bs" target="buy_sell">
             Welcome to
             {name}
 
             {owner} says:
             Welcome friend!
             Art thou here to
-            Buy or Sell? <input type="choice" options="bs" target="buy_sell"/>
+            Buy or Sell?
+            </text>
         </intro>
 
         <end>
@@ -324,14 +325,15 @@
             <music type="shopping"/>
 
 
-
+		<text type="choice" options="bs" target="buy_sell">
             Welcome to
             {name}
 
             {owner} says:
             Welcome friend!
             Want to Buy or
-            Sell? <input type="choice" options="bs" target="buy_sell"/>
+            Sell?
+            </text>
         </intro>
 
         <end>
@@ -581,11 +583,13 @@
     <script id="Food">
         <intro>
             <music type="shopping"/>
+            <text type="choice" options="yn" target="ask">
             Welcome to {name}
         
             {owner} says: Good day, and Welcome friend.
             <if test="{party:gold}&lt;{price}" redirect="come_back"/>
-            May I interest you in some rations? <input type="choice" options="yn" target="ask"/>            
+            May I interest you in some rations?  
+            </text>           
         </intro>
         
         <end>
@@ -641,7 +645,11 @@
     <script id="Tavern">
         <intro>
             <music type="shopping"/>
-            {owner} says: Welcome to {name}<redirect target="whatll_it_be"/>
+            <text type="choice" options="fa" target="buy">
+            {owner} says: Welcome to {name}
+                {owner} says: 
+                What'll it be, Food er Ale? 
+            </text>
         </intro>
 
         <end>
@@ -651,8 +659,7 @@
         <ask default="true" redirect="bye"/>
         <ask choice="y" redirect="whatll_it_be"/>        
         <whatll_it_be>
-            {owner} says: What'll it be,
-            Food er Ale? <input type="choice" options="fa" target="buy"/>
+        
         </whatll_it_be>
 
         <bye>            
@@ -839,10 +846,12 @@
         <intro>
             <music type="shopping"/>
             <ztats screen="reagents"/>
+            <text>
             A blind woman turns to you and says: Welcome to {name}
 
             I am {owner}
             Are you in need of Reagents? <input type="choice" options="yn" target="show_reagents"/>
+            </text>
         </intro>
 
         <end>
@@ -958,12 +967,14 @@
     <script id="Healer" noun="service">
         <intro>
             <music type="shopping"/>
+            <text>
             Welcome unto
             {name}
 
             {healer} says:
             Peace and Joy be with you friend.
             Are you in need of help? <input type="choice" options="yn" target="show_services"/>
+            </text>
         </intro>
 
         <end>
@@ -1121,11 +1132,13 @@
     <script id="Inn" noun="room">
         <intro>
             <music type="shopping"/>
+            <text>
             The Innkeeper says: <if test="{party:transport}=horse" redirect="nohorse"/>Welcome to {name}
         
             I am {innkeeper}.
         
             Are you in need of lodging?<input type="choice" options="yn" target="ask"/>
+            </text>
         </intro>
         
         <end>
@@ -1256,11 +1269,13 @@
         <intro>
             <music type="shopping"/>
             <ztats screen="equipment"/>
+            <text>
             Avast ye mate! Shure ye wishes to buy from ol'
             {owner}?
 
             {owner} says: Welcome to {name}.
             Like to see my goods? <input type="choice" options="yn" target="show_goods"/>
+            </text>
         </intro>
 
         <end>
@@ -1354,9 +1369,11 @@
     <script id="Stable">
         <intro>
             <music type="shopping"/>
+            <text>
             Welcome friend!
             Can I interest thee in
             horses? <input type="choice" options="yn" target="ask"/>
+            </text>
         </intro>
 
         <end>

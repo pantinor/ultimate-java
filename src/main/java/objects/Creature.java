@@ -53,11 +53,12 @@ public class Creature implements Constants {
 	private boolean wontattack;
 	private String worldrangedtile;
 	
+	public Creature() {
+		addStatus(StatusType.STAT_GOOD);
+	}
+	
 	/* combat methods */
 	public void act() {
-	}
-	public void addStatus(StatusType status) {
-		this.status.add(status);
 	}
 	public void applyDamage(int damage) {
 		Utils.adjustValueMin(this.hp, damage, 0);
@@ -229,6 +230,9 @@ public class Creature implements Constants {
 	}
 	public void removeStatus(StatusType status) {
 		this.status.remove(status);
+	}
+	public void addStatus(StatusType status) {
+		this.status.add(status);
 	}
 	public void setAmbushes(boolean ambushes) {
 		this.ambushes = ambushes;

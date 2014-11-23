@@ -21,6 +21,8 @@ public class Person implements Constants {
 	private Animation anim;
 	private Vector3 currentPos;
 	private Conversation conversation;
+	private boolean isTalking = false;
+	private PersonRole role;
 	
 	public int getId() {
 		return id;
@@ -116,6 +118,18 @@ public class Person implements Constants {
 	}
 	public void setY(int y) {
 		this.y = y;
+	}
+	public boolean isTalking() {
+		return isTalking;
+	}
+	public void setTalking(boolean isTalking) {
+		this.isTalking = isTalking;
+	}
+	public PersonRole getRole() {
+		return role;
+	}
+	public void setRole(PersonRole role) {
+		this.role = role;
 	}
 	
 	

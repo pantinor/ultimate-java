@@ -77,7 +77,8 @@ public class Ultima4 extends SimpleGame implements Constants {
 
 	public DungeonViewer dungeonViewer;
 	public DialogWindow hud;
-
+	public SecondaryInputProcessor sip;
+	
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "Ultima4";
@@ -119,10 +120,13 @@ public class Ultima4 extends SimpleGame implements Constants {
 			
 			mapCamera = new OrthographicCamera();
 			
-			initGame();
-			
 			hud = new DialogWindow(stage, this, skin);
 			stage.addActor(hud);
+			sip = new SecondaryInputProcessor(this,stage);
+
+			initGame();
+			
+			Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
 			
 			new Thread(new GameTimer(this)).start();
 					
@@ -157,6 +161,8 @@ public class Ultima4 extends SimpleGame implements Constants {
 		BaseMap bm = maps.getMapById(id);
 		context.setCurrentMap(bm);
 		
+		hud.listActionInScroller("Entering " + Maps.convert(id).getLabel() + "!");
+		
 		if (bm.getType().equals("dungeon")) {
 			
 			dungeonViewer = new DungeonViewer(stage, this, "/data/"+bm.getFname());
@@ -175,7 +181,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 
 			if (renderer != null) renderer.dispose();
 			//renderer = new OrthogonalTiledMapRenderer(map, 2f);
-			renderer = new UltimaMapRenderer(bm, map, 2f);
+			renderer = new UltimaMapRenderer(this, bm, map, 2f);
 
 			//if (mapBatch != null) mapBatch.dispose();
 			mapBatch = renderer.getBatch();
@@ -264,21 +270,29 @@ public class Ultima4 extends SimpleGame implements Constants {
 		Tile ct = context.getCurrentMap().getTile(v);
 		
 		if (keycode == Keys.UP) {
+			
 			if (!preMove(v, Direction.NORTH)) return false;
 			mapCamera.position.y = mapCamera.position.y + tilePixelHeight;
-			postMove((int)v.x,(int)v.y-1);
+			postMove(Direction.NORTH, (int)v.x,(int)v.y-1);
+			
 		} else if (keycode == Keys.RIGHT) {
+			
 			if (!preMove(v, Direction.EAST)) return false;
 			mapCamera.position.x = mapCamera.position.x + tilePixelWidth;
-			postMove((int)v.x+1,(int)v.y);
+			postMove(Direction.EAST, (int)v.x+1,(int)v.y);
+			
 		} else if (keycode == Keys.LEFT) {
+			
 			if (!preMove(v, Direction.WEST)) return false;
 			mapCamera.position.x = mapCamera.position.x - tilePixelWidth;
-			postMove((int)v.x-1,(int)v.y);
+			postMove(Direction.WEST, (int)v.x-1,(int)v.y);
+			
 		} else if (keycode == Keys.DOWN) {
+			
 			if (!preMove(v, Direction.SOUTH)) return false;
 			mapCamera.position.y = mapCamera.position.y - tilePixelHeight;
-			postMove((int)v.x,(int)v.y+1);
+			postMove(Direction.SOUTH, (int)v.x,(int)v.y+1);
+			
 		} else if (keycode == Keys.E) {
 			if (ct.enterable()) {
 				Portal p = context.getCurrentMap().getPortal(v.x, v.y);
@@ -288,6 +302,10 @@ public class Ultima4 extends SimpleGame implements Constants {
 			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
 				context.saveGame(this, v);
 			}
+		} else if (keycode == Keys.T) {
+			Gdx.input.setInputProcessor(sip);
+			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);
+			return false;
 		}
 		
 		finishTurn();
@@ -323,7 +341,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 		return true;
 	}
 	
-	private void postMove(int newx, int newy) {
+	private void postMove(Direction dir, int newx, int newy) {
 				
 		//check if entering moongate
 		if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
@@ -337,6 +355,8 @@ public class Ultima4 extends SimpleGame implements Constants {
 				}
 			}
 		}
+		
+		hud.listActionInScroller(dir.toString());
 	}
 	
 	public void finishTurn() {
@@ -347,6 +367,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 		}
 		
 		context.incrementMoves();
+		hud.update(null,null);
 	}
 	
 	public void resurfaceFromDungeon() {

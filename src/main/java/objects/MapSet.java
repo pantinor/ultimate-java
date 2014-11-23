@@ -44,6 +44,9 @@ public class MapSet {
 								p.setConversation(c);
 							}
 						}
+						for (PersonRole pr : m.getCity().getPersonRoles()) {
+							if (p.getId() == pr.getId()) p.setRole(pr); 
+						}
 					}
 				}
 				

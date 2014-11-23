@@ -16,9 +16,7 @@ public class Sounds {
 	public static boolean backgroundPlaying = true;
 	
 	static {
-		backgroundList.add(Sound.BACKGROUND1);
-		backgroundList.add(Sound.BACKGROUND2);
-		backgroundList.add(Sound.BACKGROUND3);
+		backgroundList.add(Sound.OUTSIDE);
 	}
 	
 	public static Music.OnCompletionListener listener = new Music.OnCompletionListener() {

@@ -1,7 +1,7 @@
 package objects;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Conversation {
 	
@@ -12,7 +12,7 @@ public class Conversation {
 	private String description;
 	private int respAffectsHumility;
 	
-	private Map<String, Topic> topics = new HashMap<String, Topic>();
+	private List<Topic> topics = new ArrayList<Topic>();
 		
 	public Conversation(int index, int turnAwayProb, int questionFlag,  int respAffectsHumility, String[] strings) {
 		this.index = index;
@@ -23,25 +23,41 @@ public class Conversation {
 		this.pronoun = strings[1];
 		this.description = strings[2];
 		
-		topics.put("job",new Topic("job", strings[3], null, null, null));
-		topics.put("health",new Topic("health", strings[4], null, null, null));
+		topics.add(new Topic("job", strings[3], null, null, null));
+		topics.add(new Topic("health", strings[4], null, null, null));
+		topics.add(new Topic("look", description, null, null, null));
+		topics.add(new Topic("name", pronoun + " says: I am " + name, null, null, null));
+		topics.add(new Topic("give", pronoun + " says: I do not need thy gold.  Keep it!", null, null, null));
+		topics.add(new Topic("join", pronoun + " says: I cannot join thee.", null, null, null));
 
 		String query1 = strings[10];
 		String query2 = strings[11];
 		
 		if (questionFlag == 5) {
-			topics.put(query1, new Topic(query1, strings[5], strings[7], strings[8], strings[9]));
-			topics.put(query2, new Topic(query2, strings[6], null, null, null));
+			topics.add(new Topic(query1, strings[5], strings[7], strings[8], strings[9]));
+			topics.add(new Topic(query2, strings[6], null, null, null));
 		}
 		if (questionFlag == 6) {
-			topics.put(query1, new Topic(query1, strings[5], null, null, null));
-			topics.put(query2, new Topic(query2, strings[6], strings[7], strings[8], strings[9]));
+			topics.add(new Topic(query1, strings[5], null, null, null));
+			topics.add(new Topic(query2, strings[6], strings[7], strings[8], strings[9]));
 		}
 		if (questionFlag == 0) {
-			topics.put(query1, new Topic(query1, strings[5], null, null, null));
-			topics.put(query2, new Topic(query2, strings[6], null, null, null));
+			topics.add(new Topic(query1, strings[5], null, null, null));
+			topics.add(new Topic(query2, strings[6], null, null, null));
 		}
+		
 
+
+		
+	}
+	
+	public Topic matchTopic(String query) {
+		for (Topic t : topics) {
+			if (query.toLowerCase().contains(t.getQuery().toLowerCase())) {
+				return t;
+			}
+		}
+		return null;
 	}
 	
 	
@@ -81,13 +97,6 @@ public class Conversation {
 	}
 
 
-
-	public Map<String, Topic> getTopics() {
-		return topics;
-	}
-
-
-
 	public void setIndex(int index) {
 		this.index = index;
 	}
@@ -120,12 +129,6 @@ public class Conversation {
 
 	public void setRespAffectsHumility(int respAffectsHumility) {
 		this.respAffectsHumility = respAffectsHumility;
-	}
-
-
-
-	public void setTopics(Map<String, Topic> topics) {
-		this.topics = topics;
 	}
 
 

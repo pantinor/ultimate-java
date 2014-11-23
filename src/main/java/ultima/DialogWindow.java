@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -20,12 +19,11 @@ public class DialogWindow extends Window implements Observer {
 	
 	private Ultima4 mainGame;
 	
-	public static int width = 120;
-	public static int height = 130;
+	public static int width = 140;
+	public static int height = 140;
 	
 	private Label topText;
 	private Label middleText;
-	private TextField input;
 	private LogScrollPane scrollPane;
 	
 	private boolean collapsed;
@@ -45,22 +43,16 @@ public class DialogWindow extends Window implements Observer {
 			}
 		});
 		
-		topText = new Label("",skin,"gray-background");
+		topText = new Label("", skin, "stats");
 		topText.setAlignment(Align.topLeft);
-
-		middleText = new Label("",skin,"gray-background");
-
-		setPartyText(mainGame.context.getParty()); 
-
-		scrollPane = new LogScrollPane(skin, width);
-		for (int i=0;i<4;i++) 
-			scrollPane.add("dogs and cats do not always play well together.");
+		topText.setWrap(true);
 		
-		input = new TextField("",skin);
-		
+		middleText = new Label("", skin, "stats");
+		middleText.setAlignment(Align.topLeft);
 
-				
-		defaults().padTop(2).padBottom(2).padLeft(2).padRight(2).left();
+		scrollPane = new LogScrollPane(skin, width, "logs");
+						
+		defaults().pad(2);
 		
 		Table top = new Table();
 		top.add(topText).maxWidth(width).width(width).maxHeight(height).height(height);	
@@ -73,11 +65,8 @@ public class DialogWindow extends Window implements Observer {
 		row();
 		
 		Table bottom = new Table();
-		bottom.add(scrollPane).maxWidth(width).width(width).maxHeight(height).height(height);	
+		bottom.add(scrollPane).maxWidth(width).width(width);
 		add(bottom);
-		row();
-
-		add(input).maxWidth(width).width(width);
 
 		pack();
 
@@ -85,14 +74,13 @@ public class DialogWindow extends Window implements Observer {
 		
 		setPosition(700, 500);
 
-
 	}
 	
 	public void setPartyText(Party party) {
 		StringBuffer sb = new StringBuffer();
 		int index=1;
 		for(PartyMember pm : party.getMembers()) {
-			sb.append(index + "-" +pm.getPlayer().name + "   " + pm.getPlayer().hp + "" + pm.getPlayer().status.getValue());
+			sb.append(index + "-" +pm.getPlayer().name + "   " + pm.getPlayer().hp + "" + pm.getPlayer().status.getValue()+"\n");
 			index++;
 		}
 		topText.setText(sb.toString());
@@ -130,6 +118,10 @@ public class DialogWindow extends Window implements Observer {
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		setPartyText(mainGame.context.getParty()); 
+	}
+	
+	public void listActionInScroller(String text) {
+		scrollPane.add(text);
 	}
 	
 

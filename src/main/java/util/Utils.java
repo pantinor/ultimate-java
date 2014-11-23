@@ -183,7 +183,7 @@ public class Utils implements Constants {
 		end = startOffset + MAX_PEOPLE;
 		count = 0;
 		for (int i = startOffset; i < end; i++) {
-			byte m = bytes[i];
+			int m = bytes[i] & 0xff;
 			Person p = people[count];
 			if (p == null) {
 				count++;

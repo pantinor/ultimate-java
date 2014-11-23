@@ -67,6 +67,24 @@ public class City {
 	public void setPeople(Person[] people) {
 		this.people = people;
 	}
+	public Person getPersonAt(int x, int y) {
+		for (Person p: people) {
+			if (p==null) continue;
+			//System.out.println(x +","+ y +" p:"+ p.getX() +","+ p.getY());
+			if (p.getX() == x && p.getY() == y) {
+				return p;
+			}
+		}
+		return null;
+	}
+	
+	public Person resetTalkingFlags() {
+		for (Person p: people) {
+			if (p==null) continue;
+			p.setTalking(false);
+		}
+		return null;
+	}
 	
 	
 

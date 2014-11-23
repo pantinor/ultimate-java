@@ -1,5 +1,9 @@
 {
-com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: fonts/Arial_12.fnt } },
+com.badlogic.gdx.graphics.g2d.BitmapFont: { 
+	default-font: { file: fonts/Arial_12.fnt },
+	corsiva-font: { file: fonts/corsiva.fnt },
+	corsiva-20-font: { file: fonts/corsiva-20.fnt } 
+},
 com.badlogic.gdx.graphics.Color: {
 	green: { a: 1, b: 0, g: 1, r: 0 },
 	white: { a: 1, b: 1, g: 1, r: 1 },
@@ -19,7 +23,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 },
 com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
 	default: { vScroll: default-scroll, hScrollKnob: default-round-large, background: default-rect, hScroll: default-scroll, vScrollKnob: default-round-large },
-	gray-background: { vScroll: default-scroll, hScrollKnob: default-round-large, hScroll: default-scroll, vScrollKnob: default-round-large, background: textfield }
+	logs: { vScroll: default-scroll, hScrollKnob: default-round-large, hScroll: default-scroll, vScrollKnob: default-round-large, background: textfield }
 },
 com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
 	default: {
@@ -35,7 +39,7 @@ com.badlogic.gdx.scenes.scene2d.ui.SplitPane$SplitPaneStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
 	default: { titleFont: default-font, background: default-window, titleFontColor: white },
 	custom: { titleFont: default-font, background: default-window, titleFontColor: white },
-	dialog: { titleFont: default-font, background: default-window, titleFontColor: white, stageBackground: dialogDim }
+	dialog: { titleFont: corsiva-20-font, background: default-window, titleFontColor: white, stageBackground: dialogDim }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
 	default-horizontal: { background: default-slider, knob: default-slider-knob }
@@ -43,11 +47,12 @@ com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: { font: default-font, fontColor: white },
 	black-font: { font: default-font, fontColor: black },
-	gray-background: { font: default-font, fontColor: white, background: textfield }
+	stats: { font: corsiva-20-font, fontColor: white, background: textfield },
+	logs: { font: corsiva-20-font, fontColor: white }
 	
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
-	default: { selection: selection, background: textfield, font: default-font, fontColor: white, cursor: cursor }
+	default: { selection: selection, background: textfield, font: corsiva-20-font, fontColor: white, cursor: cursor }
 },
 com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 	default: { checkboxOn: check-on, checkboxOff: check-off, font: default-font, fontColor: white }

@@ -45,6 +45,7 @@ public class BaseMap implements Constants {
 	private List<Moongate> moongates;
 	private Tile[] tiles;
 	private float[][] shadownMap;
+	private long wanderFlag = 0;
 	
 
 	public Moongate getMoongate(int phase) {
@@ -315,11 +316,16 @@ public class BaseMap implements Constants {
 		
 		if (city != null) {
 			
+			wanderFlag++;
+			
 			for(Person p : city.getPeople()) {
 				if (p == null) continue;
 				if (p.getMovement() == ObjectMovementBehavior.WANDER) {
 					Direction dir = Direction.getRandomValidDirection(getValidMovesMask(p.getX(), p.getY()));
 					if (dir == null) continue; 
+					if (wanderFlag % 2 == 0) continue; 
+					if (p.isTalking()) continue; 
+
 					Vector3 pos = null;
 					if (dir == Direction.NORTH) pos = new Vector3(p.getX(), p.getY()-1, 0);
 					if (dir == Direction.SOUTH) pos = new Vector3(p.getX(), p.getY()+1, 0);

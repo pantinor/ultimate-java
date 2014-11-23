@@ -22,6 +22,7 @@ import static com.badlogic.gdx.graphics.g2d.Batch.Y2;
 import static com.badlogic.gdx.graphics.g2d.Batch.Y3;
 import static com.badlogic.gdx.graphics.g2d.Batch.Y4;
 import objects.BaseMap;
+import objects.Party.PartyMember;
 import objects.Person;
 import util.ShadowFOV;
 
@@ -37,12 +38,14 @@ import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
 public class UltimaMapRenderer extends BatchTiledMapRenderer {
 	
 	private BaseMap bm;
+	private Ultima4 mainGame;
 	private ShadowFOV fov = new ShadowFOV();
 	float stateTime = 0;
 
-	public UltimaMapRenderer(BaseMap bm, TiledMap map, float unitScale) {
+	public UltimaMapRenderer(Ultima4 mainGame, BaseMap bm, TiledMap map, float unitScale) {
 		super(map, unitScale);
 		this.bm = bm;
+		this.mainGame = mainGame;
 	}
 
 	@Override
@@ -73,7 +76,7 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 		int starty = (row2-row1)/2 + row1 ;
 		float[][] lightMap = null;
 		if (bm.getShadownMap() != null) {
-			lightMap = fov.calculateFOV(bm.getShadownMap(), startx, starty, 15);	
+			//lightMap = fov.calculateFOV(bm.getShadownMap(), startx, starty, 15);	
 		}
 
 		for (int row = row2; row >= row1; row--) {
@@ -202,6 +205,9 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 		if (bm.getCity() != null) {
 			for(Person p : bm.getCity().getPeople()) {
 				if (p == null) {
+					continue;
+				}
+				if (p.getConversation() != null && mainGame.context.getParty().isJoinedInParty(p.getConversation().getName())) {
 					continue;
 				}
 				//see if person is in shadow
