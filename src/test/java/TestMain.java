@@ -1,4 +1,4 @@
-import ultima.DialogWindow;
+import ultima.LogScrollerWindow;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -30,7 +30,7 @@ public class TestMain extends InputAdapter implements ApplicationListener {
 	private OrthogonalTiledMapRenderer renderer;
 	Batch mapBatch, batch2;
 	Stage stage;
-	DialogWindow dialog;
+	LogScrollerWindow dialog;
 	Skin skin;
 	static int screenWidth = 1200;
 	static int screenHeight = 800;
@@ -62,7 +62,7 @@ public class TestMain extends InputAdapter implements ApplicationListener {
 		font.setColor(Color.WHITE);
 		batch2 = new SpriteBatch();
 		stage = new Stage();
-		dialog = new DialogWindow(stage,null, skin);
+		dialog = new LogScrollerWindow(stage,null, skin);
 		stage.addActor(dialog);
 //		TiledMapTileLayer mgLayer = (TiledMapTileLayer)map.getLayers().get("Moongate Layer");
 //		MapLayer mgLayerProperties = map.getLayers().get("Moongate Properties");

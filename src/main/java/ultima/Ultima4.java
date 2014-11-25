@@ -1,18 +1,23 @@
 package ultima;
 
+import java.util.List;
+
 import objects.ArmorSet;
 import objects.BaseMap;
 import objects.CreatureSet;
 import objects.MapSet;
 import objects.Moongate;
 import objects.Party;
+import objects.Party.PartyMember;
 import objects.Portal;
 import objects.SaveGame;
 import objects.Tile;
 import objects.TileRules;
 import objects.TileSet;
 import objects.WeaponSet;
+import util.FixedSizeArrayList;
 import util.Utils;
+import vendor.ArmorVendor;
 import vendor.BaseVendor;
 import vendor.VendorClassSet;
 import vendor.WeaponVendor;
@@ -80,7 +85,9 @@ public class Ultima4 extends SimpleGame implements Constants {
 	int phase = 0, trammelphase = 0, trammelSubphase = 0, feluccaphase = 0;
 
 	public DungeonViewer dungeonViewer;
-	public DialogWindow hud;
+	public List<String> logs = new FixedSizeArrayList<String>(5);
+	public boolean showZstats = false;
+	
 	public SecondaryInputProcessor sip;
 	
 	public static void main(String[] args) {
@@ -121,14 +128,15 @@ public class Ultima4 extends SimpleGame implements Constants {
 			//textures for the phases of  the moon
 			moonAtlas = new TextureAtlas(Gdx.files.classpath("graphics/moon-atlas.txt"));
 
+			//font = new BitmapFont(Gdx.files.classpath("fonts/Calisto_18.fnt"));
 			font = new BitmapFont();
+
 			font.setColor(Color.WHITE);		
 			batch2 = new SpriteBatch();
+			batch2.enableBlending();
 			
 			mapCamera = new OrthographicCamera();
 			
-			hud = new DialogWindow(stage, this, skin);
-			stage.addActor(hud);
 			sip = new SecondaryInputProcessor(this,stage);
 
 			initGame();
@@ -168,7 +176,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 		BaseMap bm = maps.getMapById(id);
 		context.setCurrentMap(bm);
 		
-		hud.listActionInScroller("Entering " + Maps.convert(id).getLabel() + "!");
+		log("Entering " + Maps.convert(id).getLabel() + "!");
 		
 		if (bm.getType().equals("dungeon")) {
 			
@@ -244,13 +252,46 @@ public class Ultima4 extends SimpleGame implements Constants {
 
 	
 			batch2.begin();
-			Vector3 v = getCurrentMapCoords();
-			font.draw(batch2, "map coords: " + v, 10, 40);
-			font.draw(batch2, "fps: " + Gdx.graphics.getFramesPerSecond(), 0, 20);
+			
+			//Vector3 v = getCurrentMapCoords();
+			//font.draw(batch2, "map coords: " + v, 10, 40);
+			//font.draw(batch2, "fps: " + Gdx.graphics.getFramesPerSecond(), 0, 20);
+			font.draw(batch2, "Food: " +context.getParty().getSaveGame().food + "    Gold: " +context.getParty().getSaveGame().gold , 5, SCREEN_HEIGHT - 5);
+
+			int y=5;
+			for (int i=context.getParty().getMembers().size()-1;i>=0;i--) {
+				PartyMember pm = context.getParty().getMember(i);
+				String s = (i+1) + " - " +pm.getPlayer().name + "   " + pm.getPlayer().hp + "" + pm.getPlayer().status.getValue();
+				y=y+18;
+				font.draw(batch2, s , SCREEN_WIDTH-125, y);
+			}
+			
+			y=18*5;
+			for (String s : logs) {
+				font.draw(batch2, s, 5, y);
+				y=y-18;
+			}
+			
+			if (showZstats) {
+				y=SCREEN_HEIGHT-5;
+				String s = context.getParty().getSaveGame().getZstats();
+				String[] pages = s.split("~");
+				for (int i=0;i<pages.length;i++) {
+					String[] lines = pages[i].split("\\|");
+					for (int j=0;j<lines.length;j++) {
+						if (lines[j] == null || lines[j].length() < 1) continue;
+						font.draw(batch2, lines[j] , SCREEN_WIDTH-140, y);
+						y = y - 18;
+					}
+					y = y - 5;
+				}
+			}
+
 			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
 				batch2.draw(moonAtlas.findRegion("phase_" + trammelphase),375,SCREEN_HEIGHT-25,25,25);
 				batch2.draw(moonAtlas.findRegion("phase_" + feluccaphase),400,SCREEN_HEIGHT-25,25,25);
 			}
+			
 			batch2.end();
 			
 			stage.act();
@@ -313,6 +354,8 @@ public class Ultima4 extends SimpleGame implements Constants {
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);
 			return false;
+		} else if (keycode == Keys.Z) {
+			showZstats = !showZstats;
 		}
 		
 		finishTurn();
@@ -363,7 +406,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 			}
 		}
 		
-		hud.listActionInScroller(dir.toString());
+		log(dir.toString());
 	}
 	
 	public void finishTurn() {
@@ -374,7 +417,6 @@ public class Ultima4 extends SimpleGame implements Constants {
 		}
 		
 		context.incrementMoves();
-		hud.update(null,null);
 	}
 	
 	public void resurfaceFromDungeon() {
@@ -517,6 +559,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 		
 		switch(type) {
 		case ARMOR:
+			v = new ArmorVendor(vendorClassSet.getVendor(type, map), context.getParty());
 			break;
 		case FOOD:
 			break;
@@ -536,7 +579,6 @@ public class Ultima4 extends SimpleGame implements Constants {
 			break;
 		case WEAPON:
 			v = new WeaponVendor(vendorClassSet.getVendor(type, map), context.getParty());
-
 			break;
 		default:
 			break;
@@ -548,6 +590,8 @@ public class Ultima4 extends SimpleGame implements Constants {
 		
 	}
     
-
+	public void log(String s) {
+		logs.add(s);
+	}
 
 }

@@ -31,7 +31,7 @@ public class SaveGame implements Constants {
 	public int[] karma = new int[Virtue.MAX.ordinal()];
 	public int[] armor = new int[8];
 	public int[] weapons = new int[16];
-	public int[] reagents = new int[Reagent.REAG_MAX.ordinal()];
+	public int[] reagents = new int[8];
 	public int[] mixtures = new int[SPELL_MAX];
 	
 	public int items = 0;
@@ -94,7 +94,7 @@ public class SaveGame implements Constants {
 			dos.writeShort(weapons[i]);
 		}
 
-		for (int i = 0; i < Reagent.REAG_MAX.ordinal(); i++) {
+		for (int i = 0; i < 8; i++) {
 			dos.writeShort(reagents[i]);
 		}
 
@@ -169,7 +169,7 @@ public class SaveGame implements Constants {
 
 		}
 
-		for (int i = 0; i < Reagent.REAG_MAX.ordinal(); i++) {
+		for (int i = 0; i < 8; i++) {
 			reagents[i] = dis.readShort();
 		}
 
@@ -389,6 +389,75 @@ public class SaveGame implements Constants {
 
 		return 1;
 	}
+	
+	//to proper case
+	public static String pc(String s) {
+		return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+	}
+	
+	
+	public String getZstats() {
+		StringBuffer sb = new StringBuffer();
+		for (int i=0;i<members;i++) {
+			SaveGamePlayerRecord p = players[i];
+			
+			sb.append(
+					pc(p.name) + "  " +
+					pc(p.klass.toString()) + "  " +
+					pc(p.sex.getDesc()) + "  " +
+					p.status.getValue() + "|"
+					);
+			
+			sb.append(
+					"MP: " + p.mp + "  LV: " + Math.round(p.hpMax / 100) + "|" +
+					"STR: " + p.str + "  HP: " + p.hp + "|"+
+					"DEX: " + p.dex + "  HM: " + p.hpMax + "|"+
+					"INT: " + p.intel + "  EX: " + p.xp + "|"+
+					"W: " + pc(p.weapon.toString()) + "|" +
+					"A: " + pc(p.armor.toString()) + "|"
+					);
+			
+			sb.append("~");
+
+		}
+		
+		sb.append("~");
+		for (int i=0;i<16;i++) {
+			int count = weapons[i];
+			if (count == 0) continue;
+			sb.append(count + " - " + pc(WeaponType.get(i).toString()) + "|");
+		}
+		
+		sb.append("~");
+		for (int i=0;i<8;i++) {
+			int count = armor[i];
+			if (count == 0) continue;
+			sb.append(count + " - " + pc(ArmorType.get(i).toString()) + "|");
+		}
+		
+		sb.append("~");
+		sb.append(torches + " - Torches|");
+		sb.append(gems + " - Gems|");
+		sb.append(keys + " - Keys|");
+		if (sextants > 0) sb.append(sextants + " - Sextant|");
+
+		sb.append("~");
+		for (int i=0;i<8;i++) {
+			int count = reagents[i];
+			if (count == 0) continue;
+			sb.append(count + " - " + pc(Reagent.get(i).toString()) + "|");
+		}
+		
+		sb.append("~");
+		for (int i=0;i<SPELL_MAX;i++) {
+			int count = mixtures[i];
+			if (count == 0) continue;
+			sb.append(count + " - " + pc(SpellNames.get(i).toString()) + "|");
+		}
+		
+		return sb.toString();
+	}
+	
 
 
 }

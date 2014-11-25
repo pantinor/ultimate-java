@@ -66,8 +66,8 @@ public class Person implements Constants {
 	public void setDialogId(int dialogId) {
 		this.dialogId = dialogId;
 	}
-	@Override
-	public String toString() {
+	
+	public String toTMXString() {
 		
 		String template = "<object name=\"%s\" type=\"person\" x=\"%s\" y=\"%s\" width=\"16\" height=\"16\">\n"+
 							"<properties>\n"+
@@ -82,6 +82,14 @@ public class Person implements Constants {
 		return String.format(template, 
 				id, start_x*16, start_y*16, tile.getName(), movement, start_x, start_y, dialogId);
 	}
+	
+	
+	
+	@Override
+	public String toString() {
+		return String.format("Person [id=%s, start_x=%s, start_y=%s, dialogId=%s, role=%s]", id, start_x, start_y, dialogId, role);
+	}
+	
 	public int getTileIndex() {
 		return tileIndex;
 	}

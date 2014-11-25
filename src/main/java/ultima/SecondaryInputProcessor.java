@@ -66,7 +66,7 @@ public class SecondaryInputProcessor extends InputAdapter {
 		ConversationDialog dialog = null;
 		
 		if (initialKeyCode == Keys.T) {
-			game.hud.listActionInScroller("Talk > " + dir.toString());
+			game.log("Talk > " + dir.toString());
 			City city = bm.getCity();
 			if (city != null) {
 				Person p = city.getPersonAt(x, y);
@@ -77,11 +77,11 @@ public class SecondaryInputProcessor extends InputAdapter {
 			}
 		} else if (initialKeyCode == Keys.L) {
 			
-			game.hud.listActionInScroller("Look > " + dir.toString());
+			game.log("Look > " + dir.toString());
 			
 		} else if (initialKeyCode == Keys.S) {
 			
-			game.hud.listActionInScroller("Search > " + dir.toString());
+			game.log("Search > " + dir.toString());
 			
 		}
 		

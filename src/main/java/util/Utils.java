@@ -21,6 +21,10 @@ import org.lwjgl.BufferUtils;
 import ultima.Constants;
 
 public class Utils implements Constants {
+
+	public static String properCase(String s) {
+		return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+	}
 	
 	/**
 	 * load the tile indexes from the ULT file

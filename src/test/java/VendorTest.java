@@ -1,12 +1,19 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
+import objects.BaseMap;
+import objects.MapSet;
 import objects.Party;
+import objects.Person;
 import objects.SaveGame;
+import objects.TileSet;
 
 import org.testng.annotations.Test;
 
@@ -19,7 +26,7 @@ import vendor.WeaponVendor;
 
 public class VendorTest {
 
-	@Test
+	//@Test
 	public void testWeaponVendor() throws Exception {
 		
 		File file = new File("target/classes/xml/vendor.xml");
@@ -71,6 +78,79 @@ public class VendorTest {
 
 	}
 	
+	@Test
+	public void printVendors() throws Exception {
+		
+		
+		
+		File file2 = new File("target/classes/xml/tileset-base.xml");
+		JAXBContext jaxbContext = JAXBContext.newInstance(TileSet.class);
+		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		TileSet ts = (TileSet) jaxbUnmarshaller.unmarshal(file2);
+		ts.setMaps();
+
+		File file3 = new File("target/classes/xml/maps.xml");
+		jaxbContext = JAXBContext.newInstance(MapSet.class);
+		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		MapSet ms = (MapSet) jaxbUnmarshaller.unmarshal(file3);
+		ms.init(ts);
+		
+		ArrayList<Holder> tm = new ArrayList<Holder>();
+				
+		for (BaseMap map : ms.getMaps()) {
+			
+			if (map.getCity() == null) {
+				continue;
+			}
+
+			//System.out.println(Maps.convert(map.getId()));
+
+			for (int i=0;i<map.getCity().getPeople().length;i++) {
+				Person p = map.getCity().getPeople()[i];
+				if (p != null && p.getRole() != null && p.getRole().getInventoryType() != null) {
+					tm.add(new Holder(p.getRole().getInventoryType(), p, Maps.convert(map.getId())));
+					System.out.println("type=\"" +p.getRole().getInventoryType()+ "\" personId=\"" + p.getId() + "\" " + Maps.convert(map.getId()));
+
+				}
+			}
+						
+
+
+			
+			
+		}
+		
+		Collections.sort(tm, new MyComparator());
+		
+		for (Holder h : tm) {
+			//System.out.println("type=\"" +h.t+ "\" personId=\"" + h.p.getId() + "\" " + h.map);
+		}
+		
+		
+		
+	}
 	
+	public class MyComparator implements Comparator<Holder> {
+	    public int compare(Holder h1, Holder h2){
+	        return h1.t.ordinal() - h2.t.ordinal();
+	    }
+	}
+	
+	public class Holder implements Comparable<Holder> {
+		InventoryType t;
+		Person p;
+		Maps map;
+		public Holder(InventoryType t, Person p, Maps map) {
+			this.t = t;
+			this.p = p;
+			this.map = map;
+		}
+		@Override
+		public int compareTo(Holder o) {
+	        return t.ordinal() - o.t.ordinal();
+		}
+	}
+	
+
 
 }

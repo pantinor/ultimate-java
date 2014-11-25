@@ -42,6 +42,11 @@ public class PersonRole {
 		this.role = role;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("role=%s, inventoryType=%s, id=%s", role, inventoryType, id);
+	}
+
 
 
 	

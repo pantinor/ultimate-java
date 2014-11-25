@@ -28,7 +28,7 @@ public abstract class BaseVendor {
 	Party party;
 	InventoryType type;
 	String welcomeMessage;
-	String farewellMessage;
+	
 	Item currentSelectedItem;
 	int currentCount;
 	
@@ -46,15 +46,6 @@ public abstract class BaseVendor {
 	public abstract boolean nextDialog() ;
 	
 	public abstract void setResponse(String input) ;
-	
-	
-	public void buy() {
-		
-	}
-	
-	public void sell() {
-		
-	}
 	
 	public boolean checkCanPay(Item item) {
 		

@@ -9,6 +9,8 @@ import javax.imageio.ImageIO;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
+import java.awt.Color;
+
 import objects.Tile;
 import objects.TileSet;
 
@@ -68,7 +70,7 @@ public class PackImagesUtil {
 
 	}
 	
-	public static void main(String[] argv) throws Exception {
+	public static void main3(String[] argv) throws Exception {
 		MaxRectsPacker mrp = new MaxRectsPacker();
 		ArrayList<MaxRectsPacker.Rect> packedRects = new ArrayList<MaxRectsPacker.Rect>();
 		int rows = 2;
@@ -90,6 +92,73 @@ public class PackImagesUtil {
 	    System.out.println("done");
 	
 	}
+	
+	public static void main(String[] argv) throws Exception {
+		
+		String inputFileName = "C:\\Users\\Paul\\Desktop\\ultima_v_5_warriors_of_destiny_tileset.png";
+		String outputFileName = "C:\\Users\\Paul\\Desktop\\ultima_5_tileset.png";
+
+	
+		//ImageTransparency.convert(inputFileName, outputFileName);		
+		
+		MaxRectsPacker mrp = new MaxRectsPacker();
+		ArrayList<MaxRectsPacker.Rect> packedRects = new ArrayList<MaxRectsPacker.Rect>();
+		int rows = 16;
+		int cols = 32;
+		int w = 32;
+		for (int i=0;i<rows;i++) {
+			for (int j=0;j<cols;j++) {
+				MaxRectsPacker.Rect rect = new MaxRectsPacker.Rect(i*w,j*w,w,w);
+				rect.name = "phase";
+				rect.index = 0;
+				packedRects.add(rect);
+			}
+		}
+		
+		System.out.println("Writing: number of sprites: " +packedRects.size());
+		
+		mrp.writePackFileWithRects(new File("."), "ultima5-atlas.txt",packedRects, "ultima_5_tileset.png");
+		
+	    System.out.println("done");
+	
+	}
+	
+	public static void main5(String[] argv) throws Exception {
+		
+		String inputFileName = "C:\\Users\\Paul\\Desktop\\nethack.gif";
+		String outputFileName = "C:\\Users\\Paul\\Desktop\\roguelike-sprites.png";
+
+		Color[] rgbs = {
+				new Color(32,64,64),
+				new Color(24,48,48),
+				new Color(0,32,32),
+				};
+	
+		ImageTransparency.convert(inputFileName, outputFileName, rgbs);		
+		
+		MaxRectsPacker mrp = new MaxRectsPacker();
+		ArrayList<MaxRectsPacker.Rect> packedRects = new ArrayList<MaxRectsPacker.Rect>();
+		int rows = 30;
+		int cols = 30;
+		int w = 32;
+		for (int i=0;i<rows;i++) {
+			for (int j=0;j<cols;j++) {
+				MaxRectsPacker.Rect rect = new MaxRectsPacker.Rect(i*w,j*w,w,w);
+				rect.name = "phase";
+				rect.index = 0;
+				packedRects.add(rect);
+			}
+		}
+		
+		System.out.println("Writing: number of sprites: " +packedRects.size());
+		
+		mrp.writePackFileWithRects(new File("."), "roguelike-sprites-atlas.txt",packedRects, "roguelike-sprites.png");
+		
+	    System.out.println("done");
+	
+	}
+	
+	
 
 	
 }

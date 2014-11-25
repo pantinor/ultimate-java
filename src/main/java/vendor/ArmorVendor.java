@@ -2,11 +2,11 @@ package vendor;
 
 import objects.Party;
 
-public class WeaponVendor extends BaseVendor {
+public class ArmorVendor extends BaseVendor {
 	
 	String welcomeMessage = "Welcome to %s\n%s says:\nWelcome friend!\nArt thou here to Buy or Sell?";
 	
-	public WeaponVendor(Vendor vendor, Party party) {
+	public ArmorVendor(Vendor vendor, Party party) {
 		super(vendor, party);
 		state = ConvState.ASK_BUY_SELL;
 	}
@@ -15,8 +15,6 @@ public class WeaponVendor extends BaseVendor {
 
 	@Override
 	public boolean nextDialog() {
-		
-		int haveCount = 0;
 		
 		switch(state) {
 		case ASK_BUY_SELL:
@@ -39,8 +37,7 @@ public class WeaponVendor extends BaseVendor {
 			break;
 
 		case BUY_ITEM:
-			haveCount = party.getSaveGame().weapons[currentSelectedItem.getWeaponType().ordinal()];
-			party.getSaveGame().weapons[currentSelectedItem.getWeaponType().ordinal()] = haveCount + currentCount;
+			party.getSaveGame().armor[currentSelectedItem.getArmorType().ordinal()] = currentCount;
 			party.getSaveGame().gold = party.getSaveGame().gold - currentSelectedItem.getPrice()*currentCount;
 			displayToScreen(String.format("%s says: A fine choice!", vendor.getOwner()));
 			displayToScreen(String.format("%s says: anything else?", vendor.getOwner()));
@@ -50,7 +47,7 @@ public class WeaponVendor extends BaseVendor {
 		case WAIT_SELL_INPUT:
 			String sellList = "Excellent!\n";
 			for (Item i : vendor.getVendorClass().getItemCatalog()) {
-				int c = party.getSaveGame().weapons[i.getWeaponType().ordinal()];
+				int c = party.getSaveGame().armor[i.getArmorType().ordinal()];
 				if (c > 0) {
 					sellList += i.getChoice().toUpperCase() + " - " + i.getName()+" for " + i.getPrice()/2 + "gp. ("+c+")\n";
 				} else {
@@ -74,8 +71,8 @@ public class WeaponVendor extends BaseVendor {
 			break;
 			
 		case SELL_ITEM:
-			haveCount = party.getSaveGame().weapons[currentSelectedItem.getWeaponType().ordinal()];
-			party.getSaveGame().weapons[currentSelectedItem.getWeaponType().ordinal()] = haveCount - currentCount;
+			int haveCount = party.getSaveGame().armor[currentSelectedItem.getArmorType().ordinal()];
+			party.getSaveGame().armor[currentSelectedItem.getArmorType().ordinal()] = haveCount - currentCount;
 			party.getSaveGame().gold = party.getSaveGame().gold + (currentSelectedItem.getPrice()/2) * currentCount;
 			displayToScreen("Fine! Anything else?");
 			break;
@@ -149,7 +146,7 @@ public class WeaponVendor extends BaseVendor {
 			if (item == null) {
 				state = ConvState.WAIT_SELL_DONT_HAVE_THAT_MANY;
 			} else {
-				int count = party.getSaveGame().weapons[item.getWeaponType().ordinal()];
+				int count = party.getSaveGame().armor[item.getArmorType().ordinal()];
 				if (count > 1) {
 					state = ConvState.WAIT_SELL_HOW_MANY;
 				} else {
@@ -164,7 +161,7 @@ public class WeaponVendor extends BaseVendor {
 			} catch (Exception e) {
 				count = 1;
 			}
-			int haveCount = party.getSaveGame().weapons[currentSelectedItem.getWeaponType().ordinal()];
+			int haveCount = party.getSaveGame().armor[currentSelectedItem.getArmorType().ordinal()];
 			if (count <= haveCount) {
 				currentCount = count;
 				state = ConvState.SELL_ITEM;

@@ -50,6 +50,29 @@ public class ImageTransparency {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void convert(String inputFileName, String outputFileName, Color[] transColors) {
+		try {
+
+			BufferedImage source = ImageIO.read(new File(inputFileName));
+			
+			for (Color color : transColors) {
+				
+				int rgb = color.getRGB();
+				
+				MARKER_RED = (rgb >> 16) & 0xFF;
+				MARKER_GREEN = (rgb >> 8) & 0xFF;
+				MARKER_BLUE = rgb & 0xFF;
+				
+				source = makeColorTransparent(source, color);
+			}
+			
+			ImageIO.write(source, "PNG", new File(outputFileName));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static void convert(String inputFileName, String outputFileName, int rgb) {
 		try {

@@ -517,13 +517,15 @@ public interface Constants {
 	
 	public enum SexType {
 		
-		SEX_MALE(0xB),
-		SEX_FEMALE(0xC);
+		SEX_MALE(0xB,"Male"),
+		SEX_FEMALE(0xC, "Female");
 
 		private int b;
-
-		private SexType(int value) {
+		private String desc;
+		
+		private SexType(int value, String d) {
 			b = value;
+			desc = d;
 		}
 
 		public int getValue() {
@@ -539,6 +541,9 @@ public interface Constants {
 			return null;
 		}
 
+		public String getDesc() {
+			return desc;
+		}
 	}
 	
 	public enum StatusType {
@@ -576,12 +581,23 @@ public interface Constants {
 		MOSS,
 		PEARL,
 		NIGHTSHADE,
-		MANDRAKE,
-		REAG_MAX;
+		MANDRAKE;
 		
 		public static Reagent get(int v) {
 			for (Reagent x : values()) {
 				if (x.ordinal() == (v&0xff)) {
+					return x;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public enum SpellNames {
+		awaken, blink, cure, dispel, energy, fireball, gate, heal, iceball, jinx, kill, light, magicmissile, negate, open, protection, quickness, resurrect, sleep, tremor, undead, view, winds, xit, yup, zdown;
+		public static SpellNames get(int i) {
+			for (SpellNames x : values()) {
+				if (x.ordinal() == i) {
 					return x;
 				}
 			}
