@@ -28,19 +28,19 @@ import ultima.Constants.Direction;
 import ultima.Constants.Reagent;
 import util.ShadowFOV;
 import util.Utils;
-import vendor.Script;
-import vendor.ScriptSet;
+import vendor.VendorClass;
+import vendor.VendorClassSet;
 
 
 public class TestJaxb {
 	
 	@Test
 	public void testScript() throws Exception {
-		File file = new File("target/classes/xml/vendorScript.xml");
-		JAXBContext jaxbContext = JAXBContext.newInstance(ScriptSet.class);
+		File file = new File("target/classes/xml/vendor.xml");
+		JAXBContext jaxbContext = JAXBContext.newInstance(VendorClassSet.class);
 		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		ScriptSet ss = (ScriptSet) jaxbUnmarshaller.unmarshal(file);
-		for (Script s : ss.getScripts()) {
+		VendorClassSet ss = (VendorClassSet) jaxbUnmarshaller.unmarshal(file);
+		for (VendorClass s : ss.getVendorClasses()) {
 			System.out.println(s);
 		}
 	}
@@ -222,8 +222,8 @@ public class TestJaxb {
 		
 		sg2.food = 30000;
 		sg2.gold = 200;
-		sg2.reagents[Reagent.REAG_GINSENG.ordinal()] = 3;
-		sg2.reagents[Reagent.REAG_GARLIC.ordinal()] = 4;
+		sg2.reagents[Reagent.GINSENG.ordinal()] = 3;
+		sg2.reagents[Reagent.GARLIC.ordinal()] = 4;
 		sg2.torches = 2;
 		
 		sg2.players[0] = avatar;

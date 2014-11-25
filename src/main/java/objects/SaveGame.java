@@ -28,9 +28,9 @@ public class SaveGame implements Constants {
 	public int keys = 0;
 	public int sextants = 0;
 	
-	public int[] karma = new int[Virtue.VIRT_MAX.ordinal()];
-	public int[] armor = new int[ArmorType.ARMR_MAX.ordinal()];
-	public int[] weapons = new int[WeaponType.WEAP_MAX.ordinal()];
+	public int[] karma = new int[Virtue.MAX.ordinal()];
+	public int[] armor = new int[8];
+	public int[] weapons = new int[16];
 	public int[] reagents = new int[Reagent.REAG_MAX.ordinal()];
 	public int[] mixtures = new int[SPELL_MAX];
 	
@@ -86,11 +86,11 @@ public class SaveGame implements Constants {
 		dos.writeShort(keys);
 		dos.writeShort(sextants);
 
-		for (int i = 0; i < ArmorType.ARMR_MAX.ordinal(); i++) {
+		for (int i = 0; i < 8; i++) {
 			dos.writeShort(armor[i]);
 		}
 
-		for (int i = 0; i < WeaponType.WEAP_MAX.ordinal(); i++) {
+		for (int i = 0; i < 16; i++) {
 			dos.writeShort(weapons[i]);
 		}
 
@@ -160,11 +160,11 @@ public class SaveGame implements Constants {
 		keys = dis.readShort()& 0xff;
 		sextants = dis.readShort()& 0xff;
 
-		for (int i = 0; i < ArmorType.ARMR_MAX.ordinal(); i++) {
+		for (int i = 0; i < 8; i++) {
 			armor[i] = dis.readShort();
 		}
 
-		for (int i = 0; i < WeaponType.WEAP_MAX.ordinal(); i++) {
+		for (int i = 0; i < 16; i++) {
 			weapons[i] = dis.readShort();
 
 		}
@@ -226,10 +226,10 @@ public class SaveGame implements Constants {
 		public int mp = 0;
 		public int unknown = 0;
 		
-		public WeaponType weapon = WeaponType.WEAP_HANDS;
-		public ArmorType armor = ArmorType.ARMR_NONE;
+		public WeaponType weapon = WeaponType.HANDS;
+		public ArmorType armor = ArmorType.NONE;
 		public SexType sex = SexType.SEX_MALE;
-		public ClassType klass = ClassType.CLASS_MAGE;
+		public ClassType klass = ClassType.MAGE;
 		public StatusType status = StatusType.STAT_GOOD;
 		
 		public int write(LittleEndianDataOutputStream dos) throws Exception {

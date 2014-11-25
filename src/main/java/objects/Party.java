@@ -37,6 +37,11 @@ public class Party extends Observable implements Constants {
 		
 	}
 	
+	public void addMember(SaveGame.SaveGamePlayerRecord rec) throws Exception {
+		if (rec == null) throw new Exception("Cannot add null record to party members!");
+		members.add(new PartyMember(this, rec));
+	}
+	
 	public List<PartyMember> getMembers() {
 		return members;
 	}
@@ -107,26 +112,26 @@ public class Party extends Observable implements Constants {
 			int max_mp = -1;
 
 			switch (player.klass) {
-			case CLASS_MAGE: // mage: 200% of int
+			case MAGE: // mage: 200% of int
 				max_mp = player.intel * 2;
 				break;
 
-			case CLASS_DRUID: // druid: 150% of int
+			case DRUID: // druid: 150% of int
 				max_mp = player.intel * 3 / 2;
 				break;
 
-			case CLASS_BARD: // bard, paladin, ranger: 100% of int
-			case CLASS_PALADIN:
-			case CLASS_RANGER:
+			case BARD: // bard, paladin, ranger: 100% of int
+			case PALADIN:
+			case RANGER:
 				max_mp = player.intel;
 				break;
 
-			case CLASS_TINKER: // tinker: 50% of int
+			case TINKER: // tinker: 50% of int
 				max_mp = player.intel / 2;
 				break;
 
-			case CLASS_FIGHTER: // fighter, shepherd: no mp at all
-			case CLASS_SHEPHERD:
+			case FIGHTER: // fighter, shepherd: no mp at all
+			case SHEPHERD:
 				max_mp = 0;
 				break;
 
@@ -195,24 +200,24 @@ public class Party extends Observable implements Constants {
 		public boolean heal(HealType type) {
 			switch (type) {
 
-			case HT_NONE:
+			case NONE:
 				return true;
 
-			case HT_CURE:
+			case CURE:
 				if (!status.contains(StatusType.STAT_POISONED)) {
 					return false;
 				}
 				removeStatus(StatusType.STAT_POISONED);
 				break;
 
-			case HT_FULLHEAL:
+			case FULLHEAL:
 				if (status.contains(StatusType.STAT_DEAD) || player.hp == player.hpMax) {
 					return false;
 				}
 				player.hp = player.hpMax;
 				break;
 
-			case HT_RESURRECT:
+			case RESURRECT:
 				if (!status.contains(StatusType.STAT_DEAD)) {
 					return false;
 				}
@@ -220,21 +225,21 @@ public class Party extends Observable implements Constants {
 				addStatus(StatusType.STAT_GOOD);
 				break;
 
-			case HT_HEAL:
+			case HEAL:
 				if (status.contains(StatusType.STAT_DEAD) || player.hp == player.hpMax) {
 					return false;
 				}
 				player.hp += 75 + (rand.nextInt(0x100) % 0x19);
 				break;
 
-			case HT_CAMPHEAL:
+			case CAMPHEAL:
 				if (status.contains(StatusType.STAT_DEAD) || player.hp == player.hpMax) {
 					return false;
 				}
 				player.hp += 99 + (rand.nextInt(0x100) & 0x77);
 				break;
 
-			case HT_INNHEAL:
+			case INNHEAL:
 				if (status.contains(StatusType.STAT_DEAD) || player.hp == player.hpMax) {
 					return false;
 				}

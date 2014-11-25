@@ -4,6 +4,7 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import objects.Conversation.Topic;
 import objects.Person;
+import vendor.BaseVendor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -31,6 +32,7 @@ public class ConversationDialog extends Window implements Constants {
 	FocusListener focusListener;
 	Ultima4 mainGame;
 	Person person;
+	BaseVendor vendor;
 	
 	public static int width = 300;
 	public static int height = 400;
@@ -52,7 +54,7 @@ public class ConversationDialog extends Window implements Constants {
 
 	private void initialize() {
 		setModal(true);
-
+		
 		defaults().space(10);
 		add(internalTable = new Table(skin)).expand().fill();
 		row();
@@ -60,6 +62,7 @@ public class ConversationDialog extends Window implements Constants {
 		internalTable.defaults().pad(1);
 		
 		scrollPane = new LogScrollPane(skin, width, "logs");
+		scrollPane.setHeight(height);
 		
 		input = new TextField("",skin);
 		input.setTextFieldListener(new TextFieldListener() {
@@ -114,8 +117,12 @@ public class ConversationDialog extends Window implements Constants {
 							previousTopic = null;
 						}
 						
-					} else if (person.getRole() != null) {
-						//vendors
+					} else if (person.getRole() != null && vendor != null) {
+
+						String input = tf.getText();
+						vendor.setResponse(input);
+						vendor.nextDialog();
+
 					}
 					
 					tf.setText("");
@@ -155,7 +162,10 @@ public class ConversationDialog extends Window implements Constants {
 		
 		if (person.getConversation() != null) {
 			scrollPane.add("You meet " + person.getConversation().getDescription().toLowerCase() + ".");
-		} else if (person.getRole() != null) {
+		} else if (person.getRole() != null && person.getRole().getInventoryType() != null) {
+			vendor = mainGame.getVendor(person.getRole().getInventoryType(), Maps.convert(mainGame.context.getCurrentMap().getId()));
+			vendor.setScrollPane(scrollPane);
+			vendor.nextDialog();
 		}
 
 	}

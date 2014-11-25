@@ -13,6 +13,9 @@ import objects.TileRules;
 import objects.TileSet;
 import objects.WeaponSet;
 import util.Utils;
+import vendor.BaseVendor;
+import vendor.VendorClassSet;
+import vendor.WeaponVendor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -48,6 +51,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 	public static WeaponSet weapons;
 	public static ArmorSet armors;
 	public static CreatureSet creatures;
+	public static VendorClassSet vendorClassSet;
 	
 	MapSet maps;
 	TextureAtlas atlas;
@@ -101,6 +105,9 @@ public class Ultima4 extends SimpleGame implements Constants {
 			
 			maps = (MapSet) Utils.loadXml("maps.xml", MapSet.class);
 			maps.init(baseTileSet);
+			
+			vendorClassSet = (VendorClassSet) Utils.loadXml("vendor.xml", VendorClassSet.class);
+			vendorClassSet.init();
 			
 			weapons = (WeaponSet) Utils.loadXml("weapons.xml", WeaponSet.class);
 			armors = (ArmorSet) Utils.loadXml("armors.xml", ArmorSet.class);
@@ -501,6 +508,43 @@ public class Ultima4 extends SimpleGame implements Constants {
 				}
 			}
 		}
+		
+	}
+	
+	public BaseVendor getVendor(InventoryType type, Maps map) {
+		
+		BaseVendor v = null;
+		
+		switch(type) {
+		case ARMOR:
+			break;
+		case FOOD:
+			break;
+		case GUILDITEM:
+			break;
+		case HEALER:
+			break;
+		case HORSE:
+			break;
+		case INN:
+			break;
+		case REAGENT:
+			break;
+		case TAVERN:
+			break;
+		case TAVERNINFO:
+			break;
+		case WEAPON:
+			v = new WeaponVendor(vendorClassSet.getVendor(type, map), context.getParty());
+
+			break;
+		default:
+			break;
+		
+		}
+		
+		return v;
+
 		
 	}
     

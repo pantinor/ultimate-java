@@ -408,23 +408,23 @@ public interface Constants {
 	
 	
 	public enum WeaponType {
-		WEAP_HANDS,
-		WEAP_STAFF,
-		WEAP_DAGGER,
-		WEAP_SLING,
-		WEAP_MACE,
-		WEAP_AXE,
-		WEAP_SWORD,
-		WEAP_BOW,
-		WEAP_CROSSBOW,
-		WEAP_OIL,
-		WEAP_HALBERD,
-		WEAP_MAGICAXE,
-		WEAP_MAGICSWORD,
-		WEAP_MAGICBOW,
-		WEAP_MAGICWAND,
-		WEAP_MYSTICSWORD,
-		WEAP_MAX;
+		HANDS,
+		STAFF,
+		DAGGER,
+		SLING,
+		MACE,
+		AXE,
+		SWORD,
+		BOW,
+		CROSSBOW,
+		OIL,
+		HALBERD,
+		MAGICAXE,
+		MAGICSWORD,
+		MAGICBOW,
+		MAGICWAND,
+		MYSTICSWORD;
+		
 		public static WeaponType get(int v) {
 			for (WeaponType x : values()) {
 				if (x.ordinal() == (v&0xff)) {
@@ -436,15 +436,15 @@ public interface Constants {
 	}
 	
 	public enum ArmorType {
-		ARMR_NONE,
-		ARMR_CLOTH,
-		ARMR_LEATHER,
-		ARMR_CHAIN,
-		ARMR_PLATE,
-		ARMR_MAGICCHAIN,
-		ARMR_MAGICPLATE,
-		ARMR_MYSTICROBES,
-		ARMR_MAX;
+		NONE,
+		CLOTH,
+		LEATHER,
+		CHAIN,
+		PLATE,
+		MAGICCHAIN,
+		MAGICPLATE,
+		MYSTICROBE;
+		
 		public static ArmorType get(int v) {
 			for (ArmorType x : values()) {
 				if (x.ordinal() == (v&0xff)) {
@@ -455,22 +455,18 @@ public interface Constants {
 		}
 	}
 	
-//    static const char * const virtueNames[] = {
-//        "Blue", "Yellow", "Red", 
-//        "Green", "Orange", "Purple", 
-//        "White", "Black"
-//    };
+
 	
 	public enum Virtue {
-		VIRT_HONESTY("honest"),
-		VIRT_COMPASSION("compassionate"),
-		VIRT_VALOR("valiant"),
-		VIRT_JUSTICE("just"),
-		VIRT_SACRIFICE("sacrificial"),
-		VIRT_HONOR("honorable"),
-		VIRT_SPIRITUALITY("spiritual"),
-		VIRT_HUMILITY("humble"),
-		VIRT_MAX("");
+		HONESTY("honest"),
+		COMPASSION("compassionate"),
+		VALOR("valiant"),
+		JUSTICE("just"),
+		SACRIFICE("sacrificial"),
+		HONOR("honorable"),
+		SPIRITUALITY("spiritual"),
+		HUMILITY("humble"),
+		MAX("");
 		
 		private String description;
 		private Virtue(String d) {
@@ -491,14 +487,14 @@ public interface Constants {
 	
 	public enum ClassType {
 		
-		CLASS_MAGE(Virtue.VIRT_HONESTY),
-		CLASS_BARD(Virtue.VIRT_COMPASSION),
-		CLASS_FIGHTER(Virtue.VIRT_VALOR),
-		CLASS_DRUID(Virtue.VIRT_JUSTICE),
-		CLASS_TINKER(Virtue.VIRT_SACRIFICE),
-		CLASS_PALADIN(Virtue.VIRT_HONOR),
-		CLASS_RANGER(Virtue.VIRT_SPIRITUALITY),
-		CLASS_SHEPHERD(Virtue.VIRT_HUMILITY);
+		MAGE(Virtue.HONESTY),
+		BARD(Virtue.COMPASSION),
+		FIGHTER(Virtue.VALOR),
+		DRUID(Virtue.JUSTICE),
+		TINKER(Virtue.SACRIFICE),
+		PALADIN(Virtue.HONOR),
+		RANGER(Virtue.SPIRITUALITY),
+		SHEPHERD(Virtue.HUMILITY);
 		
 		private Virtue virtue;
 		private ClassType(Virtue v) {
@@ -571,40 +567,16 @@ public interface Constants {
 		}
 
 	}
-	
-	/** Different states the conversation may be in */
-	public enum ConvState {
-		INTRO, //*< The initial state of the conversation, before anything is said
-		TALK, //*< The "default" state of the conversation
-		ASK, //*< The talker is asking the player a question
-		ASKYESNO, //*< The talker is asking the player a yes/no question
-		VENDORQUESTION, //*< A vendor is asking the player a question
-		BUY_ITEM, //*< Asked which item to buy
-		SELL_ITEM, //*< Asked which item to sell
-		BUY_QUANTITY, //*< Asked how many items to buy
-		SELL_QUANTITY, //*< Asked how many items to sell
-		BUY_PRICE, //*< Asked how much money to give someone
-		CONFIRMATION, //*< Asked by a vendor to confirm something
-		CONTINUEQUESTION, //*< Asked whether or not to continue
-		TOPIC, //*< Asked a topic to speak about
-		PLAYER, //*< Input for which player is required
-		FULLHEAL, //*< Heal the entire party before continuing conversation
-		ADVANCELEVELS, //*< Check and advance the party's levels before continuing
-		GIVEBEGGAR, //*< Asked how much to give a beggar
-		ATTACK, //*< The conversation ends with the talker attacking you
-		DONE; //*< The conversation is over
-	}
-
-	
+		
 	public enum Reagent {
-		REAG_ASH,
-		REAG_GINSENG,
-		REAG_GARLIC,
-		REAG_SILK,
-		REAG_MOSS,
-		REAG_PEARL,
-		REAG_NIGHTSHADE,
-		REAG_MANDRAKE,
+		ASH,
+		GINSENG,
+		GARLIC,
+		SILK,
+		MOSS,
+		PEARL,
+		NIGHTSHADE,
+		MANDRAKE,
 		REAG_MAX;
 		
 		public static Reagent get(int v) {
@@ -618,10 +590,10 @@ public interface Constants {
 	}
 	
 	public enum BaseVirtue {
-		VIRT_NONE(0x00),
-		VIRT_TRUTH(0x01),
-		VIRT_LOVE(0x02),
-		VIRT_COURAGE(0x04);
+		NONE(0x00),
+		TRUTH(0x01),
+		LOVE(0x02),
+		COURAGE(0x04);
 
 		private int intValue;
 
@@ -646,19 +618,19 @@ public interface Constants {
 	
 	
 	public enum Item {
-		ITEM_SKULL(0x01),
-		ITEM_SKULL_DESTROYED(0x02),
-		ITEM_CANDLE(0x04),
-		ITEM_BOOK(0x08),
-		ITEM_BELL(0x10),
-		ITEM_KEY_C(0x20),
-		ITEM_KEY_L(0x40),
-		ITEM_KEY_T(0x80),
-		ITEM_HORN(0x100),
-		ITEM_WHEEL(0x200),
-		ITEM_CANDLE_USED(0x400),
-		ITEM_BOOK_USED(0x800),
-		ITEM_BELL_USED(0x1000);
+		SKULL(0x01),
+		SKULL_DESTROYED(0x02),
+		CANDLE(0x04),
+		BOOK(0x08),
+		BELL(0x10),
+		KEY_C(0x20),
+		KEY_L(0x40),
+		KEY_T(0x80),
+		HORN(0x100),
+		WHEEL(0x200),
+		CANDLE_USED(0x400),
+		BOOK_USED(0x800),
+		BELL_USED(0x1000);
 
 		private int intValue;
 
@@ -680,16 +652,28 @@ public interface Constants {
 		}
 
 	}
+	
+	public enum GuildItemType {
+		gem,
+		key,
+		sextant,
+		torch;
+	}
 
+//  static const char * const virtueNames[] = {
+//  "Blue", "Yellow", "Red", 
+//  "Green", "Orange", "Purple", 
+//  "White", "Black"
+//};
 	public enum Stone {
-		STONE_BLUE(0x01),
-		STONE_YELLOW(0x02),
-		STONE_RED(0x04),
-		STONE_GREEN(0x08),
-		STONE_ORANGE(0x10),
-		STONE_PURPLE(0x20),
-		STONE_WHITE(0x40),
-		STONE_BLACK(0x80);
+		BLUE(0x01),
+		YELLOW(0x02),
+		RED(0x04),
+		GREEN(0x08),
+		ORANGE(0x10),
+		PURPLE(0x20),
+		WHITE(0x40),
+		BLACK(0x80);
 
 		private int intValue;
 
@@ -713,14 +697,14 @@ public interface Constants {
 	}
 
 	public enum Rune {
-		RUNE_HONESTY(0x01),
-		RUNE_COMPASSION(0x02),
-		RUNE_VALOR(0x04),
-		RUNE_JUSTICE(0x08),
-		RUNE_SACRIFICE(0x10),
-		RUNE_HONOR(0x20),
-		RUNE_SPIRITUALITY(0x40),
-		RUNE_HUMILITY(0x80);
+		HONESTY(0x01),
+		COMPASSION(0x02),
+		VALOR(0x04),
+		JUSTICE(0x08),
+		SACRIFICE(0x10),
+		HONOR(0x20),
+		SPIRITUALITY(0x40),
+		HUMILITY(0x80);
 
 		private int intValue;
 
@@ -747,47 +731,50 @@ public interface Constants {
 	
 	
 	public enum KarmaAction {
-		KA_FOUND_ITEM,
-		KA_STOLE_CHEST,
-		KA_GAVE_TO_BEGGAR,
-		KA_GAVE_ALL_TO_BEGGAR,
-		KA_BRAGGED,
-		KA_HUMBLE,
-		KA_HAWKWIND,
-		KA_MEDITATION,
-		KA_BAD_MANTRA,
-		KA_ATTACKED_GOOD,
-		KA_FLED_EVIL,
-		KA_FLED_GOOD,
-		KA_HEALTHY_FLED_EVIL,
-		KA_KILLED_EVIL,
-		KA_SPARED_GOOD,
-		KA_DONATED_BLOOD,
-		KA_DIDNT_DONATE_BLOOD,
-		KA_CHEAT_REAGENTS,
-		KA_DIDNT_CHEAT_REAGENTS,
-		KA_USED_SKULL,
-		KA_DESTROYED_SKULL;
+		FOUND_ITEM,
+		STOLE_CHEST,
+		GAVE_TO_BEGGAR,
+		GAVE_ALL_TO_BEGGAR,
+		BRAGGED,
+		HUMBLE,
+		HAWKWIND,
+		MEDITATION,
+		BAD_MANTRA,
+		ATTACKED_GOOD,
+		FLED_EVIL,
+		FLED_GOOD,
+		HEALTHY_FLED_EVIL,
+		KILLED_EVIL,
+		SPARED_GOOD,
+		DONATED_BLOOD,
+		DIDNT_DONATE_BLOOD,
+		CHEAT_REAGENTS,
+		DIDNT_CHEAT_REAGENTS,
+		USED_SKULL,
+		DESTROYED_SKULL;
 	}
 
 	public enum HealType {
-		HT_NONE,
-		HT_CURE,
-		HT_FULLHEAL,
-		HT_RESURRECT,
-		HT_HEAL,
-		HT_CAMPHEAL,
-		HT_INNHEAL;
+		NONE,
+		CURE,
+		FULLHEAL,
+		RESURRECT,
+		HEAL,
+		CAMPHEAL,
+		INNHEAL;
 	}
 
-	public enum InventoryItem {
-		INV_NONE,
-		INV_WEAPON,
-		INV_ARMOR,
-		INV_FOOD,
-		INV_REAGENT,
-		INV_GUILDITEM,
-		INV_HORSE;
+	public enum InventoryType {
+		WEAPON,
+		ARMOR,
+		FOOD,
+		REAGENT,
+		GUILDITEM,
+		INN,
+		TAVERN,
+		HEALER,
+		TAVERNINFO,
+		HORSE;
 	}
 
 	public enum CannotJoinError {

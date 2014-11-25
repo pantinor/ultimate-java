@@ -2,32 +2,49 @@ package objects;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import ultima.Constants.InventoryType;
+import vendor.InventoryTypeAdapter;
 
 @XmlRootElement(name = "personrole")
 public class PersonRole {
 	
 	private String role;
+	private InventoryType inventoryType;
 	private int id;
 	
-	@XmlAttribute
-	public String getRole() {
-		return role;
-	}
-	@XmlAttribute
+
+	@XmlAttribute(name="id")
 	public int getId() {
 		return id;
 	}
-	public void setRole(String role) {
-		this.role = role;
-	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
-	
-	@Override
-	public String toString() {
-		return String.format("PersonRole [role=%s, id=%s]", role, id);
+
+	@XmlAttribute(name="type")
+	@XmlJavaTypeAdapter(InventoryTypeAdapter.class)
+	public InventoryType getInventoryType() {
+		return inventoryType;
 	}
+
+	public void setInventoryType(InventoryType inventoryType) {
+		this.inventoryType = inventoryType;
+	}
+	@XmlAttribute(name="role")
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+
+
+	
 	
 	
 
