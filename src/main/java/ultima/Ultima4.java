@@ -60,6 +60,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 	
 	MapSet maps;
 	TextureAtlas atlas;
+	TextureAtlas u5atlas;
 	TextureAtlas moonAtlas;
 	Animation player;
 	float time = 0;
@@ -86,7 +87,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 
 	public DungeonViewer dungeonViewer;
 	public List<String> logs = new FixedSizeArrayList<String>(5);
-	public boolean showZstats = false;
+	public int showZstats = 0;
 	
 	public SecondaryInputProcessor sip;
 	
@@ -121,6 +122,8 @@ public class Ultima4 extends SimpleGame implements Constants {
 			creatures = (CreatureSet) Utils.loadXml("creatures.xml", CreatureSet.class);
 			
 			atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
+			u5atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/ultima5-atlas.txt"));
+
 			player = new Animation(0.25f, atlas.findRegions("avatar"));
 			
 			//textures for the moongates
@@ -204,7 +207,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 			MapProperties prop = map.getProperties();
 			mapPixelHeight = prop.get("height", Integer.class) * tilePixelWidth;
 			
-			bm.setSprites(this, atlas);
+			bm.setSprites(this, u5atlas, atlas);
 			
 			newMapPixelCoords = getMapPixelCoords(startx, starty);
 			changeMapPosition = true;
@@ -272,19 +275,8 @@ public class Ultima4 extends SimpleGame implements Constants {
 				y=y-18;
 			}
 			
-			if (showZstats) {
-				y=SCREEN_HEIGHT-5;
-				String s = context.getParty().getSaveGame().getZstats();
-				String[] pages = s.split("~");
-				for (int i=0;i<pages.length;i++) {
-					String[] lines = pages[i].split("\\|");
-					for (int j=0;j<lines.length;j++) {
-						if (lines[j] == null || lines[j].length() < 1) continue;
-						font.draw(batch2, lines[j] , SCREEN_WIDTH-140, y);
-						y = y - 18;
-					}
-					y = y - 5;
-				}
+			if (showZstats > 0) {
+				context.getParty().getSaveGame().renderZstats(showZstats, font, batch2, SCREEN_HEIGHT);
 			}
 
 			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
@@ -355,7 +347,8 @@ public class Ultima4 extends SimpleGame implements Constants {
 			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);
 			return false;
 		} else if (keycode == Keys.Z) {
-			showZstats = !showZstats;
+			showZstats = showZstats + 1;
+			if (showZstats > 6) showZstats = 0;
 		}
 		
 		finishTurn();

@@ -11,6 +11,8 @@ import org.apache.commons.lang.StringUtils;
 import ultima.Constants;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.io.LittleEndianDataOutputStream;
 
@@ -396,19 +398,20 @@ public class SaveGame implements Constants {
 	}
 	
 	
-	public String getZstats() {
-		StringBuffer sb = new StringBuffer();
+	public String[] getZstats() {
+		
+		StringBuffer sb1 = new StringBuffer();
 		for (int i=0;i<members;i++) {
 			SaveGamePlayerRecord p = players[i];
 			
-			sb.append(
+			sb1.append(
 					pc(p.name) + "  " +
 					pc(p.klass.toString()) + "  " +
 					pc(p.sex.getDesc()) + "  " +
 					p.status.getValue() + "|"
 					);
 			
-			sb.append(
+			sb1.append(
 					"MP: " + p.mp + "  LV: " + Math.round(p.hpMax / 100) + "|" +
 					"STR: " + p.str + "  HP: " + p.hp + "|"+
 					"DEX: " + p.dex + "  HM: " + p.hpMax + "|"+
@@ -417,47 +420,131 @@ public class SaveGame implements Constants {
 					"A: " + pc(p.armor.toString()) + "|"
 					);
 			
-			sb.append("~");
+			sb1.append("~");
 
 		}
 		
-		sb.append("~");
+		StringBuffer sb2 = new StringBuffer();
 		for (int i=0;i<16;i++) {
 			int count = weapons[i];
 			if (count == 0) continue;
-			sb.append(count + " - " + pc(WeaponType.get(i).toString()) + "|");
+			sb2.append(count + " - " + pc(WeaponType.get(i).toString()) + "|");
 		}
 		
-		sb.append("~");
+		StringBuffer sb3 = new StringBuffer();
 		for (int i=0;i<8;i++) {
 			int count = armor[i];
 			if (count == 0) continue;
-			sb.append(count + " - " + pc(ArmorType.get(i).toString()) + "|");
+			sb3.append(count + " - " + pc(ArmorType.get(i).toString()) + "|");
 		}
 		
-		sb.append("~");
-		sb.append(torches + " - Torches|");
-		sb.append(gems + " - Gems|");
-		sb.append(keys + " - Keys|");
-		if (sextants > 0) sb.append(sextants + " - Sextant|");
+		StringBuffer sb4 = new StringBuffer();
+		sb4.append(torches + " - Torches|");
+		sb4.append(gems + " - Gems|");
+		sb4.append(keys + " - Keys|");
+		if (sextants > 0) sb4.append(sextants + " - Sextant|");
 
-		sb.append("~");
+		StringBuffer sb5 = new StringBuffer();
 		for (int i=0;i<8;i++) {
 			int count = reagents[i];
 			if (count == 0) continue;
-			sb.append(count + " - " + pc(Reagent.get(i).toString()) + "|");
+			sb5.append(count + " - " + pc(Reagent.get(i).toString()) + "|");
 		}
 		
-		sb.append("~");
+		StringBuffer sb6 = new StringBuffer();
 		for (int i=0;i<SPELL_MAX;i++) {
 			int count = mixtures[i];
 			if (count == 0) continue;
-			sb.append(count + " - " + pc(SpellNames.get(i).toString()) + "|");
+			sb6.append(count + " - " + pc(SpellNames.get(i).toString()) + "|");
 		}
 		
-		return sb.toString();
+		String[] ret = new String[6];
+		ret[0] = sb1.toString();
+		ret[1] = sb2.toString();
+		ret[2] = sb3.toString();
+		ret[3] = sb4.toString();
+		ret[4] = sb5.toString();
+		ret[5] = sb6.toString();
+
+		
+		return ret;
 	}
 	
-
+	public void renderZstats(int showZstats, BitmapFont font, Batch batch, int SCREEN_HEIGHT) {
+		
+		int rx = 10;
+		int ry = SCREEN_HEIGHT - 50;
+		
+		String[] pages = getZstats();
+		if (showZstats == 1) {
+			// players
+			String[] players = pages[0].split("\\~");
+			for (int i = 0; i < players.length; i++) {
+				String[] lines = players[i].split("\\|");
+				rx = 10 + i * 150;
+				ry = SCREEN_HEIGHT - 50;
+				font.draw(batch, "Player " + (i + 1), rx, ry);
+				ry = ry - 18;
+				for (int j = 0; j < lines.length; j++) {
+					if (lines[j] == null || lines[j].length() < 1)
+						continue;
+					font.draw(batch, lines[j], rx, ry);
+					ry = ry - 18;
+				}
+			}
+		} else if (showZstats == 2) {
+			String[] lines = pages[1].split("\\|");
+			font.draw(batch, "Weapons", rx, ry);
+			ry = ry - 18;
+			for (int j = 0; j < lines.length; j++) {
+				if (lines[j] == null || lines[j].length() < 1)
+					continue;
+				font.draw(batch, lines[j], rx, ry);
+				ry = ry - 18;
+			}
+		} else if (showZstats == 3) {
+			String[] lines = pages[2].split("\\|");
+			font.draw(batch, "Armor", rx, ry);
+			ry = ry - 18;
+			for (int j = 0; j < lines.length; j++) {
+				if (lines[j] == null || lines[j].length() < 1)
+					continue;
+				font.draw(batch, lines[j], rx, ry);
+				ry = ry - 18;
+			}
+		} else if (showZstats == 4) {
+			String[] lines = pages[3].split("\\|");
+			font.draw(batch, "Items", rx, ry);
+			ry = ry - 18;
+			for (int j = 0; j < lines.length; j++) {
+				if (lines[j] == null || lines[j].length() < 1)
+					continue;
+				font.draw(batch, lines[j], rx, ry);
+				ry = ry - 18;
+			}
+		} else if (showZstats == 5) {
+			String[] lines = pages[4].split("\\|");
+			font.draw(batch, "Reagents", rx, ry);
+			ry = ry - 18;
+			for (int j = 0; j < lines.length; j++) {
+				if (lines[j] == null || lines[j].length() < 1)
+					continue;
+				font.draw(batch, lines[j], rx, ry);
+				ry = ry - 18;
+			}
+		} else if (showZstats == 6) {
+			String[] lines = pages[5].split("\\|");
+			font.draw(batch, "Spell Mixtures", rx, ry);
+			ry = ry - 18;
+			for (int j = 0; j < lines.length; j++) {
+				if (lines[j] == null || lines[j].length() < 1)
+					continue;
+				font.draw(batch, lines[j], rx, ry);
+				ry = ry - 18;
+			}
+		}
+		
+		
+	}
 
 }

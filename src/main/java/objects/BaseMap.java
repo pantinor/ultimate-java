@@ -14,7 +14,10 @@ import ultima.Ultima4;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 
 @XmlRootElement(name = "map")
 public class BaseMap implements Constants {
@@ -284,13 +287,19 @@ public class BaseMap implements Constants {
 	}
 
 
-	public void setSprites(Ultima4 mainGame, TextureAtlas atlas) {
+	public void setSprites(Ultima4 mainGame, TextureAtlas atlas1, TextureAtlas atlas2) {
 		if (city != null) {
 			
 			for(Person p : city.getPeople()) {
 				if (p == null) continue;
 				String tname = p.getTile().getName();
-				p.setAnim(new Animation(0.5f, atlas.findRegions(tname)));
+				
+				Array<AtlasRegion> tr = atlas1.findRegions(tname);
+				if (tr == null || tr.size == 0) {
+					tr = atlas2.findRegions(tname);
+				}
+
+				p.setAnim(new Animation(0.5f, tr));
 				Vector3 pixelPos = mainGame.getMapPixelCoords(p.getStart_x(), p.getStart_y());
 				p.setCurrentPos(pixelPos);
 				p.setX(p.getStart_x());
@@ -300,17 +309,6 @@ public class BaseMap implements Constants {
 		}
 	}
 	
-	
-//	public void renderObjects(Ultima4 mainGame, Batch mapBatch, float time) {
-//		if (city != null) {
-//			
-//			for(Person p : city.getPeople()) {
-//				if (p == null) continue;
-//				mapBatch.draw(p.getAnim().getKeyFrame(time, true), p.getCurrentPos().x, p.getCurrentPos().y, Ultima4.tilePixelWidth, Ultima4.tilePixelHeight);
-//			}
-//			
-//		}
-//	}
 
 	public void moveObjects(Ultima4 mainGame) {
 		

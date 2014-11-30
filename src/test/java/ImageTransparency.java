@@ -16,6 +16,13 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
+
+/**
+ * Utility to take an image and transform a given color(s) to be transparent instead of opaque.
+ * 
+ * @author Paul
+ *
+ */
 @SuppressWarnings("restriction")
 public class ImageTransparency {
 
