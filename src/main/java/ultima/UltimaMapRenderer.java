@@ -22,7 +22,6 @@ import static com.badlogic.gdx.graphics.g2d.Batch.Y2;
 import static com.badlogic.gdx.graphics.g2d.Batch.Y3;
 import static com.badlogic.gdx.graphics.g2d.Batch.Y4;
 import objects.BaseMap;
-import objects.Party.PartyMember;
 import objects.Person;
 import util.ShadowFOV;
 

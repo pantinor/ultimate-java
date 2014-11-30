@@ -42,8 +42,7 @@ public class WeaponVendor extends BaseVendor {
 			haveCount = party.getSaveGame().weapons[currentSelectedItem.getWeaponType().ordinal()];
 			party.getSaveGame().weapons[currentSelectedItem.getWeaponType().ordinal()] = haveCount + currentCount;
 			party.getSaveGame().gold = party.getSaveGame().gold - currentSelectedItem.getPrice()*currentCount;
-			displayToScreen(String.format("%s says: A fine choice!", vendor.getOwner()));
-			displayToScreen(String.format("%s says: anything else?", vendor.getOwner()));
+			displayToScreen(String.format("%s says: A fine choice! anything else?", vendor.getOwner()));
 			break;
 			
 			

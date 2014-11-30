@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.xml.bind.JAXBContext;
@@ -8,10 +9,13 @@ import javax.xml.bind.Unmarshaller;
 import objects.Armor;
 import objects.ArmorSet;
 import objects.BaseMap;
+import objects.Conversation;
 import objects.Creature;
 import objects.CreatureSet;
 import objects.MapSet;
 import objects.Party;
+import objects.Person;
+import objects.PersonRole;
 import objects.Rule;
 import objects.SaveGame;
 import objects.Tile;
@@ -34,7 +38,7 @@ import vendor.VendorClassSet;
 
 public class TestJaxb {
 	
-	@Test
+	//@Test
 	public void testScript() throws Exception {
 		File file = new File("target/classes/xml/vendor.xml");
 		JAXBContext jaxbContext = JAXBContext.newInstance(VendorClassSet.class);
@@ -178,11 +182,21 @@ public class TestJaxb {
 		
 	}
 	
-	//@Test
+	@Test
 	public void parseTlkFiles() throws Exception {
-		Utils.getPeople("britain.ult", null);
-		Utils.getDialogs("britain.tlk");
-
+		Person[] people = Utils.getPeople("britain.ult", null);
+		List<Conversation> cons = Utils.getDialogs("britain.tlk");
+		
+		for (Person p: people) {
+			if (p != null) {
+				for (Conversation c : cons) {
+					if (c.getIndex() == p.getDialogId()) {
+						p.setConversation(c);
+					}
+				}
+			}
+		}
+		System.out.println(people);
 	}
 	
 	//@Test

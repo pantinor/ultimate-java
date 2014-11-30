@@ -15,7 +15,8 @@ public class ArmorVendor extends BaseVendor {
 
 	@Override
 	public boolean nextDialog() {
-		
+		int haveCount = 0;
+
 		switch(state) {
 		case ASK_BUY_SELL:
 			displayToScreen(String.format(welcomeMessage, vendor.getName(), vendor.getOwner()));
@@ -37,10 +38,10 @@ public class ArmorVendor extends BaseVendor {
 			break;
 
 		case BUY_ITEM:
-			party.getSaveGame().armor[currentSelectedItem.getArmorType().ordinal()] = currentCount;
+			haveCount = party.getSaveGame().armor[currentSelectedItem.getArmorType().ordinal()];
+			party.getSaveGame().armor[currentSelectedItem.getArmorType().ordinal()] = haveCount + currentCount;
 			party.getSaveGame().gold = party.getSaveGame().gold - currentSelectedItem.getPrice()*currentCount;
-			displayToScreen(String.format("%s says: A fine choice!", vendor.getOwner()));
-			displayToScreen(String.format("%s says: anything else?", vendor.getOwner()));
+			displayToScreen(String.format("%s says: A fine choice! anything else?", vendor.getOwner()));
 			break;
 			
 			
@@ -71,7 +72,7 @@ public class ArmorVendor extends BaseVendor {
 			break;
 			
 		case SELL_ITEM:
-			int haveCount = party.getSaveGame().armor[currentSelectedItem.getArmorType().ordinal()];
+			haveCount = party.getSaveGame().armor[currentSelectedItem.getArmorType().ordinal()];
 			party.getSaveGame().armor[currentSelectedItem.getArmorType().ordinal()] = haveCount - currentCount;
 			party.getSaveGame().gold = party.getSaveGame().gold + (currentSelectedItem.getPrice()/2) * currentCount;
 			displayToScreen("Fine! Anything else?");

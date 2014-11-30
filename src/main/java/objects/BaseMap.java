@@ -1,6 +1,8 @@
 package objects;
 
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -298,8 +300,14 @@ public class BaseMap implements Constants {
 				if (tr == null || tr.size == 0) {
 					tr = atlas2.findRegions(tname);
 				}
-
-				p.setAnim(new Animation(0.5f, tr));
+				
+				//give some randomness to the animations
+				//tr.shuffle();
+				
+				//random rate between 1 and 4
+				int frameRate = ThreadLocalRandom.current().nextInt(1,4);
+				p.setAnim(new Animation(frameRate, tr));
+				
 				Vector3 pixelPos = mainGame.getMapPixelCoords(p.getStart_x(), p.getStart_y());
 				p.setCurrentPos(pixelPos);
 				p.setX(p.getStart_x());

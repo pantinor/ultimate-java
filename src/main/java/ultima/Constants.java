@@ -594,7 +594,12 @@ public interface Constants {
 	}
 	
 	public enum SpellNames {
-		awaken, blink, cure, dispel, energy, fireball, gate, heal, iceball, jinx, kill, light, magicmissile, negate, open, protection, quickness, resurrect, sleep, tremor, undead, view, winds, xit, yup, zdown;
+		
+		awaken, blink, cure, dispel, energy, fireball, gate, heal, 
+		iceball, jinx, kill, light, magicmissile, negate, open, 
+		protection, quickness, resurrect, sleep, tremor, undead, 
+		view, winds, xit, yup, zdown;
+		
 		public static SpellNames get(int i) {
 			for (SpellNames x : values()) {
 				if (x.ordinal() == i) {
