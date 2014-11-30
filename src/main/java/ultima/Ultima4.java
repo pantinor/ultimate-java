@@ -207,7 +207,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 			MapProperties prop = map.getProperties();
 			mapPixelHeight = prop.get("height", Integer.class) * tilePixelWidth;
 			
-			bm.setSprites(this, u5atlas, atlas);
+			bm.initObjects(this, u5atlas, atlas);
 			
 			newMapPixelCoords = getMapPixelCoords(startx, starty);
 			changeMapPosition = true;
@@ -342,7 +342,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
 				context.saveGame(this, v);
 			}
-		} else if (keycode == Keys.T) {
+		} else if (keycode == Keys.T || keycode == Keys.O || keycode == Keys.L || keycode == Keys.S) {
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);
 			return false;

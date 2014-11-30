@@ -52,21 +52,26 @@ public class SecondaryInputProcessor extends InputAdapter {
 			dir = Direction.EAST;
 			x = x + 1;
 		}
-		Tile tile = bm.getTile(x, y);
-		if (StringUtils.equals(tile.getRule(),"signs")) {
-			//talking to vendor so get the vendor on other side of sign
-			switch (dir) {
-			case NORTH: y = y - 1; break;
-			case SOUTH:	y = y + 1; break;
-			case EAST: x = x + 1; break;
-			case WEST: x = x - 1; break;
-			}
-		}
+		
+
 
 		ConversationDialog dialog = null;
 		
 		if (initialKeyCode == Keys.T) {
+			
 			game.log("Talk > " + dir.toString());
+
+			Tile tile = bm.getTile(x, y);
+			if (StringUtils.equals(tile.getRule(),"signs")) {
+				//talking to vendor so get the vendor on other side of sign
+				switch (dir) {
+				case NORTH: y = y - 1; break;
+				case SOUTH:	y = y + 1; break;
+				case EAST: x = x + 1; break;
+				case WEST: x = x - 1; break;
+				}
+			}
+			
 			City city = bm.getCity();
 			if (city != null) {
 				Person p = city.getPersonAt(x, y);
@@ -75,6 +80,16 @@ public class SecondaryInputProcessor extends InputAdapter {
 					dialog = new ConversationDialog(p, this.game, this.game.skin).show(stage);
 				}
 			}
+			
+		} else if (initialKeyCode == Keys.O) {
+			
+			game.log("Open > " + dir.toString());
+			if (bm.openDoor(x, y)) {
+				game.log("Opened!");
+			} else {
+				game.log("Can't!");
+			}
+
 		} else if (initialKeyCode == Keys.L) {
 			
 			game.log("Look > " + dir.toString());

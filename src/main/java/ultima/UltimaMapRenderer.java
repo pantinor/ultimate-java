@@ -22,16 +22,17 @@ import static com.badlogic.gdx.graphics.g2d.Batch.Y2;
 import static com.badlogic.gdx.graphics.g2d.Batch.Y3;
 import static com.badlogic.gdx.graphics.g2d.Batch.Y4;
 import objects.BaseMap;
+import objects.BaseMap.DoorStatus;
 import objects.Person;
 import util.ShadowFOV;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
 
 public class UltimaMapRenderer extends BatchTiledMapRenderer {
@@ -40,11 +41,24 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 	private Ultima4 mainGame;
 	private ShadowFOV fov = new ShadowFOV();
 	float stateTime = 0;
+	
+	TextureRegion door;
+	TextureRegion brick_floor;
+	TextureRegion locked_door;
 
 	public UltimaMapRenderer(Ultima4 mainGame, BaseMap bm, TiledMap map, float unitScale) {
 		super(map, unitScale);
 		this.bm = bm;
 		this.mainGame = mainGame;
+		
+		door = mainGame.atlas.findRegion("door");
+		brick_floor = mainGame.atlas.findRegion("brick_floor");
+		locked_door = mainGame.atlas.findRegion("locked_door");
+		
+		door.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+		brick_floor.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+		locked_door.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
 	}
 
 	@Override
@@ -79,21 +93,32 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 		}
 
 		for (int row = row2; row >= row1; row--) {
+			
 			float x = xStart;
 			for (int col = col1; col < col2; col++) {
-				final TiledMapTileLayer.Cell cell = layer.getCell(col, row);
+				
+				TiledMapTileLayer.Cell cell = layer.getCell(col, row);
+				
 				if (cell == null || (lightMap != null && lightMap[col][row] <= 0)) {
 					x += layerTileWidth;
 					continue;
 				}
-				final TiledMapTile tile = cell.getTile();
-
+				
+				TiledMapTile tile = cell.getTile();
 				if (tile != null) {
-					final boolean flipX = cell.getFlipHorizontally();
-					final boolean flipY = cell.getFlipVertically();
-					final int rotations = cell.getRotation();
 
 					TextureRegion region = tile.getTextureRegion();
+									
+					DoorStatus ds = bm.getDoor(col, layerHeight - row - 1);
+					if (ds != null) {
+						region = door;
+						if (ds.locked) {
+							region = locked_door;
+						}
+						if (bm.isDoorOpen(ds)) {
+							region = brick_floor;
+						}
+					}
 
 					float x1 = x + tile.getOffsetX() * unitScale;
 					float y1 = y + tile.getOffsetY() * unitScale;
@@ -129,69 +154,6 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 					vertices[U4] = u2;
 					vertices[V4] = v1;
 
-					if (flipX) {
-						float temp = vertices[U1];
-						vertices[U1] = vertices[U3];
-						vertices[U3] = temp;
-						temp = vertices[U2];
-						vertices[U2] = vertices[U4];
-						vertices[U4] = temp;
-					}
-					if (flipY) {
-						float temp = vertices[V1];
-						vertices[V1] = vertices[V3];
-						vertices[V3] = temp;
-						temp = vertices[V2];
-						vertices[V2] = vertices[V4];
-						vertices[V4] = temp;
-					}
-					if (rotations != 0) {
-						switch (rotations) {
-						case Cell.ROTATE_90: {
-							float tempV = vertices[V1];
-							vertices[V1] = vertices[V2];
-							vertices[V2] = vertices[V3];
-							vertices[V3] = vertices[V4];
-							vertices[V4] = tempV;
-
-							float tempU = vertices[U1];
-							vertices[U1] = vertices[U2];
-							vertices[U2] = vertices[U3];
-							vertices[U3] = vertices[U4];
-							vertices[U4] = tempU;
-							break;
-						}
-						case Cell.ROTATE_180: {
-							float tempU = vertices[U1];
-							vertices[U1] = vertices[U3];
-							vertices[U3] = tempU;
-							tempU = vertices[U2];
-							vertices[U2] = vertices[U4];
-							vertices[U4] = tempU;
-							float tempV = vertices[V1];
-							vertices[V1] = vertices[V3];
-							vertices[V3] = tempV;
-							tempV = vertices[V2];
-							vertices[V2] = vertices[V4];
-							vertices[V4] = tempV;
-							break;
-						}
-						case Cell.ROTATE_270: {
-							float tempV = vertices[V1];
-							vertices[V1] = vertices[V4];
-							vertices[V4] = vertices[V3];
-							vertices[V3] = vertices[V2];
-							vertices[V2] = tempV;
-
-							float tempU = vertices[U1];
-							vertices[U1] = vertices[U4];
-							vertices[U4] = vertices[U3];
-							vertices[U3] = vertices[U2];
-							vertices[U2] = tempU;
-							break;
-						}
-						}
-					}
 					batch.draw(region.getTexture(), vertices, 0, 20);
 				}
 				x += layerTileWidth;

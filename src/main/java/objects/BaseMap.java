@@ -1,7 +1,7 @@
 package objects;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -14,15 +14,15 @@ import ultima.Constants;
 import ultima.Ultima4;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 @XmlRootElement(name = "map")
 public class BaseMap implements Constants {
+	
+	private boolean initialized = false;
 
 	private int id;
 	private String fname;
@@ -50,9 +50,13 @@ public class BaseMap implements Constants {
 	private List<Moongate> moongates;
 	private Tile[] tiles;
 	private float[][] shadownMap;
+	
+	//used to keep the pace of wandering to every 2 moves instead of every move, 
+	//otherwise cannot catch up and talk to the character
 	private long wanderFlag = 0;
 	
-
+	private List<DoorStatus> doors = new ArrayList<DoorStatus>();
+	
 	public Moongate getMoongate(int phase) {
 		if (moongates == null) return null;
 		for (Moongate m : moongates) {
@@ -289,7 +293,11 @@ public class BaseMap implements Constants {
 	}
 
 
-	public void setSprites(Ultima4 mainGame, TextureAtlas atlas1, TextureAtlas atlas2) {
+	
+	public void initObjects(Ultima4 mainGame, TextureAtlas atlas1, TextureAtlas atlas2) {
+		
+		if (initialized) return;
+		
 		if (city != null) {
 			
 			for(Person p : city.getPeople()) {
@@ -315,6 +323,20 @@ public class BaseMap implements Constants {
 			}
 			
 		}
+		
+		//set doors
+		for (int x=0;x<getWidth();x++) {
+			for (int y=0;y<getHeight();y++) {
+				Tile t = getTile(x, y);
+				if (t.getName().equals("door")) {
+					doors.add(new DoorStatus(x,y,false,0));
+				} else if (t.getName().equals("locked_door")) {
+					doors.add(new DoorStatus(x,y,true,0));
+				}
+			}
+		}
+		
+		initialized = true;
 	}
 	
 
@@ -359,25 +381,25 @@ public class BaseMap implements Constants {
 		
 		if (north != null) {
 			Rule northRule = Ultima4.tileRules.getRule(north.getRule());
-			if (northRule == null || !StringUtils.equals(northRule.getCantwalkon(),"all")) {
+			if (northRule == null || !StringUtils.equals(northRule.getCantwalkon(),"all") || isDoorOpen(x,y-1)) {
 				mask = Direction.addToMask(Direction.NORTH, mask);
 			}
 		}
 		if (south != null) {
 			Rule southRule = Ultima4.tileRules.getRule(south.getRule());
-			if (southRule == null || !StringUtils.equals(southRule.getCantwalkon(),"all")) {
+			if (southRule == null || !StringUtils.equals(southRule.getCantwalkon(),"all") || isDoorOpen(x,y+1)) {
 				mask = Direction.addToMask(Direction.SOUTH, mask);
 			}
 		}
 		if (east != null) {
 			Rule eastRule = Ultima4.tileRules.getRule(east.getRule());
-			if (eastRule == null || !StringUtils.equals(eastRule.getCantwalkon(),"all")) {
+			if (eastRule == null || !StringUtils.equals(eastRule.getCantwalkon(),"all") || isDoorOpen(x+1,y)) {
 				mask = Direction.addToMask(Direction.EAST, mask);
 			}
 		}
 		if (west != null) {
 			Rule westRule = Ultima4.tileRules.getRule(west.getRule());
-			if (westRule == null || !StringUtils.equals(westRule.getCantwalkon(),"all")) {
+			if (westRule == null || !StringUtils.equals(westRule.getCantwalkon(),"all") || isDoorOpen(x-1,y)) {
 				mask = Direction.addToMask(Direction.WEST, mask);
 			}
 		}
@@ -387,8 +409,58 @@ public class BaseMap implements Constants {
 		
 	}
 	
-
+	public DoorStatus getDoor(int x, int y) {
+		for (DoorStatus ds : doors) {
+			if (ds.x == x && ds.y == y) return ds;
+		}
+		return null;
+	}
+	public boolean unlockDoor(int x, int y) {
+		DoorStatus ds = getDoor(x,y);
+		if (ds != null) {
+			ds.locked = false;
+			return true;
+		}
+		return false;
+	}
+	public boolean openDoor(int x, int y) {
+		DoorStatus ds = getDoor(x,y);
+		if (ds != null && !ds.locked) {
+			ds.openedTime = System.currentTimeMillis();
+			return true;
+		}
+		return false;
+	}
 	
+	/**
+	 * Door will stay open for 10 seconds and then close
+	 */
+	public boolean isDoorOpen(int x, int y) {
+		DoorStatus ds = getDoor(x,y);
+		if (ds != null && System.currentTimeMillis()-ds.openedTime < 10000) {
+			return true;
+		}
+		return false;
+	}
+	public boolean isDoorOpen(DoorStatus ds) {
+		if (ds != null && System.currentTimeMillis()-ds.openedTime < 10000) {
+			return true;
+		}
+		return false;
+	}
+	
+	public class DoorStatus {
+		public int x;
+		public int y;
+		public long openedTime;
+		public boolean locked = false;
+		private DoorStatus(int x, int y, boolean locked, long openedTime) {
+			this.x = x;
+			this.y = y;
+			this.openedTime = openedTime;
+			this.locked = locked;
+		}
+	}
 	
 
 
