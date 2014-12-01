@@ -78,6 +78,8 @@ public class SecondaryInputProcessor extends InputAdapter {
 				if (p != null && (p.getConversation() != null || p.getRole() != null)) {
 					Gdx.input.setInputProcessor(stage);
 					dialog = new ConversationDialog(p, this.game, this.game.skin).show(stage);
+				} else {
+					game.log("Funny, no response! ");
 				}
 			}
 			

@@ -5,14 +5,18 @@ import java.util.List;
 
 public class Conversation {
 	
-	private int index;
-	private String name;
-	private String pronoun;
-	private int turnAwayProb;
-	private String description;
-	private int respAffectsHumility;
+	int index;
+	String name;
+	String pronoun;
+	int turnAwayProb;
+	String description;
+	int respAffectsHumility;
 	
-	private List<Topic> topics = new ArrayList<Topic>();
+	List<Topic> topics = new ArrayList<Topic>();
+	
+	public Conversation() {
+		
+	}
 		
 	public Conversation(int index, int turnAwayProb, int questionFlag,  int respAffectsHumility, String[] strings) {
 		this.index = index;
@@ -140,7 +144,7 @@ public class Conversation {
 		private String yesResponse;
 		private String noResponse;
 		
-		private Topic(String query, String phrase, String question, String yesResponse, String noResponse) {
+		public Topic(String query, String phrase, String question, String yesResponse, String noResponse) {
 			super();
 			this.query = query;
 			this.phrase = phrase;

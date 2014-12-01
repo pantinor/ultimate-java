@@ -97,6 +97,7 @@
 	<tile name="child" rule="person" animation="frame" index="91" />
 	<tile name="bull" rule="person" animation="frame" index="92" />
 	<tile name="bull" rule="person" animation="frame" index="93" />
+	<tile name="lord_british" rule="person" animation="frame" index="94" />
 
 	<tile name="A" rule="signs" index="96" /> <!-- the alphabet -->
 	<tile name="B" rule="signs" index="97" />

@@ -30,7 +30,7 @@ public class SaveGame implements Constants {
 	public int keys = 0;
 	public int sextants = 0;
 	
-	public int[] karma = new int[Virtue.MAX.ordinal()];
+	public int[] karma = new int[8];
 	public int[] armor = new int[8];
 	public int[] weapons = new int[16];
 	public int[] reagents = new int[8];

@@ -458,6 +458,7 @@ public interface Constants {
 
 	
 	public enum Virtue {
+		
 		HONESTY("honest"),
 		COMPASSION("compassionate"),
 		VALOR("valiant"),
@@ -465,8 +466,7 @@ public interface Constants {
 		SACRIFICE("sacrificial"),
 		HONOR("honorable"),
 		SPIRITUALITY("spiritual"),
-		HUMILITY("humble"),
-		MAX("");
+		HUMILITY("humble");
 		
 		private String description;
 		private Virtue(String d) {

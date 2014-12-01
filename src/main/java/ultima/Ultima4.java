@@ -49,7 +49,7 @@ import dungeon.DungeonViewer;
 
 public class Ultima4 extends SimpleGame implements Constants {
 	
-	Context context;
+	public static Context context;
 	
 	public static TileSet baseTileSet;
 	public static TileRules tileRules;
@@ -333,6 +333,12 @@ public class Ultima4 extends SimpleGame implements Constants {
 			mapCamera.position.y = mapCamera.position.y - tilePixelHeight;
 			postMove(Direction.SOUTH, (int)v.x,(int)v.y+1);
 			
+		} else if (keycode == Keys.K || keycode == Keys.D) {
+			if (ct.climbable()) {
+				Portal p = context.getCurrentMap().getPortal(v.x, v.y);
+				loadNextMap(p.getDestmapid(), p.getStartx(), p.getStarty());
+				log(p.getMessage());
+			}
 		} else if (keycode == Keys.E) {
 			if (ct.enterable()) {
 				Portal p = context.getCurrentMap().getPortal(v.x, v.y);
@@ -341,6 +347,9 @@ public class Ultima4 extends SimpleGame implements Constants {
 		} else if (keycode == Keys.Q) {
 			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
 				context.saveGame(this, v);
+				log("Saved Game.");
+			} else {
+				log("Cannot save inside!");
 			}
 		} else if (keycode == Keys.T || keycode == Keys.O || keycode == Keys.L || keycode == Keys.S) {
 			Gdx.input.setInputProcessor(sip);
@@ -375,7 +384,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 			}
 		}
 		
-		int mask = bm.getValidMovesMask((int)currentTile.x, (int)currentTile.y);
+		int mask = bm.getValidMovesMask((int)currentTile.x, (int)currentTile.y, true);
 		if (!Direction.isDirInMask(dir, mask)) {
 			Sounds.play(Sound.BLOCKED);
 			return false;

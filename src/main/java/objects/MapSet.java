@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import ultima.Constants.Maps;
 import util.Utils;
 
 @XmlRootElement(name = "maps")
@@ -51,6 +52,11 @@ public class MapSet {
 				}
 				
 			}
+			
+			if (m.getId() == Maps.CASTLE_OF_LORD_BRITISH_2.getId()) {
+				m.getCity().getPeople()[31].setConversation(new LordBritishConversation());
+			}
+
 			
 			try {
 				Utils.setMapTiles(m, ts);

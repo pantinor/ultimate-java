@@ -274,12 +274,12 @@ public class BaseMap implements Constants {
 		this.tiles = tiles;
 	}
 
-	public Tile getTile(int x, int y) {
+	public synchronized Tile getTile(int x, int y) {
 		if (x + (y * width) >= tiles.length) return null;
 		return tiles[x + (y * width)];
 	}
 	
-	public Tile getTile(Vector3 v) {
+	public synchronized Tile getTile(Vector3 v) {
 		if ((int)v.x + ((int)v.y * width) >= tiles.length) return null;
 		return tiles[(int)v.x + ((int)v.y * width)];
 	}
@@ -349,7 +349,7 @@ public class BaseMap implements Constants {
 			for(Person p : city.getPeople()) {
 				if (p == null) continue;
 				if (p.getMovement() == ObjectMovementBehavior.WANDER) {
-					Direction dir = Direction.getRandomValidDirection(getValidMovesMask(p.getX(), p.getY()));
+					Direction dir = Direction.getRandomValidDirection(getValidMovesMask(p.getX(), p.getY(), false));
 					if (dir == null) continue; 
 					if (wanderFlag % 2 == 0) continue; 
 					if (p.isTalking()) continue; 
@@ -370,7 +370,7 @@ public class BaseMap implements Constants {
 		
 	}
 	
-	public int getValidMovesMask(int x, int y) {
+	public int getValidMovesMask(int x, int y, boolean player) {
 		
 		int mask = 0;
 		
@@ -379,34 +379,30 @@ public class BaseMap implements Constants {
 		Tile east = getTile(x+1,y);
 		Tile west = getTile(x-1,y);
 		
-		if (north != null) {
-			Rule northRule = Ultima4.tileRules.getRule(north.getRule());
-			if (northRule == null || !StringUtils.equals(northRule.getCantwalkon(),"all") || isDoorOpen(x,y-1)) {
-				mask = Direction.addToMask(Direction.NORTH, mask);
-			}
-		}
-		if (south != null) {
-			Rule southRule = Ultima4.tileRules.getRule(south.getRule());
-			if (southRule == null || !StringUtils.equals(southRule.getCantwalkon(),"all") || isDoorOpen(x,y+1)) {
-				mask = Direction.addToMask(Direction.SOUTH, mask);
-			}
-		}
-		if (east != null) {
-			Rule eastRule = Ultima4.tileRules.getRule(east.getRule());
-			if (eastRule == null || !StringUtils.equals(eastRule.getCantwalkon(),"all") || isDoorOpen(x+1,y)) {
-				mask = Direction.addToMask(Direction.EAST, mask);
-			}
-		}
-		if (west != null) {
-			Rule westRule = Ultima4.tileRules.getRule(west.getRule());
-			if (westRule == null || !StringUtils.equals(westRule.getCantwalkon(),"all") || isDoorOpen(x-1,y)) {
-				mask = Direction.addToMask(Direction.WEST, mask);
-			}
-		}
-
+		mask = addToMask(Direction.NORTH, mask, north, x, y-1, player);
+		mask = addToMask(Direction.SOUTH, mask, south, x, y+1, player);
+		mask = addToMask(Direction.EAST, mask, east, x+1, y, player);
+		mask = addToMask(Direction.WEST, mask, west, x-1, y, player);
 
 		return mask;
 		
+	}
+	
+	private int addToMask(Direction dir, int mask, Tile tile, int x, int y, boolean player) {
+		if (tile != null) {
+			
+			Rule rule = Ultima4.tileRules.getRule(tile.getRule());
+			
+			boolean canwalkon = rule != null && !StringUtils.equals(rule.getCantwalkon(), "all");
+			
+			//NPCs cannot go thru the secret doors
+			if (!player && tile.getIndex() == 73) canwalkon = false;
+			
+			if (rule == null || canwalkon || isDoorOpen(x, y)) {
+				mask = Direction.addToMask(dir, mask);
+			}
+		}
+		return mask;
 	}
 	
 	public DoorStatus getDoor(int x, int y) {
