@@ -63,7 +63,7 @@ public class SaveGame implements Constants {
 	//see Constants.Maps enum for locations
 	public int location = 0;
 
-	public int write(String strFilePath) throws Exception {
+	public void write(String strFilePath) throws Exception {
 			
 		FileOutputStream fos = new FileOutputStream(strFilePath);
 		LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(fos);		
@@ -128,10 +128,9 @@ public class SaveGame implements Constants {
 		
 		dos.close();
 
-		return 1;
 	}
-
-	public int read(String strFilePath) throws Exception {
+	
+	public void read(String strFilePath) throws Exception {
 		InputStream is;
 		LittleEndianDataInputStream dis = null;
 		try {
@@ -141,6 +140,10 @@ public class SaveGame implements Constants {
 			is = this.getClass().getResourceAsStream("/data/" + PARTY_SAV_BASE_FILENAME);
 			dis = new LittleEndianDataInputStream(is);
 		}
+		read(dis);
+	}
+	
+	public void read(LittleEndianDataInputStream dis) throws Exception {
 
 		unknown1 = dis.readInt();
 		moves = dis.readInt();
@@ -152,9 +155,9 @@ public class SaveGame implements Constants {
 
 		food = dis.readInt()& 0xff;
 		gold = dis.readShort()& 0xff;
-
+		
 		for (int i = 0; i < 8; i++) {
-			karma[i] = dis.readShort();
+			karma[i] = dis.readShort()& 0xff;
 		}
 
 		torches = dis.readShort()& 0xff;
@@ -163,41 +166,41 @@ public class SaveGame implements Constants {
 		sextants = dis.readShort()& 0xff;
 
 		for (int i = 0; i < 8; i++) {
-			armor[i] = dis.readShort();
+			armor[i] = dis.readShort()& 0xff;
 		}
 
 		for (int i = 0; i < 16; i++) {
-			weapons[i] = dis.readShort();
+			weapons[i] = dis.readShort()& 0xff;
 
 		}
 
 		for (int i = 0; i < 8; i++) {
-			reagents[i] = dis.readShort();
+			reagents[i] = dis.readShort()& 0xff;
 		}
 
 		for (int i = 0; i < SPELL_MAX; i++) {
-			mixtures[i] = dis.readShort();
+			mixtures[i] = dis.readShort()& 0xff;
 		}
 
-		items = dis.readShort();
+		items = dis.readShort()& 0xff;
 		x = dis.readByte() & 0xff;
 		y = dis.readByte() & 0xff;
-		stones = dis.readByte();
-		runes = dis.readByte();
-		members = dis.readShort();
-		transport = dis.readShort();
-		balloonstate = dis.readShort();
-		trammelphase = dis.readShort();
-		feluccaphase = dis.readShort();
+		stones = dis.readByte()& 0xff;
+		runes = dis.readByte()& 0xff;
+		members = dis.readShort()& 0xff;
+		transport = dis.readShort()& 0xff;
+		balloonstate = dis.readShort()& 0xff;
+		trammelphase = dis.readShort()& 0xff;
+		feluccaphase = dis.readShort()& 0xff;
 		shiphull = dis.readShort()& 0xff;
-		lbintro = dis.readShort();
+		lbintro = dis.readShort()& 0xff;
 		lastcamp = dis.readShort()& 0xff;
 		lastreagent = dis.readShort()& 0xff;
 		lastmeditation = dis.readShort()& 0xff;
 		lastvirtue = dis.readShort()& 0xff;
 		dngx = dis.readByte() & 0xff;
 		dngy = dis.readByte() & 0xff;
-		orientation = dis.readShort();
+		orientation = dis.readShort()& 0xff;
 		dnglevel = dis.readShort();
 		location = dis.readShort()& 0xff;
 
@@ -207,9 +210,6 @@ public class SaveGame implements Constants {
 		}
 		
 		dis.close();
-
-
-		return 1;
 	}
 	
 	/**

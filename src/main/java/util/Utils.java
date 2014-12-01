@@ -418,21 +418,23 @@ public class Utils implements Constants {
 	}
 	
 	
-	public static void adjustValueMax(int v, int val, int max) {
+	public static int adjustValueMax(int v, int val, int max) {
 		v += val;
 		if (v > max) {
 			v = max;
 		}
+		return v;
 	}
 
-	public static void adjustValueMin(int v, int val, int min) {
+	public static int adjustValueMin(int v, int val, int min) {
 		v += val;
 		if (v < min) {
 			v = min;
 		}
+		return v;
 	}
 
-	public static void adjustValue(int v, int val, int max, int min) {
+	public static int adjustValue(int v, int val, int max, int min) {
 		v += val;
 		if (v > max) {
 			v = max;
@@ -440,30 +442,9 @@ public class Utils implements Constants {
 		if (v < min) {
 			v = min;
 		}
+		return v;
 	}
 
-	public static void adjustValueMax(short v, int val, int max) {
-		v += val;
-		if (v > max) {
-			v = (short) max;
-		}
-	}
 
-	public static void adjustValueMin(short v, int val, int min) {
-		v += val;
-		if (v < min) {
-			v = (short) min;
-		}
-	}
-
-	public static void adjustValue(short v, int val, int max, int min) {
-		v += val;
-		if (v > max) {
-			v = (short) max;
-		}
-		if (v < min) {
-			v = (short) min;
-		}
-	}
 
 }

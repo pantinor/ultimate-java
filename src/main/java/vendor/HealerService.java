@@ -90,7 +90,7 @@ public class HealerService extends BaseVendor {
 			if (input.startsWith("y")) {
 				state = ConvState.WAIT_WHICH_SERVICE;
 			} else {
-				if (this.party.getMember(0).getPlayer().hp > 400) {
+				if (this.party.getMember(0).getPlayer().hp >= 400) {
 					state = ConvState.WAIT_GIVE_BLOOD;
 				} else {
 					state = ConvState.WAIT_NEED_HELP;

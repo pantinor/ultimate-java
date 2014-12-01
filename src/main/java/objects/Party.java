@@ -313,105 +313,104 @@ public class Party implements Constants {
     
 		return CannotJoinError.JOIN_NOT_EXPERIENCED;
 	}
-	
+
 	public void adjustKarma(KarmaAction action) {
-		
+
 		int timeLimited = 0;
-		int v = 0;
 		int[] newKarma = new int[8];
 		int[] maxVal = new int[8];
-    
-		for (v = 0; v < 8; v++) {
+
+		for (int v = 0; v < 8; v++) {
 			newKarma[v] = saveGame.karma[v] == 0 ? 100 : saveGame.karma[v];
 			maxVal[v] = saveGame.karma[v] == 0 ? 100 : 99;
 		}
-    
+
 		switch (action) {
 		case FOUND_ITEM:
-			Utils.adjustValueMax(newKarma[Virtue.HONOR.ordinal()], 5, maxVal[Virtue.HONOR.ordinal()]);
+			adjustKarmaMax(newKarma, Virtue.HONOR, 5, maxVal);
 			break;
 		case STOLE_CHEST:
-			Utils.adjustValueMin(newKarma[Virtue.HONESTY.ordinal()], -1, 1);
-			Utils.adjustValueMin(newKarma[Virtue.JUSTICE.ordinal()], -1, 1);
-			Utils.adjustValueMin(newKarma[Virtue.HONOR.ordinal()], -1, 1);
+			adjustKarmaMin(newKarma, Virtue.HONESTY, -1, 1);
+			adjustKarmaMin(newKarma, Virtue.JUSTICE, -1, 1);
+			adjustKarmaMin(newKarma, Virtue.HONOR, -1, 1);
 			break;
 		case GAVE_ALL_TO_BEGGAR:
 		case GAVE_TO_BEGGAR:
 			timeLimited = 1;
-			Utils.adjustValueMax(newKarma[Virtue.COMPASSION.ordinal()], 2, maxVal[Virtue.COMPASSION.ordinal()]);
+			adjustKarmaMax(newKarma, Virtue.COMPASSION, 2, maxVal);
 			break;
 		case BRAGGED:
-			Utils.adjustValueMin(newKarma[Virtue.HUMILITY.ordinal()], -5, 1);
+			adjustKarmaMin(newKarma, Virtue.HUMILITY, -5, 1);
 			break;
 		case HUMBLE:
 			timeLimited = 1;
-			Utils.adjustValueMax(newKarma[Virtue.HUMILITY.ordinal()], 10, maxVal[Virtue.HUMILITY.ordinal()]);
+			adjustKarmaMax(newKarma, Virtue.HUMILITY, 10, maxVal);
 			break;
 		case HAWKWIND:
 		case MEDITATION:
 			timeLimited = 1;
-			Utils.adjustValueMax(newKarma[Virtue.SPIRITUALITY.ordinal()], 3, maxVal[Virtue.SPIRITUALITY.ordinal()]);
+			adjustKarmaMax(newKarma, Virtue.SPIRITUALITY, 3, maxVal);
 			break;
 		case BAD_MANTRA:
-			Utils.adjustValueMin(newKarma[Virtue.SPIRITUALITY.ordinal()], -3, 1);
+			adjustKarmaMin(newKarma, Virtue.SPIRITUALITY, -3, 1);
 			break;
 		case ATTACKED_GOOD:
-			Utils.adjustValueMin(newKarma[Virtue.COMPASSION.ordinal()], -5, 1);
-			Utils.adjustValueMin(newKarma[Virtue.JUSTICE.ordinal()], -5, 1);
-			Utils.adjustValueMin(newKarma[Virtue.HONOR.ordinal()], -5, 1);
+			adjustKarmaMin(newKarma, Virtue.COMPASSION, -5, 1);
+			adjustKarmaMin(newKarma, Virtue.JUSTICE, -5, 1);
+			adjustKarmaMin(newKarma, Virtue.HONOR, -5, 1);
 			break;
 		case FLED_EVIL:
-			Utils.adjustValueMin(newKarma[Virtue.VALOR.ordinal()], -2, 1);
+			adjustKarmaMin(newKarma, Virtue.VALOR, -2, 1);
 			break;
 		case HEALTHY_FLED_EVIL:
-			Utils.adjustValueMin(newKarma[Virtue.VALOR.ordinal()], -2, 1);
-			Utils.adjustValueMin(newKarma[Virtue.SACRIFICE.ordinal()], -2, 1);
+			adjustKarmaMin(newKarma, Virtue.VALOR, -2, 1);
+			adjustKarmaMin(newKarma, Virtue.SACRIFICE, -2, 1);
 			break;
 		case KILLED_EVIL:
 			Random rand = new Random();
 			// gain one valor half the time, zero the rest
-			Utils.adjustValueMax(newKarma[Virtue.VALOR.ordinal()], rand.nextInt(1), maxVal[Virtue.VALOR.ordinal()]); 
+			adjustKarmaMax(newKarma, Virtue.VALOR, rand.nextInt(1), maxVal);
 			break;
 		case FLED_GOOD:
-			Utils.adjustValueMax(newKarma[Virtue.COMPASSION.ordinal()], 2, maxVal[Virtue.COMPASSION.ordinal()]);
-			Utils.adjustValueMax(newKarma[Virtue.JUSTICE.ordinal()], 2, maxVal[Virtue.JUSTICE.ordinal()]);
+			adjustKarmaMax(newKarma, Virtue.COMPASSION, 2, maxVal);
+			adjustKarmaMax(newKarma, Virtue.JUSTICE, 2, maxVal);
 			break;
 		case SPARED_GOOD:
-			Utils.adjustValueMax(newKarma[Virtue.COMPASSION.ordinal()], 1, maxVal[Virtue.COMPASSION.ordinal()]);
-			Utils.adjustValueMax(newKarma[Virtue.JUSTICE.ordinal()], 1, maxVal[Virtue.JUSTICE.ordinal()]);
+			adjustKarmaMax(newKarma, Virtue.COMPASSION, 1, maxVal);
+			adjustKarmaMax(newKarma, Virtue.JUSTICE, 1, maxVal);
 			break;
 		case DONATED_BLOOD:
-			Utils.adjustValueMax(newKarma[Virtue.SACRIFICE.ordinal()], 5, maxVal[Virtue.SACRIFICE.ordinal()]);
+			adjustKarmaMax(newKarma, Virtue.SACRIFICE, 5, maxVal);
 			break;
 		case DIDNT_DONATE_BLOOD:
-			Utils.adjustValueMin(newKarma[Virtue.SACRIFICE.ordinal()], -5, 1);
+			adjustKarmaMin(newKarma, Virtue.SACRIFICE, -5, 1);
 			break;
 		case CHEAT_REAGENTS:
-			Utils.adjustValueMin(newKarma[Virtue.HONESTY.ordinal()], -10, 1);
-			Utils.adjustValueMin(newKarma[Virtue.JUSTICE.ordinal()], -10, 1);
-			Utils.adjustValueMin(newKarma[Virtue.HONOR.ordinal()], -10, 1);
+			adjustKarmaMin(newKarma, Virtue.HONESTY, -10, 1);
+			adjustKarmaMin(newKarma, Virtue.JUSTICE, -10, 1);
+			adjustKarmaMin(newKarma, Virtue.HONOR, -10, 1);
 			break;
 		case DIDNT_CHEAT_REAGENTS:
 			timeLimited = 1;
-			Utils.adjustValueMax(newKarma[Virtue.HONESTY.ordinal()], 2, maxVal[Virtue.HONESTY.ordinal()]);
-			Utils.adjustValueMax(newKarma[Virtue.JUSTICE.ordinal()], 2, maxVal[Virtue.JUSTICE.ordinal()]);
-			Utils.adjustValueMax(newKarma[Virtue.HONOR.ordinal()], 2, maxVal[Virtue.HONOR.ordinal()]);
+			adjustKarmaMax(newKarma, Virtue.HONESTY, 2, maxVal);
+			adjustKarmaMax(newKarma, Virtue.JUSTICE, 2, maxVal);
+			adjustKarmaMax(newKarma, Virtue.HONOR, 2, maxVal);
 			break;
 		case USED_SKULL:
-			for (v = 0; v < 8; v++) {
-				Utils.adjustValueMin(newKarma[v], -5, 1);
+			for (Virtue virt : Virtue.values()) {
+				adjustKarmaMin(newKarma, virt, -5, 1);
 			}
 			break;
 		case DESTROYED_SKULL:
-			for (v = 0; v < 8; v++) {
-				Utils.adjustValueMax(newKarma[v], 10, maxVal[v]);
+			for (Virtue virt : Virtue.values()) {
+				adjustKarmaMax(newKarma, virt, 10, maxVal);
 			}
 			break;
 		}
-		
+
 		/*
-		 * check if enough time has passed since last virtue award if
-		 * action is time limited -- if not, throw away new values
+		 * check if enough time has passed since last virtue award if action is
+		 * time limited -- if not, throw away new values
 		 */
 		if (timeLimited > 0) {
 			if (((saveGame.moves / 16) >= 0x10000) || (((saveGame.moves / 16) & 0xFFFF) != saveGame.lastvirtue)) {
@@ -424,7 +423,7 @@ public class Party implements Constants {
 		/*
 		 * return to u4dos compatibility and handle losing of eighths
 		 */
-		for (v = 0; v < 8; v++) {
+		for (int v = 0; v < 8; v++) {
 			if (maxVal[v] == 100) { // already an avatar
 				if (newKarma[v] < 100) { // but lost it
 					saveGame.karma[v] = newKarma[v];
@@ -435,10 +434,17 @@ public class Party implements Constants {
 				saveGame.karma[v] = newKarma[v];
 			}
 		}
-    
-    
-    
+
 	}
 
+	private void adjustKarmaMax(int[] karma, Virtue v, int value, int[] max) {
+		int n = Utils.adjustValueMax(karma[v.ordinal()], value, max[v.ordinal()]);
+		karma[v.ordinal()] = n;
+	}
+
+	private void adjustKarmaMin(int[] karma, Virtue v, int value, int min) {
+		int n = Utils.adjustValueMax(karma[v.ordinal()], value, min);
+		karma[v.ordinal()] = n;
+	}
 
 }

@@ -1,5 +1,7 @@
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
+import java.io.InputStream;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -27,9 +29,14 @@ import objects.WeaponSet;
 import org.apache.commons.io.FileUtils;
 import org.testng.annotations.Test;
 
+import com.badlogic.gdx.Gdx;
+import com.google.common.io.LittleEndianDataInputStream;
+
 import ultima.Constants;
 import ultima.Constants.Direction;
+import ultima.Constants.KarmaAction;
 import ultima.Constants.Reagent;
+import ultima.Constants.Virtue;
 import util.ShadowFOV;
 import util.Utils;
 import vendor.VendorClass;
@@ -182,7 +189,7 @@ public class TestJaxb {
 		
 	}
 	
-	@Test
+	//@Test
 	public void parseTlkFiles() throws Exception {
 		Person[] people = Utils.getPeople("britain.ult", null);
 		List<Conversation> cons = Utils.getDialogs("britain.tlk");
@@ -221,15 +228,16 @@ public class TestJaxb {
 
 	}
 	
-	//@Test
+	@Test
 	public void testReadSaveGame() throws Exception {
 		
-		SaveGame sg = new SaveGame();
-		sg.read("D:\\ultima\\ULTIMA4\\"+Constants.PARTY_SAV_BASE_FILENAME);
-		
+		InputStream is = new FileInputStream(Constants.PARTY_SAV_BASE_FILENAME);
+		LittleEndianDataInputStream dis = new LittleEndianDataInputStream(is);
 		
 		SaveGame sg2 = new SaveGame();
+		sg2.read(dis);
 		
+				
 		SaveGame.SaveGamePlayerRecord avatar = sg2.new SaveGamePlayerRecord();
 		avatar.name = "paul";
 		avatar.hp = 199;
@@ -238,14 +246,21 @@ public class TestJaxb {
 		sg2.gold = 200;
 		sg2.reagents[Reagent.GINSENG.ordinal()] = 3;
 		sg2.reagents[Reagent.GARLIC.ordinal()] = 4;
+		sg2.reagents[Reagent.NIGHTSHADE.ordinal()] = 9;
+		sg2.reagents[Reagent.MANDRAKE.ordinal()] = 6;
 		sg2.torches = 2;
 		
 		sg2.players[0] = avatar;
-		
-		sg2.write("mysave.sav");
 				
-		//byte[] bytes1 = IOUtils.toByteArray(new FileReader(new File("D:\\ultima\\ULTIMA4\\"+Constants.PARTY_SAV_BASE_FILENAME)));
-		//byte[] bytes2 = IOUtils.toByteArray(new FileReader(new File("mysave.sav")));
+		for (int i=0;i<8;i++) 
+			System.err.println(Virtue.get(i) + " " + sg2.karma[i]);
+		
+		Party p = new Party(sg2);
+		p.adjustKarma(KarmaAction.DONATED_BLOOD);
+		
+		for (int i=0;i<8;i++) 
+			System.err.println(Virtue.get(i) + " " + sg2.karma[i]);
+		
 		
 	}
 	
