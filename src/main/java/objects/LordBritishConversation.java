@@ -1,6 +1,9 @@
 package objects;
 
+import objects.Party.PartyMember;
 import ultima.Constants;
+import ultima.Sound;
+import ultima.Sounds;
 import ultima.Ultima4;
 
 public class LordBritishConversation extends Conversation implements Constants {
@@ -20,40 +23,42 @@ public class LordBritishConversation extends Conversation implements Constants {
 		
 		topics.add(new Topic("truth","He says:  Many truths can  be learned at  the Lycaeum.  It  lies on the  northwestern  shore of Verity  Isle!", null, null, null));
 		topics.add(new Topic("love","He says:  Look for the  meaning of Love  at Empath Abbey.  The Abbey sits  on the western  edge of the Deep  Forest! ", null, null, null));
-		topics.add(new Topic("courage","He says:  Serpent's Castle  on the Isle of  Deeds is where  Courage should  be sought!    ", null, null, null));
+		topics.add(new Topic("cour","He says:  Serpent's Castle  on the Isle of  Deeds is where  Courage should  be sought!    ", null, null, null));
 		topics.add(new Topic("honesty","He says:  The fair towne  of Moonglow on  Verity Isle is  where the virtue  of Honesty  thrives!  ", null, null, null));
-		topics.add(new Topic("compassion","He says:  The bards in the  towne of Britain  are well versed  in the virtue of  Compassion!", null, null, null));
+		topics.add(new Topic("compas","He says:  The bards in the  towne of Britain  are well versed  in the virtue of  Compassion!", null, null, null));
 		topics.add(new Topic("valor","He says:  Many valiant  fighters come  from Jhelom  in the Valarian  Isles!", null, null, null));
 		topics.add(new Topic("justice","He says:  In the city of  Yew, in the Deep  Forest, Justice  is served!", null, null, null));
-		topics.add(new Topic("sacrifice","He says:  Minoc, towne of  self-sacrifice,  lies on the  eastern shores  of Lost Hope  Bay!", null, null, null));
+		topics.add(new Topic("sacr","He says:  Minoc, towne of  self-sacrifice,  lies on the  eastern shores  of Lost Hope  Bay!", null, null, null));
 		topics.add(new Topic("honor","He says:  The Paladins who  strive for Honor  are oft seen in  Trinsic, north  of the Cape of  Heroes!", null, null, null));
-		topics.add(new Topic("spirituality","He says:  In Skara Brae  the Spiritual  path is taught.  Find it on an  isle near  Spiritwood!", null, null, null));
-		topics.add(new Topic("humility","He says:  Humility is the  foundation of  Virtue!  The  ruins of proud  Magincia are a  testimony unto  the Virtue of  Humility! \n\nFind the Ruins  of Magincia far  off the shores  of Britannia,  on a small isle  in the vast  Ocean!", null, null, null));
+		topics.add(new Topic("spirit","He says:  In Skara Brae  the Spiritual  path is taught.  Find it on an  isle near  Spiritwood!", null, null, null));
+		topics.add(new Topic("humil","He says:  Humility is the  foundation of  Virtue!  The  ruins of proud  Magincia are a  testimony unto  the Virtue of  Humility! \n\nFind the Ruins  of Magincia far  off the shores  of Britannia,  on a small isle  in the vast  Ocean!", null, null, null));
 		topics.add(new Topic("pride","He says:  Of the eight  combinations of  Truth, Love and  Courage, that  which contains  neither Truth,  Love nor Courage  is Pride.\n\nPride being not  a Virtue must be  shunned in favor  of Humility, the  Virtue which is  the antithesis  of Pride!", null, null, null));
 		topics.add(new Topic("avatar","Lord British  says:  To be an Avatar  is to be the  embodiment of  the Eight  Virtues.\n\nIt is to live a  life constantly  and forever in  the Quest to  better thyself  and the world in  which we live. ", null, null, null));
 		topics.add(new Topic("quest","Lord British  says:  The Quest of  the Avatar is  to know and  become the  embodiment of  the Eight  Virtues of  Goodness! \n\n It is known that  all who take on  this Quest must  prove themselves  by conquering  the Abyss and  Viewing the  Codex of  Ultimate Wisdom! ", null, null, null));
-		topics.add(new Topic("britannia","He says:  Even though the  Great Evil Lords  have been routed  evil yet remains  in Britannia.  If but one soul  could complete  the Quest of the  Avatar, our  people would  have a new hope,  a new goal for  life.\n\nThere would be a  shining example  that there is  more to life  than the endless  struggle for  possessions  and gold!", null, null, null));
+		topics.add(new Topic("brit","He says:  Even though the  Great Evil Lords  have been routed  evil yet remains  in Britannia.  If but one soul  could complete  the Quest of the  Avatar, our  people would  have a new hope,  a new goal for  life.\n\nThere would be a  shining example  that there is  more to life  than the endless  struggle for  possessions  and gold!", null, null, null));
 		topics.add(new Topic("ankh","He says:  The Ankh is the  symbol of one  who strives for  Virtue.  Keep it  with thee at all  times for by  this mark thou  shalt be known!  ", null, null, null));
-		topics.add(new Topic("mondain","He says:  Mondain is dead!", null, null, null));
+		topics.add(new Topic("monda","He says:  Mondain is dead!", null, null, null));
 		topics.add(new Topic("minax","He says:  Minax is dead! ", null, null, null));
 		topics.add(new Topic("exodus","He says:  Exodus is dead! ", null, null, null));
 		topics.add(new Topic("virtue","He says:  The Eight  Virtues of the  Avatar are:  Honesty,  Compassion,  Valor,  Justice,  Sacrifice,  Honor,  Spirituality,  and Humility!", null, null, null));
 
-		topics.add(new Topic("abyss", pronoun + " says:\nThe Great Stygian Abyss is the darkest pocket of evil "+
-                             "remaining in Britannia!\n\nIt is said that in the deepest recesses of "+
-                             "the Abyss is the Chamber of the Codex!\n\nIt is also said that only one "+
-                             "of highest Virtue may enter this Chamber, one such as an Avatar!!!\n", null, null, null));
+		topics.add(new Topic("abyss", "He says:\nThe Great Stygian Abyss is the darkest pocket of evil "+
+                             "remaining in Britannia!\nIt is said that in the deepest recesses of "+
+                             "the Abyss is the Chamber of the Codex!\nIt is also said that only one "+
+                             "of highest Virtue may enter this Chamber, one such as an Avatar!!!", null, null, null));
 		
-		topics.add(new Topic("health", "\n\n\n\n\n\nHe says: I am\nwell, thank ye.", null, null, null));
+		topics.add(new Topic("heal", "He says: I am\nwell, thank ye.", "\n\nArt thou well?", "He says: that is good.", "He says: let me heal thy wounds!", true));
 
 
 	}
 	
 	public Topic matchTopic(String query) {
+		
 		if (query.toLowerCase().contains("help")) {
 			String resp = lordBritishGetHelp();
 			return new Topic("help", resp, null, null, null);
 		}
+		
 		for (Topic t : topics) {
 			if (query.toLowerCase().contains(t.getQuery().toLowerCase())) {
 				return t;
@@ -69,20 +74,19 @@ public class LordBritishConversation extends Conversation implements Constants {
 		SaveGame sg = Ultima4.context.getParty().getSaveGame();
 		
 		StringBuffer sb = new StringBuffer();
-		if (sg.lbintro == 0) {
+		if (sg.lbintro == 1) {
 			if (sg.members == 1) {
-				sb.append("\n\n\nLord British\nsays:  Welcome\n" + party.getMember(0).getPlayer().name + "!\n\n");
+				sb.append("Lord British says:  Welcome " + party.getMember(0).getPlayer().name + "!\n\n");
 			} else if (sg.members == 2) {
-				sb.append("\n\nLord British\nsays:  Welcome\n" + party.getMember(0).getPlayer().name + " and thee also " + party.getMember(1).getPlayer().name + "!\n\n");
+				sb.append("Lord British says:  Welcome " + party.getMember(0).getPlayer().name + "\nand thee also " + party.getMember(1).getPlayer().name + "!\n\n");
 			} else {
-				sb.append("\n\n\nLord British\nsays:  Welcome\n" + party.getMember(0).getPlayer().name + " and thy\nworthy\nAdventurers!\n\n");
+				sb.append("Lord British says:  Welcome " + party.getMember(0).getPlayer().name + "\nand thy worthy\nAdventurers!\n\n");
 			}
-		}
-
-		else {
-			sb.append("\n\n\nLord British rises and says: At long last!\n" + party.getMember(0).getPlayer().name + " thou hast come!  We have waited such a long, long time...\n"
-					+ "\n\nLord British sits and says: A new age is upon Britannia. The great evil Lords are gone but our people lack direction and purpose in their lives...\n\n\n"
-					+ "A champion of virtue is called for. Thou may be this champion, but only time shall tell.  I will aid thee any way that I can!\n\n" + "How may I help thee?\n");
+		} else {
+			sb.append("Lord British rises and says: At long last!\n\n" + party.getMember(0).getPlayer().name + " thou hast come!\n\nWe have waited such a long, long time..."
+					+ "\n\nLord British sits and says: A new age is upon Britannia. The great evil Lords are gone but our people lack direction and purpose in their lives...\n"
+					+ "A champion of virtue is called for. Thou may be this champion, but only time shall tell.  I will aid thee any way that I can!\n" + "How may I help thee?");
+			
 			sg.lbintro = 1;
 		}
 		
@@ -95,12 +99,13 @@ public class LordBritishConversation extends Conversation implements Constants {
 
 		boolean fullAvatar = true;
 		boolean partialAvatar = false;
-		String text;
 
 		for (Virtue v : Virtue.values()) {
 			fullAvatar &= (sg.karma[v.ordinal()] == 0);
 			partialAvatar |= (sg.karma[v.ordinal()] == 0);
 		}
+		
+		String text;
 
 		if (sg.moves <= 1000) {
 			text = "To survive in this hostile land thou must first know thyself! Seek ye to master thy weapons and thy magical ability!\n" + "\nTake great care in these thy first travels in Britannia.\n"
@@ -144,5 +149,7 @@ public class LordBritishConversation extends Conversation implements Constants {
 
 		return "He says: " + text;
 	}
+	
+
 
 }

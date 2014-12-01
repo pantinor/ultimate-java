@@ -143,6 +143,7 @@ public class Conversation {
 		private String question;
 		private String yesResponse;
 		private String noResponse;
+		private boolean lbHeal;
 		
 		public Topic(String query, String phrase, String question, String yesResponse, String noResponse) {
 			super();
@@ -151,6 +152,15 @@ public class Conversation {
 			this.question = question;
 			this.yesResponse = yesResponse;
 			this.noResponse = noResponse;
+		}
+		public Topic(String query, String phrase, String question, String yesResponse, String noResponse, boolean heal) {
+			super();
+			this.query = query;
+			this.phrase = phrase;
+			this.question = question;
+			this.yesResponse = yesResponse;
+			this.noResponse = noResponse;
+			this.lbHeal = heal;
 		}
 		public String getQuery() {
 			return query;
@@ -181,6 +191,12 @@ public class Conversation {
 		}
 		public void setNoResponse(String noResponse) {
 			this.noResponse = noResponse;
+		}
+		public boolean isLbHeal() {
+			return lbHeal;
+		}
+		public void setLbHeal(boolean lbHeal) {
+			this.lbHeal = lbHeal;
 		}
 		
 

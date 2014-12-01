@@ -4,6 +4,8 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import objects.Conversation.Topic;
 import objects.LordBritishConversation;
+import objects.Party;
+import objects.Party.PartyMember;
 import objects.Person;
 import vendor.BaseVendor;
 
@@ -86,9 +88,9 @@ public class ConversationDialog extends Window implements Constants {
 							
 							if (t.getQuery().equals("join")) {
 								String name = person.getConversation().getName();
-								Virtue virtue = mainGame.context.getParty().getVirtueForJoinable(name);
+								Virtue virtue = Ultima4.context.getParty().getVirtueForJoinable(name);
 								if (virtue != null) {
-									CannotJoinError join = mainGame.context.getParty().join(name);
+									CannotJoinError join = Ultima4.context.getParty().join(name);
 									if (join == CannotJoinError.JOIN_SUCCEEDED) {
 										scrollPane.add("I am honored to join thee!");
 									} else {
@@ -111,6 +113,13 @@ public class ConversationDialog extends Window implements Constants {
 									scrollPane.add(previousTopic.getYesResponse());
 								} else {
 									scrollPane.add(previousTopic.getNoResponse());
+									if (previousTopic.isLbHeal()) {
+										for (PartyMember pm : Ultima4.context.getParty().getMembers()) {
+											pm.heal(HealType.CURE);
+											pm.heal(HealType.FULLHEAL);
+										}
+										Sounds.play(Sound.MOONGATE);
+									}
 								}
 							} else {
 								scrollPane.add("That I cannot help thee with.");
@@ -168,13 +177,33 @@ public class ConversationDialog extends Window implements Constants {
 				LordBritishConversation conv = (LordBritishConversation)person.getConversation();
 				scrollPane.add(conv.intro());
 				
+				boolean playSound = false;
+				Party party = Ultima4.context.getParty();
+				if (party.getMember(0).getPlayer().status == StatusType.STAT_DEAD) {
+					party.getMember(0).heal(HealType.RESURRECT);
+					party.getMember(0).heal(HealType.FULLHEAL);
+					playSound = true;
+				}
+				
+				for (int i = 0; i < party.getMembers().size(); i++) {
+					PartyMember player = party.getMember(i);
+					if (player.advanceLevel()) {
+						playSound = true;
+						scrollPane.add(player.getPlayer().name + " thou art now level "+player.getLevel());
+					}
+				}
+				
+				if (playSound) Sounds.play(Sound.MOONGATE);
+								
 			} else {
 				scrollPane.add("You meet " + person.getConversation().getDescription().toLowerCase() + ".");
 			}
 			
 		} else if (person.getRole() != null && person.getRole().getInventoryType() != null) {
 			
-			vendor = mainGame.getVendor(person.getRole().getInventoryType(), Maps.convert(mainGame.context.getCurrentMap().getId()));
+			vendor = Ultima4.vendorClassSet.getVendorImpl(person.getRole().getInventoryType(), 
+					Maps.convert(Ultima4.context.getCurrentMap().getId()), Ultima4.context.getParty());
+			
 			vendor.setScrollPane(scrollPane);
 			vendor.nextDialog();
 		}
@@ -222,6 +251,7 @@ public class ConversationDialog extends Window implements Constants {
 	}
 
 	public void hide(Action action) {
+		
 		Stage stage = getStage();
 		if (stage != null) {
 			removeListener(focusListener);
@@ -245,8 +275,9 @@ public class ConversationDialog extends Window implements Constants {
 		}
 		
 		Gdx.input.setInputProcessor(new InputMultiplexer(mainGame, stage));
-		if (mainGame.context.getCurrentMap().getCity()!=null) 
-			mainGame.context.getCurrentMap().getCity().resetTalkingFlags();
+		
+		if (Ultima4.context.getCurrentMap().getCity()!=null) 
+			Ultima4.context.getCurrentMap().getCity().resetTalkingFlags();
 
 	}
 

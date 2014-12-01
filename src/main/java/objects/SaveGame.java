@@ -417,8 +417,7 @@ public class SaveGame implements Constants {
 					"DEX: " + p.dex + "  HM: " + p.hpMax + "|"+
 					"INT: " + p.intel + "  EX: " + p.xp + "|"+
 					"W: " + pc(p.weapon.toString()) + "|" +
-					"A: " + pc(p.armor.toString()) + "|"
-					);
+					"A: " + pc(p.armor.toString()) + "|" );			
 			
 			sb1.append("~");
 
@@ -441,8 +440,20 @@ public class SaveGame implements Constants {
 		StringBuffer sb4 = new StringBuffer();
 		sb4.append(torches + " - Torches|");
 		sb4.append(gems + " - Gems|");
-		sb4.append(keys + " - Keys|");
 		if (sextants > 0) sb4.append(sextants + " - Sextant|");
+		sb4.append(keys + " - Keys| |");
+		
+        for (int i = 0; i < 8; i++) {
+        	Virtue v = Constants.Virtue.get(i);
+        	String st = ((this.stones & (1 << i)) > 0 ? "+STONE" : "") ;
+        	String ru = ((this.runes & (1 << i)) > 0 ? "+RUNE" : "") ;
+			sb4.append(pc(v.getDescription()) + ": " + this.karma[v.ordinal()] + " " + st + " " + ru+ "|");
+        }
+        
+        for (Item item : Constants.Item.values()) {
+        	if (!item.isVisible()) continue;
+        	sb4.append((this.items & (1 << item.ordinal())) > 0 ? item.getDesc() + "|" : "") ;
+        }
 
 		StringBuffer sb5 = new StringBuffer();
 		for (int i=0;i<8;i++) {

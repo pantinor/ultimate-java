@@ -2,7 +2,6 @@ package objects;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 import java.util.Random;
 
 import objects.SaveGame.SaveGamePlayerRecord;
@@ -13,7 +12,7 @@ import ultima.Constants;
 import util.Utils;
 
 
-public class Party extends Observable implements Constants {
+public class Party implements Constants {
 	
 	private SaveGame saveGame;
 	private List<PartyMember> members = new ArrayList<PartyMember>();
@@ -28,12 +27,7 @@ public class Party extends Observable implements Constants {
 		for (int i = 0;i<saveGame.members;i++) {
 			members.add(new PartyMember(this, saveGame.players[i]));
 		}
-		
-//		SaveGame.SaveGamePlayerRecord rec = sg.new SaveGamePlayerRecord();
-//		rec.name = "avatar";
-//		rec.hp=200;
-//		members.add(new PartyMember(this, rec));
-		
+			
 		
 	}
 	
@@ -89,13 +83,11 @@ public class Party extends Observable implements Constants {
 	public class PartyMember {
 		
 		private SaveGamePlayerRecord player;
-		private List<StatusType> status = new ArrayList<StatusType>();
 		private Party party;
 		
 		public PartyMember(Party py, SaveGamePlayerRecord p) {
 			this.party = py;
 			this.player = p;
-			addStatus(p.status);
 		}
 		
 		public CreatureStatus getDamagedState() {
@@ -164,17 +156,13 @@ public class Party extends Observable implements Constants {
 		
 		public void adjustMp(int pts) {
 			Utils.adjustValueMax(player.mp, pts, getMaxMp());
-			notifyChange();
 		}
 		
-		public void advanceLevel() {
+		public boolean advanceLevel() {
 			if (getLevel() == getMaxLevel())
-				return;
+				return false;
 			
 			player.status = StatusType.STAT_GOOD;
-			this.status.clear();
-			addStatus(StatusType.STAT_GOOD);
-			
 			player.hpMax = getMaxLevel() * 100;
 			player.hp = player.hpMax;
 				    
@@ -192,9 +180,8 @@ public class Party extends Observable implements Constants {
 			if (player.intel > 50) {
 				player.intel = 50;
 			}
+			return true;
 	    
-			notifyChange();
-
 		}
 		
 		public boolean heal(HealType type) {
@@ -204,43 +191,42 @@ public class Party extends Observable implements Constants {
 				return true;
 
 			case CURE:
-				if (!status.contains(StatusType.STAT_POISONED)) {
+				if (player.status != StatusType.STAT_POISONED) {
 					return false;
 				}
-				removeStatus(StatusType.STAT_POISONED);
+				player.status = StatusType.STAT_GOOD;
 				break;
 
 			case FULLHEAL:
-				if (status.contains(StatusType.STAT_DEAD) || player.hp == player.hpMax) {
+				if (player.status == StatusType.STAT_DEAD || player.hp == player.hpMax) {
 					return false;
 				}
 				player.hp = player.hpMax;
 				break;
 
 			case RESURRECT:
-				if (!status.contains(StatusType.STAT_DEAD)) {
+				if (player.status != StatusType.STAT_DEAD) {
 					return false;
 				}
-				removeStatus(StatusType.STAT_DEAD);
-				addStatus(StatusType.STAT_GOOD);
+				player.status = StatusType.STAT_GOOD;
 				break;
 
 			case HEAL:
-				if (status.contains(StatusType.STAT_DEAD) || player.hp == player.hpMax) {
+				if (player.status == StatusType.STAT_DEAD || player.hp == player.hpMax) {
 					return false;
 				}
 				player.hp += 75 + (rand.nextInt(0x100) % 0x19);
 				break;
 
 			case CAMPHEAL:
-				if (status.contains(StatusType.STAT_DEAD) || player.hp == player.hpMax) {
+				if (player.status == StatusType.STAT_DEAD || player.hp == player.hpMax) {
 					return false;
 				}
 				player.hp += 99 + (rand.nextInt(0x100) & 0x77);
 				break;
 
 			case INNHEAL:
-				if (status.contains(StatusType.STAT_DEAD) || player.hp == player.hpMax) {
+				if (player.status == StatusType.STAT_DEAD || player.hp == player.hpMax) {
 					return false;
 				}
 				player.hp += 100 + (rand.nextInt(50) * 2);
@@ -253,8 +239,6 @@ public class Party extends Observable implements Constants {
 			if (player.hp > player.hpMax) {
 				player.hp = player.hpMax;
 			}
-
-			notifyChange();
 
 			return true;
 		}
@@ -271,15 +255,6 @@ public class Party extends Observable implements Constants {
 			return null;
 		}
 
-		public void removeStatus(StatusType status) {
-			this.status.remove(status);
-		}
-		public void addStatus(StatusType s) {
-			if (!this.status.contains(s)) {
-				this.status.add(s);
-			}
-		}
-
 	}
 	
 	public boolean isJoinedInParty(String name) {
@@ -289,13 +264,6 @@ public class Party extends Observable implements Constants {
 		return false;
 	}
 	
-	/**
-	 * For the UI update on the party text area
-	 */
-	public void notifyChange() {
-		setChanged();
-		notifyObservers(this);
-	}
 	
 	/**
 	 * Determine of character name is joinable and return the virtue for that character.
@@ -338,14 +306,139 @@ public class Party extends Observable implements Constants {
 				saveGame.players[i] = tmp;
         
 				members.add(new PartyMember(this, saveGame.players[saveGame.members++]));
-				
-				notifyChange();
-				
+								
 				return CannotJoinError.JOIN_SUCCEEDED;
 			}
 		}
     
 		return CannotJoinError.JOIN_NOT_EXPERIENCED;
 	}
+	
+	public void adjustKarma(KarmaAction action) {
+		
+		int timeLimited = 0;
+		int v = 0;
+		int[] newKarma = new int[8];
+		int[] maxVal = new int[8];
+    
+		for (v = 0; v < 8; v++) {
+			newKarma[v] = saveGame.karma[v] == 0 ? 100 : saveGame.karma[v];
+			maxVal[v] = saveGame.karma[v] == 0 ? 100 : 99;
+		}
+    
+		switch (action) {
+		case FOUND_ITEM:
+			Utils.adjustValueMax(newKarma[Virtue.HONOR.ordinal()], 5, maxVal[Virtue.HONOR.ordinal()]);
+			break;
+		case STOLE_CHEST:
+			Utils.adjustValueMin(newKarma[Virtue.HONESTY.ordinal()], -1, 1);
+			Utils.adjustValueMin(newKarma[Virtue.JUSTICE.ordinal()], -1, 1);
+			Utils.adjustValueMin(newKarma[Virtue.HONOR.ordinal()], -1, 1);
+			break;
+		case GAVE_ALL_TO_BEGGAR:
+		case GAVE_TO_BEGGAR:
+			timeLimited = 1;
+			Utils.adjustValueMax(newKarma[Virtue.COMPASSION.ordinal()], 2, maxVal[Virtue.COMPASSION.ordinal()]);
+			break;
+		case BRAGGED:
+			Utils.adjustValueMin(newKarma[Virtue.HUMILITY.ordinal()], -5, 1);
+			break;
+		case HUMBLE:
+			timeLimited = 1;
+			Utils.adjustValueMax(newKarma[Virtue.HUMILITY.ordinal()], 10, maxVal[Virtue.HUMILITY.ordinal()]);
+			break;
+		case HAWKWIND:
+		case MEDITATION:
+			timeLimited = 1;
+			Utils.adjustValueMax(newKarma[Virtue.SPIRITUALITY.ordinal()], 3, maxVal[Virtue.SPIRITUALITY.ordinal()]);
+			break;
+		case BAD_MANTRA:
+			Utils.adjustValueMin(newKarma[Virtue.SPIRITUALITY.ordinal()], -3, 1);
+			break;
+		case ATTACKED_GOOD:
+			Utils.adjustValueMin(newKarma[Virtue.COMPASSION.ordinal()], -5, 1);
+			Utils.adjustValueMin(newKarma[Virtue.JUSTICE.ordinal()], -5, 1);
+			Utils.adjustValueMin(newKarma[Virtue.HONOR.ordinal()], -5, 1);
+			break;
+		case FLED_EVIL:
+			Utils.adjustValueMin(newKarma[Virtue.VALOR.ordinal()], -2, 1);
+			break;
+		case HEALTHY_FLED_EVIL:
+			Utils.adjustValueMin(newKarma[Virtue.VALOR.ordinal()], -2, 1);
+			Utils.adjustValueMin(newKarma[Virtue.SACRIFICE.ordinal()], -2, 1);
+			break;
+		case KILLED_EVIL:
+			Random rand = new Random();
+			// gain one valor half the time, zero the rest
+			Utils.adjustValueMax(newKarma[Virtue.VALOR.ordinal()], rand.nextInt(1), maxVal[Virtue.VALOR.ordinal()]); 
+			break;
+		case FLED_GOOD:
+			Utils.adjustValueMax(newKarma[Virtue.COMPASSION.ordinal()], 2, maxVal[Virtue.COMPASSION.ordinal()]);
+			Utils.adjustValueMax(newKarma[Virtue.JUSTICE.ordinal()], 2, maxVal[Virtue.JUSTICE.ordinal()]);
+			break;
+		case SPARED_GOOD:
+			Utils.adjustValueMax(newKarma[Virtue.COMPASSION.ordinal()], 1, maxVal[Virtue.COMPASSION.ordinal()]);
+			Utils.adjustValueMax(newKarma[Virtue.JUSTICE.ordinal()], 1, maxVal[Virtue.JUSTICE.ordinal()]);
+			break;
+		case DONATED_BLOOD:
+			Utils.adjustValueMax(newKarma[Virtue.SACRIFICE.ordinal()], 5, maxVal[Virtue.SACRIFICE.ordinal()]);
+			break;
+		case DIDNT_DONATE_BLOOD:
+			Utils.adjustValueMin(newKarma[Virtue.SACRIFICE.ordinal()], -5, 1);
+			break;
+		case CHEAT_REAGENTS:
+			Utils.adjustValueMin(newKarma[Virtue.HONESTY.ordinal()], -10, 1);
+			Utils.adjustValueMin(newKarma[Virtue.JUSTICE.ordinal()], -10, 1);
+			Utils.adjustValueMin(newKarma[Virtue.HONOR.ordinal()], -10, 1);
+			break;
+		case DIDNT_CHEAT_REAGENTS:
+			timeLimited = 1;
+			Utils.adjustValueMax(newKarma[Virtue.HONESTY.ordinal()], 2, maxVal[Virtue.HONESTY.ordinal()]);
+			Utils.adjustValueMax(newKarma[Virtue.JUSTICE.ordinal()], 2, maxVal[Virtue.JUSTICE.ordinal()]);
+			Utils.adjustValueMax(newKarma[Virtue.HONOR.ordinal()], 2, maxVal[Virtue.HONOR.ordinal()]);
+			break;
+		case USED_SKULL:
+			for (v = 0; v < 8; v++) {
+				Utils.adjustValueMin(newKarma[v], -5, 1);
+			}
+			break;
+		case DESTROYED_SKULL:
+			for (v = 0; v < 8; v++) {
+				Utils.adjustValueMax(newKarma[v], 10, maxVal[v]);
+			}
+			break;
+		}
+		
+		/*
+		 * check if enough time has passed since last virtue award if
+		 * action is time limited -- if not, throw away new values
+		 */
+		if (timeLimited > 0) {
+			if (((saveGame.moves / 16) >= 0x10000) || (((saveGame.moves / 16) & 0xFFFF) != saveGame.lastvirtue)) {
+				saveGame.lastvirtue = (saveGame.moves / 16) & 0xFFFF;
+			} else {
+				return;
+			}
+		}
+
+		/*
+		 * return to u4dos compatibility and handle losing of eighths
+		 */
+		for (v = 0; v < 8; v++) {
+			if (maxVal[v] == 100) { // already an avatar
+				if (newKarma[v] < 100) { // but lost it
+					saveGame.karma[v] = newKarma[v];
+				} else { // return to u4dos compatibility
+					saveGame.karma[v] = 0;
+				}
+			} else {
+				saveGame.karma[v] = newKarma[v];
+			}
+		}
+    
+    
+    
+	}
+
 
 }

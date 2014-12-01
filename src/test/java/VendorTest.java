@@ -19,8 +19,10 @@ import org.testng.annotations.Test;
 
 import ultima.Constants.InventoryType;
 import ultima.Constants.Maps;
+import ultima.Constants.StatusType;
 import ultima.Constants.WeaponType;
 import vendor.BaseVendor;
+import vendor.HealerService;
 import vendor.VendorClassSet;
 import vendor.WeaponVendor;
 
@@ -78,7 +80,7 @@ public class VendorTest {
 
 	}
 	
-	@Test
+	//@Test
 	public void printVendors() throws Exception {
 		
 		
@@ -151,6 +153,63 @@ public class VendorTest {
 		}
 	}
 	
+	
+	@Test
+	public void testHealer() throws Exception {
+		
+		File file = new File("target/classes/xml/vendor.xml");
+		JAXBContext jaxbContext = JAXBContext.newInstance(VendorClassSet.class);
+		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		VendorClassSet vcs = (VendorClassSet) jaxbUnmarshaller.unmarshal(file);
+		vcs.init();
+		
+		SaveGame sg = new SaveGame();
+		
+		SaveGame.SaveGamePlayerRecord rec = sg.new SaveGamePlayerRecord();
+		rec.name = "avatar";
+		rec.hp=200;
+		rec.hpMax = 400;
+		rec.status = StatusType.STAT_DEAD;
+		
+		SaveGame.SaveGamePlayerRecord rec2 = sg.new SaveGamePlayerRecord();
+		rec2.name = "joe";
+		rec2.hp=50;
+		rec2.hpMax = 400;
+		rec.status = StatusType.STAT_POISONED;
+
+		Party party = new Party(sg);
+		party.addMember(rec);
+		party.addMember(rec2);
+
+
+		sg.gold = 50;
+		sg.food = 200;
+		
+
+		
+		BaseVendor v = new HealerService(vcs.getVendor(InventoryType.HEALER, Maps.BRITAIN), party);
+
+		while (true) {
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			
+			if (!v.nextDialog()) {
+				break;
+			}
+			
+			String input = br.readLine();
+			
+			if (input != null && input.equals("bye")) {
+				break;
+			}
+			
+			v.setResponse(input);
+			
+		}
+		
+		String[] s = sg.getZstats();
+		System.err.println(s[0]);
+
+	}
 
 
 }

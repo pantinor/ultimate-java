@@ -5,6 +5,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import objects.Party;
 import ultima.Constants.InventoryType;
 import ultima.Constants.Maps;
 
@@ -41,6 +42,44 @@ public class VendorClassSet {
 				v.setVendorClass(vc);
 			}
 		}
+	}
+	
+	public BaseVendor getVendorImpl(InventoryType type, Maps map, Party party) {
+		
+		BaseVendor v = null;
+		
+		switch(type) {
+		case ARMOR:
+			v = new ArmorVendor(getVendor(type, map), party);
+			break;
+		case FOOD:
+			break;
+		case GUILDITEM:
+			break;
+		case HEALER:
+			v = new HealerService(getVendor(type, map), party);
+			break;
+		case HORSE:
+			break;
+		case INN:
+			break;
+		case REAGENT:
+			break;
+		case TAVERN:
+			break;
+		case TAVERNINFO:
+			break;
+		case WEAPON:
+			v = new WeaponVendor(getVendor(type, map), party);
+			break;
+		default:
+			break;
+		
+		}
+		
+		return v;
+
+		
 	}
 
 }

@@ -459,18 +459,21 @@ public interface Constants {
 	
 	public enum Virtue {
 		
-		HONESTY("honest"),
-		COMPASSION("compassionate"),
-		VALOR("valiant"),
-		JUSTICE("just"),
-		SACRIFICE("sacrificial"),
-		HONOR("honorable"),
-		SPIRITUALITY("spiritual"),
-		HUMILITY("humble");
+		HONESTY("honest", "AHM"),
+		COMPASSION("compassionate", "MU"),
+		VALOR("valiant", "RA"),
+		JUSTICE("just", "BEH"),
+		SACRIFICE("sacrificial", "CAH"),
+		HONOR("honorable", "SUMM"),
+		SPIRITUALITY("spiritual", "OM"),
+		HUMILITY("humble", "LUM");
 		
 		private String description;
-		private Virtue(String d) {
+		private String mantra;
+		
+		private Virtue(String d, String ab) {
 			this.description = d;
+			this.mantra = ab;
 		}
 		public static Virtue get(int v) {
 			for (Virtue x : values()) {
@@ -482,6 +485,9 @@ public interface Constants {
 		}
 		public String getDescription() {
 			return description;
+		}
+		public String getMantra() {
+			return mantra;
 		}
 	}
 	
@@ -639,37 +645,41 @@ public interface Constants {
 	
 	
 	public enum Item {
-		SKULL(0x01),
-		SKULL_DESTROYED(0x02),
-		CANDLE(0x04),
-		BOOK(0x08),
-		BELL(0x10),
-		KEY_C(0x20),
-		KEY_L(0x40),
-		KEY_T(0x80),
-		HORN(0x100),
-		WHEEL(0x200),
-		CANDLE_USED(0x400),
-		BOOK_USED(0x800),
-		BELL_USED(0x1000);
-
-		private int intValue;
-
-		private Item(int value) {
-			intValue = value;
-		}
-
-		public int getValue() {
-			return intValue;
+		SKULL("Skull of Mondain", true),
+		SKULL_DESTROYED("",false),
+		CANDLE("Candle of Love", true),
+		BOOK("Book of Truth",true),
+		BELL("Bell of Courage",true),
+		KEY_C("Key Part Courage",true),
+		KEY_L("Key Part Love",true),
+		KEY_T("Key Part Truth",true),
+		HORN("Silver Horn",true),
+		WHEEL("Wheel of HMS Cape",true),
+		CANDLE_USED("",false),
+		BOOK_USED("",false),
+		BELL_USED("",false);
+		
+		private boolean visible;
+		private String desc;
+		
+		private Item(String desc, boolean v) {
+			this.desc = desc;
+			this.visible = v;
 		}
 		
 		public static Item get(int v) {
 			for (Item x : values()) {
-				if (x.getValue() == (v&0xff)) {
+				if (x.ordinal() == (v&0xff)) {
 					return x;
 				}
 			}
 			return null;
+		}
+		public boolean isVisible() {
+			return this.visible;
+		}
+		public String getDesc() {
+			return this.desc;
 		}
 
 	}
@@ -681,72 +691,25 @@ public interface Constants {
 		torch;
 	}
 
-//  static const char * const virtueNames[] = {
-//  "Blue", "Yellow", "Red", 
-//  "Green", "Orange", "Purple", 
-//  "White", "Black"
-//};
 	public enum Stone {
-		BLUE(0x01),
-		YELLOW(0x02),
-		RED(0x04),
-		GREEN(0x08),
-		ORANGE(0x10),
-		PURPLE(0x20),
-		WHITE(0x40),
-		BLACK(0x80);
-
-		private int intValue;
-
-		private Stone(int value) {
-			intValue = value;
-		}
-
-		public int getValue() {
-			return intValue;
-		}
-		
+		BLUE,
+		YELLOW,
+		RED,
+		GREEN,
+		ORANGE,
+		PURPLE,
+		WHITE,
+		BLACK;
 		public static Stone get(int v) {
 			for (Stone x : values()) {
-				if (x.getValue() == (v&0xff)) {
+				if (x.ordinal() == (v&0xff)) {
 					return x;
 				}
 			}
 			return null;
 		}
-
 	}
 
-	public enum Rune {
-		HONESTY(0x01),
-		COMPASSION(0x02),
-		VALOR(0x04),
-		JUSTICE(0x08),
-		SACRIFICE(0x10),
-		HONOR(0x20),
-		SPIRITUALITY(0x40),
-		HUMILITY(0x80);
-
-		private int intValue;
-
-		private Rune(int value) {
-			intValue = value;
-		}
-
-		public int getValue() {
-			return intValue;
-		}
-		
-		public static Rune get(int v) {
-			for (Rune x : values()) {
-				if (x.getValue() == (v&0xff)) {
-					return x;
-				}
-			}
-			return null;
-		}
-
-	}
 
 	public static final int SPELL_MAX = 26;
 	

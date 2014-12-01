@@ -22,6 +22,7 @@ import vendor.BaseVendor;
 import vendor.VendorClassSet;
 import vendor.WeaponVendor;
 
+import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
@@ -96,6 +97,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 		cfg.title = "Ultima4";
 		cfg.width = SCREEN_WIDTH;
 		cfg.height = SCREEN_HEIGHT;
+		cfg.addIcon("graphics/icon.png", FileType.Classpath);
 		new LwjglApplication(new Ultima4(), cfg);
 
 	}
@@ -552,43 +554,6 @@ public class Ultima4 extends SimpleGame implements Constants {
 				}
 			}
 		}
-		
-	}
-	
-	public BaseVendor getVendor(InventoryType type, Maps map) {
-		
-		BaseVendor v = null;
-		
-		switch(type) {
-		case ARMOR:
-			v = new ArmorVendor(vendorClassSet.getVendor(type, map), context.getParty());
-			break;
-		case FOOD:
-			break;
-		case GUILDITEM:
-			break;
-		case HEALER:
-			break;
-		case HORSE:
-			break;
-		case INN:
-			break;
-		case REAGENT:
-			break;
-		case TAVERN:
-			break;
-		case TAVERNINFO:
-			break;
-		case WEAPON:
-			v = new WeaponVendor(vendorClassSet.getVendor(type, map), context.getParty());
-			break;
-		default:
-			break;
-		
-		}
-		
-		return v;
-
 		
 	}
     
