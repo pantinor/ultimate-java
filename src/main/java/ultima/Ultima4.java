@@ -17,10 +17,7 @@ import objects.TileSet;
 import objects.WeaponSet;
 import util.FixedSizeArrayList;
 import util.Utils;
-import vendor.ArmorVendor;
-import vendor.BaseVendor;
 import vendor.VendorClassSet;
-import vendor.WeaponVendor;
 
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
@@ -97,7 +94,7 @@ public class Ultima4 extends SimpleGame implements Constants {
 		cfg.title = "Ultima4";
 		cfg.width = SCREEN_WIDTH;
 		cfg.height = SCREEN_HEIGHT;
-		cfg.addIcon("graphics/icon.png", FileType.Classpath);
+		cfg.addIcon("graphics/ankh.png", FileType.Classpath);
 		new LwjglApplication(new Ultima4(), cfg);
 
 	}

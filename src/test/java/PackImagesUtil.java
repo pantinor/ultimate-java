@@ -93,7 +93,7 @@ public class PackImagesUtil {
 	
 	}
 	
-	public static void main(String[] argv) throws Exception {
+	public static void main4(String[] argv) throws Exception {
 		
 		String inputFileName = "C:\\Users\\Paul\\Desktop\\ultima_v_5_warriors_of_destiny_tileset.png";
 		String outputFileName = "C:\\Users\\Paul\\Desktop\\ultima_5_tileset.png";
@@ -158,7 +158,35 @@ public class PackImagesUtil {
 	
 	}
 	
+	public static void main(String[] argv) throws Exception {
+		MaxRectsPacker mrp = new MaxRectsPacker();
+		ArrayList<MaxRectsPacker.Rect> packedRects = new ArrayList<MaxRectsPacker.Rect>();
+		
+		int tileWidth = 48;
+		int tileHeight = 31;
+		
+		int[] dx = {0, 48+8, (48+8)*2, 176, 176+48, 176+48*2}; 
+		int[] dy = {0, 31+1, 31*2 +2, 31*3+3, 31*4+4, 31*5+5}; 
+		
+		int rows = 6;
+		int cols = 6;
+		for (int i=0;i<rows;i++) {
+			for (int j=0;j<cols;j++) {
+				int xp = dx[i];
+				int yp = dy[j];
+				MaxRectsPacker.Rect rect = new MaxRectsPacker.Rect(xp,yp,tileWidth,tileHeight);
+				rect.name = "beast";
+				rect.index = 0;
+				packedRects.add(rect);
+			}
+		}
+		
+		
+		mrp.writePackFileWithRects(new File("."), "beasties-atlas.txt",packedRects, "beasties.png");
+		
+	    System.out.println("done");
 	
+	}
 
 	
 }

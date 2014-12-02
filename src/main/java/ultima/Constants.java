@@ -454,20 +454,34 @@ public interface Constants {
 	}
 	
 	public enum ClassType {
-		
-		MAGE(Virtue.HONESTY),
-		BARD(Virtue.COMPASSION),
-		FIGHTER(Virtue.VALOR),
-		DRUID(Virtue.JUSTICE),
-		TINKER(Virtue.SACRIFICE),
-		PALADIN(Virtue.HONOR),
-		RANGER(Virtue.SPIRITUALITY),
-		SHEPHERD(Virtue.HUMILITY);
+				
+		MAGE(Virtue.HONESTY, WeaponType.STAFF,  ArmorType.CLOTH,   2, 125, 231, 136),
+		BARD(Virtue.COMPASSION, WeaponType.SLING,  ArmorType.CLOTH,   3, 240,  83, 105),
+		FIGHTER(Virtue.VALOR, WeaponType.AXE,    ArmorType.LEATHER, 3, 205,  35, 221),
+		DRUID(Virtue.JUSTICE, WeaponType.DAGGER, ArmorType.CLOTH,   2, 175,  59,  44),
+		TINKER(Virtue.SACRIFICE, WeaponType.MACE,   ArmorType.LEATHER, 2, 110, 158,  21),
+		PALADIN(Virtue.HONOR, WeaponType.SWORD,  ArmorType.CHAIN,   3, 325, 105, 183),
+		RANGER(Virtue.SPIRITUALITY, WeaponType.SWORD,  ArmorType.LEATHER, 2, 150,  23, 129),
+		SHEPHERD(Virtue.HUMILITY, WeaponType.STAFF,  ArmorType.CLOTH,   1,   5, 186, 171);
 		
 		private Virtue virtue;
-		private ClassType(Virtue v) {
-			this.virtue = v;
+		private WeaponType initialWeapon;
+		private ArmorType initialArmor;
+		private int initialLevel;
+		private int initialExp;
+		private int startX;
+		private int startY;
+
+		private ClassType(Virtue virtue, WeaponType initialWeapon, ArmorType initialArmor, int initialLevel, int initialExp, int startX, int startY) {
+			this.virtue = virtue;
+			this.initialWeapon = initialWeapon;
+			this.initialArmor = initialArmor;
+			this.initialLevel = initialLevel;
+			this.initialExp = initialExp;
+			this.startX = startX;
+			this.startY = startY;
 		}
+
 		public static ClassType get(int v) {
 			for (ClassType x : values()) {
 				if (x.ordinal() == (v&0xff)) {
@@ -476,10 +490,36 @@ public interface Constants {
 			}
 			return null;
 		}
-		
+
 		public Virtue getVirtue() {
 			return virtue;
 		}
+
+		public WeaponType getInitialWeapon() {
+			return initialWeapon;
+		}
+
+		public ArmorType getInitialArmor() {
+			return initialArmor;
+		}
+
+		public int getInitialLevel() {
+			return initialLevel;
+		}
+
+		public int getInitialExp() {
+			return initialExp;
+		}
+
+		public int getStartX() {
+			return startX;
+		}
+
+		public int getStartY() {
+			return startY;
+		}
+		
+
 	}
 
 	

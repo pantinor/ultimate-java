@@ -29,6 +29,35 @@ public class CrushImages {
 	}
 
 	public static void main(String[] argv) throws IOException {
-		crush("moonSheet.png", "moonPhases.png", 79, 79, 50, 50);
+		//crush("moonSheet.png", "moonPhases.png", 79, 79, 50, 50);
+		makeBeastieAtlas();
 	}
+	
+	
+	private static void makeBeastieAtlas() throws IOException {
+		BufferedImage input = ImageIO.read(new File("target\\classes\\graphics\\beasties.png"));
+		
+		int tileWidth = 48;
+		int tileHeight = 31;
+		
+		int[] dx = {0, 48+8, (48+8)*2, 176, 176+48, 176+48*2}; 
+		int[] dy = {0, 31+1, 31*2 +2, 31*3+3, 31*4+4, 31*5+5}; 
+
+		BufferedImage output = new BufferedImage(tileWidth * 6, tileHeight * 6, BufferedImage.TYPE_INT_ARGB);
+
+		for (int x = 0; x < dx.length; x++) {
+			for (int y = 0; y < dy.length; y++) {
+				int xp = dx[x];
+				int yp = dy[y];
+
+				BufferedImage tile = input.getSubimage(xp, yp, tileWidth, tileHeight);
+				output.getGraphics().drawImage(tile, x * tileWidth, y * tileHeight, null);
+			}
+		}
+		
+		ImageIO.write(output, "PNG", new File("beasties.png"));
+	}
+	
+	
+	
 }

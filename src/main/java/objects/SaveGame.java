@@ -23,14 +23,14 @@ public class SaveGame implements Constants {
 
 	public int unknown1 = 0;
 	public int moves = 0;
-	public int food = 0;
-	public int gold = 0;
+	public int food = 300;
+	public int gold = 200;
 	public int torches = 0;
 	public int gems = 0;
 	public int keys = 0;
 	public int sextants = 0;
 	
-	public int[] karma = new int[8];
+	public int[] karma = {50,50,50,50,50,50,50,50};
 	public int[] armor = new int[8];
 	public int[] weapons = new int[16];
 	public int[] reagents = new int[8];
