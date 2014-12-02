@@ -33,6 +33,10 @@ import org.lwjgl.BufferUtils;
 import org.testng.annotations.Test;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.utils.Array;
 import com.google.common.io.LittleEndianDataInputStream;
 
 import ultima.Constants;
@@ -41,7 +45,7 @@ import ultima.Constants.Item;
 import ultima.Constants.KarmaAction;
 import ultima.Constants.Reagent;
 import ultima.Constants.Virtue;
-import ultima.Intro;
+import ultima.StartScreen;
 import util.ShadowFOV;
 import util.Utils;
 import vendor.VendorClass;
@@ -401,22 +405,23 @@ public class TestJaxb {
 	public void testReadTitleExe() throws Exception {
 		InputStream is = TestJaxb.class.getResourceAsStream("/data/title.exe");
 		byte[] bytes = IOUtils.toByteArray(is);
+
 		
-		int stringIndex = 0;
-		int pos = 28;
-		CharBuffer bb = BufferUtils.createCharBuffer(288);
-			
-		while (stringIndex < 28) {
-			if (bytes[pos] == 0x0) {
-				bb.flip();
-				System.out.println(new String(bb.toString().replace("\n", " ")));
-				stringIndex++;
-				bb.clear();
-			} else {
-				bb.put((char)bytes[pos]);
-			}
-			pos ++;
-		}
+//		int stringIndex = 0;
+//		int pos = 28;
+//		CharBuffer bb = BufferUtils.createCharBuffer(288);
+//			
+//		while (stringIndex < 28) {
+//			if (bytes[pos] == 0x0) {
+//				bb.flip();
+//				System.out.println(new String(bb.toString().replace("\n", " ")));
+//				stringIndex++;
+//				bb.clear();
+//			} else {
+//				bb.put((char)bytes[pos]);
+//			}
+//			pos ++;
+//		}
 		System.out.println("");
 
 		

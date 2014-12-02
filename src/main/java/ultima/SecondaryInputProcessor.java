@@ -16,14 +16,14 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class SecondaryInputProcessor extends InputAdapter {
 	
-	private Ultima4 game;
+	private GameScreen game;
 	private Stage stage;
 	private int initialKeyCode;
 	private BaseMap bm;
 	private int x;
 	private int y;
 	
-	public SecondaryInputProcessor(Ultima4 game, Stage stage) {
+	public SecondaryInputProcessor(GameScreen game, Stage stage) {
 		this.game = game;
 		this.stage = stage;
 	}

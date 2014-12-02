@@ -38,7 +38,7 @@ import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
 public class UltimaMapRenderer extends BatchTiledMapRenderer {
 	
 	private BaseMap bm;
-	private Ultima4 mainGame;
+	private GameScreen mainGame;
 	private ShadowFOV fov = new ShadowFOV();
 	float stateTime = 0;
 	
@@ -46,7 +46,7 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 	TextureRegion brick_floor;
 	TextureRegion locked_door;
 
-	public UltimaMapRenderer(Ultima4 mainGame, BaseMap bm, TiledMap map, float unitScale) {
+	public UltimaMapRenderer(GameScreen mainGame, BaseMap bm, TiledMap map, float unitScale) {
 		super(map, unitScale);
 		this.bm = bm;
 		this.mainGame = mainGame;
@@ -172,12 +172,12 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 					continue;
 				}
 				//see if person is in shadow
-				int px = Math.round((p.getCurrentPos().x) / Ultima4.tilePixelWidth);
-				int py = Math.round(p.getCurrentPos().y / Ultima4.tilePixelHeight);
+				int px = Math.round((p.getCurrentPos().x) / GameScreen.tilePixelWidth);
+				int py = Math.round(p.getCurrentPos().y / GameScreen.tilePixelHeight);
 				if (lightMap != null && lightMap[px][py] <= 0) {
 					continue;
 				}
-				batch.draw(p.getAnim().getKeyFrame(stateTime, true), p.getCurrentPos().x, p.getCurrentPos().y, Ultima4.tilePixelWidth, Ultima4.tilePixelHeight);
+				batch.draw(p.getAnim().getKeyFrame(stateTime, true), p.getCurrentPos().x, p.getCurrentPos().y, GameScreen.tilePixelWidth, GameScreen.tilePixelHeight);
 			}
 			
 		}

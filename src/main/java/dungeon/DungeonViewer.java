@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 
 import ultima.Constants;
+import ultima.GameScreen;
 import ultima.Ultima4;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -50,7 +51,7 @@ import com.badlogic.gdx.utils.UBJsonReader;
 public class DungeonViewer implements ApplicationListener, InputProcessor, Constants {
 	
 	private String dungeonFileName;
-	private Ultima4 mainGame;
+	private GameScreen mainGame;
 	private Stage stage;
 	public Environment environment;
 	public ModelBatch modelBatch;
@@ -97,7 +98,7 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		this.dungeonFileName = dungeonFileName;
 	}
 	
-	public DungeonViewer(Stage stage, Ultima4 mainGame, String dungeonFileName) {
+	public DungeonViewer(Stage stage, GameScreen mainGame, String dungeonFileName) {
 		this.dungeonFileName = dungeonFileName;
 		this.mainGame = mainGame;
 		this.stage = stage;

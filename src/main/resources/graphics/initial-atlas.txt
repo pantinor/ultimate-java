@@ -1,0 +1,103 @@
+
+initial-screens.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+title
+  rotate: false
+  xy: 5, 1732
+  size: 480, 184
+  orig: 480, 184
+  offset: 0, 0
+  index: 0
+tree.png
+  rotate: false
+  xy: 5, 1575
+  size: 320, 152
+  orig: 320, 152
+  offset: 0, 0
+  index: 0
+spirhum.png
+  rotate: false
+  xy: 5, 1418
+  size: 320, 152
+  orig: 320, 152
+  offset: 0, 0
+  index: 0
+outside.png
+  rotate: false
+  xy: 5, 1261
+  size: 320, 152
+  orig: 320, 152
+  offset: 0, 0
+  index: 0
+abacus.png
+  rotate: false
+  xy: 5, 1104
+  size: 320, 152
+  orig: 320, 152
+  offset: 0, 0
+  index: 0
+sachonor.png
+  rotate: false
+  xy: 5, 947
+  size: 320, 152
+  orig: 320, 152
+  offset: 0, 0
+  index: 0
+gypsy.png
+  rotate: false
+  xy: 5, 790
+  size: 320, 152
+  orig: 320, 152
+  offset: 0, 0
+  index: 0
+inside.png
+  rotate: false
+  xy: 5, 633
+  size: 320, 152
+  orig: 320, 152
+  offset: 0, 0
+  index: 0
+honcom.png
+  rotate: false
+  xy: 5, 476
+  size: 320, 152
+  orig: 320, 152
+  offset: 0, 0
+  index: 0
+wagon.png
+  rotate: false
+  xy: 5, 319
+  size: 320, 152
+  orig: 320, 152
+  offset: 0, 0
+  index: 0
+valjus.png
+  rotate: false
+  xy: 5, 162
+  size: 320, 152
+  orig: 320, 152
+  offset: 0, 0
+  index: 0
+portal.png
+  rotate: false
+  xy: 5, 5
+  size: 320, 152
+  orig: 320, 152
+  offset: 0, 0
+  index: 0
+white-bead
+  rotate: false
+  xy: 490, 1904
+  size: 8, 12
+  orig: 8, 12
+  offset: 0, 0
+  index: 0
+black-bead
+  rotate: false
+  xy: 330, 1715
+  size: 8, 12
+  orig: 8, 12
+  offset: 0, 0
+  index: 0

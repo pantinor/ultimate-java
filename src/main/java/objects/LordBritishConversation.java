@@ -2,6 +2,7 @@ package objects;
 
 import objects.Party.PartyMember;
 import ultima.Constants;
+import ultima.GameScreen;
 import ultima.Sound;
 import ultima.Sounds;
 import ultima.Ultima4;
@@ -70,8 +71,8 @@ public class LordBritishConversation extends Conversation implements Constants {
 	
 	public String intro() {
 		
-		Party party = Ultima4.context.getParty();
-		SaveGame sg = Ultima4.context.getParty().getSaveGame();
+		Party party = GameScreen.context.getParty();
+		SaveGame sg = GameScreen.context.getParty().getSaveGame();
 		
 		StringBuffer sb = new StringBuffer();
 		if (sg.lbintro == 1) {
@@ -95,7 +96,7 @@ public class LordBritishConversation extends Conversation implements Constants {
 	
 	private String lordBritishGetHelp() {
 		
-		SaveGame sg = Ultima4.context.getParty().getSaveGame();
+		SaveGame sg = GameScreen.context.getParty().getSaveGame();
 
 		boolean fullAvatar = true;
 		boolean partialAvatar = false;

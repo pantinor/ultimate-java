@@ -1,11 +1,12 @@
 package ultima;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
-public class Intro implements Screen {
+public class StartScreen implements Screen, InputProcessor, Constants {
 		
 	public static String[] questions = new String[28];
 	public static String[] script = new String[29];
@@ -72,12 +73,16 @@ public class Intro implements Screen {
 	
 	}
 	
+	public static int[] beast1FrameIndexes = {1,1,1,0,0,1,1,1,0,0,1,1,2,2,3,3,4,4,1,2,3,4,1,2,5,6,7,8,5,6,7,8,5,6,7,8,5,6,7,8,5,6,7,8,5,6,7,8,9,10,9,10,9,10,11,11,11,11,12,12,13,13,12,13,12,13,12,11,11,11,0,0,1,2,3,4,1,2,5,6,7,8,5,6,7,8,9,10,11,11,11,0,0,14,14,14,15,16,16,16,17,17,17,16,16,16,17,17,17,16,16,16,15,14,14,0,0,11,11,11};
+	public static int[] beast2FrameIndexes = {1,0,1,2,3,4,3,2,1,0,1,2,3,4,5,6,5,6,5,6,4,7,8,9,10,9,8,7,8,9,10,11,12,11,12,13,11,12,13,1,13,1,14,1,15,1,14,1,15,10,9,8,16,17,16,17,16,17,9,8,7,4,3,2,0};
+
+	
 	TextureAtlas atlas;
 	Animation beast1;
 	Animation beast2;
 	
 	
-	public Intro() {
+	public StartScreen() {
 		atlas = new TextureAtlas(Gdx.files.classpath("graphics/tile-atlas.txt"));
 
 	}
@@ -129,6 +134,62 @@ public class Intro implements Screen {
 	public void dispose() {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	@Override
+	public boolean keyDown(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public boolean keyUp(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public boolean keyTyped(char character) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public boolean scrolled(int amount) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	

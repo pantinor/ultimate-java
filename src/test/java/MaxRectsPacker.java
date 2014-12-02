@@ -853,8 +853,8 @@ public class MaxRectsPacker {
 			}
 			page.imageName = outputFile.getName();
 
-			BufferedImage canvas = ImageTransparency.createTransparentImage(width, height);
-			//BufferedImage canvas = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			//BufferedImage canvas = ImageTransparency.createTransparentImage(width, height);
+			BufferedImage canvas = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 			Graphics2D g = (Graphics2D) canvas.getGraphics();
 
 			System.out.println("Writing " + canvas.getWidth() + "x" + canvas.getHeight() + ": " + outputFile);
@@ -906,9 +906,9 @@ public class MaxRectsPacker {
 			}
 			
 			try {
-				BufferedImage img = ImageTransparency.convert(canvas, outputFile.getAbsolutePath(), alpha);
-				ImageIO.write(img, "PNG", outputFile);
-				//ImageIO.write(canvas, "PNG", outputFile);
+				//BufferedImage img = ImageTransparency.convert(canvas, outputFile.getAbsolutePath(), alpha);
+				//ImageIO.write(img, "PNG", outputFile);
+				ImageIO.write(canvas, "PNG", outputFile);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

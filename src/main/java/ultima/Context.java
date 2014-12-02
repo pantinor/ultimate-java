@@ -111,7 +111,7 @@ public class Context implements Constants {
 		this.party = party;
 	}
 
-    public void saveGame(Ultima4 game, Vector3 currentPos) {
+    public void saveGame(GameScreen game, Vector3 currentPos) {
 		party.getSaveGame().x = (int)currentPos.x;
 		party.getSaveGame().y = (int)currentPos.y;
 		party.getSaveGame().trammelphase = game.trammelphase;

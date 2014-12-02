@@ -28,12 +28,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 
 public class ConversationDialog extends Window implements Constants {
 	
-	
 	private Skin skin;
 	boolean cancelHide;
 	Actor previousKeyboardFocus, previousScrollFocus;
 	FocusListener focusListener;
-	Ultima4 mainGame;
+	GameScreen mainGame;
 	Person person;
 	BaseVendor vendor;
 	
@@ -46,7 +45,7 @@ public class ConversationDialog extends Window implements Constants {
 	LogScrollPane scrollPane;
 	Topic previousTopic;
 
-	public ConversationDialog(Person p, Ultima4 game, Skin skin) {
+	public ConversationDialog(Person p, GameScreen game, Skin skin) {
 		super("", skin.get("dialog", WindowStyle.class));
 		setSkin(skin);
 		this.skin = skin;
@@ -88,9 +87,9 @@ public class ConversationDialog extends Window implements Constants {
 							
 							if (t.getQuery().equals("join")) {
 								String name = person.getConversation().getName();
-								Virtue virtue = Ultima4.context.getParty().getVirtueForJoinable(name);
+								Virtue virtue = GameScreen.context.getParty().getVirtueForJoinable(name);
 								if (virtue != null) {
-									CannotJoinError join = Ultima4.context.getParty().join(name);
+									CannotJoinError join = GameScreen.context.getParty().join(name);
 									if (join == CannotJoinError.JOIN_SUCCEEDED) {
 										scrollPane.add("I am honored to join thee!");
 									} else {
@@ -114,7 +113,7 @@ public class ConversationDialog extends Window implements Constants {
 								} else {
 									scrollPane.add(previousTopic.getNoResponse());
 									if (previousTopic.isLbHeal()) {
-										for (PartyMember pm : Ultima4.context.getParty().getMembers()) {
+										for (PartyMember pm : GameScreen.context.getParty().getMembers()) {
 											pm.heal(HealType.CURE);
 											pm.heal(HealType.FULLHEAL);
 										}
@@ -178,7 +177,7 @@ public class ConversationDialog extends Window implements Constants {
 				scrollPane.add(conv.intro());
 				
 				boolean playSound = false;
-				Party party = Ultima4.context.getParty();
+				Party party = GameScreen.context.getParty();
 				if (party.getMember(0).getPlayer().status == StatusType.STAT_DEAD) {
 					party.getMember(0).heal(HealType.RESURRECT);
 					party.getMember(0).heal(HealType.FULLHEAL);
@@ -201,8 +200,8 @@ public class ConversationDialog extends Window implements Constants {
 			
 		} else if (person.getRole() != null && person.getRole().getInventoryType() != null) {
 			
-			vendor = Ultima4.vendorClassSet.getVendorImpl(person.getRole().getInventoryType(), 
-					Maps.convert(Ultima4.context.getCurrentMap().getId()), Ultima4.context.getParty());
+			vendor = GameScreen.vendorClassSet.getVendorImpl(person.getRole().getInventoryType(), 
+					Maps.convert(GameScreen.context.getCurrentMap().getId()), GameScreen.context.getParty());
 			
 			vendor.setScrollPane(scrollPane);
 			vendor.nextDialog();
@@ -276,8 +275,8 @@ public class ConversationDialog extends Window implements Constants {
 		
 		Gdx.input.setInputProcessor(new InputMultiplexer(mainGame, stage));
 		
-		if (Ultima4.context.getCurrentMap().getCity()!=null) 
-			Ultima4.context.getCurrentMap().getCity().resetTalkingFlags();
+		if (GameScreen.context.getCurrentMap().getCity()!=null) 
+			GameScreen.context.getCurrentMap().getCity().resetTalkingFlags();
 
 	}
 

@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.StringUtils;
 
 import ultima.Constants;
+import ultima.GameScreen;
 import ultima.Ultima4;
 import ultima.Constants.Item;
 
@@ -296,7 +297,7 @@ public class BaseMap implements Constants {
 
 
 	
-	public void initObjects(Ultima4 mainGame, TextureAtlas atlas1, TextureAtlas atlas2) {
+	public void initObjects(GameScreen mainGame, TextureAtlas atlas1, TextureAtlas atlas2) {
 		
 		if (initialized) return;
 		
@@ -342,7 +343,7 @@ public class BaseMap implements Constants {
 	}
 	
 
-	public void moveObjects(Ultima4 mainGame) {
+	public void moveObjects(GameScreen mainGame) {
 		
 		if (city != null) {
 			
@@ -393,7 +394,7 @@ public class BaseMap implements Constants {
 	private int addToMask(Direction dir, int mask, Tile tile, int x, int y, boolean player) {
 		if (tile != null) {
 			
-			Rule rule = Ultima4.tileRules.getRule(tile.getRule());
+			Rule rule = GameScreen.tileRules.getRule(tile.getRule());
 			
 			boolean canwalkon = rule != null && !StringUtils.equals(rule.getCantwalkon(), "all");
 			

@@ -1,68 +1,87 @@
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
 
-import java.awt.Color;
-
-import objects.Tile;
-import objects.TileSet;
+import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 
 public class PackImagesUtil {
 
 	public static File dir = new File("D:\\xu4-source\\u4\\graphics\\png");
 
-	public static void main2(String[] argv) throws Exception {
+	public static void main(String[] argv) throws Exception {
 
-		File[] tileFiles = dir.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.toLowerCase().startsWith("tile_");
-			}
-		});
+		File[] files = new File[11];
+		
+		files[0] = new File("target\\classes\\graphics\\abacus.png");
+		files[1] = new File("target\\classes\\graphics\\inside.png");
+		files[2] = new File("target\\classes\\graphics\\outside.png");
+		files[3] = new File("target\\classes\\graphics\\wagon.png");
+		files[4] = new File("target\\classes\\graphics\\honcom.png");
+		files[5] = new File("target\\classes\\graphics\\portal.png");
+		files[6] = new File("target\\classes\\graphics\\spirhum.png");
+		files[7] = new File("target\\classes\\graphics\\gypsy.png");
+		files[8] = new File("target\\classes\\graphics\\sachonor.png");
+		files[9] = new File("target\\classes\\graphics\\tree.png");
+		files[10] = new File("target\\classes\\graphics\\valjus.png");
+
 		
 		Map<String,BufferedImage> imgMap = new HashMap<String,BufferedImage>();
-		for (File file : tileFiles) {
-			String name = file.getName().replace("tile_", "").replace(".png", "");
+		
+		for (File file : files) {
+			String name = file.getName();
 			BufferedImage input = ImageIO.read(file);
-			imgMap.put(name, input);
+			BufferedImage fr = input.getSubimage(0, 0, 320, 152);
+			imgMap.put(name, fr);
 		}
 
-		File file2 = new File("target/classes/xml/tileset-base.xml");
-		JAXBContext jaxbContext = JAXBContext.newInstance(TileSet.class);
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		TileSet ts = (TileSet) jaxbUnmarshaller.unmarshal(file2);
-		ts.setMaps();
-
-		MaxRectsPacker mrp = new MaxRectsPacker();
+		Settings settings = new Settings();
+		settings.maxWidth = 500;
+		settings.maxHeight = 2000;
+		settings.paddingX = 5;
+		settings.paddingY = 5;
+		settings.fast = false;
+		MaxRectsPacker mrp = new MaxRectsPacker(settings);
 		ArrayList<MaxRectsPacker.Rect> packedRects = new ArrayList<MaxRectsPacker.Rect>();
 		
 		
-		for (Tile t : ts.getTiles()) {
-
-			BufferedImage img = imgMap.get(t.getName());
-			int height = img.getHeight();
-			int frames = height / 16;
-
-			for (int j = 0; j < frames; j++) {
-				BufferedImage fr = img.getSubimage(0, j*16, 16, 16);
-				MaxRectsPacker.Rect rect = new MaxRectsPacker.Rect(fr,0,0,16,16);
-				rect.name = t.getName();
-				rect.index = j;
-				packedRects.add(rect);
-			}
+		for (String name : imgMap.keySet()) {
+			BufferedImage img = imgMap.get(name);
+			MaxRectsPacker.Rect rect = new MaxRectsPacker.Rect(img,0,0,320,152);
+			rect.name = name;
+			rect.index = 0;
+			packedRects.add(rect);
 		}
+		
+		BufferedImage tit = ImageIO.read(new File("target\\classes\\graphics\\title.png"));
+		MaxRectsPacker.Rect rect = new MaxRectsPacker.Rect(tit,0,0,tit.getWidth(),tit.getHeight());
+		rect.name = "title";
+		rect.index = 0;
+		packedRects.add(rect);
+		
+		BufferedImage abacus = ImageIO.read(new File("target\\classes\\graphics\\abacus.png"));
+		BufferedImage wb = abacus.getSubimage(8, 187, 8, 12);
+		BufferedImage bb = abacus.getSubimage(24, 187, 8, 12);
+		
+		MaxRectsPacker.Rect rect2 = new MaxRectsPacker.Rect(wb,0,0,8,12);
+		rect2.name = "white-bead";
+		rect2.index = 0;
+		packedRects.add(rect2);
+		
+		MaxRectsPacker.Rect rect3 = new MaxRectsPacker.Rect(bb,0,0,8,12);
+		rect3.name = "black-bead";
+		rect3.index = 0;
+		packedRects.add(rect3);
+		
 		
 		System.out.println("Writing: number of sprites: " +packedRects.size());
 		
 		ArrayList<MaxRectsPacker.Page> pages = mrp.pack(packedRects);
-		mrp.writeImages(new File("."), pages, "tiles");
-		mrp.writePackFile(new File("."), pages, "tile-atlas.txt");
+		mrp.writeImages(new File("."), pages, "initial-screens");
+		mrp.writePackFile(new File("."), pages, "initial-atlas.txt");
 		
 	    System.out.println("done");
 		
@@ -123,70 +142,9 @@ public class PackImagesUtil {
 	
 	}
 	
-	public static void main5(String[] argv) throws Exception {
-		
-		String inputFileName = "C:\\Users\\Paul\\Desktop\\nethack.gif";
-		String outputFileName = "C:\\Users\\Paul\\Desktop\\roguelike-sprites.png";
 
-		Color[] rgbs = {
-				new Color(32,64,64),
-				new Color(24,48,48),
-				new Color(0,32,32),
-				};
 	
-		ImageTransparency.convert(inputFileName, outputFileName, rgbs);		
-		
-		MaxRectsPacker mrp = new MaxRectsPacker();
-		ArrayList<MaxRectsPacker.Rect> packedRects = new ArrayList<MaxRectsPacker.Rect>();
-		int rows = 30;
-		int cols = 30;
-		int w = 32;
-		for (int i=0;i<rows;i++) {
-			for (int j=0;j<cols;j++) {
-				MaxRectsPacker.Rect rect = new MaxRectsPacker.Rect(i*w,j*w,w,w);
-				rect.name = "phase";
-				rect.index = 0;
-				packedRects.add(rect);
-			}
-		}
-		
-		System.out.println("Writing: number of sprites: " +packedRects.size());
-		
-		mrp.writePackFileWithRects(new File("."), "roguelike-sprites-atlas.txt",packedRects, "roguelike-sprites.png");
-		
-	    System.out.println("done");
-	
-	}
-	
-	public static void main(String[] argv) throws Exception {
-		MaxRectsPacker mrp = new MaxRectsPacker();
-		ArrayList<MaxRectsPacker.Rect> packedRects = new ArrayList<MaxRectsPacker.Rect>();
-		
-		int tileWidth = 48;
-		int tileHeight = 31;
-		
-		int[] dx = {0, 48+8, (48+8)*2, 176, 176+48, 176+48*2}; 
-		int[] dy = {0, 31+1, 31*2 +2, 31*3+3, 31*4+4, 31*5+5}; 
-		
-		int rows = 6;
-		int cols = 6;
-		for (int i=0;i<rows;i++) {
-			for (int j=0;j<cols;j++) {
-				int xp = dx[i];
-				int yp = dy[j];
-				MaxRectsPacker.Rect rect = new MaxRectsPacker.Rect(xp,yp,tileWidth,tileHeight);
-				rect.name = "beast";
-				rect.index = 0;
-				packedRects.add(rect);
-			}
-		}
-		
-		
-		mrp.writePackFileWithRects(new File("."), "beasties-atlas.txt",packedRects, "beasties.png");
-		
-	    System.out.println("done");
-	
-	}
+
 
 	
 }
