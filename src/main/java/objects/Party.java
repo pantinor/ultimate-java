@@ -100,6 +100,11 @@ public class Party implements Constants {
 			}
 		}
 		
+		public void awardXP(int value) {
+			int exp = Utils.adjustValueMax(player.xp, value, 9999);
+			player.xp = exp;
+		}
+		
 		public int getMaxMp() {
 			int max_mp = -1;
 
@@ -313,7 +318,7 @@ public class Party implements Constants {
     
 		return CannotJoinError.JOIN_NOT_EXPERIENCED;
 	}
-
+	
 	public void adjustKarma(KarmaAction action) {
 
 		int timeLimited = 0;
@@ -327,6 +332,7 @@ public class Party implements Constants {
 
 		switch (action) {
 		case FOUND_ITEM:
+			//only increment HONOR for found items
 			adjustKarmaMax(newKarma, Virtue.HONOR, 5, maxVal);
 			break;
 		case STOLE_CHEST:

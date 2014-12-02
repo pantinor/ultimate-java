@@ -2,6 +2,7 @@ package objects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -12,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 
 import ultima.Constants;
 import ultima.Ultima4;
+import ultima.Constants.Item;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -458,6 +460,260 @@ public class BaseMap implements Constants {
 		}
 	}
 	
+	/**
+	 * Add item to inventory and add experience etc for a found item
+	 */
+	public ItemMapLabels searchLocation(Party p, int x, int y) {
+		SaveGame sg = p.getSaveGame();
+		Label tmp = null;
+		for (Label l : labels) {
+			if (l.getX() == x && l.getY() == y)
+				tmp = l;
+		}
+		if (tmp == null)
+			return null;
+
+		int expPoints = 0;
+		ItemMapLabels label = ItemMapLabels.valueOf(tmp.getName());
+		boolean added = false;
+
+		switch (label) {
+
+		case bell:
+			if ((sg.items & Item.BELL.getLoc()) > 0)
+				break;
+			sg.items |= Item.BELL.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 400;
+			added = true;
+			break;
+		case blackstone:
+			if ((sg.stones & Stone.BLACK.getLoc()) > 0)
+				break;
+			sg.stones |= Stone.BLACK.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 200;
+			added = true;
+			break;
+		case bluestone:
+			if ((sg.stones & Stone.BLUE.getLoc()) > 0)
+				break;
+			sg.stones |= Stone.BLUE.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 200;
+			added = true;
+			break;
+		case book:
+			if ((sg.items & Item.BOOK.getLoc()) > 0)
+				break;
+			sg.items |= Item.BOOK.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 400;
+			added = true;
+			break;
+		case candle:
+			if ((sg.items & Item.CANDLE.getLoc()) > 0)
+				break;
+			sg.items |= Item.CANDLE.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 400;
+			added = true;
+			break;
+		case compassionrune:
+			if ((sg.runes & Virtue.COMPASSION.getLoc()) > 0)
+				break;
+			sg.runes |= Virtue.COMPASSION.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 100;
+			added = true;
+			break;
+		case greenstone:
+			if ((sg.stones & Stone.GREEN.getLoc()) > 0)
+				break;
+			sg.stones |= Stone.GREEN.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 200;
+			added = true;
+			break;
+		case honestyrune:
+			if ((sg.runes & Virtue.HONESTY.getLoc()) > 0)
+				break;
+			sg.runes |= Virtue.HONESTY.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 100;
+			added = true;
+			break;
+		case honorrune:
+			if ((sg.runes & Virtue.HONOR.getLoc()) > 0)
+				break;
+			sg.runes |= Virtue.HONOR.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 100;
+			added = true;
+			break;
+		case horn:
+			if ((sg.items & Item.HORN.getLoc()) > 0)
+				break;
+			sg.items |= Item.HORN.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 400;
+			added = true;
+			break;
+		case humilityrune:
+			if ((sg.runes & Virtue.HUMILITY.getLoc()) > 0)
+				break;
+			sg.runes |= Virtue.HUMILITY.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 100;
+			added = true;
+			break;
+		case justicerune:
+			if ((sg.runes & Virtue.JUSTICE.getLoc()) > 0)
+				break;
+			sg.runes |= Virtue.JUSTICE.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 100;
+			added = true;
+			break;
+		case orangestone:
+			if ((sg.stones & Stone.ORANGE.getLoc()) > 0)
+				break;
+			sg.stones |= Stone.ORANGE.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 200;
+			added = true;
+			break;
+		case purplestone:
+			if ((sg.stones & Stone.PURPLE.getLoc()) > 0)
+				break;
+			sg.stones |= Stone.PURPLE.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 200;
+			added = true;
+			break;
+		case redstone:
+			if ((sg.stones & Stone.RED.getLoc()) > 0)
+				break;
+			sg.stones |= Stone.RED.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 200;
+			added = true;
+			break;
+		case sacrificerune:
+			if ((sg.runes & Virtue.SACRIFICE.getLoc()) > 0)
+				break;
+			sg.runes |= Virtue.SACRIFICE.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 100;
+			added = true;
+			break;
+		case skull:
+			if ((sg.items & Item.SKULL.getLoc()) > 0)
+				break;
+			sg.items |= Item.SKULL.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 400;
+			added = true;
+			break;
+		case spiritualityrune:
+			if ((sg.runes & Virtue.SPIRITUALITY.getLoc()) > 0)
+				break;
+			sg.runes |= Virtue.SPIRITUALITY.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 100;
+			added = true;
+			break;
+		case valorrune:
+			if ((sg.runes & Virtue.VALOR.getLoc()) > 0)
+				break;
+			sg.runes |= Virtue.VALOR.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 100;
+			added = true;
+			break;
+		case wheel:
+			if ((sg.items & Item.WHEEL.getLoc()) > 0)
+				break;
+			sg.items |= Item.WHEEL.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 400;
+			added = true;
+			break;
+		case whitestone:
+			if ((sg.stones & Stone.WHITE.getLoc()) > 0)
+				break;
+			sg.stones |= Stone.WHITE.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 200;
+			added = true;
+			break;
+		case yellowstone:
+			if ((sg.stones & Stone.YELLOW.getLoc()) > 0)
+				break;
+			sg.stones |= Stone.YELLOW.getLoc();
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 200;
+			added = true;
+			break;
+
+		case mysticarmor:
+			if (sg.armor[ArmorType.MYSTICROBE.ordinal()] > 0)
+				break;
+			sg.armor[ArmorType.MYSTICROBE.ordinal()] = 8;
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 400;
+			added = true;
+			break;
+		case mysticswords:
+			if (sg.weapons[WeaponType.MYSTICSWORD.ordinal()] > 0)
+				break;
+			sg.weapons[WeaponType.MYSTICSWORD.ordinal()] = 8;
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 400;
+			added = true;
+			break;
+
+		case mandrake1:
+		case mandrake2:
+			sg.reagents[Reagent.MANDRAKE.ordinal()] += new Random().nextInt(8) + 2;
+			if (sg.reagents[Reagent.MANDRAKE.ordinal()] > 99)
+				sg.reagents[Reagent.MANDRAKE.ordinal()] = 99;
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			sg.lastreagent = sg.moves & 0xF0;
+			added = true;
+			break;
+		case nightshade1:
+		case nightshade2:
+			sg.reagents[Reagent.NIGHTSHADE.ordinal()] += new Random().nextInt(8) + 2;
+			if (sg.reagents[Reagent.NIGHTSHADE.ordinal()] > 99)
+				sg.reagents[Reagent.NIGHTSHADE.ordinal()] = 99;
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			sg.lastreagent = sg.moves & 0xF0;
+			added = true;
+			break;
+
+		case telescope:
+			break;
+		case balloon:
+			break;
+		case lockelake:
+			break;
+
+		default:
+			break;
+
+		}
+
+		if (expPoints > 0) {
+			p.getMember(0).awardXP(expPoints);
+		}
+
+		if (added) {
+			return label;
+		}
+
+		return null;
+	}
 
 
 }

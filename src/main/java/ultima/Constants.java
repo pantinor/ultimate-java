@@ -354,50 +354,7 @@ public interface Constants {
 		
 	}
 	
-	/*
-	 * bitmasks for LOS shadows on a 13x13 (or smaller, for odd size dimensions only) grid, 
-	 * will not work for larger grids.
-	 */
-	public static int ____H = 0x01; // obscured along the horizontal face
-	public static int ___C_ = 0x02; // obscured at the center
-	public static int __V__ = 0x04; // obscured along the vertical face
-	public static int _N___ = 0x80; // start of new raster
 
-	public static int ___CH = 0x03;
-	public static int __VCH = 0x07;
-	public static int __VC_ = 0x06;
-
-	public static int _N__H = 0x81;
-	public static int _N_CH = 0x83;
-	public static int _NVCH = 0x87;
-	public static int _NVC_ = 0x86;
-	public static int _NV__ = 0x84;
-	
-    public static final int shadowRaster[][] = {
-	        { 6, __VCH, 4, _N_CH, 1, __VCH, 3, _N___, 1, ___CH, 1, __VCH, 1 },    // raster_1_0
-	        { 6, __VC_, 1, _NVCH, 2, __VC_, 1, _NVCH, 3, _NVCH, 2, _NVCH, 1 },    // raster_1_1
-	        //
-	        { 4, __VCH, 3, _N__H, 1, ___CH, 1, __VCH, 1,     0, 0,     0, 0 },    // raster_2_0
-	        { 6, __VC_, 2, _N_CH, 1, __VCH, 2, _N_CH, 1, __VCH, 1, _N__H, 1 },    // raster_2_1
-	        { 6, __V__, 1, _NVCH, 1, __VC_, 1, _NVCH, 1, __VC_, 1, _NVCH, 1 },    // raster_2_2
-	        //
-	        { 2, __VCH, 2, _N__H, 2,     0, 0,     0, 0,     0, 0,     0, 0 },    // raster_3_0
-	        { 3, __VC_, 2, _N_CH, 1, __VCH, 1,     0, 0,     0, 0,     0, 0 },    // raster_3_1
-	        { 3, __VC_, 1, _NVCH, 2, _N_CH, 1,     0, 0,     0, 0,     0, 0 },    // raster_3_2
-	        { 3, _NVCH, 1, __V__, 1, _NVCH, 1,     0, 0,     0, 0,     0, 0 },    // raster_3_3
-	        //
-	        { 2, __VCH, 1, _N__H, 1,     0, 0,     0, 0,     0, 0,     0, 0 },    // raster_4_0
-	        { 2, __VC_, 1, _N__H, 1,     0, 0,     0, 0,     0, 0,     0, 0 },    // raster_4_1
-	        { 2, __VC_, 1, _N_CH, 1,     0, 0,     0, 0,     0, 0,     0, 0 },    // raster_4_2
-	        { 2, __V__, 1, _NVCH, 1,     0, 0,     0, 0,     0, 0,     0, 0 },    // raster_4_3
-	        { 2, __V__, 1, _NVCH, 1,     0, 0,     0, 0,     0, 0,     0, 0 }     // raster_4_4
-	    };
-    
-	public class ClasspathFileHandleResolver implements FileHandleResolver {
-		public FileHandle resolve (String fileName) {
-			return Gdx.files.classpath(fileName);
-		}
-	}
 	
 	
 	public static final String PARTY_SAV_BASE_FILENAME = "party.sav";
@@ -459,21 +416,23 @@ public interface Constants {
 	
 	public enum Virtue {
 		
-		HONESTY("honest", "AHM"),
-		COMPASSION("compassionate", "MU"),
-		VALOR("valiant", "RA"),
-		JUSTICE("just", "BEH"),
-		SACRIFICE("sacrificial", "CAH"),
-		HONOR("honorable", "SUMM"),
-		SPIRITUALITY("spiritual", "OM"),
-		HUMILITY("humble", "LUM");
+		HONESTY("honest", "AHM", 0x01),
+		COMPASSION("compassionate", "MU", 0x02),
+		VALOR("valiant", "RA", 0x04),
+		JUSTICE("just", "BEH", 0x08),
+		SACRIFICE("sacrificial", "CAH", 0x10),
+		HONOR("honorable", "SUMM", 0x20),
+		SPIRITUALITY("spiritual", "OM", 0x40),
+		HUMILITY("humble", "LUM", 0x80);
 		
 		private String description;
 		private String mantra;
+		private int loc;
 		
-		private Virtue(String d, String ab) {
+		private Virtue(String d, String ab, int loc) {
 			this.description = d;
 			this.mantra = ab;
+			this.loc = loc;
 		}
 		public static Virtue get(int v) {
 			for (Virtue x : values()) {
@@ -488,6 +447,9 @@ public interface Constants {
 		}
 		public String getMantra() {
 			return mantra;
+		}
+		public int getLoc() {
+			return loc;
 		}
 	}
 	
@@ -645,26 +607,27 @@ public interface Constants {
 	
 	
 	public enum Item {
-		SKULL("Skull of Mondain", true),
-		SKULL_DESTROYED("",false),
-		CANDLE("Candle of Love", true),
-		BOOK("Book of Truth",true),
-		BELL("Bell of Courage",true),
-		KEY_C("Key Part Courage",true),
-		KEY_L("Key Part Love",true),
-		KEY_T("Key Part Truth",true),
-		HORN("Silver Horn",true),
-		WHEEL("Wheel of HMS Cape",true),
-		CANDLE_USED("",false),
-		BOOK_USED("",false),
-		BELL_USED("",false);
+		SKULL("Skull of Mondain", true, 0x01),
+		SKULL_DESTROYED("",false, 0x02),
+		CANDLE("Candle of Love", true, 0x04),
+		BOOK("Book of Truth",true, 0x08),
+		BELL("Bell of Courage",true, 0x10),
+		KEY_C("Key of Courage",true, 0x20),
+		KEY_L("Key of Love",true, 0x40),
+		KEY_T("Key of Truth",true, 0x80),
+		HORN("Silver Horn",true, 0x100),
+		WHEEL("Wheel of HMS Cape",true, 0x200),
+		CANDLE_USED("",false, 0x400),
+		BOOK_USED("",false, 0x800),
+		BELL_USED("",false, 0x1000);
 		
 		private boolean visible;
 		private String desc;
-		
-		private Item(String desc, boolean v) {
+		private int loc;
+		private Item(String desc, boolean v, int loc) {
 			this.desc = desc;
 			this.visible = v;
+			this.loc = loc;
 		}
 		
 		public static Item get(int v) {
@@ -681,8 +644,61 @@ public interface Constants {
 		public String getDesc() {
 			return this.desc;
 		}
+		public int getLoc() {
+			return loc;
+		}
 
 	}
+	
+	public enum ItemMapLabels {
+		
+		balloon("the Ballon"),
+		lockelake("Locke Lake"),
+		telescope("a telescope"),
+		
+		mandrake1("Mandrake Root"),
+		mandrake2("Mandrake Root"),
+		nightshade1("Nightshade"),
+		nightshade2("Nightshade"),
+		
+		bell("the Bell of Courage"),
+		horn("the Silver Horn"),
+		wheel("the Wheel from the H.M.S. Cape"),
+		skull("the Skull of Modain the Wizard"),
+		candle("the Candle of Love"),
+		book("the Book of Truth"),
+				
+		mysticarmor("Mystic Robes"),
+		mysticswords("Mystic Swords"),
+		
+		honestyrune("the rune of Honesty"),
+		compassionrune("the rune of Compassion"),
+		valorrune("the rune of Valor"),
+		justicerune("the rune of Justice"),
+		sacrificerune("the rune of Sacrifice"),
+		honorrune("the rune of Honor"),
+		humilityrune("the rune of Humility"),
+		spiritualityrune("the rune of Spirituality"),
+
+		blackstone("the Black Stone"),
+		whitestone("the White Stone"),
+		bluestone("the Blue Stone"),
+		yellowstone("the Yellow Stone"),
+		redstone("the Red Stone"),
+		greenstone("the Green Stone"),
+		orangestone("the Orange Stone"),
+		purplestone("the Purple Stone");
+		
+		private String desc;
+
+		private ItemMapLabels(String desc) {
+			this.desc = desc;
+		}
+		public String getDesc() {
+			return this.desc;
+		}
+	}
+	
 	
 	public enum GuildItemType {
 		gem,
@@ -692,14 +708,20 @@ public interface Constants {
 	}
 
 	public enum Stone {
-		BLUE,
-		YELLOW,
-		RED,
-		GREEN,
-		ORANGE,
-		PURPLE,
-		WHITE,
-		BLACK;
+		BLUE(0x01),
+		YELLOW(0x02),
+		RED(0x04),
+		GREEN(0x08),
+		ORANGE(0x10),
+		PURPLE(0x20),
+		WHITE(0x40),
+		BLACK(0x80);
+		private int loc;
+		
+		private Stone(int loc) {
+			this.loc = loc;
+		}
+
 		public static Stone get(int v) {
 			for (Stone x : values()) {
 				if (x.ordinal() == (v&0xff)) {
@@ -707,6 +729,10 @@ public interface Constants {
 				}
 			}
 			return null;
+		}
+		
+		public int getLoc() {
+			return loc;
 		}
 	}
 
@@ -767,24 +793,6 @@ public interface Constants {
 		JOIN_NOT_VIRTUOUS;
 	}
 
-	public enum EquipError {
-		EQUIP_SUCCEEDED,
-		EQUIP_NONE_LEFT,
-		EQUIP_CLASS_RESTRICTED;
-	}
-	
-	public enum PartyEventType {
-		GENERIC,
-		LOST_EIGHTH,
-		ADVANCED_LEVEL,
-		STARVING,
-		TRANSPORT_CHANGED,
-		PLAYER_KILLED,
-		ACTIVE_PLAYER_CHANGED,
-		MEMBER_JOINED,
-		PARTY_REVIVED,
-		INVENTORY_ADDED;
-	}
 
 	public enum CreatureAttrib {
 		MATTR_STEALFOOD(0x1),
@@ -949,5 +957,12 @@ public interface Constants {
 		}
 
 	}
+	
+	public class ClasspathFileHandleResolver implements FileHandleResolver {
+		public FileHandle resolve(String fileName) {
+			return Gdx.files.classpath(fileName);
+		}
+	}
+
 
 }

@@ -34,6 +34,7 @@ import com.google.common.io.LittleEndianDataInputStream;
 
 import ultima.Constants;
 import ultima.Constants.Direction;
+import ultima.Constants.Item;
 import ultima.Constants.KarmaAction;
 import ultima.Constants.Reagent;
 import ultima.Constants.Virtue;
@@ -251,16 +252,48 @@ public class TestJaxb {
 		sg2.torches = 2;
 		
 		sg2.players[0] = avatar;
-				
-		for (int i=0;i<8;i++) 
-			System.err.println(Virtue.get(i) + " " + sg2.karma[i]);
-		
+						
 		Party p = new Party(sg2);
-		p.adjustKarma(KarmaAction.DONATED_BLOOD);
 		
-		for (int i=0;i<8;i++) 
-			System.err.println(Virtue.get(i) + " " + sg2.karma[i]);
 		
+		//for (int i=0;i<8;i++) 
+			//System.err.println(Virtue.get(i) + " " + sg2.karma[i]);
+		
+		p.adjustKarma(KarmaAction.FOUND_ITEM);
+		
+		//for (int i=0;i<8;i++) 
+			//System.err.println(Virtue.get(i) + " " + sg2.karma[i]);
+			
+        for (int i = 0; i < 8; i++) {
+        	Virtue v = Constants.Virtue.get(i);
+        	String st = ((sg2.stones & (1 << i)) > 0 ? "+STONE" : "") ;
+        	String ru = ((sg2.runes & (1 << i)) > 0 ? "+RUNE" : "") ;
+        	//System.err.println(v + " " + st + " " + ru);
+        }
+        
+        System.err.println("---------------");
+		sg2.runes |= Virtue.HUMILITY.getLoc();
+		
+        for (int i = 0; i < 8; i++) {
+        	Virtue v = Constants.Virtue.get(i);
+        	String st = ((sg2.stones & (1 << i)) > 0 ? "+STONE" : "") ;
+        	String ru = ((sg2.runes & (1 << i)) > 0 ? "+RUNE" : "") ;
+        	//System.err.println(v + " " + st + " " + ru);
+        }
+        
+        sg2.items |= Item.BELL.getLoc();
+        
+        for (Item item : Constants.Item.values()) {
+        	if (!item.isVisible()) continue;
+        	System.err.println((sg2.items & (1 << item.ordinal())) > 0 ? item.getDesc() : "") ;
+        }
+        
+        sg2.items |= Item.HORN.getLoc();
+        
+        for (Item item : Constants.Item.values()) {
+        	if (!item.isVisible()) continue;
+        	System.err.println((sg2.items & (1 << item.ordinal())) > 0 ? item.getDesc() : "") ;
+        }
 		
 	}
 	
@@ -276,44 +309,7 @@ public class TestJaxb {
 
 	}
 	
-	//@Test
-	public void testLOS() throws Exception {
-		
-		long t = System.currentTimeMillis();
 
-		
-		int dim = 13;
-		
-		Tile[][] vt = new Tile[dim][dim];
-		for (int x=0;x<dim;x++) {
-			for (int y=0;y<dim;y++) {
-				vt[x][y] = new Tile();
-				//vt[x][y].setOpaque(true);
-			}
-		}
-		
-		vt[2][2].setOpaque(true);
-		vt[1][8].setOpaque(true);
-		vt[8][1].setOpaque(true);
-		vt[8][8].setOpaque(true);
-		vt[8][7].setOpaque(true);
-		vt[8][6].setOpaque(true);
-
-		int[][] los = Utils.screenFindLineOfSight(vt, 0, dim-1, 0, dim-1) ;
-		
-		for (int y=0;y<dim;y++) {
-			for (int x=0;x<dim;x++) {
-				System.out.print(los[x][y] == 1?"O":"X");
-			}
-			System.out.println("");
-
-		}
-		
-		System.out.println("testLOS time: " + (System.currentTimeMillis() - t));
-
-
-
-	}
 	
 	//@Test
 	public void testLOS2() throws Exception {

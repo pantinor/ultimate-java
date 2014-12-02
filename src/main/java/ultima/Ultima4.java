@@ -353,7 +353,15 @@ public class Ultima4 extends SimpleGame implements Constants {
 			} else {
 				log("Cannot save inside!");
 			}
-		} else if (keycode == Keys.T || keycode == Keys.O || keycode == Keys.L || keycode == Keys.S) {
+		} else if (keycode == Keys.S) {
+
+			BaseMap bm = context.getCurrentMap();
+			ItemMapLabels l = bm.searchLocation(context.getParty(), (int)v.x, (int)v.y);
+			if (l != null) {
+				log("You found " + l.getDesc() + ".");
+			}
+			
+		} else if (keycode == Keys.T || keycode == Keys.O || keycode == Keys.L) {
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);
 			return false;

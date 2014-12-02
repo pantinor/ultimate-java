@@ -59,7 +59,6 @@
 		<label name="skull" x="197" y="245" />
 		<label name="blackstone" x="224" y="133" />
 		<label name="whitestone" x="64" y="80" />
-		<label name="lasergun" x="48" y="22" />
 	</map>
 
 	<!-- castles -->
