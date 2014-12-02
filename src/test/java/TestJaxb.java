@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
+import java.nio.CharBuffer;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -27,6 +28,8 @@ import objects.Weapon;
 import objects.WeaponSet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.lwjgl.BufferUtils;
 import org.testng.annotations.Test;
 
 import com.badlogic.gdx.Gdx;
@@ -38,6 +41,7 @@ import ultima.Constants.Item;
 import ultima.Constants.KarmaAction;
 import ultima.Constants.Reagent;
 import ultima.Constants.Virtue;
+import ultima.Intro;
 import util.ShadowFOV;
 import util.Utils;
 import vendor.VendorClass;
@@ -229,7 +233,7 @@ public class TestJaxb {
 
 	}
 	
-	@Test
+	//@Test
 	public void testReadSaveGame() throws Exception {
 		
 		InputStream is = new FileInputStream(Constants.PARTY_SAV_BASE_FILENAME);
@@ -393,6 +397,29 @@ public class TestJaxb {
 	}
 	
 
-	
+	@Test
+	public void testReadTitleExe() throws Exception {
+		InputStream is = TestJaxb.class.getResourceAsStream("/data/title.exe");
+		byte[] bytes = IOUtils.toByteArray(is);
+		
+		int stringIndex = 0;
+		int pos = 28;
+		CharBuffer bb = BufferUtils.createCharBuffer(288);
+			
+		while (stringIndex < 28) {
+			if (bytes[pos] == 0x0) {
+				bb.flip();
+				System.out.println(new String(bb.toString().replace("\n", " ")));
+				stringIndex++;
+				bb.clear();
+			} else {
+				bb.put((char)bytes[pos]);
+			}
+			pos ++;
+		}
+		System.out.println("");
+
+		
+	}
 
 }

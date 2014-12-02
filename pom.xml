@@ -108,8 +108,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-
-							<mainClass>org.antinori.cards.Cards</mainClass>
+							<mainClass>ultima.Ultima4</mainClass>
 						</manifest>
 
 					</archive>
@@ -128,7 +127,7 @@
 
 					<archive>
 						<manifest>
-							<mainClass>org.antinori.cards.Cards</mainClass>
+							<mainClass>ultima.Ultima4</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
