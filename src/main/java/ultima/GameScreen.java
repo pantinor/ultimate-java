@@ -166,6 +166,7 @@ public class GameScreen implements Screen, InputProcessor, Constants {
 		
 		phase = sg.trammelphase * 3;
 		
+		//TODO look for whether SAVE is in dungeon or on surface here
 		loadNextMap(Maps.WORLD.getId(), sg.x, sg.y);
 		
 	}

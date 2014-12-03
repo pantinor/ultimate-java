@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import objects.SaveGame;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
@@ -120,6 +122,11 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 		batch.draw(beast1.getKeyFrame(time, true), 0, Ultima4.SCREEN_HEIGHT-31*2, 48*2, 31*2);
 		batch.draw(beast2.getKeyFrame(time, true), Ultima4.SCREEN_WIDTH-48*2, Ultima4.SCREEN_HEIGHT-31*2, 48*2, 31*2);
 		
+		float x = Ultima4.SCREEN_WIDTH/2-320;
+		float y = 100;
+		float width = 640;
+		float height = 50;
+		
 		if (state == State.INIT) {
 			batch.draw(title,Ultima4.SCREEN_WIDTH/2-title.getWidth()/2,350);
 			
@@ -134,7 +141,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 			
 		} else if (state == State.ASK_NAME) {
 			batch.draw(title,Ultima4.SCREEN_WIDTH/2-title.getWidth()/2,350);
-			
+						
 			font.draw(batch, "By what name shalt thou be known in this world and time?", 100, 240);
 			font.draw(batch, nameBuffer.toString(), 300, 210);
 			Gdx.input.setInputProcessor(nia);
@@ -167,11 +174,6 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 			
 			batch.draw(storyTexture, Ultima4.SCREEN_WIDTH/2-320, 200, 640, 304);
 			
-			float x = Ultima4.SCREEN_WIDTH/2-320;
-			float y = 100;
-			float width = 640;
-			float height = 50;
-			
 			TextBounds bounds = font.getWrappedBounds(initScripts[storyInd], width);
 			x += width / 2 - bounds.width / 2;
 			y += height / 2 + bounds.height / 2;
@@ -183,11 +185,6 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 		} else if (state == State.ASK_QUESTIONS || state == State.DONE) {
 			
 			batch.draw(storyTexture, Ultima4.SCREEN_WIDTH/2-320, 200, 640, 304);
-			
-			float x = Ultima4.SCREEN_WIDTH/2-320;
-			float y = 100;
-			float width = 640;
-			float height = 50;
 			
 			for (Sprite b : whiteBeads) {
 				batch.draw(b, b.getX(), b.getY(), 16, 24);
@@ -214,7 +211,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 					sb.append(gypsyText[questionRound == 0 ? GYP_PLACES_FIRST : (questionRound == 6 ? GYP_PLACES_LAST : GYP_PLACES_TWOMORE)]);
 					sb.append(gypsyText[GYP_UPON_TABLE]);
 					sb.append(String.format("%s and %s.  She says", gypsyText[questionTree[questionRound * 2] + 4], gypsyText[questionTree[questionRound * 2 + 1] + 4]));
-					sb.append("\n\"Consider this:\"");
+					sb.append("\nConsider this:");
 					String text = sb.toString();
 							
 					TextBounds bounds = font.getWrappedBounds(text, width);
@@ -340,7 +337,51 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 				storyInd++;
 				if (storyInd == 14) {
 					
-					//TODO save game here
+					SaveGame sg = new SaveGame();
+					
+					SaveGame.SaveGamePlayerRecord avatar = sg.new SaveGamePlayerRecord();
+					avatar.name = nameBuffer.toString();
+					avatar.sex = sexBuffer.toString().equals("M")?SexType.SEX_MALE:SexType.SEX_FEMALE;
+					avatar.klass = ClassType.get(questionTree[14]);
+					
+					avatar.weapon = avatar.klass.getInitialWeapon();
+				    avatar.armor = avatar.klass.getInitialArmor();
+				    avatar.xp = avatar.klass.getInitialExp();
+				    sg.x = avatar.klass.getStartX();
+				    sg.y = avatar.klass.getStartY();
+
+				    avatar.adjuestAttribsPerKarma(questionTree);
+				    
+				    avatar.hp = avatar.hpMax = avatar.getMaxLevel() * 100;
+				    avatar.mp = avatar.getMaxMp();
+				    
+					sg.players[0] = avatar;
+				    
+				    int p = 1;
+					for (int i = 0; i < 8; i++) {
+				        /* Initial setup for party members that aren't in your group yet... */
+				        if (i != avatar.klass.ordinal()) {
+				        	sg.players[p] = sg.new SaveGamePlayerRecord();
+				            sg.players[p].klass = ClassType.get(i);
+				            sg.players[p].xp = sg.players[p].klass.getInitialExp();
+				            sg.players[p].str = NpcDefaults.get(i).getStr();
+				            sg.players[p].dex = NpcDefaults.get(i).getDex();
+				            sg.players[p].intel = NpcDefaults.get(i).getIntell();
+				            sg.players[p].weapon = sg.players[p].klass.getInitialWeapon();
+				            sg.players[p].armor = sg.players[p].klass.getInitialArmor();
+				            sg.players[p].name = NpcDefaults.get(i).toString();
+				            sg.players[p].sex = NpcDefaults.get(i).getSex();
+				            sg.players[p].hp = sg.players[p].hpMax = sg.players[p].getMaxLevel() * 100;
+				            sg.players[p].mp = sg.players[p].getMaxMp();
+				            p++;
+				        }
+					}
+					
+					try {
+						sg.write(PARTY_SAV_BASE_FILENAME);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					
 					mainGame.setScreen(new GameScreen(mainGame));
 				}

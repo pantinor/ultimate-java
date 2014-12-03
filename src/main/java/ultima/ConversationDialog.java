@@ -185,10 +185,10 @@ public class ConversationDialog extends Window implements Constants {
 				}
 				
 				for (int i = 0; i < party.getMembers().size(); i++) {
-					PartyMember player = party.getMember(i);
-					if (player.advanceLevel()) {
+					PartyMember pm = party.getMember(i);
+					if (pm.getPlayer().advanceLevel()) {
 						playSound = true;
-						scrollPane.add(player.getPlayer().name + " thou art now level "+player.getLevel());
+						scrollPane.add(pm.getPlayer().name + " thou art now level "+pm.getPlayer().getLevel());
 					}
 				}
 				

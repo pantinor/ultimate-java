@@ -521,6 +521,82 @@ public interface Constants {
 		
 
 	}
+	
+	public enum NpcDefaults {
+		
+        Mariah(9, 12, 20, SexType.SEX_FEMALE ,ClassType.MAGE ),
+        Iolo(16, 19, 13, SexType.SEX_MALE ,ClassType.BARD ),
+        Geoffrey(20, 15, 11, SexType.SEX_MALE,ClassType.FIGHTER ),
+        Jaana(17, 16, 13, SexType.SEX_FEMALE,ClassType.DRUID ),
+        Julia(15, 16, 12, SexType.SEX_FEMALE ,ClassType.TINKER ),
+        Dupre(17, 14, 17, SexType.SEX_MALE ,ClassType.PALADIN),
+        Shamino(16, 15, 15, SexType.SEX_MALE ,ClassType.RANGER ),
+        Katrina(11, 12, 10, SexType.SEX_FEMALE,ClassType.SHEPHERD );
+        
+        private int str;
+        private int dex;
+        private int intell;
+        private SexType sex;
+        private ClassType klass;
+        
+		private NpcDefaults(int str, int dex, int intell, SexType sex, ClassType klass) {
+			this.str = str;
+			this.dex = dex;
+			this.intell = intell;
+			this.sex = sex;
+			this.klass = klass;
+		}
+
+		public int getStr() {
+			return str;
+		}
+
+		public int getDex() {
+			return dex;
+		}
+
+		public int getIntell() {
+			return intell;
+		}
+
+		public SexType getSex() {
+			return sex;
+		}
+
+		public ClassType getKlass() {
+			return klass;
+		}
+
+		public void setStr(int str) {
+			this.str = str;
+		}
+
+		public void setDex(int dex) {
+			this.dex = dex;
+		}
+
+		public void setIntell(int intell) {
+			this.intell = intell;
+		}
+
+		public void setSex(SexType sex) {
+			this.sex = sex;
+		}
+
+		public void setKlass(ClassType klass) {
+			this.klass = klass;
+		}
+		
+		public static NpcDefaults get(int v) {
+			for (NpcDefaults x : values()) {
+				if (x.ordinal() == (v&0xff)) {
+					return x;
+				}
+			}
+			return null;
+		}
+		        
+	}
 
 	
 	public enum SexType {

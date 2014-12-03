@@ -5,10 +5,12 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
 
 import ultima.Constants;
+import util.Utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -23,9 +25,9 @@ public class SaveGame implements Constants {
 
 	public int unknown1 = 0;
 	public int moves = 0;
-	public int food = 300;
+	public int food = 30000;
 	public int gold = 200;
-	public int torches = 0;
+	public int torches = 2;
 	public int gems = 0;
 	public int keys = 0;
 	public int sextants = 0;
@@ -33,7 +35,7 @@ public class SaveGame implements Constants {
 	public int[] karma = {50,50,50,50,50,50,50,50};
 	public int[] armor = new int[8];
 	public int[] weapons = new int[16];
-	public int[] reagents = new int[8];
+	public int[] reagents = {0,3,4,0,0,0,0,0};
 	public int[] mixtures = new int[SPELL_MAX];
 	
 	public int items = 0;
@@ -41,15 +43,15 @@ public class SaveGame implements Constants {
 	public int y = 0;
 	public int stones = 0;
 	public int runes = 0;
-	public int members = 0;
-	public int transport = 0;
+	public int members = 1;
+	public int transport = 0x1f;
 
 	public int balloonstate = 0;
 	public int torchduration = 0;
 
 	public int trammelphase = 0;
 	public int feluccaphase = 0;
-	public int shiphull = 0;
+	public int shiphull = 50;
 	public int lbintro = 0;
 	public int lastcamp = 0;
 	public int lastreagent = 0;
@@ -62,6 +64,9 @@ public class SaveGame implements Constants {
 	public int dnglevel = (int) 0xFFFF;
 	//see Constants.Maps enum for locations
 	public int location = 0;
+	
+	private Random rand = new Random();
+
 
 	public void write(String strFilePath) throws Exception {
 			
@@ -145,8 +150,8 @@ public class SaveGame implements Constants {
 	
 	public void read(LittleEndianDataInputStream dis) throws Exception {
 
-		unknown1 = dis.readInt();
-		moves = dis.readInt();
+		unknown1 = dis.readInt()& 0xff;
+		moves = dis.readInt()& 0xff;
 
 		for (int i = 0; i < 8; i++) {
 			players[i] = new SaveGamePlayerRecord();
@@ -299,6 +304,136 @@ public class SaveGame implements Constants {
 			status = StatusType.get(ch);
 
 			return 1;
+		}
+		
+		public int getMaxMp() {
+			int max_mp = -1;
+
+			switch (klass) {
+			case MAGE: // mage: 200% of int
+				max_mp = intel * 2;
+				break;
+
+			case DRUID: // druid: 150% of int
+				max_mp = intel * 3 / 2;
+				break;
+
+			case BARD: // bard, paladin, ranger: 100% of int
+			case PALADIN:
+			case RANGER:
+				max_mp = intel;
+				break;
+
+			case TINKER: // tinker: 50% of int
+				max_mp = intel / 2;
+				break;
+
+			case FIGHTER: // fighter, shepherd: no mp at all
+			case SHEPHERD:
+				max_mp = 0;
+				break;
+
+			default:
+			}
+
+			/* mp always maxes out at 99 */
+			if (max_mp > 99) {
+				max_mp = 99;
+			}
+
+			return max_mp;
+		}
+		
+		public int getLevel() {
+			return hpMax / 100;
+		}
+		
+		public int getMaxLevel() {
+			int level = 1;
+			int next = 100;
+	    
+			while (xp >= next && level < 8) {
+				level++;
+				next <<= 1;
+			}
+	    
+			return level;
+		}
+		
+		public void adjustMp(int pts) {
+			Utils.adjustValueMax(mp, pts, getMaxMp());
+		}
+		
+		public boolean advanceLevel() {
+			if (getLevel() == getMaxLevel())
+				return false;
+			
+			status = StatusType.STAT_GOOD;
+			hpMax = getMaxLevel() * 100;
+			hp = hpMax;
+				    
+			/* improve stats by 1-8 each */
+			str += rand.nextInt(8) + 1;
+			dex += rand.nextInt(8) + 1;
+			intel += rand.nextInt(8) + 1;
+	    
+			if (str > 50) {
+				str = 50;
+			}
+			if (dex > 50) {
+				dex = 50;
+			}
+			if (intel > 50) {
+				intel = 50;
+			}
+			return true;
+	    
+		}
+		
+		/**
+		 * Performed at game init time only frmo Start Screen
+		 * @param questionTree
+		 */
+		public void adjuestAttribsPerKarma(int[] questionTree) {
+		    str = 15;
+		    dex = 15;
+		    intel = 15;
+
+		    for (int i = 8; i < 15; i++) {
+		        karma[questionTree[i]] += 5;
+		        Virtue v = Virtue.get(questionTree[i]);
+		        switch (v) {
+		        case HONESTY:
+		            intel += 3;
+		            break;
+		        case COMPASSION:
+		            dex += 3;
+		            break;
+		        case VALOR:
+		            str += 3;
+		            break;
+		        case JUSTICE:
+		            intel++;
+		            dex++;
+		            break;
+		        case SACRIFICE:
+		            dex++;
+		            str++;
+		            break;
+		        case HONOR:
+		            intel++;
+		            str++;
+		            break;
+		        case SPIRITUALITY:
+		            intel++;
+		            dex++;
+		            str++;
+		            break;
+		        case HUMILITY:
+		            /* no stats for you! */
+		            break;
+		        }
+		    }
 		}
 
 		@Override
