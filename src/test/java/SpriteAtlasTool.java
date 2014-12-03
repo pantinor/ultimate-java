@@ -242,10 +242,10 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 		MaxRectsPacker mrp = new MaxRectsPacker();
 		ArrayList<MaxRectsPacker.Rect> packedRects = new ArrayList<MaxRectsPacker.Rect>();
 		int w = tilePixelWidth;
-		for (int y=0;y<gridNames[0].length-1;y++) {
-			for (int x=0;x<gridNames.length-1;x++) {
+		for (int y=0;y<gridNames[0].length;y++) {
+			for (int x=0;x<gridNames.length;x++) {
 				MaxRectsPacker.Rect rect = new MaxRectsPacker.Rect(x*w,y*w,w,w);
-				rect.name = (gridNames[x][y] != null?gridNames[x][y].name:"none");
+				rect.name = (gridNames[x][y] != null?gridNames[x][y].name:"col-"+x+"-row-"+y );
 				rect.index = 0;
 				packedRects.add(rect);
 			}

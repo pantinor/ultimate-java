@@ -1,7 +1,6 @@
-
 initial-screens.png
 format: RGBA8888
-filter: Nearest,Nearest
+filter: Nearest, Nearest
 repeat: none
 title
   rotate: false
@@ -10,77 +9,49 @@ title
   orig: 480, 184
   offset: 0, 0
   index: 0
-tree.png
+tree
   rotate: false
   xy: 5, 1575
   size: 320, 152
   orig: 320, 152
   offset: 0, 0
   index: 0
-spirhum.png
-  rotate: false
-  xy: 5, 1418
-  size: 320, 152
-  orig: 320, 152
-  offset: 0, 0
-  index: 0
-outside.png
+outside
   rotate: false
   xy: 5, 1261
   size: 320, 152
   orig: 320, 152
   offset: 0, 0
   index: 0
-abacus.png
+abacus
   rotate: false
   xy: 5, 1104
   size: 320, 152
   orig: 320, 152
   offset: 0, 0
   index: 0
-sachonor.png
-  rotate: false
-  xy: 5, 947
-  size: 320, 152
-  orig: 320, 152
-  offset: 0, 0
-  index: 0
-gypsy.png
+gypsy
   rotate: false
   xy: 5, 790
   size: 320, 152
   orig: 320, 152
   offset: 0, 0
   index: 0
-inside.png
+inside
   rotate: false
   xy: 5, 633
   size: 320, 152
   orig: 320, 152
   offset: 0, 0
   index: 0
-honcom.png
-  rotate: false
-  xy: 5, 476
-  size: 320, 152
-  orig: 320, 152
-  offset: 0, 0
-  index: 0
-wagon.png
+wagon
   rotate: false
   xy: 5, 319
   size: 320, 152
   orig: 320, 152
   offset: 0, 0
   index: 0
-valjus.png
-  rotate: false
-  xy: 5, 162
-  size: 320, 152
-  orig: 320, 152
-  offset: 0, 0
-  index: 0
-portal.png
+portal
   rotate: false
   xy: 5, 5
   size: 320, 152
@@ -99,5 +70,61 @@ black-bead
   xy: 330, 1715
   size: 8, 12
   orig: 8, 12
+  offset: 0, 0
+  index: 0
+valor
+  rotate: false
+  xy: 18, 175
+  size: 89, 122
+  orig: 89, 122
+  offset: 0, 0
+  index: 0
+justice
+  rotate: false
+  xy: 224, 175
+  size: 89, 122
+  orig: 89, 122
+  offset: 0, 0
+  index: 0
+honesty
+  rotate: false
+  xy: 18, 489
+  size: 89, 122
+  orig: 89, 122
+  offset: 0, 0
+  index: 0
+compassion
+  rotate: false
+  xy: 224, 489
+  size: 89, 122
+  orig: 89, 122
+  offset: 0, 0
+  index: 0
+sacrifice
+  rotate: false
+  xy: 18, 960
+  size: 89, 122
+  orig: 89, 122
+  offset: 0, 0
+  index: 0
+honor
+  rotate: false
+  xy: 224, 960
+  size: 89, 122
+  orig: 89, 122
+  offset: 0, 0
+  index: 0
+spirituality
+  rotate: false
+  xy: 18, 1431
+  size: 89, 122
+  orig: 89, 122
+  offset: 0, 0
+  index: 0
+humility
+  rotate: false
+  xy: 224, 1431
+  size: 89, 122
+  orig: 89, 122
   offset: 0, 0
   index: 0

@@ -12,7 +12,7 @@ public class Ultima4 extends Game {
 	
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
-		cfg.title = "Ultima4";
+		cfg.title = "Ultima 4 - Quest of the Avatar";
 		cfg.width = SCREEN_WIDTH;
 		cfg.height = SCREEN_HEIGHT;
 		cfg.addIcon("graphics/ankh.png", FileType.Classpath);
@@ -23,9 +23,7 @@ public class Ultima4 extends Game {
 	@Override
 	public void create() {
 		
-		
-		
-		setScreen(new GameScreen());
+		setScreen(new StartScreen(this));
 		
 	}
 

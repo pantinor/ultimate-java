@@ -48,7 +48,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dungeon.DungeonViewer;
 
 public class GameScreen implements Screen, InputProcessor, Constants {
-	
+	public Ultima4 mainGame;
+
 	public OrthographicCamera mapCamera;
 	public Stage stage;
 	public Skin skin;
@@ -92,7 +93,9 @@ public class GameScreen implements Screen, InputProcessor, Constants {
 	
 	public SecondaryInputProcessor sip;
 	
-	public GameScreen() {
+	public GameScreen(Ultima4 mainGame) {
+		this.mainGame = mainGame;
+		
 		stage = new Stage(new ScreenViewport());
 		skin = new Skin(Gdx.files.classpath("skin/uiskin.json"));
 		

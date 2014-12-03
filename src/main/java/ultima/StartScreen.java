@@ -1,196 +1,510 @@
 package ultima;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 
 public class StartScreen implements Screen, InputProcessor, Constants {
-		
-	public static String[] questions = new String[28];
-	public static String[] script = new String[29];
-
-	static {
-		questions[0] = "Entrusted to deliver an uncounted purse of gold, thou Dost meet a poor beggar. \nDost thou A) deliver the gold knowing the Trust in thee was well placed, or B) show Compassion, giving the beggar a coin, knowing it won't be missed?";
-		questions[1] = "Thou has been prohibited by thy absent Lord from joining thy friends in a close pitched battle. \nDost thou A) refrain, so thou may Honesty claim obedience, or B) show Valor, and aid thy comrades, knowing thou may deny it later?";
-		questions[2] = "A merchant owes thy friend money, now long past due.  Thou \nDost see the same merchant drop a purse of gold. \nDost thou A) Honestly return the purse intact, or B) Justly give thy friend a portion of the gold first?";
-		questions[3] = "Thee and thy friend are valiant but penniless warriors.  Thou both go out to slay a mighty dragon.  Thy friend thinks he slew it; thee did.  When asked, \nDost thou A) Truthfully claim the gold, or B) Allow thy friend the large reward?";
-		questions[4] = "Thou art sworn to protect thy Lord at any cost, yet thou know he hath committed a crime.  Authorities ask thee of the affair.  \nDost thou A) break thine oath by Honestly speaking, or B) uphold Honor by silently keeping thine oath?";
-		questions[5] = "Thy friend seeks admittance to thy Spiritual order. Thou art asked to vouch for his purity of Spirit, of which thou art unsure.  \nDost thou A) Honestly express thy doubt, or B) Vouch for him hoping for his Spiritual improvement?";
-		questions[6] = "Thy Lord mistakenly believes he slew a dragon.  Thou hast proof that thy lance felled the beast.  When asked, \nDost thou A) Honestly claim the kill and the prize, or B) Humbly permit thy Lord his belief?";
-		questions[7] = "Thou Dost manage to disarm thy mortal enemy in a duel.  He is at thy mercy. \nDost thou A) show Compassion by permitting him to yield, or B) slay him as expected of a Valiant duelist?";
-		questions[8] = "After 20 years thou hast found the slayer of thy best friends.  The villain proves to be a man who provides the sole support for a young girl.  \nDost thou A) spare him in Compassion for the girl, or B) slay him in the name of Justice?";
-		questions[9] = "Thee and thy friends have been routed and ordered to retreat.  In defiance of thy orders, \nDost thou A) stop in Compassion to aid a wounded companion, or B) Sacrifice thyself to slow the pursuing enemy, so others may escape?";
-		questions[10] = "Thou art sworn to uphold a Lord who participates in the forbidden torture of prisoners.  Each night their cries of pain reach thee.  \nDost thou A) show Compassion by reporting the deeds, or B) Honor thy oath and ignore the deeds?";
-		questions[11] = "Thou hast been taught to preserve all life as sacred. A man lies fatally stung by a venomous serpent.  He pleads for a merciful death.  \nDost thou A) show Compassion and end his pain, or B) heed thy Spiritual beliefs and refuse?";
-		questions[12] = "As one of the King's Guard, thy Captain has asked that one amongst you visit a hospital to cheer the children with tales of thy valiant deeds.  \nDost thou A) Show thy Compassion and play the braggart, or B) Humbly let another go?";
-		questions[13] = "Thou hast been sent to secure a needed treaty with a distant Lord.  Thy host is agreeable to the proposal but insults thy country at dinner.  \nDost thou A) Valiantly bear the slurs, or B) Justly rise and demand an apology?";
-		questions[14] = "A mighty knight accosts thee and demands thy food.  \nDost thou A) Valiantly refuse and engage the knight, or B) Sacrifice thy food unto the hungry knight?";
-		questions[15] = "During battle thou art ordered to guard thy commander's empty tent.  The battle goes poorly and thou \nDost yearn to aid thy fellows.  \nDost thou A) Valiantly enter the battle to aid thy companions, or B) Honor thy post as guard?";
-		questions[16] = "A local bully pushes for a fight.  \nDost thou A) Valiantly trounce the rogue, or B) Decline, knowing in thy Spirit that no lasting good will come of it?";
-		questions[17] = "Although a teacher of music, thou art a skillful wrestler.  Thou hast been asked to fight in a local championship. \nDost thou A) accept the invitation and Valiantly fight to win, or B) Humbly decline knowing thou art sure to win?";
-		questions[18] = "During a pitched battle, thou Dost see a fellow desert his post, endangering many.  As he flees, he is set upon by several enemies. \nDost thou A) Justly let him fight alone, or B) Risk Sacrificing thine own life to aid him?";
-		questions[19] = "Thou hast sworn to do thy Lord's bidding in all.  He covets a piece of land and orders the owner removed.  \nDost thou A) serve Justice refusing to act, thus being disgraced, or B) Honor thine oath and unfairly evict the landowner?";
-		questions[20] = "Thou Dost believe that virtue resides in all people.  Thou \nDost see a rogue steal from thy Lord.  \nDost thou A) call him to Justice, or B) personally try to sway him back to the Spiritual path of good?";
-		questions[21] = "Unwitnessed, thou hast slain a great dragon in self defense.  A poor warrior claims the offered reward.  \nDost thou A) Justly step forward to claim the reward, or B) Humbly go about life, secure in thy self esteem?";
-		questions[22] = "Thou art a bounty hunter sworn to return an alleged murder.  After his capture thou believest him to be innocent.  \nDost thou A) Sacrifice thy sizable bounty for thy belief, or B) Honor thy oath to return him as thou hast promised?";
-		questions[23] = "Thou hast spent thy life in charitable and righteous work.  Thine uncle the innkeeper lies ill and asks you to take over his tavern.  \nDost thou A) Sacrifice thy life of purity to aid thy kin, or B) decline & follow thy Spirit's call?";
-		questions[24] = "Thou art an elderly, wealthy eccentric. Thy end is near. \nDost thou A) donate all thy wealth to feed hundreds of starving children, and receive public adulation, or B) Humbly live out thy life, willing thy fortune to thy heirs?";
-		questions[25] = "In thy youth thou pledged to marry thy sweetheart.  Now thou art on a sacred quest in distant lands.  Thy sweetheart asks thee to keep thy vow.  \nDost thou A) Honor thy pledge to wed, or B) follow thy Spiritual crusade?";
-		questions[26] = "Thou art at a crossroads in thy life. \nDost thou A) Choose the Honorable life of a Paladin, striving for Truth and Courage, or B) Choose the Humble life of a Shepherd, and a world of simplicity and peace?";
-		questions[27] = "Thy parents wish thee to become an apprentice. Two positions are available. \nDost thou A) Become an acolyte in the Spiritual order, or B) Become an assistant to a humble village cobbler?";
-	
-		script[0] = "The day is warm, yet there is a cooling breeze.  The latest in a series of personal crises seems insurmountable. You are being pulled apart in all directions.";
-		script[1] = "Yet this afternoon walk in the country- side slowly brings relaxation to your harried mind.  The soil and strain of modern high-tech living begins to wash off in layers. That willow tree near the stream looks comfortable and inviting.";
-		script[2] = "The buzz of dragonflies and the whisper of the willow's swaying branches bring a deep peace.  Searching inward for tranquility and happiness, you close your eyes.";
-		script[3] = "A high-pitched cascading sound like crystal wind-chimes impinges on your floating awareness.  As you open your eyes, you see a shimmering blueness rise from the ground.  The sound seems to be emanating from this glowing portal.";
-		script[4] = "It is difficult to look at the blueness. Light seems to bend and distort around it, while the sound waves become so intense, they appear to become visible.";
-		script[5] = "The portal hangs there for a moment; then, with the rush of an imploding vacuum, it sinks into the ground. Something remains suspended in mid-air for a moment before falling to earth with a heavy thud.";
-		script[6] = "Somewhat shaken by this vision, you rise to your feet to investigate.  A crude circle of stones surrounds the spot where the portal appeared. There is something glinting in the grass.";
-		script[7] = "You pick up an amulet shaped like a cross with a loop at the top.  It is an Ankh, the sacred symbol of life and rebirth.  But this could not have made the thud, so you look again and find a large book wrapped in thick cloth!";
-		script[8] = "With trembling hands you unwrap the book.  Behold, the cloth is a map, and within lies not one book, but two.  The map is of a land strange to you, and the style speaks of ancient cartography.";
-		script[9] = "The script on the cover of the first book is arcane but readable.  The title is:\nThe History of Britannia\nas told by\nKyle the Younger";
-		script[10] = "The other book is disturbing to look at. Its small cover appears to be fashioned out of some sort of leathery hide, but from what creature is uncertain.  The reddish-black skin radiates an intense aura suggestive of ancient power.";
-		script[11] = "The tongue of the title is beyond your ken.  You dare not open the book and disturb whatever sleeps within.  You decide to peruse the History.  Settling back under the willow tree, you open the book.";
-		script[12] = "(You read the Book of History)";
-		script[13] = "(No, really! Read the Book of History!)";
-		script[14] = "Closing the book, you again pick up the Ankh.  As you hold it, you begin to hear a hauntingly familiar, lute-like sound wafting over a nearby hill.  Still clutching the strange artifacts, you rise unbidden and climb the slope.";
-		script[15] = "In the valley below you see what appears to be a fair.  It seems strange that you came that way earlier and noticed nothing.  As you mull this over, your feet carry you down towards the site.";
-		script[16] = "This is no ordinary travelling carnival, but a Renaissance Fair.  The pennants on the tent tops blow briskly in the late afternoon breeze.";
-		script[17] = "The ticket taker at the RenFair's gate starts to ask you for money, but upon spotting your Ankh says, \"Welcome, friend.  Enter in peace and find your path.\"";
-		script[18] = "The music continues to pull you forward amongst the merchants and vendors.  Glimpses of fabulous treasures can be seen in some of the shadowy booths.";
-		script[19] = "These people are very happy.  They seem to glow with an inner light.  Some look up as you pass and smile, but you cannot stop - the music compels you to move onward through the crowd.";
-		script[20] = "Through the gathering dusk you see a secluded gypsy wagon sitting off in the woods.  The music seems to emanate from the wagon.  As you draw near, a woman's voice weaves into the music, saying: \"You may approach, O seeker.\"";
-		script[21] = "You enter to find an old gypsy sitting in a small curtained room.  She wears an Ankh around her neck. In front of her is a round table covered in deep green velvet.  The room smells so heavily of incense that you feel dizzy.";
-		script[22] = "Seeing the Ankh, the ancient gypsy smiles and warns you never to part with it.  \"We have been waiting such a long time, but at last you have come.  Sit here and I shall read the path of your future.\"";
-		script[23] = "Upon the table she places a curious wooden object like an abacus but without beads.  In her hands she holds eight unusual cards.  \"Let us begin the casting.\"";
-		script[24] = "The gypsy places the first two cards ";
-		script[25] = "The gypsy places two more of the cards ";
-		script[26] = "The gypsy places the last two cards upon the table.  They are the cards of Honesty, Compassion, Valor, Justice, Sacrifice, Honor, Spirituality and Humility";
-		script[27] = "With the final choice, the incense swells up around you.  The gypsy speaks as if from a great distance, her voice growing fainter with each word: \"So be it!  Thy path is chosen!\"";
-		script[28] = "There is a moment of intense, wrenching vertigo.  As you open your eyes, a voice whispers within your mind, \"Seek the counsel of thy sovereign.\"  After a moment, the spinning subsides, and you open your eyes to...";
-	
-	}
 	
 	public static int[] beast1FrameIndexes = {1,1,1,0,0,1,1,1,0,0,1,1,2,2,3,3,4,4,1,2,3,4,1,2,5,6,7,8,5,6,7,8,5,6,7,8,5,6,7,8,5,6,7,8,5,6,7,8,9,10,9,10,9,10,11,11,11,11,12,12,13,13,12,13,12,13,12,11,11,11,0,0,1,2,3,4,1,2,5,6,7,8,5,6,7,8,9,10,11,11,11,0,0,14,14,14,15,16,16,16,17,17,17,16,16,16,17,17,17,16,16,16,15,14,14,0,0,11,11,11};
 	public static int[] beast2FrameIndexes = {1,0,1,2,3,4,3,2,1,0,1,2,3,4,5,6,5,6,5,6,4,7,8,9,10,9,8,7,8,9,10,11,12,11,12,13,11,12,13,1,13,1,14,1,15,1,14,1,15,10,9,8,16,17,16,17,16,17,9,8,7,4,3,2,0};
-
 	
-	TextureAtlas atlas;
 	Animation beast1;
 	Animation beast2;
-	
-	
-	public StartScreen() {
-		atlas = new TextureAtlas(Gdx.files.classpath("graphics/tile-atlas.txt"));
+	Animation whirlpool;
 
+	Sprite title;
+	BitmapFont font;
+	TextureAtlas ta;
+	TextureRegion storyTexture;
+
+	StringBuilder nameBuffer = new StringBuilder();
+	StringBuilder sexBuffer = new StringBuilder();
+	
+	NameInputAdapter nia = new NameInputAdapter();
+	SexInputAdapter sia = new SexInputAdapter();
+	StoryInputAdapter stia = new StoryInputAdapter();
+	QuestionInputAdapter qia = new QuestionInputAdapter();
+	DoneInputAdapter dia = new DoneInputAdapter();
+	
+	int storyInd = 0;
+	
+	int questionRound = 0;
+    int answerInd = 0;
+    boolean pauseFlag = true;
+    String currentQuestion = null;
+    int[] questionTree = new int[15];
+    
+    List<Sprite> whiteBeads = new ArrayList<Sprite>();
+    List<Sprite> blackBeads = new ArrayList<Sprite>();
+    
+    int GYP_PLACES_FIRST = 0;
+    int GYP_PLACES_TWOMORE = 1;
+    int GYP_PLACES_LAST = 2;
+    int GYP_UPON_TABLE = 3;
+    int GYP_SEGUE1 = 13;
+    int GYP_SEGUE2 = 14;
+    
+	float time = 0;
+	Batch batch;
+	
+	Ultima4 mainGame;
+	
+	public enum State {
+		INIT,
+		ASK_NAME,
+		ASK_SEX,
+		TELL_STORY,
+		ASK_QUESTIONS,
+		DONE;
 	}
-
-
-	@Override
-	public void show() {
-		// TODO Auto-generated method stub
+	
+	State state = State.INIT;
+	
+	public StartScreen(Ultima4 mainGame) {
 		
+		this.mainGame = mainGame;
+	
+		TextureAtlas ba = new TextureAtlas(Gdx.files.classpath("graphics/beasties-atlas.txt"));
+		Array<AtlasRegion> anim1 = ba.findRegions("beast");
+		Array<AtlasRegion> anim2 = ba.findRegions("dragon");
+		Array<AtlasRegion> tmp1 = new Array<AtlasRegion>(beast1FrameIndexes.length);
+		Array<AtlasRegion> tmp2 = new Array<AtlasRegion>(beast2FrameIndexes.length);
+		for (int i=0;i<beast1FrameIndexes.length;i++) tmp1.add(anim1.get(beast1FrameIndexes[i]));
+		for (int i=0;i<beast2FrameIndexes.length;i++) tmp2.add(anim2.get(beast2FrameIndexes[i]));
+		beast1 = new Animation(0.25f, tmp1);
+		beast2 = new Animation(0.25f, tmp2);
+		
+		ta = new TextureAtlas(Gdx.files.classpath("graphics/initial-atlas.txt"));
+		title = ta.createSprite("title");
+		
+		TextureAtlas ua = new TextureAtlas(Gdx.files.classpath("tilemaps/ultima5-atlas.txt"));
+		whirlpool = new Animation(0.50f, ua.findRegions("whirlpool"));
+		
+		font = new BitmapFont(Gdx.files.classpath("fonts/Calisto_24.fnt"));
+		font.setColor(Color.WHITE);
+		
+		batch = new SpriteBatch();
+		
+		Gdx.input.setInputProcessor(this);
+
 	}
 
 
 	@Override
 	public void render(float delta) {
-		// TODO Auto-generated method stub
+		time += Gdx.graphics.getDeltaTime();
+
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+				
+		batch.begin();
+		
+		batch.draw(beast1.getKeyFrame(time, true), 0, Ultima4.SCREEN_HEIGHT-31*2, 48*2, 31*2);
+		batch.draw(beast2.getKeyFrame(time, true), Ultima4.SCREEN_WIDTH-48*2, Ultima4.SCREEN_HEIGHT-31*2, 48*2, 31*2);
+		
+		if (state == State.INIT) {
+			batch.draw(title,Ultima4.SCREEN_WIDTH/2-title.getWidth()/2,350);
+			
+			font.draw(batch, "In another world, in a time to come.", 215, 300);
+			font.draw(batch, "Options:", 350, 260);
+			batch.draw(whirlpool.getKeyFrame(time, true), 445, 240, 20, 20);
+			font.draw(batch, "Initiate New Game", 300, 220);
+			font.draw(batch, "Journey Onward", 300, 190);
+			font.draw(batch, "Conversion by Paul Antinori", 250, 60);
+			font.draw(batch, "Copyright 1987 Lord British", 250, 30);
+			Gdx.input.setInputProcessor(this);
+			
+		} else if (state == State.ASK_NAME) {
+			batch.draw(title,Ultima4.SCREEN_WIDTH/2-title.getWidth()/2,350);
+			
+			font.draw(batch, "By what name shalt thou be known in this world and time?", 100, 240);
+			font.draw(batch, nameBuffer.toString(), 300, 210);
+			Gdx.input.setInputProcessor(nia);
+			
+		} else if (state == State.ASK_SEX) {
+			batch.draw(title,Ultima4.SCREEN_WIDTH/2-title.getWidth()/2,350);
+			
+			font.draw(batch, "Art thou Male or Female?", 250, 240);
+			font.draw(batch, sexBuffer.toString(), 300, 210);
+			Gdx.input.setInputProcessor(sia);
+			
+		} else if (state == State.TELL_STORY) {
+									
+	        if (storyInd == 0)
+	        	storyTexture = ta.findRegion("tree");
+	        else if (storyInd == 6)
+	        	storyTexture = ta.findRegion("portal");
+	        else if (storyInd == 11)
+	        	storyTexture = ta.findRegion("tree");
+	        else if (storyInd == 15)
+	        	storyTexture = ta.findRegion("outside");
+	        else if (storyInd == 17)
+	        	storyTexture = ta.findRegion("inside");
+	        else if (storyInd == 20)
+	        	storyTexture = ta.findRegion("wagon");
+	        else if (storyInd == 21)
+	        	storyTexture = ta.findRegion("gypsy");
+	        else if (storyInd == 23)
+	        	storyTexture = ta.findRegion("abacus");
+			
+			batch.draw(storyTexture, Ultima4.SCREEN_WIDTH/2-320, 200, 640, 304);
+			
+			float x = Ultima4.SCREEN_WIDTH/2-320;
+			float y = 100;
+			float width = 640;
+			float height = 50;
+			
+			TextBounds bounds = font.getWrappedBounds(initScripts[storyInd], width);
+			x += width / 2 - bounds.width / 2;
+			y += height / 2 + bounds.height / 2;
+
+			font.drawWrapped(batch, initScripts[storyInd], x, y, width);
+
+			Gdx.input.setInputProcessor(stia);
+			
+		} else if (state == State.ASK_QUESTIONS || state == State.DONE) {
+			
+			batch.draw(storyTexture, Ultima4.SCREEN_WIDTH/2-320, 200, 640, 304);
+			
+			float x = Ultima4.SCREEN_WIDTH/2-320;
+			float y = 100;
+			float width = 640;
+			float height = 50;
+			
+			for (Sprite b : whiteBeads) {
+				batch.draw(b, b.getX(), b.getY(), 16, 24);
+			}
+			
+			for (Sprite b : blackBeads) {
+				batch.draw(b, b.getX(), b.getY(), 16, 24);
+			}
+			
+			if (questionRound > 6) {
+				questionRound = 6;
+			}
+			
+			String v1 = Virtue.get(questionTree[questionRound * 2]).toString().toLowerCase();
+			String v2 = Virtue.get(questionTree[questionRound * 2 + 1]).toString().toLowerCase();
+			batch.draw(ta.findRegion(v1), 110, 232, 178, 244);
+			batch.draw(ta.findRegion(v2), 515, 232, 178, 244);
+			
+			if (state == State.ASK_QUESTIONS) {
+							
+				if (pauseFlag) {
+					
+					StringBuffer sb = new StringBuffer();
+					sb.append(gypsyText[questionRound == 0 ? GYP_PLACES_FIRST : (questionRound == 6 ? GYP_PLACES_LAST : GYP_PLACES_TWOMORE)]);
+					sb.append(gypsyText[GYP_UPON_TABLE]);
+					sb.append(String.format("%s and %s.  She says", gypsyText[questionTree[questionRound * 2] + 4], gypsyText[questionTree[questionRound * 2 + 1] + 4]));
+					sb.append("\n\"Consider this:\"");
+					String text = sb.toString();
+							
+					TextBounds bounds = font.getWrappedBounds(text, width);
+					x += width / 2 - bounds.width / 2;
+					y += height / 2 + bounds.height / 2;
+					font.drawWrapped(batch, text, x, y, width);
+					
+				} else {
+					
+					TextBounds bounds = font.getWrappedBounds(currentQuestion, width);
+					x += width / 2 - bounds.width / 2;
+					y += height / 2 + bounds.height / 2;
+					font.drawWrapped(batch, currentQuestion, x, y, width);
+					
+				}
+	
+				Gdx.input.setInputProcessor(qia);
+				
+			} else {
+				
+				TextBounds bounds = font.getWrappedBounds(gypsyText[storyInd], width);
+				x += width / 2 - bounds.width / 2;
+				y += height / 2 + bounds.height / 2;
+				font.drawWrapped(batch, gypsyText[storyInd], x, y, width);
+				
+				Gdx.input.setInputProcessor(dia);
+			}
+
+		}
+
+		batch.end();
 		
 	}
+	
+	@Override
+	public boolean keyUp(int keycode) {
+		
+		if (keycode == Keys.I) {
+			state = State.ASK_NAME;	
+		} else if (keycode == Keys.J) {
+			mainGame.setScreen(new GameScreen(mainGame));
+		}
+		
+		return false;
+	}
+	
+	class NameInputAdapter extends InputAdapter {
+		@Override
+		public boolean keyUp(int keycode) {
+			if (keycode == Keys.ENTER) {
+				if (nameBuffer.length() < 1) return false;
+				state = State.ASK_SEX;
+			} else if (keycode == Keys.BACKSPACE) {
+				if (nameBuffer.length() > 0)
+					nameBuffer.deleteCharAt(nameBuffer.length() - 1);
+			} else if (keycode >= 29 && keycode <= 54) {
+				if (nameBuffer.length() < 1) {
+					nameBuffer.append(Keys.toString(keycode));
+				} else {
+					nameBuffer.append(Keys.toString(keycode).toLowerCase());
+				}
+			}
+			return false;
+		}
+	}
 
+	class SexInputAdapter extends InputAdapter {
+		@Override
+		public boolean keyUp(int keycode) {
+			if (keycode == Keys.ENTER) {
+				if (sexBuffer.length() < 1) return false;
+				state = State.TELL_STORY;
+			} else if (keycode == Keys.BACKSPACE) {
+				if (sexBuffer.length() > 0)
+					sexBuffer.deleteCharAt(sexBuffer.length() - 1);
+			} else if (keycode == Keys.M || keycode == Keys.F) {
+				sexBuffer.append(Keys.toString(keycode));
+			}
+			return false;
+		}
+	}
+	
+	class StoryInputAdapter extends InputAdapter {
+		@Override
+		public boolean keyUp(int keycode) {
+			if (keycode == Keys.ENTER || keycode == Keys.SPACE) {
+				storyInd++;
+				if (storyInd == 24) {
+					state = State.ASK_QUESTIONS;
+				    questionRound = 0;
+				    initQuestionTree();
+				}
+			}
+			return false;
+		}
+	}
+	
+	class QuestionInputAdapter extends InputAdapter {
+		@Override
+		public boolean keyUp(int keycode) {
+			
+			if (pauseFlag) {
+				pauseFlag = false;
+				currentQuestion = getQuestion(questionTree[questionRound * 2], questionTree[questionRound * 2 + 1]);
+			} else {
+				if (keycode == Keys.A || keycode == Keys.B) {
+					boolean ret = doQuestion(keycode == Keys.A ? 0 : 1);
+					if (ret) {
+						state = State.DONE;
+						storyInd = 12;
+					}
+					pauseFlag = true;
+				}
+			}
+			return false;
+		}
+	}
+	
+	class DoneInputAdapter extends InputAdapter {
+		@Override
+		public boolean keyUp(int keycode) {
+			if (keycode == Keys.ENTER || keycode == Keys.SPACE) {
+				storyInd++;
+				if (storyInd == 14) {
+					
+					//TODO save game here
+					
+					mainGame.setScreen(new GameScreen(mainGame));
+				}
+			}
+			return false;
+		}
+	}
+	
+	
+	/**
+	 * Initializes the question tree.  The tree starts off with the first
+	 * eight entries set to the numbers 0-7 in a random order.
+	 */
+	public void initQuestionTree() {
+
+		for (int i = 0; i < 8; i++) {
+			questionTree[i] = i;
+		}
+		Random rand = new Random();
+		for (int i = 0; i < 8; i++) {
+			int r = rand.nextInt(8);
+			int tmp = questionTree[r];
+			questionTree[r] = questionTree[i];
+			questionTree[i] = tmp;
+		}
+		answerInd = 8;
+
+		if (questionTree[0] > questionTree[1]) {
+			int tmp = questionTree[0];
+			questionTree[0] = questionTree[1];
+			questionTree[1] = tmp;
+		}
+
+	}
+	
+	public String getQuestion(int v1, int v2) {
+		int i = 0;
+		int d = 7;
+		while (v1 > 0) {
+			i += d;
+			d--;
+			v1--;
+			v2--;
+		}
+		return Constants.karmaQuestions[i + v2 - 1];
+	}
+	
+	/**
+	 * Updates the question tree with the given answer, and advances to the next round.
+	 * @return true if all questions have been answered, false otherwise
+	 */
+	public boolean doQuestion(int answer) {
+		if (answer == 0) {
+			questionTree[answerInd] = questionTree[questionRound * 2];
+		}
+		else {
+			questionTree[answerInd] = questionTree[questionRound * 2 + 1];
+		}
+    
+		setAbacusBeads(questionRound, questionTree[answerInd], questionTree[questionRound * 2 + ((answer) != 0 ? 0 : 1)]);
+    
+		answerInd++;
+		questionRound++;
+    
+		if (questionRound > 6) {
+			return true;
+		}
+    
+		if (questionTree[questionRound * 2] > questionTree[questionRound * 2 + 1]) {
+			int tmp = questionTree[questionRound * 2];
+			questionTree[questionRound * 2] = questionTree[questionRound * 2 + 1];
+			questionTree[questionRound * 2 + 1] = tmp;
+		}
+    
+		return false;
+	}
+	
+	public void setAbacusBeads(int row, int selectedVirtue, int rejectedVirtue) {
+	    
+	    Sprite wb = ta.createSprite("white-bead");
+	    wb.setBounds(360 + (selectedVirtue * 11), Ultima4.SCREEN_HEIGHT - 166 - (row * 29), 16, 24);
+	    whiteBeads.add(wb);
+	    
+	    Sprite bb = ta.createSprite("black-bead");
+	    bb.setBounds(360 + (rejectedVirtue * 11), Ultima4.SCREEN_HEIGHT - 166 - (row * 29), 16, 24);
+	    whiteBeads.add(bb);
+	    
+	}
+	
+		
+	@Override
+	public void show() {
+		
+	}
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
 		
 	}
 
-
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
 	public boolean keyDown(int keycode) {
-		// TODO Auto-generated method stub
 		return false;
 	}
-
-
-	@Override
-	public boolean keyUp(int keycode) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 
 	@Override
 	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
-
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 
 	@Override
 	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
 		return false;
 	}
+	
+
 	
 	
 
