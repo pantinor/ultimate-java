@@ -8,13 +8,12 @@ import java.util.concurrent.ThreadLocalRandom;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.StringUtils;
 
 import ultima.Constants;
 import ultima.GameScreen;
-import ultima.Ultima4;
-import ultima.Constants.Item;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -41,7 +40,7 @@ public class BaseMap implements Constants {
 	private boolean firstperson;
 	private boolean contextual;
 	private String music;
-	private String borderbehavior;
+	private MapBorderBehavior borderbehavior;
 	private String tileset;
 	private String tilemap;
 	
@@ -151,8 +150,9 @@ public class BaseMap implements Constants {
 	public int getChunkheight() {
 		return chunkheight;
 	}
-	@XmlAttribute
-	public String getBorderbehavior() {
+	@XmlAttribute(name="borderbehavior")
+	@XmlJavaTypeAdapter(BorderTypeAdapter.class)
+	public MapBorderBehavior getBorderbehavior() {
 		return borderbehavior;
 	}
 	@XmlElement(name = "portal")
@@ -225,9 +225,6 @@ public class BaseMap implements Constants {
 	public void setMusic(String music) {
 		this.music = music;
 	}
-	public void setBorderBehavior(String borderBehavior) {
-		this.borderbehavior = borderBehavior;
-	}
 	public void setTileset(String tileset) {
 		this.tileset = tileset;
 	}
@@ -240,7 +237,7 @@ public class BaseMap implements Constants {
 	public void setChunkheight(int chunkheight) {
 		this.chunkheight = chunkheight;
 	}
-	public void setBorderbehavior(String borderbehavior) {
+	public void setBorderbehavior(MapBorderBehavior borderbehavior) {
 		this.borderbehavior = borderbehavior;
 	}
 	public void setPortals(List<Portal> portals) {
@@ -343,7 +340,7 @@ public class BaseMap implements Constants {
 	}
 	
 
-	public void moveObjects(GameScreen mainGame) {
+	public void moveObjects(GameScreen mainGame, int avatarX, int avatarY) {
 		
 		if (city != null) {
 			
@@ -351,29 +348,65 @@ public class BaseMap implements Constants {
 			
 			for(Person p : city.getPeople()) {
 				if (p == null) continue;
-				if (p.getMovement() == ObjectMovementBehavior.WANDER) {
-					Direction dir = Direction.getRandomValidDirection(getValidMovesMask(p.getX(), p.getY(), false));
-					if (dir == null) continue; 
+				
+				Vector3 pos = null;
+				Vector3 pixelPos = null;
+				Direction dir = null;
+				
+				switch (p.getMovement()) {
+				case ATTACK_AVATAR:
+				case FOLLOW_AVATAR:
+			        int mask = getValidMovesMask(p.getX(), p.getY(), false, avatarX, avatarY);
+			        dir = findPathTo(avatarX, avatarY, mask, true, p.getX(), p.getY());
+					break;
+				case FIXED:
+					break;
+				case WANDER:
 					if (wanderFlag % 2 == 0) continue; 
 					if (p.isTalking()) continue; 
-
-					Vector3 pos = null;
-					if (dir == Direction.NORTH) pos = new Vector3(p.getX(), p.getY()-1, 0);
-					if (dir == Direction.SOUTH) pos = new Vector3(p.getX(), p.getY()+1, 0);
-					if (dir == Direction.EAST) pos = new Vector3(p.getX()+1, p.getY(), 0);
-					if (dir == Direction.WEST) pos = new Vector3(p.getX()-1, p.getY(), 0);
-					Vector3 pixelPos = mainGame.getMapPixelCoords((int)pos.x, (int)pos.y);
-					p.setCurrentPos(pixelPos);
-					p.setX((int)pos.x);
-					p.setY((int)pos.y);
+					dir = Direction.getRandomValidDirection(getValidMovesMask(p.getX(), p.getY(), false, avatarX, avatarY));
+					break;
+				default:
+					break;
+				
 				}
+				
+				if (dir == null) continue; 
+				if (dir == Direction.NORTH) pos = new Vector3(p.getX(), p.getY()-1, 0);
+				if (dir == Direction.SOUTH) pos = new Vector3(p.getX(), p.getY()+1, 0);
+				if (dir == Direction.EAST) pos = new Vector3(p.getX()+1, p.getY(), 0);
+				if (dir == Direction.WEST) pos = new Vector3(p.getX()-1, p.getY(), 0);
+				pixelPos = mainGame.getMapPixelCoords((int)pos.x, (int)pos.y);
+				p.setCurrentPos(pixelPos);
+				p.setX((int)pos.x);
+				p.setY((int)pos.y);
+				
 			}
 			
 		}
 		
 	}
 	
-	public int getValidMovesMask(int x, int y, boolean player) {
+	public Direction findPathTo(int avatarX, int avatarY, int validMovesMask, boolean towards, int objX, int objY) {
+	    /* find the directions that lead [to/away from] our target */
+	    int directionsToObject = towards ? ~getRelativeDirection(avatarX,avatarY,objX,objY) : getRelativeDirection(avatarX,avatarY,objX,objY);
+
+	    /* make sure we eliminate impossible options */
+	    directionsToObject &= validMovesMask;
+
+	    /* get the new direction to move */
+	    if (directionsToObject > 0)
+	        return Direction.getRandomValidDirection(directionsToObject);
+
+	    /* there are no valid directions that lead to our target, just move wherever we can! */
+	    else return Direction.getRandomValidDirection(validMovesMask);
+	}
+	
+	public int getValidMovesMask(int x, int y) {
+		return getValidMovesMask(x, y, true, 0, 0);
+	}
+	
+	public int getValidMovesMask(int x, int y, boolean player, int avatarX, int avatarY) {
 		
 		int mask = 0;
 		
@@ -382,30 +415,90 @@ public class BaseMap implements Constants {
 		Tile east = getTile(x+1,y);
 		Tile west = getTile(x-1,y);
 		
-		mask = addToMask(Direction.NORTH, mask, north, x, y-1, player);
-		mask = addToMask(Direction.SOUTH, mask, south, x, y+1, player);
-		mask = addToMask(Direction.EAST, mask, east, x+1, y, player);
-		mask = addToMask(Direction.WEST, mask, west, x-1, y, player);
+		mask = addToMask(Direction.NORTH, mask, north, x, y-1, player, avatarX, avatarY);
+		mask = addToMask(Direction.SOUTH, mask, south, x, y+1, player, avatarX, avatarY);
+		mask = addToMask(Direction.EAST, mask, east, x+1, y, player, avatarX, avatarY);
+		mask = addToMask(Direction.WEST, mask, west, x-1, y, player, avatarX, avatarY);
 
 		return mask;
 		
 	}
 	
-	private int addToMask(Direction dir, int mask, Tile tile, int x, int y, boolean player) {
+	private int addToMask(Direction dir, int mask, Tile tile, int x, int y, boolean player, int avatarX, int avatarY) {
 		if (tile != null) {
 			
 			Rule rule = GameScreen.tileRules.getRule(tile.getRule());
 			
 			boolean canwalkon = rule != null && !StringUtils.equals(rule.getCantwalkon(), "all");
 			
-			//NPCs cannot go thru the secret doors
-			if (!player && tile.getIndex() == 73) canwalkon = false;
+			//NPCs cannot go thru the secret doors or walk where the avatar is
+			if (!player) {
+				if (tile.getIndex() == 73 || (avatarX == x && avatarY == y)) {
+					canwalkon = false;
+				}
+			}
+			
+			//see if another person is there
+			if (city != null) {
+				for(Person p : city.getPeople()) {
+					if (p == null) continue;
+					if (p.getX() == x && p.getY() == y) {
+						canwalkon = false;
+						break;
+					}
+				}
+			}
 			
 			if (rule == null || canwalkon || isDoorOpen(x, y)) {
 				mask = Direction.addToMask(dir, mask);
 			}
 		}
 		return mask;
+	}
+	
+	/**
+	 * Returns a mask of directions that indicate where one point is relative
+	 * to another.  For instance, if the object at (x, y) is
+	 * northeast of (c.x, c.y), then this function returns
+	 * (MASK_DIR(DIR_NORTH) | MASK_DIR(DIR_EAST))
+	 * This function also takes into account map boundaries and adjusts
+	 * itself accordingly. If the two coordinates are not on the same z-plane,
+	 * then this function return DIR_NONE.
+	 */
+	public int getRelativeDirection(int ax, int ay, int cx, int cy)  {
+	    int dx=0, dy=0;        
+	    int dirmask = 0;
+	    
+	    /* adjust our coordinates to find the closest path */
+		if (borderbehavior == MapBorderBehavior.wrap) {
+
+			if (Math.abs(ax - cx) > Math.abs(ax + width - cx))
+				ax += width;
+			else if (Math.abs(ax - cx) > Math.abs(ax - width - cx))
+				ax -= width;
+
+			if (Math.abs(ay - cy) > Math.abs(ay + width - cy))
+				ay += height;
+			else if (Math.abs(ay - cy) > Math.abs(ay - width - cy))
+				ay -= height;
+
+			dx = ax - cx;
+			dy = ay - cy;
+		} else {
+			dx = ax - cx;
+			dy = ay - cy;
+		}
+
+	    /* add x directions that lead towards to_x to the mask */
+	    if (dx < 0)         dirmask |= Direction.getMask(Direction.EAST);
+	    else if (dx > 0)    dirmask |= Direction.getMask(Direction.WEST);
+
+	    /* add y directions that lead towards to_y to the mask */
+	    if (dy < 0)         dirmask |= Direction.getMask(Direction.SOUTH);
+	    else if (dy > 0)    dirmask |= Direction.getMask(Direction.NORTH);
+
+	    /* return the result */
+	    return dirmask;
 	}
 	
 	public DoorStatus getDoor(int x, int y) {

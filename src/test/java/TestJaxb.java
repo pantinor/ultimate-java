@@ -237,31 +237,34 @@ public class TestJaxb {
 
 	}
 	
-	//@Test
+
+	@Test
 	public void testReadSaveGame() throws Exception {
 		
 		InputStream is = new FileInputStream(Constants.PARTY_SAV_BASE_FILENAME);
 		LittleEndianDataInputStream dis = new LittleEndianDataInputStream(is);
 		
-		SaveGame sg2 = new SaveGame();
-		sg2.read(dis);
+		SaveGame sg = new SaveGame();
+		sg.read(dis);
 		
 				
-		SaveGame.SaveGamePlayerRecord avatar = sg2.new SaveGamePlayerRecord();
-		avatar.name = "paul";
-		avatar.hp = 199;
-		
-		sg2.food = 30000;
-		sg2.gold = 200;
-		sg2.reagents[Reagent.GINSENG.ordinal()] = 3;
-		sg2.reagents[Reagent.GARLIC.ordinal()] = 4;
-		sg2.reagents[Reagent.NIGHTSHADE.ordinal()] = 9;
-		sg2.reagents[Reagent.MANDRAKE.ordinal()] = 6;
-		sg2.torches = 2;
-		
-		sg2.players[0] = avatar;
+//		SaveGame.SaveGamePlayerRecord avatar = sg.new SaveGamePlayerRecord();
+//		avatar.name = "paul";
+//		avatar.hp = 199;
+//		
+//		sg.food = 30000;
+//		sg.gold = 200;
+//		sg.reagents[Reagent.GINSENG.ordinal()] = 3;
+//		sg.reagents[Reagent.GARLIC.ordinal()] = 4;
+//		sg.reagents[Reagent.NIGHTSHADE.ordinal()] = 9;
+//		sg.reagents[Reagent.MANDRAKE.ordinal()] = 6;
+//		sg.torches = 2;
+//		
+//		sg.players[0] = avatar;
+//		
+//		sg.write(Constants.PARTY_SAV_BASE_FILENAME);
 						
-		Party p = new Party(sg2);
+		Party p = new Party(sg);
 		
 		
 		//for (int i=0;i<8;i++) 
@@ -274,33 +277,33 @@ public class TestJaxb {
 			
         for (int i = 0; i < 8; i++) {
         	Virtue v = Constants.Virtue.get(i);
-        	String st = ((sg2.stones & (1 << i)) > 0 ? "+STONE" : "") ;
-        	String ru = ((sg2.runes & (1 << i)) > 0 ? "+RUNE" : "") ;
+        	String st = ((sg.stones & (1 << i)) > 0 ? "+STONE" : "") ;
+        	String ru = ((sg.runes & (1 << i)) > 0 ? "+RUNE" : "") ;
         	//System.err.println(v + " " + st + " " + ru);
         }
         
         System.err.println("---------------");
-		sg2.runes |= Virtue.HUMILITY.getLoc();
+		sg.runes |= Virtue.HUMILITY.getLoc();
 		
         for (int i = 0; i < 8; i++) {
         	Virtue v = Constants.Virtue.get(i);
-        	String st = ((sg2.stones & (1 << i)) > 0 ? "+STONE" : "") ;
-        	String ru = ((sg2.runes & (1 << i)) > 0 ? "+RUNE" : "") ;
+        	String st = ((sg.stones & (1 << i)) > 0 ? "+STONE" : "") ;
+        	String ru = ((sg.runes & (1 << i)) > 0 ? "+RUNE" : "") ;
         	//System.err.println(v + " " + st + " " + ru);
         }
         
-        sg2.items |= Item.BELL.getLoc();
+        sg.items |= Item.BELL.getLoc();
         
         for (Item item : Constants.Item.values()) {
         	if (!item.isVisible()) continue;
-        	System.err.println((sg2.items & (1 << item.ordinal())) > 0 ? item.getDesc() : "") ;
+        	//System.err.println((sg.items & (1 << item.ordinal())) > 0 ? item.getDesc() : "") ;
         }
         
-        sg2.items |= Item.HORN.getLoc();
+        sg.items |= Item.HORN.getLoc();
         
         for (Item item : Constants.Item.values()) {
         	if (!item.isVisible()) continue;
-        	System.err.println((sg2.items & (1 << item.ordinal())) > 0 ? item.getDesc() : "") ;
+        	//System.err.println((sg.items & (1 << item.ordinal())) > 0 ? item.getDesc() : "") ;
         }
 		
 	}
@@ -401,7 +404,7 @@ public class TestJaxb {
 	}
 	
 
-	@Test
+	//@Test
 	public void testReadTitleExe() throws Exception {
 		InputStream is = TestJaxb.class.getResourceAsStream("/data/title.exe");
 		byte[] bytes = IOUtils.toByteArray(is);

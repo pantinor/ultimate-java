@@ -147,18 +147,18 @@ public class SaveGame implements Constants {
 		}
 		read(dis);
 	}
-	
+		
 	public void read(LittleEndianDataInputStream dis) throws Exception {
 
-		unknown1 = dis.readInt()& 0xff;
-		moves = dis.readInt()& 0xff;
+		unknown1 = dis.readInt();
+		moves = dis.readInt();
 
 		for (int i = 0; i < 8; i++) {
 			players[i] = new SaveGamePlayerRecord();
 			players[i].read(dis);
 		}
 
-		food = dis.readInt()& 0xff;
+		food = dis.readInt();
 		gold = dis.readShort()& 0xff;
 		
 		for (int i = 0; i < 8; i++) {

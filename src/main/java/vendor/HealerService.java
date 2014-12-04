@@ -3,8 +3,6 @@ package vendor;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.SaveGame;
-import ultima.Sound;
-import ultima.Sounds;
 import ultima.Constants.KarmaAction;
 
 public class HealerService extends BaseVendor {

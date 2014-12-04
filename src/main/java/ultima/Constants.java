@@ -156,9 +156,9 @@ public interface Constants {
 	}
 
 	public enum MapBorderBehavior {
-		BORDER_WRAP,
-		BORDER_EXIT2PARENT,
-		BORDER_FIXED;
+		wrap,
+		exit,
+		fixed;
 	}
 	
 	public static int MOON_PHASES = 24;

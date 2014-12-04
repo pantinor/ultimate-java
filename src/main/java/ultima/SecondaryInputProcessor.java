@@ -20,8 +20,8 @@ public class SecondaryInputProcessor extends InputAdapter {
 	private Stage stage;
 	private int initialKeyCode;
 	private BaseMap bm;
-	private int x;
-	private int y;
+	private int currentX;
+	private int currentY;
 	
 	public SecondaryInputProcessor(GameScreen game, Stage stage) {
 		this.game = game;
@@ -31,13 +31,15 @@ public class SecondaryInputProcessor extends InputAdapter {
 	public void setinitialKeyCode(int k, BaseMap bm, int x, int y) {
 		this.initialKeyCode = k;
 		this.bm = bm;
-		this.x = x;
-		this.y = y;
+		this.currentX = x;
+		this.currentY = y;
 	}
 	
 	@Override
 	public boolean keyUp (int keycode) {
 		Direction dir = Direction.NORTH;
+		
+		int x=currentX, y=currentY;
 
 		if (keycode == Keys.UP) {
 			dir = Direction.NORTH;
@@ -106,7 +108,7 @@ public class SecondaryInputProcessor extends InputAdapter {
 			Gdx.input.setInputProcessor(new InputMultiplexer(game, stage));
 		}
 		
-		game.finishTurn();
+		game.finishTurn(currentX, currentY);
 
 		
 		return false;

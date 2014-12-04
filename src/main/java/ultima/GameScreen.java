@@ -261,7 +261,7 @@ public class GameScreen implements Screen, InputProcessor, Constants {
 			//Vector3 v = getCurrentMapCoords();
 			//font.draw(batch2, "map coords: " + v, 10, 40);
 			//font.draw(batch2, "fps: " + Gdx.graphics.getFramesPerSecond(), 0, 20);
-			font.draw(batch2, "Food: " +context.getParty().getSaveGame().food + "    Gold: " +context.getParty().getSaveGame().gold , 5, Ultima4.SCREEN_HEIGHT - 5);
+			font.draw(batch2, "Food: " +context.getParty().getSaveGame().food/100 + "    Gold: " +context.getParty().getSaveGame().gold , 5, Ultima4.SCREEN_HEIGHT - 5);
 
 			int y=5;
 			for (int i=context.getParty().getMembers().size()-1;i>=0;i--) {
@@ -397,7 +397,7 @@ public class GameScreen implements Screen, InputProcessor, Constants {
 			if (showZstats > 6) showZstats = 0;
 		}
 		
-		finishTurn();
+		finishTurn((int)v.x, (int)v.y);
 
 		return false;
 
@@ -450,7 +450,7 @@ public class GameScreen implements Screen, InputProcessor, Constants {
 		if (dir == Direction.WEST) nextTile = new Vector3(currentTile.x-1,currentTile.y,0);
 		if (dir == Direction.EAST) nextTile = new Vector3(currentTile.x+1,currentTile.y,0);
 				
-		if (bm.getBorderbehavior().equals("exit")) {
+		if (bm.getBorderbehavior() == MapBorderBehavior.exit) {
 			if (nextTile.x > bm.getWidth()-1 || nextTile.x < 0 || nextTile.y > bm.getHeight()-1 || nextTile.y < 0) {
 				Portal p = maps.getMapById(Maps.WORLD.getId()).getPortal(bm.getId());
 				loadNextMap(Maps.WORLD.getId(), p.getX(), p.getY());
@@ -458,7 +458,7 @@ public class GameScreen implements Screen, InputProcessor, Constants {
 			}
 		}
 		
-		int mask = bm.getValidMovesMask((int)currentTile.x, (int)currentTile.y, true);
+		int mask = bm.getValidMovesMask((int)currentTile.x, (int)currentTile.y);
 		if (!Direction.isDirInMask(dir, mask)) {
 			Sounds.play(Sound.BLOCKED);
 			return false;
@@ -485,11 +485,10 @@ public class GameScreen implements Screen, InputProcessor, Constants {
 		log(dir.toString());
 	}
 	
-	public void finishTurn() {
-		
+	public void finishTurn(int currentX, int currentY) {
 		
 		if (true) { //TODO is not party flying
-			context.getCurrentMap().moveObjects(this);
+			context.getCurrentMap().moveObjects(this, currentX, currentY);
 		}
 		
 		context.incrementMoves();
