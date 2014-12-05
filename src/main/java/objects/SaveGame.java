@@ -235,9 +235,9 @@ public class SaveGame implements Constants {
 		
 		public WeaponType weapon = WeaponType.HANDS;
 		public ArmorType armor = ArmorType.NONE;
-		public SexType sex = SexType.SEX_MALE;
+		public SexType sex = SexType.MALE;
 		public ClassType klass = ClassType.MAGE;
-		public StatusType status = StatusType.STAT_GOOD;
+		public StatusType status = StatusType.GOOD;
 		
 		public int write(LittleEndianDataOutputStream dos) throws Exception {
 	    
@@ -361,14 +361,14 @@ public class SaveGame implements Constants {
 		}
 		
 		public void adjustMp(int pts) {
-			Utils.adjustValueMax(mp, pts, getMaxMp());
+			mp = Utils.adjustValueMax(mp, pts, getMaxMp());
 		}
 		
 		public boolean advanceLevel() {
 			if (getLevel() == getMaxLevel())
 				return false;
 			
-			status = StatusType.STAT_GOOD;
+			status = StatusType.GOOD;
 			hpMax = getMaxLevel() * 100;
 			hp = hpMax;
 				    

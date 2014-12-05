@@ -12,7 +12,8 @@ public class Context implements Constants {
     private Party party;
     private BaseMap currentMap;
     private TiledMap currentTiledMap;
-
+    private int locationMask;
+    
     private int line, col;
     //private StatsArea stats;
     private int moonPhase = 0;
@@ -123,9 +124,12 @@ public class Context implements Constants {
 		}
     }
     
-    public void incrementMoves() {
-		party.getSaveGame().moves++;
-    }
+	public int getLocationMask() {
+		return locationMask;
+	}
+	public void setLocationMask(int locationMask) {
+		this.locationMask = locationMask;
+	}
     
 
 }

@@ -23,6 +23,7 @@ public class Person implements Constants {
 	private Conversation conversation;
 	private boolean isTalking = false;
 	private PersonRole role;
+	private Creature emulatingCreature;
 	
 	public int getId() {
 		return id;
@@ -138,6 +139,12 @@ public class Person implements Constants {
 	}
 	public void setRole(PersonRole role) {
 		this.role = role;
+	}
+	public Creature getEmulatingCreature() {
+		return emulatingCreature;
+	}
+	public void setEmulatingCreature(Creature emulatingCreature) {
+		this.emulatingCreature = emulatingCreature;
 	}
 	
 	

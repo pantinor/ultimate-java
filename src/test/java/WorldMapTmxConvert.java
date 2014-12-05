@@ -100,7 +100,7 @@ public class WorldMapTmxConvert {
 		for (Portal p : portals) {
 			BaseMap destMap = ms.getMapById(p.getDestmapid());
 			p.setName(Constants.Maps.convert(p.getDestmapid()).toString());
-			String ttype = destMap.getCity()==null?destMap.getType():destMap.getCity().getType();
+			String ttype = destMap.getCity()==null?destMap.getType().toString():destMap.getCity().getType().toString();
 			p.setMapTileId(findTileId(mapTileIds, ttype));
 		}
 		

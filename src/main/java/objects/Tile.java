@@ -2,14 +2,15 @@ package objects;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.badlogic.gdx.graphics.Texture;
+import ultima.Constants.TileRule;
 
 @XmlRootElement(name = "tile")
 public class Tile {
 
 	private String name;
-	private String rule;
+	private TileRule rule;
 	private int frames;
 	private String animation;
 	private int index;
@@ -19,15 +20,14 @@ public class Tile {
 	private boolean tiledInDungeon;
 	private boolean usesReplacementTileAsBackground;
 	private boolean usesWaterReplacementTileAsBackground;
-	private Texture image;
-	private String altImage;
 	
 	@XmlAttribute
 	public String getName() {
 		return name;
 	}
-	@XmlAttribute
-	public String getRule() {
+	@XmlAttribute(name="rule")
+	@XmlJavaTypeAdapter(TileRuleAdapter.class)
+	public TileRule getRule() {
 		return rule;
 	}
 	@XmlAttribute
@@ -72,7 +72,7 @@ public class Tile {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public void setRule(String rule) {
+	public void setRule(TileRule rule) {
 		this.rule = rule;
 	}
 	public void setFrames(int frames) {
@@ -104,23 +104,9 @@ public class Tile {
 		this.usesWaterReplacementTileAsBackground = usesWaterReplacementTileAsBackground;
 	}
 	
-	
-	public Texture getImage() {
-		return image;
-	}
-	public void setImage(Texture image) {
-		this.image = image;
-	}
-	@XmlAttribute(name="image")
-	public String getAltImage() {
-		return altImage;
-	}
-	public void setAltImage(String altImage) {
-		this.altImage = altImage;
-	}
 	@Override
 	public String toString() {
-		return String.format("Tile [name=%s, index=%s]", name, index);
+		return String.format("Tile [name=%s, rule=%s]", name, rule);
 	}
 	
 	public boolean enterable() {

@@ -1,9 +1,18 @@
 package objects;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import ultima.Constants.CreatureType;
+import ultima.GameScreen;
+
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.utils.Array;
 
 @XmlRootElement(name = "creatures")
 public class CreatureSet {
@@ -17,6 +26,38 @@ public class CreatureSet {
 
 	public void setCreatures(List<Creature> creatures) {
 		this.creatures = creatures;
+	}
+	
+	public void init(GameScreen mainGame, TextureAtlas atlas1, TextureAtlas atlas2) {
+		
+		for(Creature cr : creatures ) {
+			CreatureType ct = CreatureType.get(cr.getId());
+			if (ct != null) ct.setCreature(cr);
+		}
+	}
+	
+	public Creature getInstance(CreatureType type, TextureAtlas atlas1, TextureAtlas atlas2) {
+		for (Creature cr : creatures) {
+			if (cr.getTile() == type) {
+				
+				Creature newCr = new Creature(cr);
+				
+				Array<AtlasRegion> tr = atlas1.findRegions(cr.getTile().toString());
+				if (tr == null || tr.size == 0) {
+					tr = atlas2.findRegions(cr.getTile().toString());
+				}
+				//random rate between 1 and 4
+				int frameRate = ThreadLocalRandom.current().nextInt(1,4);
+				newCr.setAnim(new Animation(frameRate, tr));
+				
+				System.out.println(type + " new instance created. texture =" + tr);
+				
+				return newCr;
+			}
+		}
+		System.err.println(type + " not found.");
+
+		return null;
 	}
 	
 	

@@ -7,6 +7,7 @@ import objects.City;
 import objects.Person;
 import objects.Tile;
 import ultima.Constants.Direction;
+import ultima.Constants.TileRule;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -64,7 +65,7 @@ public class SecondaryInputProcessor extends InputAdapter {
 			game.log("Talk > " + dir.toString());
 
 			Tile tile = bm.getTile(x, y);
-			if (StringUtils.equals(tile.getRule(),"signs")) {
+			if (tile.getRule() == TileRule.signs) {
 				//talking to vendor so get the vendor on other side of sign
 				switch (dir) {
 				case NORTH: y = y - 1; break;

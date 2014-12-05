@@ -1,9 +1,11 @@
 package ultima;
 
 import java.util.List;
+import java.util.Random;
 
 import objects.ArmorSet;
 import objects.BaseMap;
+import objects.Creature;
 import objects.CreatureSet;
 import objects.MapSet;
 import objects.Moongate;
@@ -12,7 +14,6 @@ import objects.Party.PartyMember;
 import objects.Portal;
 import objects.SaveGame;
 import objects.Tile;
-import objects.TileRules;
 import objects.TileSet;
 import objects.WeaponSet;
 import util.FixedSizeArrayList;
@@ -57,7 +58,6 @@ public class GameScreen implements Screen, InputProcessor, Constants {
 	public static Context context;
 	
 	public static TileSet baseTileSet;
-	public static TileRules tileRules;
 	public static WeaponSet weapons;
 	public static ArmorSet armors;
 	public static CreatureSet creatures;
@@ -92,6 +92,7 @@ public class GameScreen implements Screen, InputProcessor, Constants {
 	public int showZstats = 0;
 	
 	public SecondaryInputProcessor sip;
+	Random rand = new Random();
 	
 	public GameScreen(Ultima4 mainGame) {
 		this.mainGame = mainGame;
@@ -100,13 +101,12 @@ public class GameScreen implements Screen, InputProcessor, Constants {
 		skin = new Skin(Gdx.files.classpath("skin/uiskin.json"));
 		
 		try {
-			
+			atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
+			u5atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/ultima5-atlas.txt"));
 			
 			baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	
 			baseTileSet.setMaps();
-			
-			tileRules = (TileRules) Utils.loadXml("tileRules.xml", TileRules.class);
-			
+						
 			maps = (MapSet) Utils.loadXml("maps.xml", MapSet.class);
 			maps.init(baseTileSet);
 			
@@ -116,9 +116,7 @@ public class GameScreen implements Screen, InputProcessor, Constants {
 			weapons = (WeaponSet) Utils.loadXml("weapons.xml", WeaponSet.class);
 			armors = (ArmorSet) Utils.loadXml("armors.xml", ArmorSet.class);
 			creatures = (CreatureSet) Utils.loadXml("creatures.xml", CreatureSet.class);
-			
-			atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
-			u5atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/ultima5-atlas.txt"));
+			creatures.init(this, u5atlas, atlas);
 
 			player = new Animation(0.25f, atlas.findRegions("avatar"));
 			
@@ -178,7 +176,7 @@ public class GameScreen implements Screen, InputProcessor, Constants {
 		
 		log("Entering " + Maps.convert(id).getLabel() + "!");
 		
-		if (bm.getType().equals("dungeon")) {
+		if (bm.getType() == MapType.dungeon) {
 			
 			dungeonViewer = new DungeonViewer(stage, this, "/data/"+bm.getFname());
 			dungeonViewer.create();
@@ -487,11 +485,146 @@ public class GameScreen implements Screen, InputProcessor, Constants {
 	
 	public void finishTurn(int currentX, int currentY) {
 		
-		if (true) { //TODO is not party flying
+		if (true) {
+			
+			context.getParty().endTurn();
+			
+			if (checkRandomCreatures()) {
+				spawnCreature(null, currentX, currentY);
+			}
+			
 			context.getCurrentMap().moveObjects(this, currentX, currentY);
+			
 		}
 		
-		context.incrementMoves();
+	}
+	
+	public boolean checkRandomCreatures() {
+		
+	    boolean canSpawnHere = context.getCurrentMap().getId() == Maps.WORLD.getId() || dungeonViewer != null;
+	    int spawnDivisor = dungeonViewer != null ? (32 - (dungeonViewer.currentLevel << 2)) : 32;
+	    int spawnVal = rand.nextInt(spawnDivisor);
+
+	    if (!canSpawnHere || context.getCurrentMap().getCreatures().size() >= MAX_CREATURES_ON_MAP || spawnVal != 0) {
+	        return false;
+	    }
+	    
+	    return true;
+	}
+	
+	public boolean spawnCreature(Creature creature, int currentX, int currentY) {
+
+		int dx = 0;
+        int dy = 0;
+        int tmp = 0;
+        
+	    if (dungeonViewer != null) {
+
+	    } else {
+	    	
+	        boolean ok = false;
+	        int tries = 0;
+	        int MAX_TRIES = 10;
+
+	        while (!ok && (tries < MAX_TRIES)) {
+	            dx = 15;
+	            dy = rand.nextInt(15);
+	            
+	            if (rand.nextInt(2) > 0) {
+	                dx = -dx;
+	            }
+	            if (rand.nextInt(2) > 0) {
+	                dy = -dy;
+	            }
+	            if (rand.nextInt(2) > 0) {
+	                tmp = dx;
+	                dx = dy;
+	                dy = tmp;
+	            }
+	            
+	            dx = currentX + dx;
+	            dy = currentY + dy;
+
+	            /* make sure we can spawn the creature there */
+	            if (creature != null) {
+	        		Tile tile = context.getCurrentMap().getTile(dx, dy);
+	    			TileRule rule = tile.getRule();
+	                if ((creature.getSails() && rule.has(TileAttrib.sailable)) || 
+	                    (creature.getSwims() && rule.has(TileAttrib.swimmable)) ||
+	                    (creature.getFlies() && !rule.has(TileAttrib.unflyable))) {
+	                    ok = true;
+	                } else {
+	                	tries++;
+	                }
+	            } else {
+	            	ok = true;
+	            }
+	        }
+
+	        if (!ok) {
+		        return false;
+	        }
+	    } 
+	    
+	    if (creature != null) {
+
+	    } else if (dungeonViewer != null) {
+	        //creature = creatureMgr->randomForDungeon(c->location->coords.z);
+	    } else {
+	    	Tile tile = context.getCurrentMap().getTile(dx, dy);
+	        creature = getRandomCreatureForTile(tile);
+	    }
+	    
+	    if (creature != null) {
+	    	creature.currentX = dx;
+	    	creature.currentY = dy;
+	    	context.getCurrentMap().addCreature(creature);
+	    } else {
+	    	return false;
+	    }
+	        
+	    return true;
+	}
+	
+	public Creature getRandomCreatureForTile(Tile tile) {
+
+		int era = 0;
+		int randId = 0;
+
+		if (tile == null || tile.getRule() == null) {
+			System.err.println("randomForTile: Tile or rule is null");
+			return null;
+		}
+
+		if (tile.getRule().has(TileAttrib.creatureunwalkable)) {
+			return null;
+		}
+
+		if (tile.getRule().has(TileAttrib.sailable)) {
+			randId = CreatureType.pirate_ship.getValue();
+			randId += rand.nextInt(7);
+			Creature cr = creatures.getInstance(CreatureType.get(randId), u5atlas, atlas);
+			return cr;
+		} else if (tile.getRule().has(TileAttrib.swimmable)) {
+			randId = CreatureType.nixie.getValue();
+			randId += rand.nextInt(5);
+			Creature cr = creatures.getInstance(CreatureType.get(randId), u5atlas, atlas);
+			return cr;
+		}
+
+		if (context.getParty().getSaveGame().moves > 30000) {
+			era = 0x0f;
+		} else if (context.getParty().getSaveGame().moves > 20000) {
+			era = 0x07;
+		} else {
+			era = 0x03;
+		}
+
+		randId = CreatureType.orc.getValue();
+		randId += era & rand.nextInt(0x10) & rand.nextInt(0x10);
+		Creature cr = creatures.getInstance(CreatureType.get(randId), u5atlas, atlas);
+		
+		return cr;
 	}
 	
 	public void resurfaceFromDungeon() {

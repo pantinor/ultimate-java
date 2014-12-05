@@ -2,7 +2,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.nio.CharBuffer;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -18,38 +17,29 @@ import objects.CreatureSet;
 import objects.MapSet;
 import objects.Party;
 import objects.Person;
-import objects.PersonRole;
-import objects.Rule;
 import objects.SaveGame;
 import objects.Tile;
-import objects.TileRules;
 import objects.TileSet;
 import objects.Weapon;
 import objects.WeaponSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.lwjgl.BufferUtils;
 import org.testng.annotations.Test;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.utils.Array;
-import com.google.common.io.LittleEndianDataInputStream;
 
 import ultima.Constants;
 import ultima.Constants.Direction;
 import ultima.Constants.Item;
 import ultima.Constants.KarmaAction;
-import ultima.Constants.Reagent;
+import ultima.Constants.TileAttrib;
+import ultima.Constants.TileRule;
 import ultima.Constants.Virtue;
-import ultima.StartScreen;
 import util.ShadowFOV;
 import util.Utils;
 import vendor.VendorClass;
 import vendor.VendorClassSet;
+
+import com.google.common.io.LittleEndianDataInputStream;
 
 
 public class TestJaxb {
@@ -83,18 +73,6 @@ public class TestJaxb {
 		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 		TileSet ts = (TileSet) jaxbUnmarshaller.unmarshal(file);
 		for (Tile t : ts.getTiles()) {
-			System.out.println(t);
-		}
-	}
-
-	
-	//@Test
-	public void testTileRules() throws Exception {
-		File file = new File("target/classes/xml/tileRules.xml");
-		JAXBContext jaxbContext = JAXBContext.newInstance(TileRules.class);
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		TileRules ts = (TileRules) jaxbUnmarshaller.unmarshal(file);
-		for (Rule t : ts.getRules()) {
 			System.out.println(t);
 		}
 	}
@@ -238,7 +216,7 @@ public class TestJaxb {
 	}
 	
 
-	@Test
+	//@Test
 	public void testReadSaveGame() throws Exception {
 		
 		InputStream is = new FileInputStream(Constants.PARTY_SAV_BASE_FILENAME);
@@ -427,6 +405,21 @@ public class TestJaxb {
 //		}
 		System.out.println("");
 
+		
+	}
+	
+	@Test
+	public void testTileAttrib() throws Exception {
+		
+		for (TileAttrib r : TileAttrib.values()) {
+			System.out.println(Integer.toBinaryString(r.getVal()));
+		}
+		for (TileRule r : TileRule.values()) {
+			System.out.println(Integer.toBinaryString(r.getAttribs()));
+		}
+		
+		assert(TileRule.water.has(TileAttrib.unwalkable));
+		assert(!TileRule.grass.has(TileAttrib.unwalkable));
 		
 	}
 

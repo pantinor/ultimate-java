@@ -2,6 +2,8 @@ package ultima;
 
 import java.util.Random;
 
+import objects.Creature;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
@@ -127,33 +129,147 @@ public interface Constants {
 	}
 
 	public enum TileEffect {
-		EFFECT_NONE,
-		EFFECT_FIRE,
-		EFFECT_SLEEP,
-		EFFECT_POISON,
-		EFFECT_POISONFIELD,
-		EFFECT_ELECTRICITY,
-		EFFECT_LAVA;
+		NONE,
+		FIRE,
+		SLEEP,
+		POISON,
+		POISONFIELD,
+		ELECTRICITY,
+		LAVA;
 	}
 
 	public enum TileAnimationStyle {
-		ANIM_NONE,
-		ANIM_SCROLL,
-		ANIM_CAMPFIRE,
-		ANIM_CITYFLAG,
-		ANIM_CASTLEFLAG,
-		ANIM_SHIPFLAG,
-		ANIM_LCBFLAG,
-		ANIM_FRAMES;
+		NONE,
+		SCROLL,
+		CAMPFIRE,
+		CITYFLAG,
+		CASTLEFLAG,
+		SHIPFLAG,
+		LCBFLAG,
+		FRAMES;
+	}
+	
+	public enum TileAttrib {
+		unwalkable(0x1),
+		creatureunwalkable(0x2),
+		swimmable(0x4),
+		sailable(0x8),
+		unflyable(0x10),
+		canattackover(0x20),
+		canlandballoon(0x40),
+		chest(0x80),
+		dispelable(0x100),
+		door(0x200),
+		horse(0x400),
+		ship(0x800),
+		ballon(0x1000),
+		replacement(0x2000),
+		onWaterOnlyReplacement(0x4000),
+		livingthing(0x8000),
+		lockeddoor(0x10000),
+		secretdoor(0x20000);
+		private int val;
+		private TileAttrib(int val) {
+			this.val = val;
+		}
+		public int getVal() {
+			return val;
+		}
+	}
+	
+	public enum TileRule {
+	    water(TileAttrib.unwalkable.getVal() | TileAttrib.swimmable.getVal() | TileAttrib.sailable.getVal() | TileAttrib.onWaterOnlyReplacement.getVal()),
+	    shallows(TileAttrib.unwalkable.getVal() | TileAttrib.swimmable.getVal() | TileAttrib.onWaterOnlyReplacement.getVal()),
+	    swamp(0, TileSpeed.SLOW, TileEffect.POISON, TileAnimationStyle.NONE),
+	    grass(TileAttrib.canlandballoon.getVal() | TileAttrib.replacement.getVal()),
+	    brush(0, TileSpeed.VSLOW, TileEffect.POISON, TileAnimationStyle.NONE),
+	    hills(0, TileSpeed.VVSLOW, TileEffect.POISON, TileAnimationStyle.NONE),
+	    mountains(TileAttrib.unwalkable.getVal() | TileAttrib.unflyable.getVal() | TileAttrib.creatureunwalkable.getVal()),
+	    lcb(TileAttrib.unwalkable.getVal() | TileAttrib.creatureunwalkable.getVal()),
+	    lcb_entrance(TileAttrib.creatureunwalkable.getVal()),
+	    ship(TileAttrib.ship.getVal() | TileAttrib.creatureunwalkable.getVal()),
+	    horse(TileAttrib.horse.getVal() | TileAttrib.creatureunwalkable.getVal()),
+	    floors(TileAttrib.replacement.getVal()),
+	    balloon(TileAttrib.ballon.getVal() | TileAttrib.creatureunwalkable.getVal()),
+	    person(TileAttrib.livingthing.getVal() | TileAttrib.unwalkable.getVal()),
+	    solid(TileAttrib.unwalkable.getVal()),
+	    solid_attackover(TileAttrib.canattackover.getVal() | TileAttrib.unwalkable.getVal()),
+	    walls(TileAttrib.unwalkable.getVal() | TileAttrib.canattackover.getVal() | TileAttrib.unflyable.getVal()),
+	    locked_door(TileAttrib.unwalkable.getVal() | TileAttrib.lockeddoor.getVal()),
+	    door(TileAttrib.unwalkable.getVal() | TileAttrib.door.getVal()),
+	    secret_door(TileAttrib.secretdoor.getVal()),
+	    chest(TileAttrib.chest.getVal()),
+	    poison_field(TileAttrib.dispelable.getVal(), TileSpeed.FAST, TileEffect.POISON, TileAnimationStyle.NONE),
+	    energy_field(TileAttrib.dispelable.getVal() | TileAttrib.unflyable.getVal() | TileAttrib.unwalkable.getVal() | TileAttrib.creatureunwalkable.getVal(), TileSpeed.FAST, TileEffect.ELECTRICITY, TileAnimationStyle.NONE),
+	    fire_field(TileAttrib.dispelable.getVal(), TileSpeed.VVSLOW, TileEffect.FIRE, TileAnimationStyle.NONE),
+	    sleep_field(TileAttrib.dispelable.getVal(), TileSpeed.FAST, TileEffect.SLEEP, TileAnimationStyle.NONE),
+	    lava(TileAttrib.replacement.getVal(), TileSpeed.FAST, TileEffect.LAVA, TileAnimationStyle.NONE),
+	    signs(TileAttrib.unwalkable.getVal()),
+	    spacers(TileAttrib.unwalkable.getVal()),
+	    monster(TileAttrib.livingthing.getVal() & TileAttrib.unwalkable.getVal());
+	    
+	    private int attribs = 0;
+	    private TileSpeed speed = TileSpeed.FAST;
+	    private TileEffect effect = TileEffect.NONE;
+	    private TileAnimationStyle animStyle = TileAnimationStyle.NONE;
+
+		private TileRule(int attribs, TileSpeed speed, TileEffect effect, TileAnimationStyle animStyle) {
+			this.attribs = attribs;
+			this.speed = speed;
+			this.effect = effect;
+			this.animStyle = animStyle;
+		}
+		
+		private TileRule(int attribs) {
+			this.attribs = attribs;
+		}
+
+		public boolean has(TileAttrib attrib) {
+			return (attrib.getVal() & attribs) > 0;
+		}
+		
+		public int getAttribs() {
+			return attribs;
+		}
+
+		public TileSpeed getSpeed() {
+			return speed;
+		}
+
+		public TileEffect getEffect() {
+			return effect;
+		}
+
+		public TileAnimationStyle getAnimStyle() {
+			return animStyle;
+		}	
+		
 	}
 	
 	public enum MapType {
-		WORLD,
-		CITY,
-		SHRINE,
-		COMBAT,
-		DUNGEON;
+		world(0x0001),
+		combat(0x0002),
+		city(0x0004),
+		dungeon(0x0008),
+		altar_room(0x0010),
+		shrine(0x0020);
+		
+		private int val;
+		
+		private MapType(int val) {
+			this.val = val;
+		}
+
+		public int getVal() {
+			return val;
+		}
+		
 	}
+	
+	public static int CTX_ANY = 0xffff;
+	public static int CTX_NORMAL = (MapType.world.getVal() | MapType.city.getVal());
+	public static int CTX_NON_COMBAT = (CTX_ANY & ~MapType.combat.getVal());
+	public static int CTX_CAN_SAVE_GAME = (MapType.world.getVal() | MapType.dungeon.getVal());
 
 	public enum MapBorderBehavior {
 		wrap,
@@ -215,42 +331,31 @@ public interface Constants {
 
 	};
 	
-	
-	
-	
-
-	
 	public enum PortalTriggerAction {
-		
-		ACTION_NONE(0x0),
-		ACTION_ENTER(0x1),
-		ACTION_KLIMB(0x2),
-		ACTION_DESCEND(0x4),
-		ACTION_EXIT_NORTH(0x8),
-		ACTION_EXIT_EAST(0x10),
-		ACTION_EXIT_SOUTH(0x20),
-		ACTION_EXIT_WEST(0x40);
-
+		NONE(0x0),
+		ENTER(0x1),
+		KLIMB(0x2),
+		DESCEND(0x4),
+		EXIT_NORTH(0x8),
+		EXIT_EAST(0x10),
+		EXIT_SOUTH(0x20),
+		EXIT_WEST(0x40);
 		private int intValue;
-
 		private PortalTriggerAction(int i) {
 			this.intValue = i;
 		}
-
 		public int getIntValue() {
 			return intValue;
 		}
-		
-
 	}
 	
 	public enum TransportContext {
-		TRANSPORT_FOOT(0x1),
-		TRANSPORT_HORSE(0x2),
-		TRANSPORT_SHIP(0x4),
-		TRANSPORT_BALLOON(0x8),
-		TRANSPORT_FOOT_OR_HORSE(0x1 | 0x2),
-		TRANSPORT_ANY(0xffff);
+		FOOT(0x1),
+		HORSE(0x2),
+		SHIP(0x4),
+		BALLOON(0x8),
+		FOOT_OR_HORSE(0x1 | 0x2),
+		ANY(0xffff);
 		
 		private int intValue;
 
@@ -524,14 +629,14 @@ public interface Constants {
 	
 	public enum NpcDefaults {
 		
-        Mariah(9, 12, 20, SexType.SEX_FEMALE ,ClassType.MAGE ),
-        Iolo(16, 19, 13, SexType.SEX_MALE ,ClassType.BARD ),
-        Geoffrey(20, 15, 11, SexType.SEX_MALE,ClassType.FIGHTER ),
-        Jaana(17, 16, 13, SexType.SEX_FEMALE,ClassType.DRUID ),
-        Julia(15, 16, 12, SexType.SEX_FEMALE ,ClassType.TINKER ),
-        Dupre(17, 14, 17, SexType.SEX_MALE ,ClassType.PALADIN),
-        Shamino(16, 15, 15, SexType.SEX_MALE ,ClassType.RANGER ),
-        Katrina(11, 12, 10, SexType.SEX_FEMALE,ClassType.SHEPHERD );
+        Mariah(9, 12, 20, SexType.FEMALE ,ClassType.MAGE ),
+        Iolo(16, 19, 13, SexType.MALE ,ClassType.BARD ),
+        Geoffrey(20, 15, 11, SexType.MALE,ClassType.FIGHTER ),
+        Jaana(17, 16, 13, SexType.FEMALE,ClassType.DRUID ),
+        Julia(15, 16, 12, SexType.FEMALE ,ClassType.TINKER ),
+        Dupre(17, 14, 17, SexType.MALE ,ClassType.PALADIN),
+        Shamino(16, 15, 15, SexType.MALE ,ClassType.RANGER ),
+        Katrina(11, 12, 10, SexType.FEMALE,ClassType.SHEPHERD );
         
         private int str;
         private int dex;
@@ -600,22 +705,17 @@ public interface Constants {
 
 	
 	public enum SexType {
-		
-		SEX_MALE(0xB,"Male"),
-		SEX_FEMALE(0xC, "Female");
-
+		MALE(0xB,"Male"),
+		FEMALE(0xC, "Female");
 		private int b;
 		private String desc;
-		
 		private SexType(int value, String d) {
 			b = value;
 			desc = d;
 		}
-
 		public int getValue() {
 			return b;
 		}
-		
 		public static SexType get(byte v) {
 			for (SexType x : values()) {
 				if (x.getValue() == (v&0xff)) {
@@ -624,28 +724,23 @@ public interface Constants {
 			}
 			return null;
 		}
-
 		public String getDesc() {
 			return desc;
 		}
 	}
 	
 	public enum StatusType {
-		STAT_GOOD('G'),
-		STAT_POISONED('P'),
-		STAT_SLEEPING('S'),
-		STAT_DEAD('D');
-
+		GOOD('G'),
+		POISONED('P'),
+		SLEEPING('S'),
+		DEAD('D');
 		private char intValue;
-
 		private StatusType(char value) {
 			intValue = value;
 		}
-
 		public char getValue() {
 			return intValue;
 		}
-		
 		public static StatusType get(byte v) {
 			for (StatusType x : values()) {
 				if (x.getValue() == (char)(v&0xff)) {
@@ -654,7 +749,6 @@ public interface Constants {
 			}
 			return null;
 		}
-
 	}
 		
 	public enum Reagent {
@@ -911,23 +1005,23 @@ public interface Constants {
 
 
 	public enum CreatureAttrib {
-		MATTR_STEALFOOD(0x1),
-		MATTR_STEALGOLD(0x2),
-		MATTR_CASTS_SLEEP(0x4),
-		MATTR_UNDEAD(0x8),
-		MATTR_GOOD(0x10),
-		MATTR_WATER(0x20),
-		MATTR_NONATTACKABLE(0x40),
-		MATTR_NEGATE(0x80),
-		MATTR_CAMOUFLAGE(0x100),
-		MATTR_NOATTACK(0x200),
-		MATTR_AMBUSHES(0x400),
-		MATTR_RANDOMRANGED(0x800),
-		MATTR_INCORPOREAL(0x1000),
-		MATTR_NOCHEST(0x2000),
-		MATTR_DIVIDES(0x4000),
-		MATTR_SPAWNSONDEATH(0x8000),
-		MATTR_FORCE_OF_NATURE(0x10000);
+		STEALFOOD(0x1),
+		STEALGOLD(0x2),
+		CASTS_SLEEP(0x4),
+		UNDEAD(0x8),
+		GOOD(0x10),
+		WATER(0x20),
+		NONATTACKABLE(0x40),
+		NEGATE(0x80),
+		CAMOUFLAGE(0x100),
+		NOATTACK(0x200),
+		AMBUSHES(0x400),
+		RANDOMRANGED(0x800),
+		INCORPOREAL(0x1000),
+		NOCHEST(0x2000),
+		DIVIDES(0x4000),
+		SPAWNSONDEATH(0x8000),
+		FORCE_OF_NATURE(0x10000);
 
 		private int intValue;
 
@@ -942,14 +1036,14 @@ public interface Constants {
 	}
 
 	public enum CreatureMovementAttrib {
-		MATTR_STATIONARY(0x1),
-		MATTR_WANDERS(0x2),
-		MATTR_SWIMS(0x4),
-		MATTR_SAILS(0x8),
-		MATTR_FLIES(0x10),
-		MATTR_TELEPORT(0x20),
-		MATTR_CANMOVECREATURES(0x40),
-		MATTR_CANMOVEAVATAR(0x80);
+		STATIONARY(0x1),
+		WANDERS(0x2),
+		SWIMS(0x4),
+		SAILS(0x8),
+		FLIES(0x10),
+		TELEPORT(0x20),
+		CANMOVECREATURES(0x40),
+		CANMOVEAVATAR(0x80);
 
 		private int intValue;
 
@@ -973,71 +1067,93 @@ public interface Constants {
 	}
 	
 	public enum CreatureType {
-		HORSE1_ID(0),
-		HORSE2_ID(1),
+		horse1(0),
+		horse2(1),
 
-		MAGE_ID(2),
-		BARD_ID(3),
-		FIGHTER_ID(4),
-		DRUID_ID(5),
-		TINKER_ID(6),
-		PALADIN_ID(7),
-		RANGER_ID(8),
-		SHEPHERD_ID(9),
+		mage(2),
+		bard(3),
+		fighter(4),
+		druid(5),
+		tinker(6),
+		paladin(7),
+		ranger(8),
+		shepherd(9),
 
-		GUARD_ID(10),
-		VILLAGER_ID(11),
-		SINGINGBARD_ID(12),
-		JESTER_ID(13),
-		BEGGAR_ID(14),
-		CHILD_ID(15),
-		BULL_ID(16),
-		LORDBRITISH_ID(17),
+		guard(10),
+		villager(11),
+		bard_singing(12),
+		jester(13),
+		beggar(14),
+		child(15),
+		bull(16),
+		lord_british(17),
 
-		PIRATE_ID(18),
-		NIXIE_ID(19),
-		GIANT_SQUID_ID(20),
-		SEA_SERPENT_ID(21),
-		SEAHORSE_ID(22),
-		WHIRLPOOL_ID(23),
-		STORM_ID(24),
-		RAT_ID(25),
-		BAT_ID(26),
-		GIANT_SPIDER_ID(27),
-		GHOST_ID(28),
-		SLIME_ID(29),
-		TROLL_ID(30),
-		GREMLIN_ID(31),
-		MIMIC_ID(32),
-		REAPER_ID(33),
-		INSECT_SWARM_ID(34),
-		GAZER_ID(35),
-		PHANTOM_ID(36),
-		ORC_ID(37),
-		SKELETON_ID(38),
-		ROGUE_ID(39),
-		PYTHON_ID(40),
-		ETTIN_ID(41),
-		HEADLESS_ID(42),
-		CYCLOPS_ID(43),
-		WISP_ID(44),
-		EVILMAGE_ID(45),
-		LICH_ID(46),
-		LAVA_LIZARD_ID(47),
-		ZORN_ID(48),
-		DAEMON_ID(49),
-		HYDRA_ID(50),
-		DRAGON_ID(51),
-		BALRON_ID(52);
-
+		pirate_ship(18),
+		nixie(19),
+		giant_squid(20),
+		sea_serpent(21),
+		sea_horse(22),
+		whirlpool(23),
+		twister(24),
+		
+		rat(25),
+		bat(26),
+		spider(27),
+		ghost(28),
+		slime(29),
+		troll(30),
+		gremlin(31),
+		mimic(32),
+		reaper(33),
+		insect_swarm(34),
+		gazer(35),
+		phantom(36),
+		orc(37),
+		skeleton(38),
+		rogue(39),
+		python(40),
+		ettin(41),
+		headless(42),
+		cyclops(43),
+		wisp(44),
+		evil_mage(45),
+		lich(46),
+		lava_lizard(47),
+		zorn(48),
+		daemon(49),
+		hydra(50),
+		dragon(51),
+		balron(52);
+		
 		private int intValue;
-
+		private Creature creature;
 		private CreatureType(int value) {
 			intValue = value;
 		}
-
 		public int getValue() {
 			return intValue;
+		}
+		public static CreatureType get(int v) {
+			for (CreatureType x : values()) {
+				if (x.getValue() == v) {
+					return x;
+				}
+			}
+			return null;
+		}
+		public static CreatureType get(String v) {
+			for (CreatureType x : values()) {
+				if (x.toString().equals(v)) {
+					return x;
+				}
+			}
+			return null;
+		}
+		public Creature getCreature() {
+			return creature;
+		}
+		public void setCreature(Creature creature) {
+			this.creature = creature;
 		}
 	}
 

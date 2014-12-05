@@ -178,7 +178,7 @@ public class ConversationDialog extends Window implements Constants {
 				
 				boolean playSound = false;
 				Party party = GameScreen.context.getParty();
-				if (party.getMember(0).getPlayer().status == StatusType.STAT_DEAD) {
+				if (party.getMember(0).getPlayer().status == StatusType.DEAD) {
 					party.getMember(0).heal(HealType.RESURRECT);
 					party.getMember(0).heal(HealType.FULLHEAL);
 					playSound = true;

@@ -23,6 +23,7 @@ import static com.badlogic.gdx.graphics.g2d.Batch.Y3;
 import static com.badlogic.gdx.graphics.g2d.Batch.Y4;
 import objects.BaseMap;
 import objects.BaseMap.DoorStatus;
+import objects.Creature;
 import objects.Person;
 import util.ShadowFOV;
 
@@ -168,11 +169,11 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 				if (p == null) {
 					continue;
 				}
-				if (p.getConversation() != null && mainGame.context.getParty().isJoinedInParty(p.getConversation().getName())) {
+				if (p.getConversation() != null && GameScreen.context.getParty().isJoinedInParty(p.getConversation().getName())) {
 					continue;
 				}
 				//see if person is in shadow
-				int px = Math.round((p.getCurrentPos().x) / GameScreen.tilePixelWidth);
+				int px = Math.round(p.getCurrentPos().x / GameScreen.tilePixelWidth);
 				int py = Math.round(p.getCurrentPos().y / GameScreen.tilePixelHeight);
 				if (lightMap != null && lightMap[px][py] <= 0) {
 					continue;
@@ -180,6 +181,21 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 				batch.draw(p.getAnim().getKeyFrame(stateTime, true), p.getCurrentPos().x, p.getCurrentPos().y, GameScreen.tilePixelWidth, GameScreen.tilePixelHeight);
 			}
 			
+		}
+		
+		if (bm.getCreatures().size() > 0) {
+			for (Creature cr : bm.getCreatures()) {
+				if (cr.currentPos == null  ) {
+					continue;
+				}
+				//see if in shadow
+				int px = Math.round(cr.currentX / GameScreen.tilePixelWidth);
+				int py = Math.round(cr.currentY / GameScreen.tilePixelHeight);
+				if (lightMap != null && lightMap[px][py] <= 0) {
+					continue;
+				}
+				batch.draw(cr.getAnim().getKeyFrame(stateTime, true), cr.currentPos.x, cr.currentPos.y, GameScreen.tilePixelWidth, GameScreen.tilePixelHeight);
+			}
 		}
 	}
 }

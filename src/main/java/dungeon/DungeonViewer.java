@@ -9,12 +9,11 @@ import org.apache.commons.io.IOUtils;
 
 import ultima.Constants;
 import ultima.GameScreen;
-import ultima.Ultima4;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
@@ -81,8 +80,8 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 	public List<ModelInstance> ceiling = new ArrayList<ModelInstance>();
 
 	public static Texture MINI_MAP_TEXTURE;
-	private int currentLevel = 0;
-	private Vector3 currentPos;
+	public int currentLevel = 0;
+	public Vector3 currentPos;
 	public Direction currentDir = Direction.EAST;
 	
 

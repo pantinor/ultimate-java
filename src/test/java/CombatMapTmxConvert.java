@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
+import ultima.Constants.MapType;
 import ultima.Constants.ObjectMovementBehavior;
 
 import com.badlogic.gdx.files.FileHandle;
@@ -55,12 +56,12 @@ public class CombatMapTmxConvert {
 			String tmxmapname = null;
 			boolean isShrine = false;
 
-			if (map.getType().equals("combat") || (map.getType().equals("shrine") && !foundShrine)) {
-				if (map.getType().equals("shrine") && !foundShrine) {
+			if (map.getType() == MapType.combat || (map.getType() == MapType.shrine && !foundShrine)) {
+				if (map.getType() == MapType.shrine && !foundShrine) {
 					foundShrine = true;
 					tmxmapname = "shrine.tmx";
 					isShrine = true;
-				} else if (map.getType().equals("combat")) {
+				} else if (map.getType() == MapType.combat) {
 					tmxmapname = "combat_" + map.getId() + ".tmx";
 				}
 			} else {

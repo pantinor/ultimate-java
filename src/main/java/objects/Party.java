@@ -9,6 +9,7 @@ import objects.SaveGame.SaveGamePlayerRecord;
 import org.apache.commons.lang.StringUtils;
 
 import ultima.Constants;
+import ultima.GameScreen;
 import util.Utils;
 
 
@@ -79,6 +80,10 @@ public class Party implements Constants {
 	public void setTorchduration(int torchduration) {
 		this.torchduration = torchduration;
 	}
+	
+	public void adjustFood(int food) {
+	    saveGame.food = Utils.adjustValue(saveGame.food, food, 999900, 0);
+	}
 
 	public class PartyMember {
 		
@@ -105,8 +110,6 @@ public class Party implements Constants {
 			player.xp = exp;
 		}
 		
-		
-		
 		public boolean heal(HealType type) {
 			switch (type) {
 
@@ -114,42 +117,42 @@ public class Party implements Constants {
 				return true;
 
 			case CURE:
-				if (player.status != StatusType.STAT_POISONED) {
+				if (player.status != StatusType.POISONED) {
 					return false;
 				}
-				player.status = StatusType.STAT_GOOD;
+				player.status = StatusType.GOOD;
 				break;
 
 			case FULLHEAL:
-				if (player.status == StatusType.STAT_DEAD || player.hp == player.hpMax) {
+				if (player.status == StatusType.DEAD || player.hp == player.hpMax) {
 					return false;
 				}
 				player.hp = player.hpMax;
 				break;
 
 			case RESURRECT:
-				if (player.status != StatusType.STAT_DEAD) {
+				if (player.status != StatusType.DEAD) {
 					return false;
 				}
-				player.status = StatusType.STAT_GOOD;
+				player.status = StatusType.GOOD;
 				break;
 
 			case HEAL:
-				if (player.status == StatusType.STAT_DEAD || player.hp == player.hpMax) {
+				if (player.status == StatusType.DEAD || player.hp == player.hpMax) {
 					return false;
 				}
 				player.hp += 75 + (rand.nextInt(0x100) % 0x19);
 				break;
 
 			case CAMPHEAL:
-				if (player.status == StatusType.STAT_DEAD || player.hp == player.hpMax) {
+				if (player.status == StatusType.DEAD || player.hp == player.hpMax) {
 					return false;
 				}
 				player.hp += 99 + (rand.nextInt(0x100) & 0x77);
 				break;
 
 			case INNHEAL:
-				if (player.status == StatusType.STAT_DEAD || player.hp == player.hpMax) {
+				if (player.status == StatusType.DEAD || player.hp == player.hpMax) {
 					return false;
 				}
 				player.hp += 100 + (rand.nextInt(50) * 2);
@@ -176,6 +179,72 @@ public class Party implements Constants {
 		
 		public Creature nearestOpponent(int dist, boolean ranged) {
 			return null;
+		}
+		
+		public boolean isDead() {
+		    return player.status == StatusType.DEAD;
+		}
+
+		public boolean isDisabled() {
+		    return (player.status == StatusType.GOOD || player.status == StatusType.POISONED) ? false : true;
+		}
+
+		/**
+		 * Lose the equipped weapon for the player (flaming oil, ranged daggers, etc.)
+		 * Returns the number of weapons left of that type, including the one in
+		 * the players hand
+		 */
+		public WeaponType loseWeapon() {
+		    int weapon = player.weapon.ordinal();
+		    if (saveGame.weapons[weapon] > 0) {
+		    	--saveGame.weapons[weapon];
+		    	int w = saveGame.weapons[weapon] + 1;
+		        return WeaponType.get(w);
+		    } else {
+		        player.weapon = WeaponType.HANDS;
+		        return WeaponType.HANDS;
+		    }
+		}
+
+		public void putToSleep() {    
+		    if (!isDead()) {
+		        //soundPlay(SOUND_SLEEP, false);
+				player.status = StatusType.SLEEPING;    
+		        //setTile(Tileset::findTileByName("corpse")->getId());
+		    }
+		}
+
+		public void wakeUp() {
+			player.status = StatusType.GOOD;    
+		    //setTile(tileForClass(getClass()));
+		}
+		
+		public boolean applyDamage(int damage) {
+		    int newHp = player.hp;
+
+		    if (isDead())
+		        return false;
+
+		    newHp -= damage;
+
+		    if (newHp < 0) {
+				player.status = StatusType.DEAD;    
+		        newHp = 0;
+		    }
+		    
+		    player.hp = newHp;
+
+		    if ((GameScreen.context.getCurrentMap().getType() == MapType.combat) && isDead()) {
+		        //Coords p = getCoords();                    
+		        //Map *map = getMap();
+		        //map->annotations->add(p, Tileset::findTileByName("corpse")->getId())->setTTL(party->size() * 2);
+
+		        /* remove yourself from the map */
+		        //remove();        
+		        return false;
+		    }
+
+		    return true;
 		}
 
 	}
@@ -369,6 +438,56 @@ public class Party implements Constants {
 	private void adjustKarmaMin(int[] karma, Virtue v, int value, int min) {
 		int n = Utils.adjustValueMax(karma[v.ordinal()], value, min);
 		karma[v.ordinal()] = n;
+	}
+	
+	public void endTurn() {
+
+		saveGame.moves++;
+
+		for (int i = 0; i < members.size(); i++) {
+
+			PartyMember member = members.get(i);
+
+			if ((GameScreen.context.getLocationMask() & CTX_NON_COMBAT) == GameScreen.context.getLocationMask()) {
+
+				if (member.player.status != StatusType.DEAD)
+					adjustFood(-1);
+
+				switch (member.player.status) {
+				case SLEEPING:
+					if (rand.nextInt(5) == 0)
+						member.wakeUp();
+					break;
+
+				case POISONED:
+					// soundPlay(SOUND_POISON_DAMAGE, false);
+					member.applyDamage(2);
+					break;
+
+				default:
+					break;
+				}
+			}
+
+			/* regenerate magic points */
+			if (!member.isDisabled() && member.player.mp < member.player.getMaxMp()) {
+				member.player.mp++;
+			}
+		}
+
+		// /* The party is starving! */
+		// if ((saveGame.food == 0) && ((c->location->context & CTX_NON_COMBAT)
+		// == c->location->context)) {
+		// setChanged();
+		// PartyEvent event(PartyEvent::STARVING, 0);
+		// notifyObservers(event);
+		// }
+		//
+		// /* heal ship (25% chance it is healed each turn) */
+		// if ((c->location->context == CTX_WORLDMAP) && (saveGame->shiphull <
+		// 50) && xu4_random(4) == 0) {
+		// healShip(1);
+		// }
 	}
 
 }

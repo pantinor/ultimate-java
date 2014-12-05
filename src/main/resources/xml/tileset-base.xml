@@ -1,7 +1,5 @@
 <tileset name="base" imageName="tiles">
 
-	<!-- By default, the tile uses the image that matches its name, precluded with "tile_" (e.g. "tile_sea", "tile_mage", etc.) To override this behavior, use the "image" property to identify a different image for the tile (e.g. image="tile_bridge"). -->
-
 	<tile name="sea" rule="water" animation="scroll" index="0" />
 	<tile name="water" rule="water" animation="scroll" index="1" />
 	<tile name="shallows" rule="shallows" animation="scroll" index="2" />

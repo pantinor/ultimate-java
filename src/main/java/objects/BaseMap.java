@@ -10,8 +10,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang.StringUtils;
-
 import ultima.Constants;
 import ultima.GameScreen;
 
@@ -28,7 +26,7 @@ public class BaseMap implements Constants {
 
 	private int id;
 	private String fname;
-	private String type;
+	private MapType type;
 	private int width;
 	private int height;
 	private int levels;
@@ -49,6 +47,8 @@ public class BaseMap implements Constants {
 	private City city;
 	private Dungeon dungeon;
 	private Shrine shrine;
+	
+	private List<Creature> creatures = new ArrayList<Creature>();
 	private List<Moongate> moongates;
 	private Tile[] tiles;
 	private float[][] shadownMap;
@@ -94,8 +94,9 @@ public class BaseMap implements Constants {
 	public String getFname() {
 		return fname;
 	}
-	@XmlAttribute
-	public String getType() {
+	@XmlAttribute(name="type")
+	@XmlJavaTypeAdapter(MapTypeAdapter.class)
+	public MapType getType() {
 		return type;
 	}
 	@XmlAttribute
@@ -189,7 +190,7 @@ public class BaseMap implements Constants {
 	public void setFname(String fname) {
 		this.fname = fname;
 	}
-	public void setType(String type) {
+	public void setType(MapType type) {
 		this.type = type;
 	}
 	public void setWidth(int width) {
@@ -253,10 +254,23 @@ public class BaseMap implements Constants {
 	public void setShrine(Shrine shrine) {
 		this.shrine = shrine;
 	}
+	
+	public List<Creature> getCreatures() {
+		return creatures;
+	}
+	public void addCreature(Creature cr) {
+		creatures.add(cr);
+	}
+	public void removeCreature(Creature cr) {
+		creatures.remove(cr);
+	}
+	public void clearCreatures() {
+		creatures.clear();
+	}
+	
 	public void setMoongates(List<Moongate> moongate) {
 		this.moongates = moongate;
 	}
-
 
 	public void setDungeon(Dungeon dungeon) {
 		this.dungeon = dungeon;
@@ -275,12 +289,22 @@ public class BaseMap implements Constants {
 	}
 
 	public synchronized Tile getTile(int x, int y) {
-		if (x + (y * width) >= tiles.length) return null;
+		if (x < 0 || y < 0) {
+			return null;
+		}
+		if (x + (y * width) >= tiles.length) {
+			return null;
+		}
 		return tiles[x + (y * width)];
 	}
 	
 	public synchronized Tile getTile(Vector3 v) {
-		if ((int)v.x + ((int)v.y * width) >= tiles.length) return null;
+		if (v.x < 0 || v.y < 0) { 
+			return null;
+		}
+		if ((int)v.x + ((int)v.y * width) >= tiles.length) {
+			return null;
+		}
 		return tiles[(int)v.x + ((int)v.y * width)];
 	}
 	
@@ -320,6 +344,12 @@ public class BaseMap implements Constants {
 				p.setCurrentPos(pixelPos);
 				p.setX(p.getStart_x());
 				p.setY(p.getStart_y());
+				
+				CreatureType ct = CreatureType.get(tname);
+				if (ct != null) {
+					p.setEmulatingCreature(ct.getCreature());
+				}
+				
 			}
 			
 		}
@@ -356,7 +386,7 @@ public class BaseMap implements Constants {
 				switch (p.getMovement()) {
 				case ATTACK_AVATAR:
 				case FOLLOW_AVATAR:
-			        int mask = getValidMovesMask(p.getX(), p.getY(), false, avatarX, avatarY);
+			        int mask = getValidMovesMask(p.getX(), p.getY(), p.getEmulatingCreature(), avatarX, avatarY);
 			        dir = findPathTo(avatarX, avatarY, mask, true, p.getX(), p.getY());
 					break;
 				case FIXED:
@@ -364,7 +394,7 @@ public class BaseMap implements Constants {
 				case WANDER:
 					if (wanderFlag % 2 == 0) continue; 
 					if (p.isTalking()) continue; 
-					dir = Direction.getRandomValidDirection(getValidMovesMask(p.getX(), p.getY(), false, avatarX, avatarY));
+					dir = Direction.getRandomValidDirection(getValidMovesMask(p.getX(), p.getY(), p.getEmulatingCreature(), avatarX, avatarY));
 					break;
 				default:
 					break;
@@ -385,15 +415,30 @@ public class BaseMap implements Constants {
 			
 		}
 		
+		for (Creature cr : creatures) {
+	        int mask = getValidMovesMask(cr.currentX, cr.currentY, cr, avatarX, avatarY);
+	        Direction dir = findPathTo(avatarX, avatarY, mask, true, cr.currentX, cr.currentY);
+			if (dir == null) continue;
+			Vector3 pos = null;
+			if (dir == Direction.NORTH) pos = new Vector3(cr.currentX, cr.currentY-1, 0);
+			if (dir == Direction.SOUTH) pos = new Vector3(cr.currentX, cr.currentY+1, 0);
+			if (dir == Direction.EAST) pos = new Vector3(cr.currentX+1, cr.currentY, 0);
+			if (dir == Direction.WEST) pos = new Vector3(cr.currentX-1, cr.currentY, 0);
+			Vector3 pixelPos = mainGame.getMapPixelCoords((int)pos.x, (int)pos.y);
+			cr.currentPos = pixelPos;
+			cr.currentX = (int)pos.x;
+			cr.currentY = (int)pos.y;  
+		}
+		
 	}
 	
 	public Direction findPathTo(int avatarX, int avatarY, int validMovesMask, boolean towards, int objX, int objY) {
 	    /* find the directions that lead [to/away from] our target */
-	    int directionsToObject = towards ? ~getRelativeDirection(avatarX,avatarY,objX,objY) : getRelativeDirection(avatarX,avatarY,objX,objY);
+	    int directionsToObject = towards ? getRelativeDirection(avatarX,avatarY,objX,objY) : getRelativeDirection(avatarX,avatarY,objX,objY);
 
 	    /* make sure we eliminate impossible options */
 	    directionsToObject &= validMovesMask;
-
+	    
 	    /* get the new direction to move */
 	    if (directionsToObject > 0)
 	        return Direction.getRandomValidDirection(directionsToObject);
@@ -403,10 +448,10 @@ public class BaseMap implements Constants {
 	}
 	
 	public int getValidMovesMask(int x, int y) {
-		return getValidMovesMask(x, y, true, 0, 0);
+		return getValidMovesMask(x, y, null, 0, 0);
 	}
 	
-	public int getValidMovesMask(int x, int y, boolean player, int avatarX, int avatarY) {
+	public int getValidMovesMask(int x, int y, Creature cr, int avatarX, int avatarY) {
 		
 		int mask = 0;
 		
@@ -415,26 +460,41 @@ public class BaseMap implements Constants {
 		Tile east = getTile(x+1,y);
 		Tile west = getTile(x-1,y);
 		
-		mask = addToMask(Direction.NORTH, mask, north, x, y-1, player, avatarX, avatarY);
-		mask = addToMask(Direction.SOUTH, mask, south, x, y+1, player, avatarX, avatarY);
-		mask = addToMask(Direction.EAST, mask, east, x+1, y, player, avatarX, avatarY);
-		mask = addToMask(Direction.WEST, mask, west, x-1, y, player, avatarX, avatarY);
+		mask = addToMask(Direction.NORTH, mask, north, x, y-1, cr, avatarX, avatarY);
+		mask = addToMask(Direction.SOUTH, mask, south, x, y+1, cr, avatarX, avatarY);
+		mask = addToMask(Direction.EAST, mask, east, x+1, y, cr, avatarX, avatarY);
+		mask = addToMask(Direction.WEST, mask, west, x-1, y, cr, avatarX, avatarY);
 
 		return mask;
 		
 	}
 	
-	private int addToMask(Direction dir, int mask, Tile tile, int x, int y, boolean player, int avatarX, int avatarY) {
+	private int addToMask(Direction dir, int mask, Tile tile, int x, int y, Creature cr, int avatarX, int avatarY) {
 		if (tile != null) {
 			
-			Rule rule = GameScreen.tileRules.getRule(tile.getRule());
+			TileRule rule = tile.getRule();
+			boolean canmove = false;
+			if (rule != null) {
+				canmove = !rule.has(TileAttrib.unwalkable);
+				if (cr != null) {
+	                if (cr.getSails() && rule.has(TileAttrib.sailable)) canmove = true;
+	                else if (cr.getSails() && !rule.has(TileAttrib.unwalkable)) canmove = false;
+	                else if (cr.getSwims() && rule.has(TileAttrib.swimmable)) canmove = true;
+	                else if (cr.getSwims() && !rule.has(TileAttrib.unwalkable)) canmove = false;
+	                else if (cr.getFlies() && !rule.has(TileAttrib.unflyable)) canmove = true;		
+	                else if (rule.has(TileAttrib.creatureunwalkable)) canmove = false;					                	
+				}
+			} else {
+				canmove = false; 
+			}
 			
-			boolean canwalkon = rule != null && !StringUtils.equals(rule.getCantwalkon(), "all");
+		    //System.out.println(String.format("addToMask: %s %s",tile,cr));
+
 			
 			//NPCs cannot go thru the secret doors or walk where the avatar is
-			if (!player) {
+			if (cr != null) {
 				if (tile.getIndex() == 73 || (avatarX == x && avatarY == y)) {
-					canwalkon = false;
+					canmove = false;
 				}
 			}
 			
@@ -443,13 +503,21 @@ public class BaseMap implements Constants {
 				for(Person p : city.getPeople()) {
 					if (p == null) continue;
 					if (p.getX() == x && p.getY() == y) {
-						canwalkon = false;
+						canmove = false;
 						break;
 					}
 				}
 			}
 			
-			if (rule == null || canwalkon || isDoorOpen(x, y)) {
+			for(Creature cre : creatures) {
+				if (cre.currentX == x && cre.currentY == y) {
+					canmove = false;
+					break;
+				}
+			}
+			
+			
+			if (rule == null || canmove || isDoorOpen(x, y)) {
 				mask = Direction.addToMask(dir, mask);
 			}
 		}
@@ -465,7 +533,7 @@ public class BaseMap implements Constants {
 	 * itself accordingly. If the two coordinates are not on the same z-plane,
 	 * then this function return DIR_NONE.
 	 */
-	public int getRelativeDirection(int ax, int ay, int cx, int cy)  {
+	public int getRelativeDirection(int cx, int cy, int ax, int ay)  {
 	    int dx=0, dy=0;        
 	    int dirmask = 0;
 	    
@@ -559,13 +627,15 @@ public class BaseMap implements Constants {
 	 */
 	public ItemMapLabels searchLocation(Party p, int x, int y) {
 		SaveGame sg = p.getSaveGame();
+		
+		if (labels == null)	return null;
+		
 		Label tmp = null;
 		for (Label l : labels) {
 			if (l.getX() == x && l.getY() == y)
 				tmp = l;
 		}
-		if (tmp == null)
-			return null;
+		if (tmp == null) return null;
 
 		int expPoints = 0;
 		ItemMapLabels label = ItemMapLabels.valueOf(tmp.getName());
@@ -808,6 +878,7 @@ public class BaseMap implements Constants {
 
 		return null;
 	}
+	
 
 
 }

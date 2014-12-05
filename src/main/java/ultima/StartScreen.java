@@ -341,7 +341,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 					
 					SaveGame.SaveGamePlayerRecord avatar = sg.new SaveGamePlayerRecord();
 					avatar.name = nameBuffer.toString();
-					avatar.sex = sexBuffer.toString().equals("M")?SexType.SEX_MALE:SexType.SEX_FEMALE;
+					avatar.sex = sexBuffer.toString().equals("M")?SexType.MALE:SexType.FEMALE;
 					avatar.klass = ClassType.get(questionTree[14]);
 					
 					avatar.weapon = avatar.klass.getInitialWeapon();

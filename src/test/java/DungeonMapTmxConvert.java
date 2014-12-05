@@ -54,7 +54,7 @@ public class DungeonMapTmxConvert implements Constants {
 		for (BaseMap map : ms.getMaps()) {
 			String tmxmapname = null;
 			boolean isAbyss = false;
-			if (map.getType().equals("dungeon")) {
+			if (map.getType() == MapType.dungeon) {
 				if (map.getFname().equals("abyss.dng")) {
 					tmxmapname = "abyss.tmx";
 					isAbyss = true;

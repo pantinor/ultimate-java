@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import ultima.Constants.MapType;
 import ultima.Constants.Maps;
 import util.Utils;
 
@@ -64,7 +65,7 @@ public class MapSet {
 				e.printStackTrace();
 			}
 			
-			if (!m.getType().equals("dungeon") && !m.getType().equals("shrine") && !m.getType().equals("combat")) {
+			if (m.getType() != MapType.dungeon && m.getType() != MapType.shrine && m.getType() != MapType.combat) {
 				
 				//use ydown scheme here same as gdx rendering
 				float[][] shadowMap = new float[m.getWidth()][m.getHeight()];

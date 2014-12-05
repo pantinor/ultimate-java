@@ -169,13 +169,13 @@ public class VendorTest {
 		rec.name = "avatar";
 		rec.hp=200;
 		rec.hpMax = 400;
-		rec.status = StatusType.STAT_DEAD;
+		rec.status = StatusType.DEAD;
 		
 		SaveGame.SaveGamePlayerRecord rec2 = sg.new SaveGamePlayerRecord();
 		rec2.name = "joe";
 		rec2.hp=50;
 		rec2.hpMax = 400;
-		rec.status = StatusType.STAT_POISONED;
+		rec.status = StatusType.POISONED;
 
 		Party party = new Party(sg);
 		party.addMember(rec);

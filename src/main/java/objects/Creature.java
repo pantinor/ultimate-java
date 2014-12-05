@@ -1,13 +1,13 @@
 package objects;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.math.Vector3;
 
 import ultima.Constants;
-import util.Utils;
 
 @XmlRootElement(name = "creature")
 public class Creature implements Constants {
@@ -20,7 +20,6 @@ public class Creature implements Constants {
 	private boolean canMoveOntoCreatures;
 	private boolean cantattack;
 	private String casts;
-	private CreatureStatus damageStatus = CreatureStatus.FINE;
 	private boolean divides;
 	private int encounterSize;
 	private int exp;
@@ -43,29 +42,66 @@ public class Creature implements Constants {
 	private boolean sails;
 	private boolean spawnsOnDeath;
 	private String spawntile;
-	private List<StatusType> status = new ArrayList<StatusType>();
 	private String steals;
 	private boolean swims;
 	private boolean teleports;
-	private String tile;
 	
 	private boolean undead;
 	private boolean wontattack;
 	private String worldrangedtile;
 	
+	private CreatureType tile;
+	private CreatureStatus status = CreatureStatus.FINE;
+	private Animation anim;
+	public int currentX;
+	public int currentY;
+	public Vector3 currentPos; //in pixels
+
 	public Creature() {
-		addStatus(StatusType.STAT_GOOD);
+		
 	}
 	
-	/* combat methods */
-	public void act() {
+	public Creature(Creature clone) {
+		this.ambushes = clone.ambushes;
+		this.basehp = clone.basehp;
+		this.camouflage = clone.camouflage;
+		this.camouflageTile = clone.camouflageTile;
+		this.canMoveOntoAvatar = clone.canMoveOntoAvatar;
+		this.canMoveOntoCreatures = clone.canMoveOntoCreatures;
+		this.cantattack = clone.cantattack;
+		this.casts = clone.casts;
+		this.divides = clone.divides;
+		this.encounterSize = clone.encounterSize;
+		this.exp = clone.exp;
+		this.flies = clone.flies;
+		this.forceOfNature = clone.forceOfNature;
+		this.good = clone.good;
+		this.hp = clone.hp;
+		this.id = clone.id;
+		this.incorporeal = clone.incorporeal;
+		this.leader = clone.leader;
+		this.leavestile = clone.leavestile;
+		this.movement = clone.movement;
+		this.name = clone.name;
+		this.nochest = clone.nochest;
+		this.poisons = clone.poisons;
+		this.ranged = clone.ranged;
+		this.rangedhittile = clone.rangedhittile;
+		this.rangedmisstile = clone.rangedmisstile;
+		this.resists = clone.resists;
+		this.sails = clone.sails;
+		this.spawnsOnDeath = clone.spawnsOnDeath;
+		this.spawntile = clone.spawntile;
+		this.steals = clone.steals;
+		this.swims = clone.swims;
+		this.teleports = clone.teleports;
+		this.undead = clone.undead;
+		this.wontattack = clone.wontattack;
+		this.worldrangedtile = clone.worldrangedtile;
+		this.tile = clone.tile;
+		this.status = clone.status;
 	}
-	public void applyDamage(int damage) {
-		Utils.adjustValueMin(this.hp, damage, 0);
-	}
-	public void dealDamage(Creature m, int damage) {
-		m.applyDamage(damage);
-	}
+	
 	@XmlAttribute
 	public boolean getAmbushes() {
 		return ambushes;
@@ -97,9 +133,6 @@ public class Creature implements Constants {
 	@XmlAttribute
 	public String getCasts() {
 		return casts;
-	}
-	public CreatureStatus getDamageStatus() {
-		return damageStatus;
 	}
 	@XmlAttribute
 	public boolean getDivides() {
@@ -193,16 +226,13 @@ public class Creature implements Constants {
 	public boolean getSwims() {
 		return swims;
 	}
-	
-	
-	
-	
 	@XmlAttribute
 	public boolean getTeleports() {
 		return teleports;
 	}
-	@XmlAttribute
-	public String getTile() {
+	@XmlAttribute(name="tile")
+	@XmlJavaTypeAdapter(CreatureTypeAdapter.class)
+	public CreatureType getTile() {
 		return tile;
 	}
 	@XmlAttribute
@@ -216,23 +246,6 @@ public class Creature implements Constants {
 	@XmlAttribute
 	public String getWorldrangedtile() {
 		return worldrangedtile;
-	}
-	public boolean isAsleep() {
-		return status.contains(StatusType.STAT_SLEEPING);
-	}
-	public Creature nearestOpponent(int dist, boolean ranged) {
-		return null;
-	}
-	public void putToSleep() {
-		if (!status.contains(StatusType.STAT_DEAD)) {
-			status.add(StatusType.STAT_SLEEPING);
-		}
-	}
-	public void removeStatus(StatusType status) {
-		this.status.remove(status);
-	}
-	public void addStatus(StatusType status) {
-		this.status.add(status);
 	}
 	public void setAmbushes(boolean ambushes) {
 		this.ambushes = ambushes;
@@ -257,9 +270,6 @@ public class Creature implements Constants {
 	}
 	public void setCasts(String casts) {
 		this.casts = casts;
-	}
-	public void setDamageStatus(CreatureStatus damageStatus) {
-		this.damageStatus = damageStatus;
 	}
 	public void setDivides(boolean divides) {
 		this.divides = divides;
@@ -329,16 +339,14 @@ public class Creature implements Constants {
 	public void setSteals(String steals) {
 		this.steals = steals;
 	}
-	
 	public void setSwims(boolean swims) {
 		this.swims = swims;
 	}
-	
 	public void setTeleports(boolean teleports) {
 		this.teleports = teleports;
 	}
 
-	public void setTile(String tile) {
+	public void setTile(CreatureType tile) {
 		this.tile = tile;
 	}
 
@@ -353,9 +361,24 @@ public class Creature implements Constants {
 	public void setWorldrangedtile(String worldrangedtile) {
 		this.worldrangedtile = worldrangedtile;
 	}
+	public CreatureStatus getStatus() {
+		return status;
+	}
+	public void setStatus(CreatureStatus status) {
+		this.status = status;
+	}
 
-	public void wakeUp() {
-		this.status.remove(StatusType.STAT_SLEEPING);
+	public Animation getAnim() {
+		return anim;
+	}
+
+	public void setAnim(Animation anim) {
+		this.anim = anim;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("Creature [id=%s, name=%s, tile=%s]", id, name, tile);
 	}
 
 
