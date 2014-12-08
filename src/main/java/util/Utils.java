@@ -35,26 +35,49 @@ public class Utils implements Constants {
 		byte[] bytes = IOUtils.toByteArray(is);
 
 		Tile[] tiles = new Tile[map.getWidth() * map.getHeight()];
-		int pos = 0;
-	    for(int ych = 0; ych < map.getHeight() / 32; ych++) {
-	        for(int xch = 0; xch < map.getWidth() / 32; xch++) {
-                for(int y = 0; y < 32; y++) {
-                    for(int x = 0; x < 32; x++) {                    
-        				int index = bytes[pos] & 0xff;
-						pos++;
-						Tile tile = ts.getTileByIndex(index);
-						if (tile == null) {
-							System.out.println("Tile index cannot be found: " + index + " using index 127 for black space.");
-							tile = ts.getTileByIndex(127);
-						}
-                        tiles[x + (y * map.getWidth()) + (xch * 32) + (ych * 32 * map.getWidth())] = tile;
-                    }
+		
+		if (map.getType() == MapType.world || map.getType() == MapType.city) {
+			
+			int pos = 0;
+		    for(int ych = 0; ych < map.getHeight() / 32; ych++) {
+		        for(int xch = 0; xch < map.getWidth() / 32; xch++) {
+	                for(int y = 0; y < 32; y++) {
+	                    for(int x = 0; x < 32; x++) {                    
+	        				int index = bytes[pos] & 0xff;
+							pos++;
+							Tile tile = ts.getTileByIndex(index);
+							if (tile == null) {
+								System.out.println("Tile index cannot be found: " + index + " using index 127 for black space.");
+								tile = ts.getTileByIndex(127);
+							}
+	                        tiles[x + (y * map.getWidth()) + (xch * 32) + (ych * 32 * map.getWidth())] = tile;
+	                    }
+	                }
+		            
+		        }
+		    }
+		    
+		} else if (map.getType() == MapType.combat || map.getType() == MapType.shrine) {
+			
+			int pos = 0x40;
+	    	for(int y = 0; y < map.getHeight(); y++) {
+                for(int x = 0; x < map.getWidth(); x++) {                    
+    				int index = bytes[pos] & 0xff;
+					pos++;
+					Tile tile = ts.getTileByIndex(index);
+					if (tile == null) {
+						System.out.println("Tile index cannot be found: " + index + " using index 127 for black space.");
+						tile = ts.getTileByIndex(127);
+					}
+                    tiles[x + y * map.getWidth()] = tile;
                 }
-	            
-	        }
+            }
 	    }
+		
+	
 	    map.setTiles(tiles);
 	}
+
 	
 	/**
 	 * Read the TLK file and parse the conversations

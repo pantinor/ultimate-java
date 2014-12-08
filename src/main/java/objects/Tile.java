@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import ultima.Constants.Maps;
 import ultima.Constants.TileRule;
 
 @XmlRootElement(name = "tile")
@@ -20,6 +21,7 @@ public class Tile {
 	private boolean tiledInDungeon;
 	private boolean usesReplacementTileAsBackground;
 	private boolean usesWaterReplacementTileAsBackground;
+	private Maps combatMap = Maps.BRICK_CON;
 	
 	@XmlAttribute
 	public String getName() {
@@ -140,6 +142,12 @@ public class Tile {
 		}
 		
 		return false;
+	}
+	public Maps getCombatMap() {
+		return combatMap;
+	}
+	public void setCombatMap(Maps combatMap) {
+		this.combatMap = combatMap;
 	}
 	
 

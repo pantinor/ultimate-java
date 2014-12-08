@@ -31,6 +31,7 @@ import ultima.Constants;
 import ultima.Constants.Direction;
 import ultima.Constants.Item;
 import ultima.Constants.KarmaAction;
+import ultima.Constants.Maps;
 import ultima.Constants.TileAttrib;
 import ultima.Constants.TileRule;
 import ultima.Constants.Virtue;
@@ -356,7 +357,7 @@ public class TestJaxb {
 		MapSet ms = (MapSet) jaxbUnmarshaller.unmarshal(file3);
 		ms.init(ts);
 		
-		BaseMap m = ms.getMapById(0);
+		BaseMap m = Maps.WORLD.getMap();
 
 		int startx = 56;
 		int starty = 65;

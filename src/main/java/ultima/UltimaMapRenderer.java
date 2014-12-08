@@ -36,7 +36,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
 
-public class UltimaMapRenderer extends BatchTiledMapRenderer {
+public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constants {
 	
 	private BaseMap bm;
 	private GameScreen mainGame;
@@ -52,13 +52,16 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 		this.bm = bm;
 		this.mainGame = mainGame;
 		
-		door = mainGame.atlas.findRegion("door");
-		brick_floor = mainGame.atlas.findRegion("brick_floor");
-		locked_door = mainGame.atlas.findRegion("locked_door");
+		if (mainGame != null) {
 		
-		door.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-		brick_floor.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-		locked_door.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+			door = mainGame.atlas.findRegion("door");
+			brick_floor = mainGame.atlas.findRegion("brick_floor");
+			locked_door = mainGame.atlas.findRegion("locked_door");
+			
+			door.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+			brick_floor.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+			locked_door.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+		}
 
 	}
 
@@ -173,12 +176,12 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 					continue;
 				}
 				//see if person is in shadow
-				int px = Math.round(p.getCurrentPos().x / GameScreen.tilePixelWidth);
-				int py = Math.round(p.getCurrentPos().y / GameScreen.tilePixelHeight);
+				int px = Math.round(p.getCurrentPos().x / tilePixelWidth);
+				int py = Math.round(p.getCurrentPos().y / tilePixelHeight);
 				if (lightMap != null && lightMap[px][py] <= 0) {
 					continue;
 				}
-				batch.draw(p.getAnim().getKeyFrame(stateTime, true), p.getCurrentPos().x, p.getCurrentPos().y, GameScreen.tilePixelWidth, GameScreen.tilePixelHeight);
+				batch.draw(p.getAnim().getKeyFrame(stateTime, true), p.getCurrentPos().x, p.getCurrentPos().y, tilePixelWidth, tilePixelHeight);
 			}
 			
 		}
@@ -189,12 +192,12 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer {
 					continue;
 				}
 				//see if in shadow
-				int px = Math.round(cr.currentX / GameScreen.tilePixelWidth);
-				int py = Math.round(cr.currentY / GameScreen.tilePixelHeight);
+				int px = Math.round(cr.currentX / tilePixelWidth);
+				int py = Math.round(cr.currentY / tilePixelHeight);
 				if (lightMap != null && lightMap[px][py] <= 0) {
 					continue;
 				}
-				batch.draw(cr.getAnim().getKeyFrame(stateTime, true), cr.currentPos.x, cr.currentPos.y, GameScreen.tilePixelWidth, GameScreen.tilePixelHeight);
+				batch.draw(cr.getAnim().getKeyFrame(stateTime, true), cr.currentPos.x, cr.currentPos.y, tilePixelWidth, tilePixelHeight);
 			}
 		}
 	}

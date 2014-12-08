@@ -110,8 +110,8 @@ public class VendorTest {
 			for (int i=0;i<map.getCity().getPeople().length;i++) {
 				Person p = map.getCity().getPeople()[i];
 				if (p != null && p.getRole() != null && p.getRole().getInventoryType() != null) {
-					tm.add(new Holder(p.getRole().getInventoryType(), p, Maps.convert(map.getId())));
-					System.out.println("type=\"" +p.getRole().getInventoryType()+ "\" personId=\"" + p.getId() + "\" " + Maps.convert(map.getId()));
+					tm.add(new Holder(p.getRole().getInventoryType(), p, Maps.get(map.getId())));
+					System.out.println("type=\"" +p.getRole().getInventoryType()+ "\" personId=\"" + p.getId() + "\" " + Maps.get(map.getId()));
 
 				}
 			}

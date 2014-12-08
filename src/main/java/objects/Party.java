@@ -440,7 +440,7 @@ public class Party implements Constants {
 		karma[v.ordinal()] = n;
 	}
 	
-	public void endTurn() {
+	public void endTurn(MapType mapType) {
 
 		saveGame.moves++;
 
@@ -448,7 +448,7 @@ public class Party implements Constants {
 
 			PartyMember member = members.get(i);
 
-			if ((GameScreen.context.getLocationMask() & CTX_NON_COMBAT) == GameScreen.context.getLocationMask()) {
+			if (mapType != MapType.combat) {
 
 				if (member.player.status != StatusType.DEAD)
 					adjustFood(-1);

@@ -10,8 +10,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import ultima.BaseScreen;
 import ultima.Constants;
-import ultima.GameScreen;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -318,7 +318,7 @@ public class BaseMap implements Constants {
 
 
 	
-	public void initObjects(GameScreen mainGame, TextureAtlas atlas1, TextureAtlas atlas2) {
+	public void initObjects(BaseScreen screen, TextureAtlas atlas1, TextureAtlas atlas2) {
 		
 		if (initialized) return;
 		
@@ -340,7 +340,7 @@ public class BaseMap implements Constants {
 				int frameRate = ThreadLocalRandom.current().nextInt(1,4);
 				p.setAnim(new Animation(frameRate, tr));
 				
-				Vector3 pixelPos = mainGame.getMapPixelCoords(p.getStart_x(), p.getStart_y());
+				Vector3 pixelPos = screen.getMapPixelCoords(p.getStart_x(), p.getStart_y());
 				p.setCurrentPos(pixelPos);
 				p.setX(p.getStart_x());
 				p.setY(p.getStart_y());
@@ -370,7 +370,7 @@ public class BaseMap implements Constants {
 	}
 	
 
-	public void moveObjects(GameScreen mainGame, int avatarX, int avatarY) {
+	public void moveObjects(BaseScreen screen, int avatarX, int avatarY) {
 		
 		if (city != null) {
 			
@@ -406,7 +406,7 @@ public class BaseMap implements Constants {
 				if (dir == Direction.SOUTH) pos = new Vector3(p.getX(), p.getY()+1, 0);
 				if (dir == Direction.EAST) pos = new Vector3(p.getX()+1, p.getY(), 0);
 				if (dir == Direction.WEST) pos = new Vector3(p.getX()-1, p.getY(), 0);
-				pixelPos = mainGame.getMapPixelCoords((int)pos.x, (int)pos.y);
+				pixelPos = screen.getMapPixelCoords((int)pos.x, (int)pos.y);
 				p.setCurrentPos(pixelPos);
 				p.setX((int)pos.x);
 				p.setY((int)pos.y);
@@ -424,7 +424,7 @@ public class BaseMap implements Constants {
 			if (dir == Direction.SOUTH) pos = new Vector3(cr.currentX, cr.currentY+1, 0);
 			if (dir == Direction.EAST) pos = new Vector3(cr.currentX+1, cr.currentY, 0);
 			if (dir == Direction.WEST) pos = new Vector3(cr.currentX-1, cr.currentY, 0);
-			Vector3 pixelPos = mainGame.getMapPixelCoords((int)pos.x, (int)pos.y);
+			Vector3 pixelPos = screen.getMapPixelCoords((int)pos.x, (int)pos.y);
 			cr.currentPos = pixelPos;
 			cr.currentX = (int)pos.x;
 			cr.currentY = (int)pos.y;  

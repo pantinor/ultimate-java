@@ -1,8 +1,6 @@
 package objects;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -15,7 +13,6 @@ import util.Utils;
 public class MapSet {
 	
 	private List<BaseMap> maps = null;
-	private Map<Integer, BaseMap> mapMap = new HashMap<Integer, BaseMap>();
 
 	@XmlElement(name = "map")
 	public List<BaseMap> getMaps() {
@@ -29,7 +26,8 @@ public class MapSet {
 	public void init(TileSet ts) {
 		for (BaseMap m : maps) {
 			
-			mapMap.put(m.getId(), m);
+			Maps map = Maps.get(m.getId());
+			map.setMap(m);
 			
 			String tlkName = m.getCity()==null?null:m.getCity().getTlk_fname();
 			if (tlkName != null) {
@@ -58,14 +56,14 @@ public class MapSet {
 				m.getCity().getPeople()[31].setConversation(new LordBritishConversation());
 			}
 
-			
 			try {
 				Utils.setMapTiles(m, ts);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+
 			
-			if (m.getType() != MapType.dungeon && m.getType() != MapType.shrine && m.getType() != MapType.combat) {
+			if (m.getType() == MapType.world || m.getType() == MapType.city) {
 				
 				//use ydown scheme here same as gdx rendering
 				float[][] shadowMap = new float[m.getWidth()][m.getHeight()];
@@ -75,19 +73,15 @@ public class MapSet {
 						shadowMap[x][y] = (m.getTile(x, m.getHeight()-1-y).isOpaque()?1:0);
 					}
 				}
+				
 				m.setShadownMap(shadowMap);
+				
+				
 			}
 
 
 		}
 	}
-	
-	public BaseMap getMapById(int id) {
-		return mapMap.get(id);
-	}
-	
-
-	
 	
 
 }

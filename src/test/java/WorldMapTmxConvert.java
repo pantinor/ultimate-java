@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import ultima.Constants;
+import ultima.Constants.Maps;
 import util.Utils;
 
 import com.badlogic.gdx.files.FileHandle;
@@ -55,7 +56,7 @@ public class WorldMapTmxConvert {
 
 		int TILE_SIZE = 16;
 
-		BaseMap map = ms.getMapById(0);
+		BaseMap map = Maps.WORLD.getMap();
 		Utils.setMapTiles(map, ts);
 		Tile[] tiles = map.getTiles();
 
@@ -98,8 +99,8 @@ public class WorldMapTmxConvert {
 		
 		//set map tile id per dest map type
 		for (Portal p : portals) {
-			BaseMap destMap = ms.getMapById(p.getDestmapid());
-			p.setName(Constants.Maps.convert(p.getDestmapid()).toString());
+			BaseMap destMap = Maps.get(p.getDestmapid()).getMap();
+			p.setName(Constants.Maps.get(p.getDestmapid()).toString());
 			String ttype = destMap.getCity()==null?destMap.getType().toString():destMap.getCity().getType().toString();
 			p.setMapTileId(findTileId(mapTileIds, ttype));
 		}

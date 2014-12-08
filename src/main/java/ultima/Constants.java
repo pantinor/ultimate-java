@@ -2,6 +2,7 @@ package ultima;
 
 import java.util.Random;
 
+import objects.BaseMap;
 import objects.Creature;
 
 import com.badlogic.gdx.Gdx;
@@ -10,6 +11,9 @@ import com.badlogic.gdx.files.FileHandle;
 
 
 public interface Constants {
+	
+	public static int tilePixelWidth = 32;
+	public static int tilePixelHeight = 32;
 	
 	public enum Maps {
 		NONE(255,"None"),
@@ -73,6 +77,7 @@ public interface Constants {
 		
 		private int id;
 		private String label;
+		private BaseMap baseMap;
 		
 		private Maps(int id, String label) {
 			this.id = id;
@@ -91,13 +96,23 @@ public interface Constants {
 			return label;
 		}
 
-		public static Maps convert(int id) {
+		public static Maps get(int id) {
 			for (Maps m : Maps.values()) {
 				if (m.getId() == id)
 					return m;
 			}
 			return null;
 		}
+
+		public BaseMap getMap() {
+			return baseMap;
+		}
+
+		public void setMap(BaseMap baseMap) {
+			this.baseMap = baseMap;
+		}
+
+
 	}
 	
 	public static final int WITHOUT_OBJECTS = 0;
@@ -247,12 +262,11 @@ public interface Constants {
 	}
 	
 	public enum MapType {
-		world(0x0001),
-		combat(0x0002),
-		city(0x0004),
-		dungeon(0x0008),
-		altar_room(0x0010),
-		shrine(0x0020);
+		world(0x1),
+		combat(0x2),
+		city(0x4),
+		dungeon(0x8),
+		shrine(0x10);
 		
 		private int val;
 		
@@ -265,11 +279,6 @@ public interface Constants {
 		}
 		
 	}
-	
-	public static int CTX_ANY = 0xffff;
-	public static int CTX_NORMAL = (MapType.world.getVal() | MapType.city.getVal());
-	public static int CTX_NON_COMBAT = (CTX_ANY & ~MapType.combat.getVal());
-	public static int CTX_CAN_SAVE_GAME = (MapType.world.getVal() | MapType.dungeon.getVal());
 
 	public enum MapBorderBehavior {
 		wrap,
@@ -372,9 +381,9 @@ public interface Constants {
 	public enum DungeonTile {
 		
 		NOTHING(0x00,"Nothing","blank"),
-		LADDER_UP(0x10 	,"Ladder Up", "up_ladder"),
-		LADDER_DOWN(0x20 	,"Ladder Down", "down_ladder"),
-		LADDER_UP_DOWN(0x30 	,"Ladder Up & Down", "down_ladder"),
+		LADDER_UP(0x10 	,"Ladder Up", "up_ladder", Maps.DNG1_CON),
+		LADDER_DOWN(0x20 	,"Ladder Down", "down_ladder", Maps.DNG2_CON),
+		LADDER_UP_DOWN(0x30 	,"Ladder Up & Down", "down_ladder", Maps.DNG3_CON),
 		CHEST(0x40 	,"Treasure Chest", "chest"),
 		CEILING_HOLE(0x50 	,"Ceiling Hole", "rocks"),
 		FLOOR_HOLE(0x60 	,"Floor Hole", "rocks"),
@@ -392,7 +401,7 @@ public interface Constants {
 		FIELD_FIRE(0xA2 	,"Fire Field", "fire_field"),
 		FIELD_SLEEP(0xA3 	,"Sleep Field", "sleep_field"),
 		ALTAR(0xB0 	,"Altar", "altar"),
-		DOOR(0xC0 	,"Door", "locked_door"),
+		DOOR(0xC0 	,"Door", "locked_door", Maps.DNG5_CON),
 		ROOM_1(0xD0 	,"Dungeon Room 1", "spacer_square"),
 		ROOM_2(0xD1 	,"Dungeon Room 2", "spacer_square"),
 		ROOM_3(0xD2 	,"Dungeon Room 3", "spacer_square"),
@@ -409,17 +418,25 @@ public interface Constants {
 		ROOM_14(0xDD 	,"Dungeon Room 14", "spacer_square"),
 		ROOM_15(0xDE 	,"Dungeon Room 15", "spacer_square"),
 		ROOM_16(0xDF 	,"Dungeon Room 16", "spacer_square"),
-		SECRET_DOOR(0xE0 	,"Secret Door", "secret_door"),
+		SECRET_DOOR(0xE0 	,"Secret Door", "secret_door", Maps.DNG6_CON),
 		WALL(0xF0 	,"Wall ", "stone_wall");
-		
+				
 		private int value;
 		private String type;
 		private String tileName;
+		private Maps combatMap = Maps.DNG0_CON;
 		
 		private DungeonTile(int value, String type, String tileName) {
 			this.value = value;
 			this.type = type;
 			this.tileName = tileName;
+		}
+		
+		private DungeonTile(int value, String type, String tileName, Maps combatMap) {
+			this.value = value;
+			this.type = type;
+			this.tileName = tileName;
+			this.combatMap = combatMap;
 		}
 
 		public int getValue() {
@@ -455,6 +472,14 @@ public interface Constants {
 				}
 			}
 			return ret;
+		}
+
+		public Maps getCombatMap() {
+			return combatMap;
+		}
+
+		public void setCombatMap(Maps combatMap) {
+			this.combatMap = combatMap;
 		}
 		
 	}
@@ -1158,7 +1183,7 @@ public interface Constants {
 	}
 
 	public static final int MAX_CREATURES_ON_MAP = 4;
-	public static final int MAX_CREATURE_DISTANCE = 16;
+	public static final int MAX_CREATURE_DISTANCE = 24;
 	
 	
 	public enum SlowedType {

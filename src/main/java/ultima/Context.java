@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import objects.BaseMap;
 import objects.Party;
+import objects.Tile;
 
 
 public class Context implements Constants {
@@ -129,6 +130,42 @@ public class Context implements Constants {
 	}
 	public void setLocationMask(int locationMask) {
 		this.locationMask = locationMask;
+	}
+	
+	public Maps getCombatMapForTile(Tile combatantTile, TransportContext transport, int x, int y) {
+		
+		boolean fromShip = false;
+		boolean toShip = false;   
+		
+		Tile tileUnderneathAvatar = currentMap.getTile(x, y);
+    
+		if (transport == TransportContext.SHIP) {
+			fromShip = true;
+		}
+		
+		if (combatantTile.getRule() == TileRule.ship) {
+			toShip = true;
+		}
+
+		if (fromShip && toShip) {
+			return Maps.SHIPSHIP_CON;
+		}
+    
+		if (toShip) {
+			return Maps.SHORSHIP_CON;
+		} else if (fromShip && tileUnderneathAvatar.getRule() == TileRule.water) {
+			return Maps.SHIPSEA_CON;
+		} else if (tileUnderneathAvatar.getRule() == TileRule.water) {
+			return Maps.SHORE_CON;
+		} else if (fromShip && tileUnderneathAvatar.getRule() != TileRule.water) {
+			return Maps.SHIPSHOR_CON;
+		}
+		
+		if (tileUnderneathAvatar.getCombatMap() != null) {
+			return tileUnderneathAvatar.getCombatMap();
+		}
+    
+		return Maps.BRICK_CON;
 	}
     
 

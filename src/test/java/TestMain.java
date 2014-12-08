@@ -1,4 +1,16 @@
+import objects.Creature;
+import objects.CreatureSet;
+import objects.MapSet;
+import objects.Party;
+import objects.SaveGame;
+import objects.TileSet;
+import ultima.CombatScreen;
+import ultima.Constants;
+import ultima.Constants.CreatureType;
+import ultima.Constants.Maps;
+import ultima.Context;
 import ultima.StartScreen;
+import util.Utils;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -10,6 +22,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.Array;
 
 public class TestMain extends Game {
@@ -21,8 +35,53 @@ public class TestMain extends Game {
 	float time = 0;
 	Batch batch2;
 	
+	public static void main(String[] args) {
+		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
+		cfg.title = "test";
+		cfg.width = 800;
+		cfg.height = 600;
+		new LwjglApplication(new TestMain(), cfg);
+	}
+	
+	@Override
+	public void create() {
+		
+		try {
+					
+			TileSet baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	
+			baseTileSet.setMaps();
+						
+			MapSet maps = (MapSet) Utils.loadXml("maps.xml", MapSet.class);
+			maps.init(baseTileSet);
+		
+			CreatureSet cs = (CreatureSet) Utils.loadXml("creatures.xml", CreatureSet.class);
+			cs.init();
+			
+			Context context = new Context();
+			SaveGame sg = new SaveGame();
+			try {
+				sg.read(Constants.PARTY_SAV_BASE_FILENAME);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			Party party = new Party(sg);
+			context.setParty(party);
+			
+			TiledMap tmap = new TmxMapLoader().load("tilemaps/combat_"+Maps.SHIPSHOR_CON.getId()+".tmx");
+			
+			TextureAtlas a1 = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
+			TextureAtlas a2 = new TextureAtlas(Gdx.files.classpath("tilemaps/ultima5-atlas.txt"));
+	
+			setScreen(new CombatScreen(null, party, Maps.WORLD, Maps.SHIPSHOR_CON.getMap(), tmap, CreatureType.orc, cs, a1, a2));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 
-	public void create () {
+	public void init () {
 		
 		atlas = new TextureAtlas(Gdx.files.classpath("graphics/beasties-atlas.txt"));
 		
@@ -42,7 +101,7 @@ public class TestMain extends Game {
 
 	}
 
-	public void render () {
+	public void renderX () {
 		time += Gdx.graphics.getDeltaTime();
 
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -58,13 +117,7 @@ public class TestMain extends Game {
 	
 
 	
-	public static void main(String[] args) {
-		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
-		cfg.title = "test";
-		cfg.width = 800;
-		cfg.height = 600;
-		new LwjglApplication(new TestMain(), cfg);
-	}
+
 	
 	
 

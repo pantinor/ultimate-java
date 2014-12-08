@@ -1,7 +1,5 @@
 package ultima;
 
-import org.apache.commons.lang.StringUtils;
-
 import objects.BaseMap;
 import objects.City;
 import objects.Person;

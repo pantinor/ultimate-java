@@ -201,7 +201,7 @@ public class ConversationDialog extends Window implements Constants {
 		} else if (person.getRole() != null && person.getRole().getInventoryType() != null) {
 			
 			vendor = GameScreen.vendorClassSet.getVendorImpl(person.getRole().getInventoryType(), 
-					Maps.convert(GameScreen.context.getCurrentMap().getId()), GameScreen.context.getParty());
+					Maps.get(GameScreen.context.getCurrentMap().getId()), GameScreen.context.getParty());
 			
 			vendor.setScrollPane(scrollPane);
 			vendor.nextDialog();

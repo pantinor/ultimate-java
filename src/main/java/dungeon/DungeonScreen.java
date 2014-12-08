@@ -7,18 +7,15 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
-import ultima.Constants;
+import ultima.BaseScreen;
 import ultima.GameScreen;
+import ultima.Ultima4;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -47,11 +44,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.UBJsonReader;
 
-public class DungeonViewer implements ApplicationListener, InputProcessor, Constants {
+public class DungeonScreen extends BaseScreen {
 	
 	private String dungeonFileName;
-	private GameScreen mainGame;
+	private GameScreen gameScreen;
 	private Stage stage;
+	
 	public Environment environment;
 	public ModelBatch modelBatch;
 	private SpriteBatch batch;
@@ -83,28 +81,28 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 	public int currentLevel = 0;
 	public Vector3 currentPos;
 	public Direction currentDir = Direction.EAST;
-	
-
-	public static void main(String[] args) {
-		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
-		cfg.title = "DungeonViewer";
-		cfg.width = 1000;
-		cfg.height = 800;
-		new LwjglApplication(new DungeonViewer("/data/despise.dng"), cfg);
-	}
-	
-	public DungeonViewer(String dungeonFileName) {
-		this.dungeonFileName = dungeonFileName;
-	}
-	
-	public DungeonViewer(Stage stage, GameScreen mainGame, String dungeonFileName) {
+		
+	public DungeonScreen(Ultima4 mainGame, Stage stage, GameScreen gameScreen, String dungeonFileName) {
 		this.dungeonFileName = dungeonFileName;
 		this.mainGame = mainGame;
+		this.gameScreen = gameScreen;
 		this.stage = stage;
+		init();
+	}
+	
+	@Override
+	public void show() {
+		if (stage != null) {
+			Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
+		} else {
+			Gdx.input.setInputProcessor(this);
+		}
 	}
 
-	@Override
-	public void create() {
+	
+	public void init() {
+		
+
 		
 		assets = new AssetManager(new ClasspathFileHandleResolver());
 		assets.load("graphics/dirt.png", Texture.class);
@@ -147,11 +145,6 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		cam.far = 1000f;
 		cam.update();
 				
-		if (stage != null) {
-			Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
-		} else {
-			Gdx.input.setInputProcessor(this);
-		}
 
 		ModelBuilder builder = new ModelBuilder();
 		for (int x=0;x<12;x++) {
@@ -164,7 +157,7 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		
 		try {
 			
-			InputStream is = DungeonViewer.class.getResourceAsStream(dungeonFileName);
+			InputStream is = DungeonScreen.class.getResourceAsStream(dungeonFileName);
 			byte[] bytes = IOUtils.toByteArray(is);	
 						
 			int pos = 0 ;
@@ -229,7 +222,7 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 	}
 	
 	@Override
-	public void render() {
+	public void render(float delta) {
 		
 		cam.update();
 		
@@ -460,7 +453,7 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 
 	
 	@Override
-	public boolean keyDown (int keycode) {
+	public boolean keyUp (int keycode) {
 		
 		int x = (Math.round(currentPos.x)-1);
 		int y = (Math.round(currentPos.z)-1);
@@ -560,7 +553,7 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 			if (currentLevel < 0) {
 				currentLevel = 0;
 				if (mainGame != null) {
-					mainGame.resurfaceFromDungeon();
+					mainGame.setScreen(gameScreen);
 				}
 			}
 
@@ -573,77 +566,6 @@ public class DungeonViewer implements ApplicationListener, InputProcessor, Const
 		return false;
 	}
 
-
-	@Override
-	public boolean keyUp(int keycode) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-	@Override
-	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-	@Override
-	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	
 
 
 }
