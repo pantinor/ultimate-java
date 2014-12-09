@@ -5,10 +5,14 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import ultima.Constants.WeaponType;
 
 @XmlRootElement(name = "weapon")
 public class Weapon {
 
+	private WeaponType type;
 	private String name;
 	private String abbr;
 	private int range;
@@ -142,17 +146,13 @@ public class Weapon {
 		this.constraints = constraints;
 	}
 	
-	@Override
-	public String toString() {
-		return String
-				.format("Weapon [name=%s, abbr=%s, range=%s, absolute_range=%s, damage=%s, attackthroughobjects=%s, choosedistance=%s, dontshowtravel=%s, hittile=%s, leavetile=%s, lose=%s, losewhenranged=%s, magic=%s, misstile=%s, returns=%s, constraints=%s]",
-						name, abbr, range, absolute_range, damage, attackthroughobjects, choosedistance, dontshowtravel, hittile, leavetile, lose, losewhenranged, magic, misstile, returns, constraints);
+	@XmlAttribute(name="type")
+	@XmlJavaTypeAdapter(WeaponTypeAdapter.class)
+	public WeaponType getType() {
+		return type;
 	}
-
-	
-
-	
-	
-	
+	public void setType(WeaponType type) {
+		this.type = type;
+	}
 
 }

@@ -7,6 +7,11 @@ public enum Sound {
 	MOONGATE ("sound/moongate_flash.ogg", false, 0.3f), 
 	BLOCKED ("sound/blocked.ogg", false, 0.3f),
 	
+	PC_ATTACK ("sound/pc_attack.ogg", false, 0.3f),
+	PC_STRUCK ("sound/pc_struck.ogg", false, 0.3f),
+	NPC_ATTACK ("sound/npc_attack.ogg", false, 0.3f),
+	NPC_STRUCK ("sound/npc_struck.ogg", false, 0.3f),
+	
 	//music
 	OUTSIDE ("sound/Wanderer.mp3", false, 0.1f), 
 	TOWNS ("sound/Towns.mp3", false, 0.1f), 
@@ -18,7 +23,6 @@ public enum Sound {
 	COMBAT ("sound/Combat.mp3", false, 0.1f), 
 	CASTLES ("sound/Castles.mp3", false, 0.1f);
 	
-
 	String file;
 	boolean looping;
 	float volume;

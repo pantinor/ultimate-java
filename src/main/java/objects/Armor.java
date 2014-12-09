@@ -5,10 +5,14 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import ultima.Constants.ArmorType;
 
 @XmlRootElement(name = "armor")
 public class Armor {
 	
+	private ArmorType type;
 	private String name;
 	private int defense;
 	private List<Constraint> constraints;
@@ -36,10 +40,13 @@ public class Armor {
 	public void setConstraints(List<Constraint> constraints) {
 		this.constraints = constraints;
 	}
-	
-	@Override
-	public String toString() {
-		return String.format("Armor [name=%s, defense=%s, constraints=%s]", name, defense, constraints);
+	@XmlAttribute(name="type")
+	@XmlJavaTypeAdapter(ArmorTypeAdapter.class)
+	public ArmorType getType() {
+		return type;
+	}
+	public void setType(ArmorType type) {
+		this.type = type;
 	}
 
 	

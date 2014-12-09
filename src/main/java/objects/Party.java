@@ -68,9 +68,17 @@ public class Party implements Constants {
 	public void setMembers(List<PartyMember> members) {
 		this.members = members;
 	}
+	
+	public PartyMember getActivePartyMember() {
+		return members.get(activePlayer);
+	}
 
-	public void setActivePlayer(int activePlayer) {
-		this.activePlayer = activePlayer;
+	public int nextActivePlayer() {
+		this.activePlayer++;
+		if (this.activePlayer >= saveGame.members) {
+			this.activePlayer = 0;
+		}
+		return this.activePlayer;
 	}
 
 	public void setTransport(Tile transport) {
@@ -105,6 +113,14 @@ public class Party implements Constants {
 			}
 		}
 		
+		public int getDamage() {
+		    int maxDamage = player.weapon.getWeapon().getDamage();
+		    maxDamage += player.str;
+		    if (maxDamage > 255)
+		        maxDamage = 255;
+		    return rand.nextInt(maxDamage);
+		}
+			
 		public void awardXP(int value) {
 			int exp = Utils.adjustValueMax(player.xp, value, 9999);
 			player.xp = exp;
@@ -216,7 +232,6 @@ public class Party implements Constants {
 
 		public void wakeUp() {
 			player.status = StatusType.GOOD;    
-		    //setTile(tileForClass(getClass()));
 		}
 		
 		public boolean applyDamage(int damage) {

@@ -32,7 +32,7 @@ public class ConversationDialog extends Window implements Constants {
 	boolean cancelHide;
 	Actor previousKeyboardFocus, previousScrollFocus;
 	FocusListener focusListener;
-	GameScreen mainGame;
+	BaseScreen screen;
 	Person person;
 	BaseVendor vendor;
 	
@@ -45,11 +45,11 @@ public class ConversationDialog extends Window implements Constants {
 	LogScrollPane scrollPane;
 	Topic previousTopic;
 
-	public ConversationDialog(Person p, GameScreen game, Skin skin) {
+	public ConversationDialog(Person p, BaseScreen screen, Skin skin) {
 		super("", skin.get("dialog", WindowStyle.class));
 		setSkin(skin);
 		this.skin = skin;
-		this.mainGame = game;
+		this.screen = screen;
 		this.person = p;
 		initialize();
 	}
@@ -273,7 +273,7 @@ public class ConversationDialog extends Window implements Constants {
 			remove();
 		}
 		
-		Gdx.input.setInputProcessor(new InputMultiplexer(mainGame, stage));
+		Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
 		
 		if (GameScreen.context.getCurrentMap().getCity()!=null) 
 			GameScreen.context.getCurrentMap().getCity().resetTalkingFlags();

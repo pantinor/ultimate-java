@@ -447,6 +447,23 @@ public class BaseMap implements Constants {
 	    else return Direction.getRandomValidDirection(validMovesMask);
 	}
 	
+	public boolean isTileBlockedForRangedAttack(int x, int y) {
+		Tile tile = getTile(x,y);
+		TileRule rule = tile.getRule();
+		boolean blocked = false;
+		if (rule != null) {
+			blocked = rule.has(TileAttrib.unwalkable) && !rule.has(TileAttrib.canattackover) && !rule.has(TileAttrib.swimmable);
+		}
+		for(Creature cre : creatures) {
+			if (cre.currentX == x && cre.currentY == y) {
+				blocked = true;
+				break;
+			}
+		}
+		return blocked;
+	}
+
+	
 	public int getValidMovesMask(int x, int y) {
 		return getValidMovesMask(x, y, null, 0, 0);
 	}
@@ -487,9 +504,6 @@ public class BaseMap implements Constants {
 			} else {
 				canmove = false; 
 			}
-			
-		    //System.out.println(String.format("addToMask: %s %s",tile,cr));
-
 			
 			//NPCs cannot go thru the secret doors or walk where the avatar is
 			if (cr != null) {

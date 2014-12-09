@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import ultima.BaseScreen;
 import ultima.GameScreen;
 import ultima.Ultima4;
+import ultima.Constants.ScreenType;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -83,6 +84,9 @@ public class DungeonScreen extends BaseScreen {
 	public Direction currentDir = Direction.EAST;
 		
 	public DungeonScreen(Ultima4 mainGame, Stage stage, GameScreen gameScreen, String dungeonFileName) {
+		
+		scType = ScreenType.DUNGEON;
+
 		this.dungeonFileName = dungeonFileName;
 		this.mainGame = mainGame;
 		this.gameScreen = gameScreen;
@@ -564,6 +568,12 @@ public class DungeonScreen extends BaseScreen {
 		}
 			
 		return false;
+	}
+
+	@Override
+	public void finishTurn(int currentX, int currentY) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

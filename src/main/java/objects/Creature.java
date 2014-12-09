@@ -4,16 +4,15 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import ultima.Constants;
+
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector3;
-
-import ultima.Constants;
 
 @XmlRootElement(name = "creature")
 public class Creature implements Constants {
 
 	private boolean ambushes;
-	private int basehp;
 	private boolean camouflage;
 	private String camouflageTile;
 	private boolean canMoveOntoAvatar;
@@ -26,13 +25,16 @@ public class Creature implements Constants {
 	private boolean flies;
 	private boolean forceOfNature;
 	private boolean good;
+	
 	private int hp;
+	private int basehp;
 	private int id;
+	private String name;
+
 	private boolean incorporeal;
 	private int leader;
 	private boolean leavestile;
 	private String movement;
-	private String name;
 	private boolean nochest;
 	private boolean poisons;
 	private boolean ranged;
@@ -51,7 +53,6 @@ public class Creature implements Constants {
 	private String worldrangedtile;
 	
 	private CreatureType tile;
-	private CreatureStatus status = CreatureStatus.FINE;
 	private Animation anim;
 	public int currentX;
 	public int currentY;
@@ -63,7 +64,6 @@ public class Creature implements Constants {
 	
 	public Creature(Creature clone) {
 		this.ambushes = clone.ambushes;
-		this.basehp = clone.basehp;
 		this.camouflage = clone.camouflage;
 		this.camouflageTile = clone.camouflageTile;
 		this.canMoveOntoAvatar = clone.canMoveOntoAvatar;
@@ -76,8 +76,11 @@ public class Creature implements Constants {
 		this.flies = clone.flies;
 		this.forceOfNature = clone.forceOfNature;
 		this.good = clone.good;
-		this.hp = clone.hp;
+		
+		this.basehp = clone.basehp;
+		this.hp = clone.basehp;
 		this.id = clone.id;
+		
 		this.incorporeal = clone.incorporeal;
 		this.leader = clone.leader;
 		this.leavestile = clone.leavestile;
@@ -99,8 +102,8 @@ public class Creature implements Constants {
 		this.wontattack = clone.wontattack;
 		this.worldrangedtile = clone.worldrangedtile;
 		this.tile = clone.tile;
-		this.status = clone.status;
 	}
+
 	
 	@XmlAttribute
 	public boolean getAmbushes() {
@@ -361,11 +364,34 @@ public class Creature implements Constants {
 	public void setWorldrangedtile(String worldrangedtile) {
 		this.worldrangedtile = worldrangedtile;
 	}
-	public CreatureStatus getStatus() {
-		return status;
+	
+	public int getHP() {
+		return this.hp;
 	}
-	public void setStatus(CreatureStatus status) {
-		this.status = status;
+	public void setHP(int h) {
+		this.hp = h;
+	}
+	public CreatureStatus getStatus() {
+		
+		int heavy_threshold, light_threshold, crit_threshold;
+
+		crit_threshold = basehp >> 2; /* (basehp / 4) */
+		heavy_threshold = basehp >> 1; /* (basehp / 2) */
+		light_threshold = crit_threshold + heavy_threshold;
+
+		if (hp <= 0)
+			return CreatureStatus.DEAD;
+		else if (hp < 24)
+			return CreatureStatus.FLEEING;
+		else if (hp < crit_threshold)
+			return CreatureStatus.CRITICAL;
+		else if (hp < heavy_threshold)
+			return CreatureStatus.HEAVILYWOUNDED;
+		else if (hp < light_threshold)
+			return CreatureStatus.LIGHTLYWOUNDED;
+		else
+			return CreatureStatus.BARELYWOUNDED;
+		
 	}
 
 	public Animation getAnim() {

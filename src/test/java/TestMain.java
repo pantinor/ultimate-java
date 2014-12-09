@@ -1,13 +1,15 @@
-import objects.Creature;
+import objects.ArmorSet;
 import objects.CreatureSet;
 import objects.MapSet;
 import objects.Party;
 import objects.SaveGame;
 import objects.TileSet;
+import objects.WeaponSet;
 import ultima.CombatScreen;
 import ultima.Constants;
 import ultima.Constants.CreatureType;
 import ultima.Constants.Maps;
+import ultima.Constants.WeaponType;
 import ultima.Context;
 import ultima.StartScreen;
 import util.Utils;
@@ -53,6 +55,9 @@ public class TestMain extends Game {
 						
 			MapSet maps = (MapSet) Utils.loadXml("maps.xml", MapSet.class);
 			maps.init(baseTileSet);
+			
+			WeaponSet weapons = (WeaponSet) Utils.loadXml("weapons.xml", WeaponSet.class);
+			ArmorSet armors = (ArmorSet) Utils.loadXml("armors.xml", ArmorSet.class);
 		
 			CreatureSet cs = (CreatureSet) Utils.loadXml("creatures.xml", CreatureSet.class);
 			cs.init();
@@ -66,6 +71,8 @@ public class TestMain extends Game {
 			}
 			Party party = new Party(sg);
 			context.setParty(party);
+			
+			sg.players[0].weapon = WeaponType.SLING;
 			
 			TiledMap tmap = new TmxMapLoader().load("tilemaps/combat_"+Maps.SHIPSHOR_CON.getId()+".tmx");
 			

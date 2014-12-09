@@ -1,7 +1,6 @@
 package ultima;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
 import objects.ArmorSet;
@@ -17,7 +16,6 @@ import objects.SaveGame;
 import objects.Tile;
 import objects.TileSet;
 import objects.WeaponSet;
-import util.FixedSizeArrayList;
 import util.Utils;
 import vendor.VendorClassSet;
 
@@ -38,7 +36,6 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -48,10 +45,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dungeon.DungeonScreen;
 
 public class GameScreen extends BaseScreen {
-	
-
-	public Stage stage;
-	public Skin skin;
 	
 	public static Context context;
 	
@@ -69,22 +62,19 @@ public class GameScreen extends BaseScreen {
 	
 	TiledMap map;
 	UltimaMapRenderer renderer;
-	Batch mapBatch, batch2;
+	Batch mapBatch, batch;
 	
-	BitmapFont font;
-
-	Vector2 currentMousePos;
-
 	Array<AtlasRegion> moongateTextures = new Array<AtlasRegion>();
 	int phase = 0, trammelphase = 0, trammelSubphase = 0, feluccaphase = 0;
 
-	public List<String> logs = new FixedSizeArrayList<String>(5);
-	public int showZstats = 0;
 	
 	public SecondaryInputProcessor sip;
 	Random rand = new Random();
 	
 	public GameScreen(Ultima4 mainGame) {
+		
+		scType = ScreenType.MAIN;
+		
 		this.mainGame = mainGame;
 		
 		stage = new Stage(new ScreenViewport());
@@ -119,8 +109,8 @@ public class GameScreen extends BaseScreen {
 			font = new BitmapFont();
 
 			font.setColor(Color.WHITE);		
-			batch2 = new SpriteBatch();
-			batch2.enableBlending();
+			batch = new SpriteBatch();
+			batch.enableBlending();
 			
 			mapCamera = new OrthographicCamera();
 			mapCamera.setToOrtho(false);
@@ -253,50 +243,44 @@ public class GameScreen extends BaseScreen {
 
 		mapBatch.end();
 
-		batch2.begin();
+		batch.begin();
 
 		// Vector3 v = getCurrentMapCoords();
 		// font.draw(batch2, "map coords: " + v, 10, 40);
 		// font.draw(batch2, "fps: " + Gdx.graphics.getFramesPerSecond(), 0,
 		// 20);
-		font.draw(batch2, "Food: " + context.getParty().getSaveGame().food / 100 + "    Gold: " + context.getParty().getSaveGame().gold, 5, Ultima4.SCREEN_HEIGHT - 5);
+		font.draw(batch, "Food: " + context.getParty().getSaveGame().food / 100 + "    Gold: " + context.getParty().getSaveGame().gold, 5, Ultima4.SCREEN_HEIGHT - 5);
 
 		int y = 5;
 		for (int i = context.getParty().getMembers().size() - 1; i >= 0; i--) {
 			PartyMember pm = context.getParty().getMember(i);
 			String s = (i + 1) + " - " + pm.getPlayer().name + "   " + pm.getPlayer().hp + "" + pm.getPlayer().status.getValue();
 			y = y + 18;
-			font.draw(batch2, s, Ultima4.SCREEN_WIDTH - 125, y);
+			font.draw(batch, s, Ultima4.SCREEN_WIDTH - 125, y);
 		}
 
 		y = 18 * 5;
 		for (String s : logs) {
-			font.draw(batch2, s, 5, y);
+			font.draw(batch, s, 5, y);
 			y = y - 18;
 		}
 
 		if (showZstats > 0) {
-			context.getParty().getSaveGame().renderZstats(showZstats, font, batch2, Ultima4.SCREEN_HEIGHT);
+			context.getParty().getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);
 		}
 
 		if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
-			batch2.draw(moonAtlas.findRegion("phase_" + trammelphase), 375, Ultima4.SCREEN_HEIGHT - 25, 25, 25);
-			batch2.draw(moonAtlas.findRegion("phase_" + feluccaphase), 400, Ultima4.SCREEN_HEIGHT - 25, 25, 25);
+			batch.draw(moonAtlas.findRegion("phase_" + trammelphase), 375, Ultima4.SCREEN_HEIGHT - 25, 25, 25);
+			batch.draw(moonAtlas.findRegion("phase_" + feluccaphase), 400, Ultima4.SCREEN_HEIGHT - 25, 25, 25);
 		}
 
-		batch2.end();
+		batch.end();
 
 		stage.act();
 		stage.draw();
 		
 		
 		
-	}
-
-	@Override
-	public void resize(int width, int height) {
-		mapCamera.viewportWidth = width;
-		mapCamera.viewportHeight = height;
 	}
 
 
@@ -576,19 +560,6 @@ public class GameScreen extends BaseScreen {
 	}
 		
 	
-	/**
-	 * get the map coords at the camera center
-	 */
-	public Vector3 getCurrentMapCoords() {
-		
-		Vector3 v = mapCamera.unproject(new Vector3(Ultima4.SCREEN_WIDTH/2, Ultima4.SCREEN_HEIGHT/2, 0));
-		
-		return new Vector3(
-				Math.round((v.x) / tilePixelWidth), 
-				Math.round(yDownPixel(v.y) / tilePixelHeight),
-				0);
-	}
-	
 	public void updateMoons(boolean showmoongates) {
 		
 		// world map only
@@ -665,6 +636,8 @@ public class GameScreen extends BaseScreen {
 					
 					if (System.currentTimeMillis() - context.getLastCommandTime() > 20*1000) {
 						keyUp(Keys.SPACE);
+						System.out.println("hit space bar on timer in game screen..");
+
 					}
 					
 				} catch (InterruptedException e) {
@@ -674,20 +647,7 @@ public class GameScreen extends BaseScreen {
 		
 	}
     
-	public void log(String s) {
-		logs.add(s);
-	}
-	
-	@Override
-	public void hide() {
-		Gdx.input.setInputProcessor(null);
-	}
 
-	@Override
-	public boolean mouseMoved (int screenX, int screenY) {
-		currentMousePos = new Vector2(screenX, screenY);
-		return false;
-	}
 
 
 

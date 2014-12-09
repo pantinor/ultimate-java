@@ -2,8 +2,10 @@ package ultima;
 
 import java.util.Random;
 
+import objects.Armor;
 import objects.BaseMap;
 import objects.Creature;
+import objects.Weapon;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
@@ -11,6 +13,10 @@ import com.badlogic.gdx.files.FileHandle;
 
 
 public interface Constants {
+	
+	public enum ScreenType {
+		MAIN,COMBAT,DUNGEON;
+	}
 	
 	public static int tilePixelWidth = 32;
 	public static int tilePixelHeight = 32;
@@ -493,7 +499,6 @@ public interface Constants {
 	public static final int MONSTERTABLE_SIZE = 32;
 	public static final int MONSTERTABLE_CREATURES_SIZE = 8;
 	
-	
 	public enum WeaponType {
 		HANDS,
 		STAFF,
@@ -512,6 +517,8 @@ public interface Constants {
 		MAGICWAND,
 		MYSTICSWORD;
 		
+		private Weapon weapon;
+
 		public static WeaponType get(int v) {
 			for (WeaponType x : values()) {
 				if (x.ordinal() == (v&0xff)) {
@@ -520,7 +527,18 @@ public interface Constants {
 			}
 			return null;
 		}
+
+		public Weapon getWeapon() {
+			return weapon;
+		}
+
+		public void setWeapon(Weapon weapon) {
+			this.weapon = weapon;
+		}
+		
 	}
+	
+	
 	
 	public enum ArmorType {
 		NONE,
@@ -532,6 +550,8 @@ public interface Constants {
 		MAGICPLATE,
 		MYSTICROBE;
 		
+		private Armor armor;
+		
 		public static ArmorType get(int v) {
 			for (ArmorType x : values()) {
 				if (x.ordinal() == (v&0xff)) {
@@ -539,6 +559,14 @@ public interface Constants {
 				}
 			}
 			return null;
+		}
+
+		public Armor getArmor() {
+			return armor;
+		}
+
+		public void setArmor(Armor armor) {
+			this.armor = armor;
 		}
 	}
 	
@@ -1192,28 +1220,6 @@ public interface Constants {
 		SLOWED_BY_WIND;
 	}
 
-	public enum MoveResult {
-		MOVE_SUCCEEDED(0x0001),
-		MOVE_END_TURN(0x0002),
-		MOVE_BLOCKED(0x0004),
-		MOVE_MAP_CHANGE(0x0008),
-		MOVE_TURNED(0x0010), // dungeons and ship movement
-		MOVE_DRIFT_ONLY(0x0020), // balloon -- no movement
-		MOVE_EXIT_TO_PARENT(0x0040),
-		MOVE_SLOWED(0x0080),
-		MOVE_MUST_USE_SAME_EXIT(0x0100);
-
-		private int intValue;
-
-		private MoveResult(int value) {
-			intValue = value;
-		}
-
-		public int getValue() {
-			return intValue;
-		}
-
-	}
 	
 	public class ClasspathFileHandleResolver implements FileHandleResolver {
 		public FileHandle resolve(String fileName) {
@@ -1296,5 +1302,19 @@ public interface Constants {
 		"With the final choice, the incense swells up around you.  The gypsy speaks as if from a great distance, her voice growing fainter with each word: \"So be it!  Thy path is chosen!\"",
 		"There is a moment of intense, wrenching vertigo.  As you open your eyes, a voice whispers within your mind, \"Seek the counsel of thy sovereign.\"  After a moment, the spinning subsides, and you open your eyes to..."
 	};
+	
+	public class Vector {
+		int x;
+		int y;
+		Vector(int x, int y) {
+			this.x=x;
+			this.y=y;
+		}
+		@Override
+		public String toString() {
+			return String.format("[x=%s, y=%s]", x, y);
+		}
+		
+	}
 
 }
