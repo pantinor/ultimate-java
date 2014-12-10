@@ -7,6 +7,7 @@ import objects.ArmorSet;
 import objects.BaseMap;
 import objects.Creature;
 import objects.CreatureSet;
+import objects.Drawable;
 import objects.MapSet;
 import objects.Moongate;
 import objects.Party;
@@ -71,6 +72,8 @@ public class GameScreen extends BaseScreen {
 	public SecondaryInputProcessor sip;
 	Random rand = new Random();
 	
+	GameTimer gameTimer;
+	
 	public GameScreen(Ultima4 mainGame) {
 		
 		scType = ScreenType.MAIN;
@@ -117,11 +120,20 @@ public class GameScreen extends BaseScreen {
 			
 			sip = new SecondaryInputProcessor(this, stage);
 
-			initGame();
+			context = new Context();
+
+			SaveGame sg = new SaveGame();
+			sg.read(PARTY_SAV_BASE_FILENAME);
 			
-			Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
+			Party party = new Party(sg);
+			context.setParty(party);
 			
-			new Thread(new GameTimer()).start();
+			phase = sg.trammelphase * 3;
+			
+			//TODO look for whether SAVE is in dungeon or on surface here
+			loadNextMap(Maps.WORLD, sg.x, sg.y);
+						
+			gameTimer = new GameTimer();
 					
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -129,27 +141,18 @@ public class GameScreen extends BaseScreen {
 		
 	}
 	
-	public void initGame() {
-		
-		context = new Context();
-
-		SaveGame sg = new SaveGame();
-		try {
-			sg.read(PARTY_SAV_BASE_FILENAME);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		Party party = new Party(sg);
-		context.setParty(party);
-		
-		phase = sg.trammelphase * 3;
-		
-		//TODO look for whether SAVE is in dungeon or on surface here
-		loadNextMap(Maps.WORLD, sg.x, sg.y);
-		
+	@Override
+	public void show() {
+		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
+		gameTimer.run = true;
+		new Thread(gameTimer).start();
 	}
 	
+	@Override
+	public void hide() {
+		gameTimer.run = false;
+	}
+		
 	public void loadNextMap(Maps m, int startx, int starty) {
 		
 		log("Entering " + m.getLabel() + "!");
@@ -190,25 +193,47 @@ public class GameScreen extends BaseScreen {
 						
 	}
 	
-	public void attackAt(Maps combat, CreatureType cr) {
+	public void attackAt(Maps combat, Creature cr) {
 		
 		Maps contextMap = Maps.get(context.getCurrentMap().getId());
 		BaseMap combatMap = combat.getMap();
 		
-		log("Attacking!");
-		
 		map = new TmxMapLoader().load("tilemaps/combat_"+combat.getId()+".tmx");
 		
 		context.setCurrentTiledMap(map);
-
-		CombatScreen sc = new CombatScreen(this, context.getParty(), contextMap, combatMap, map, cr, creatures, u5atlas, atlas);
+		
+		CombatScreen sc = new CombatScreen(mainGame, this, context.getParty(), contextMap, combatMap, map, cr.getTile(), creatures, u5atlas, atlas);
 		mainGame.setScreen(sc);
+		
+		currentEncounter = cr;
 
 	}
+	
+	public void endCombat(boolean isWon) {
+		if (currentEncounter != null) {
+			
+			Tile tile = context.getCurrentMap().getTile(currentEncounter.currentX, currentEncounter.currentY);
 
-	@Override
-	public void show() {
-		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
+			if (isWon) {
+			    /* add a chest, if the creature leaves one */
+			    if (!currentEncounter.getNochest() && !tile.getRule().has(TileAttrib.unwalkable)) {
+			    	Drawable chest = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "chest", atlas);
+			    	chest.setX(currentEncounter.currentPos.x);
+			    	chest.setY(currentEncounter.currentPos.y);
+			        stage.addActor(chest);
+			    }
+			    /* add a ship if you just defeated a pirate ship */
+			    else if (currentEncounter.getTile() == CreatureType.pirate_ship) {
+			    	Drawable ship = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "ship", atlas);
+			    	ship.setX(currentEncounter.currentPos.x);
+			    	ship.setY(currentEncounter.currentPos.y);
+			        stage.addActor(ship);
+			    }
+			}
+			
+			context.getCurrentMap().removeCreature(currentEncounter);
+			currentEncounter = null;
+		}
 	}
 
 	@Override
@@ -342,7 +367,7 @@ public class GameScreen extends BaseScreen {
 				log("You found " + l.getDesc() + ".");
 			}
 			
-		} else if (keycode == Keys.T || keycode == Keys.O || keycode == Keys.L) {
+		} else if (keycode == Keys.T || keycode == Keys.O || keycode == Keys.L || keycode == Keys.A) {
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);
 			return false;
@@ -627,17 +652,15 @@ public class GameScreen extends BaseScreen {
 	}
 	
 	class GameTimer implements Runnable {
-
+		boolean run = true;
 		public void run() {
-			while (true) {
+			while (run) {
 				try {
 					Thread.sleep(250);
 					updateMoons(true);		
 					
 					if (System.currentTimeMillis() - context.getLastCommandTime() > 20*1000) {
 						keyUp(Keys.SPACE);
-						System.out.println("hit space bar on timer in game screen..");
-
 					}
 					
 				} catch (InterruptedException e) {

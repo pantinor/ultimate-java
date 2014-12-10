@@ -6,7 +6,8 @@ public enum Sound {
 	ATTACK ("sound/attack.ogg", false, 0.3f), 
 	MOONGATE ("sound/moongate_flash.ogg", false, 0.3f), 
 	BLOCKED ("sound/blocked.ogg", false, 0.3f),
-	
+	FLEE ("sound/flee.ogg", false, 0.3f),
+
 	PC_ATTACK ("sound/pc_attack.ogg", false, 0.3f),
 	PC_STRUCK ("sound/pc_struck.ogg", false, 0.3f),
 	NPC_ATTACK ("sound/npc_attack.ogg", false, 0.3f),

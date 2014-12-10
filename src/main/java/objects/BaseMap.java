@@ -8,8 +8,10 @@ import java.util.concurrent.ThreadLocalRandom;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import objects.Party.PartyMember;
 import ultima.BaseScreen;
 import ultima.Constants;
 
@@ -49,6 +51,8 @@ public class BaseMap implements Constants {
 	private Shrine shrine;
 	
 	private List<Creature> creatures = new ArrayList<Creature>();
+	private List<PartyMember> combatPlayers;
+	
 	private List<Moongate> moongates;
 	private Tile[] tiles;
 	private float[][] shadownMap;
@@ -444,7 +448,7 @@ public class BaseMap implements Constants {
 	        return Direction.getRandomValidDirection(directionsToObject);
 
 	    /* there are no valid directions that lead to our target, just move wherever we can! */
-	    else return Direction.getRandomValidDirection(validMovesMask);
+	    else return null;//Direction.getRandomValidDirection(validMovesMask);
 	}
 	
 	public boolean isTileBlockedForRangedAttack(int x, int y) {
@@ -530,6 +534,15 @@ public class BaseMap implements Constants {
 				}
 			}
 			
+			if (combatPlayers != null) {
+				for(PartyMember p : combatPlayers) {
+					if (p.combatCr == null || p.fled) continue;
+					if (p.combatCr.currentX == x && p.combatCr.currentY == y) {
+						canmove = false;
+						break;
+					}
+				}
+			}
 			
 			if (rule == null || canmove || isDoorOpen(x, y)) {
 				mask = Direction.addToMask(dir, mask);
@@ -891,6 +904,15 @@ public class BaseMap implements Constants {
 		}
 
 		return null;
+	}
+
+	@XmlTransient
+	public List<PartyMember> getCombatPlayers() {
+		return combatPlayers;
+	}
+
+	public void setCombatPlayers(List<PartyMember> combatPlayers) {
+		this.combatPlayers = combatPlayers;
 	}
 	
 

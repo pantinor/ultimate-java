@@ -117,6 +117,21 @@ public class SecondaryInputProcessor extends InputAdapter {
 				
 				screen.log("Search > " + dir.toString());
 				
+			} else if (initialKeyCode == Keys.A) {
+				
+				screen.log("Attack > " + dir.toString());
+				
+				GameScreen gameScreen = (GameScreen)screen;
+				
+				for (Creature c : bm.getCreatures()) {
+					if (c.currentX == x && c.currentY == y) {
+						Tile t = bm.getTile(x, y);
+						gameScreen.attackAt(t.getCombatMap(), c);
+						return false;
+					}
+				}
+
+
 			}
 			
 			if(dialog == null) {
@@ -179,10 +194,12 @@ public class SecondaryInputProcessor extends InputAdapter {
 		Vector target = scr.attack(attacker, dir, x, y, range);
 
 		ProjectileActor p = scr.new ProjectileActor(Color.RED, x, y);
+		
 		Vector3 v = scr.getMapPixelCoords(target.x, target.y);
-		p.addAction(sequence(moveTo(v.x, v.y, .4f),fadeOut(.6f), new Action() {
+		
+		p.addAction(sequence(moveTo(v.x, v.y, .3f),fadeOut(.2f), new Action() {
 			public boolean act(float delta) {
-				Creature active = scr.getPlayers().get(scr.party.getActivePlayer());
+				Creature active = scr.party.getMembers().get(scr.party.getActivePlayer()).combatCr;
 				scr.finishTurn(active.currentX,active.currentY);
 				return true;
 			}

@@ -3,8 +3,6 @@ package ultima;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeIn;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.forever;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
 import java.util.ArrayList;
@@ -17,12 +15,10 @@ import objects.CreatureSet;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.Tile;
-import ultima.Constants.WeaponType;
 import util.Utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -40,7 +36,6 @@ import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -48,14 +43,13 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class CombatScreen extends BaseScreen {
 	
-	public Ultima4 mainGame;
+	private Ultima4 mainGame;
 	
 	public static int AREA_CREATURES = 16;
 	public static int AREA_PLAYERS  =  8;
 	
 	private CreatureType[] crSlots = new CreatureType[AREA_CREATURES];
 	
-	private List<Creature> players = new ArrayList<Creature>();
 	private CursorActor cursor;
 
 	private Maps contextMap;
@@ -70,14 +64,17 @@ public class CombatScreen extends BaseScreen {
 	private SpriteBatch batch;
 	private SecondaryInputProcessor sip;
 
-	public CombatScreen(Screen returnScreen, Party party, Maps contextMap, BaseMap combatMap, TiledMap tmap, CreatureType cr, CreatureSet cs, TextureAtlas a1, TextureAtlas a2) {
+	public CombatScreen(Ultima4 mainGame, BaseScreen returnScreen, Party party, Maps contextMap, BaseMap combatMap, TiledMap tmap, CreatureType cr, CreatureSet cs, TextureAtlas a1, TextureAtlas a2) {
 		
 		scType = ScreenType.COMBAT;
 
+		this.mainGame = mainGame;
 		this.returnScreen = returnScreen;
 		this.contextMap = contextMap;
 		this.combatMap = combatMap;
+		
 		this.crType = cr;
+		
 		this.party = party;
 		this.creatureSet = cs;
 		
@@ -116,7 +113,7 @@ public class CombatScreen extends BaseScreen {
 			
 			if (crSlots[index] == null) continue;
 			
-			Creature c = creatureSet.getInstance(crSlots[index], a2, a1);
+			Creature c = creatureSet.getInstance(crSlots[index], a1, a2);
 			
 			c.currentX = startX;
 			c.currentY = startY;
@@ -135,21 +132,23 @@ public class CombatScreen extends BaseScreen {
 			
 			if (index + 1 > party.getSaveGame().members) continue;
 			
-			Creature c = creatureSet.getInstance(CreatureType.get(party.getMember(index).getPlayer().klass.toString().toLowerCase()), a2, a1);
+			Creature c = creatureSet.getInstance(CreatureType.get(party.getMember(index).getPlayer().klass.toString().toLowerCase()), a1, a2);
 			c.currentX = startX;
 			c.currentY = startY;
 			c.currentPos = getMapPixelCoords(startX, startY);
 
-			players.add(c);
+			party.getMember(index).combatCr = c;
 			
 			if (index == 0) cursor.setPos(c.currentPos);
 		}
+		
+		combatMap.setCombatPlayers(party.getMembers());
 		
 		newMapPixelCoords = getMapPixelCoords(5, 5);
 		changeMapPosition = true;
 	}
 	
-
+	
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(this);
@@ -252,11 +251,11 @@ public class CombatScreen extends BaseScreen {
 			renderer.getBatch().draw(cr.getAnim().getKeyFrame(time, true), cr.currentPos.x, cr.currentPos.y, tilePixelWidth, tilePixelHeight);
 		}
 		
-		for (Creature cr : players) {
-			if (cr.currentPos == null  ) {
+		for(PartyMember p : party.getMembers()) {
+			if (p.combatCr == null || p.combatCr.currentPos == null || p.fled) {
 				continue;
 			}
-			renderer.getBatch().draw(cr.getAnim().getKeyFrame(time, true), cr.currentPos.x, cr.currentPos.y, tilePixelWidth, tilePixelHeight);
+			renderer.getBatch().draw(p.combatCr.getAnim().getKeyFrame(time, true), p.combatCr.currentPos.x, p.combatCr.currentPos.y, tilePixelWidth, tilePixelHeight);
 		}
 		
 		renderer.getBatch().end();
@@ -290,25 +289,25 @@ public class CombatScreen extends BaseScreen {
 	@Override
 	public boolean keyUp (int keycode) {
 		
-		Creature active = players.get(party.getActivePlayer());
+		Creature active = party.getActivePartyMember().combatCr;
 		
 		if (keycode == Keys.UP) {
-			if (!preMove(active.currentX,active.currentY, Direction.NORTH)) return false;
+			if (!preMove(active, Direction.NORTH)) return false;
 			active.currentY--;
 			active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
 			
 		} else if (keycode == Keys.DOWN) {
-			if (!preMove(active.currentX,active.currentY, Direction.SOUTH)) return false;
+			if (!preMove(active, Direction.SOUTH)) return false;
 			active.currentY++;
 			active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
 			
 		} else if (keycode == Keys.RIGHT) {
-			if (!preMove(active.currentX,active.currentY, Direction.EAST)) return false;
+			if (!preMove(active, Direction.EAST)) return false;
 			active.currentX++;
 			active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
 			
 		} else if (keycode == Keys.LEFT) {
-			if (!preMove(active.currentX,active.currentY, Direction.WEST)) return false;
+			if (!preMove(active, Direction.WEST)) return false;
 			active.currentX--;
 			active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
 			
@@ -325,23 +324,40 @@ public class CombatScreen extends BaseScreen {
 
 	}
 	
-	private boolean preMove(int x, int y, Direction dir) {
-				
-		Vector3 next = null;
-		if (dir == Direction.NORTH) next = new Vector3(x,y-1,0);
-		if (dir == Direction.SOUTH) next = new Vector3(x,y+1,0);
-		if (dir == Direction.EAST) next = new Vector3(x+1,y,0);
-		if (dir == Direction.WEST) next = new Vector3(x-1,y,0);
+	private boolean preMove(Creature active, Direction dir) {
+		
+		int x = active.currentX;
+		int y = active.currentY;
+		
+		Vector next = null;
+		if (dir == Direction.NORTH) next = new Vector(x,y-1);
+		if (dir == Direction.SOUTH) next = new Vector(x,y+1);
+		if (dir == Direction.EAST) next = new Vector(x+1,y);
+		if (dir == Direction.WEST) next = new Vector(x-1,y);
 				
 		if (next.x > combatMap.getWidth()-1 || next.x < 0 || next.y > combatMap.getHeight()-1 || next.y < 0) {
-			mainGame.setScreen(returnScreen);
-			return false;
-		}
+		    
+			/* active player left/fled combat */
+			PartyMember ap = party.getActivePartyMember();
+			ap.fled = true;
+			Sounds.play(Sound.FLEE);
+			
+			if (party.getAbleCombatPlayers() == 0) {
+				end();
+				return false;
+			} else {
+				int ni = party.getNextActiveIndex();
+				Creature nextActivePlayer = party.getMember(ni).combatCr; 
+				cursor.setPos(nextActivePlayer.currentPos);
+			}
+			
+		} else {
 		
-		int mask = combatMap.getValidMovesMask(x, y);
-		if (!Direction.isDirInMask(dir, mask)) {
-			Sounds.play(Sound.BLOCKED);
-			return false;
+			int mask = combatMap.getValidMovesMask(x, y);
+			if (!Direction.isDirInMask(dir, mask)) {
+				Sounds.play(Sound.BLOCKED);
+				return false;
+			}
 		}
 		
 		return true;
@@ -353,9 +369,22 @@ public class CombatScreen extends BaseScreen {
 
 		combatMap.moveObjects(this, currentX, currentY);
 		
-		Creature nextActivePlayer = players.get(party.nextActivePlayer()); 
+		PartyMember next = party.getAndSetNextActivePlayer();
+		Creature nextActivePlayer = next.combatCr; 
 		cursor.setPos(nextActivePlayer.currentPos);
 		
+	}
+	
+	public void end() {
+		
+		boolean isWon = combatMap.getCreatures().size() == 0;
+		returnScreen.endCombat(isWon);
+		
+		combatMap.setCombatPlayers(null);
+		
+		party.reset();
+
+		mainGame.setScreen(returnScreen);
 	}
 	
 
@@ -534,7 +563,7 @@ public class CombatScreen extends BaseScreen {
 	
 	private Texture getCursorTexture() {
 		Pixmap pixmap = new Pixmap(tilePixelHeight,tilePixelHeight, Format.RGBA8888);
-		pixmap.setColor(0.9f, 0.9f, 0.9f, 0.7f);
+		pixmap.setColor(Color.YELLOW);
 		int w = 4;
 		pixmap.fillRectangle(0, 0, w, tilePixelHeight);
 		pixmap.fillRectangle(tilePixelHeight - w, 0, w, tilePixelHeight);
@@ -591,11 +620,6 @@ public class CombatScreen extends BaseScreen {
 		}
 		
 	}
-
-	public List<Creature> getPlayers() {
-		return players;
-	}
-
 	
 
 }

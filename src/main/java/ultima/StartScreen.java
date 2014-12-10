@@ -252,7 +252,11 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 		if (keycode == Keys.I) {
 			state = State.ASK_NAME;	
 		} else if (keycode == Keys.J) {
-			mainGame.setScreen(new GameScreen(mainGame));
+			if (!Gdx.files.internal(PARTY_SAV_BASE_FILENAME).file().exists()) {
+				state = State.ASK_NAME;	
+			} else {
+				mainGame.setScreen(new GameScreen(mainGame));
+			}
 		}
 		
 		return false;

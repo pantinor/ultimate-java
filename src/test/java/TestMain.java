@@ -7,6 +7,9 @@ import objects.TileSet;
 import objects.WeaponSet;
 import ultima.CombatScreen;
 import ultima.Constants;
+import ultima.Constants.NpcDefaults;
+import ultima.GameScreen;
+import ultima.Constants.CannotJoinError;
 import ultima.Constants.CreatureType;
 import ultima.Constants.Maps;
 import ultima.Constants.WeaponType;
@@ -72,14 +75,20 @@ public class TestMain extends Game {
 			Party party = new Party(sg);
 			context.setParty(party);
 			
+			sg.players[0].hpMax = 500;
+			
+			party.join(NpcDefaults.Mariah.name());
+			party.join(NpcDefaults.Shamino.name());
+
+			
 			sg.players[0].weapon = WeaponType.SLING;
 			
 			TiledMap tmap = new TmxMapLoader().load("tilemaps/combat_"+Maps.SHIPSHOR_CON.getId()+".tmx");
 			
-			TextureAtlas a1 = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
-			TextureAtlas a2 = new TextureAtlas(Gdx.files.classpath("tilemaps/ultima5-atlas.txt"));
+			TextureAtlas a2 = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
+			TextureAtlas a1 = new TextureAtlas(Gdx.files.classpath("tilemaps/ultima5-atlas.txt"));
 	
-			setScreen(new CombatScreen(null, party, Maps.WORLD, Maps.SHIPSHOR_CON.getMap(), tmap, CreatureType.orc, cs, a1, a2));
+			setScreen(new CombatScreen(null, null, party, Maps.WORLD, Maps.SHIPSHOR_CON.getMap(), tmap, CreatureType.orc, cs, a1, a2));
 			
 		} catch (Exception e) {
 			e.printStackTrace();

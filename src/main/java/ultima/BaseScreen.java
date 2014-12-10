@@ -3,6 +3,7 @@ package ultima;
 import java.util.List;
 import java.util.Random;
 
+import objects.Creature;
 import util.FixedSizeArrayList;
 
 import com.badlogic.gdx.Gdx;
@@ -20,7 +21,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants {
 	protected ScreenType scType;
 	
 	protected Ultima4 mainGame;
-	protected Screen returnScreen;
+	protected BaseScreen returnScreen;
 	
 	protected Stage stage;
 	protected Skin skin;
@@ -39,6 +40,8 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants {
 	protected BitmapFont font;
 
 	protected Vector2 currentMousePos;
+	
+	protected Creature currentEncounter;
 	
 	public int yDownPixel(float y) {
 		return mapPixelHeight - Math.round(y) - tilePixelHeight;
@@ -76,6 +79,9 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants {
 	
 	public abstract void finishTurn(int currentX, int currentY) ;
 
+	public void endCombat(boolean isWon) {
+
+	}
 	
 	@Override
 	public void hide() {

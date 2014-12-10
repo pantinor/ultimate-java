@@ -8,6 +8,8 @@ import objects.SaveGame.SaveGamePlayerRecord;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.badlogic.gdx.math.Vector3;
+
 import ultima.Constants;
 import ultima.GameScreen;
 import util.Utils;
@@ -72,13 +74,76 @@ public class Party implements Constants {
 	public PartyMember getActivePartyMember() {
 		return members.get(activePlayer);
 	}
-
-	public int nextActivePlayer() {
-		this.activePlayer++;
-		if (this.activePlayer >= saveGame.members) {
-			this.activePlayer = 0;
+	
+	public int getAbleCombatPlayers() {
+		int n = 0;
+		for (int i=0;i<members.size();i++) {
+			if (!members.get(i).isDisabled()) {
+				n++;
+			}
 		}
-		return this.activePlayer;
+		return n;
+	}
+	
+	/**
+	 * Gets the next active index without changing the active index
+	 */
+	public int getNextActiveIndex() {
+		boolean allbad = true;
+		for (int i=0;i<members.size();i++) {
+			if (!members.get(i).isDisabled()) {
+				allbad = false;
+			}
+		}
+		if (allbad) return -1;
+		
+		int tmp = activePlayer;
+		boolean flag = true;
+		while (flag) {
+			tmp ++;
+			if (tmp >= members.size()) {
+				tmp = 0;
+			} 
+			if (!members.get(tmp).isDisabled()) {
+				flag = false;
+			}
+		}
+		return tmp;
+	}
+
+	/**
+	 * Gets and sets the next axctive player
+	 */
+	public PartyMember getAndSetNextActivePlayer() {
+		
+		boolean allbad = true;
+		for (int i=0;i<members.size();i++) {
+			if (!members.get(i).isDisabled()) {
+				allbad = false;
+			}
+		}
+		if (allbad) return null;
+		
+		PartyMember p = null;
+		boolean flag = true;
+		while (flag) {
+			this.activePlayer ++;
+			if (activePlayer >= members.size()) {
+				activePlayer = 0;
+			} 
+			if (!members.get(activePlayer).isDisabled()) {
+				p = members.get(activePlayer);
+				flag = false;
+			}
+		}
+		return p;
+	}
+	
+	public void reset() {
+		for (PartyMember pm : members) {
+			pm.fled = false;
+		}
+		activePlayer  = 0;
 	}
 
 	public void setTransport(Tile transport) {
@@ -97,6 +162,10 @@ public class Party implements Constants {
 		
 		private SaveGamePlayerRecord player;
 		private Party party;
+		
+		public boolean fled;
+		public Creature combatCr;
+
 		
 		public PartyMember(Party py, SaveGamePlayerRecord p) {
 			this.party = py;
@@ -202,7 +271,7 @@ public class Party implements Constants {
 		}
 
 		public boolean isDisabled() {
-		    return (player.status == StatusType.GOOD || player.status == StatusType.POISONED) ? false : true;
+		    return ((player.status == StatusType.GOOD || player.status == StatusType.POISONED) && !fled) ? false : true;
 		}
 
 		/**

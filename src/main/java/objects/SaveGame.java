@@ -142,8 +142,9 @@ public class SaveGame implements Constants {
 			is = new FileInputStream(Gdx.files.internal(strFilePath).file());
 			dis = new LittleEndianDataInputStream(is);
 		} catch (Exception e) {
-			is = this.getClass().getResourceAsStream("/data/" + PARTY_SAV_BASE_FILENAME);
-			dis = new LittleEndianDataInputStream(is);
+			throw new Exception("Could not read save game file.");
+			//is = this.getClass().getResourceAsStream("/data/" + PARTY_SAV_BASE_FILENAME);
+			//dis = new LittleEndianDataInputStream(is);
 		}
 		read(dis);
 	}
