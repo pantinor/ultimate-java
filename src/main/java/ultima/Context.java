@@ -1,11 +1,15 @@
 package ultima;
 
+import java.util.Random;
+
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
 
+import objects.Aura;
 import objects.BaseMap;
 import objects.Party;
 import objects.Tile;
+import ultima.Constants.Direction;
 
 
 public class Context implements Constants {
@@ -21,12 +25,13 @@ public class Context implements Constants {
     private Direction windDirection = Direction.NORTH;
     private int windCounter;
     private boolean windLock;
-    //private Aura aura;    
+    private Aura aura = new Aura();    
     private int horseSpeed;
     private int opacity;
     private TransportContext transportContext;
     private long lastCommandTime = System.currentTimeMillis();
     private Object lastShip;
+    private Random rand = new Random();
     
 	public int getLine() {
 		return line;
@@ -167,6 +172,56 @@ public class Context implements Constants {
     
 		return Maps.BRICK_CON;
 	}
+	public Aura getAura() {
+		return aura;
+	}
+	public void setAura(AuraType t, int duration) {
+		this.aura.set(t, duration);
+	}
+	
+    
+    /**
+     * Default handler for slowing movement.
+     * Returns true if slowed, false if not slowed
+     */
+    public boolean slowedByTile(Tile tile) {
+        boolean slow;
+        
+        TileSpeed ts = tile.getRule().getSpeed();
+        
+        switch (ts) {
+        case SLOW:
+            slow = rand.nextInt(8) == 0;
+            break;
+        case VSLOW:
+            slow = rand.nextInt(4) == 0;
+            break;
+        case VVSLOW:
+            slow = rand.nextInt(2) == 0;
+            break;
+        case FAST:
+        default:
+            slow = false;
+            break;
+        }
+
+        return slow;
+    }
+
+    /**
+     * Slowed depending on the direction of object with respect to wind direction
+     * Returns true if slowed, false if not slowed
+     */
+    public boolean slowedByWind(Direction direction) {
+        /* 1 of 4 moves while trying to move into the wind succeeds */
+        if (direction == this.windDirection)
+            return (party.getSaveGame().moves % 4) != 0;
+        /* 1 of 4 moves while moving directly away from wind fails */
+        else if (direction == Direction.reverse(windDirection))
+            return (party.getSaveGame().moves % 4) == 3;    
+        else
+            return false;
+    }
     
 
 }

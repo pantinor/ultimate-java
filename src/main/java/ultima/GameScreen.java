@@ -17,6 +17,8 @@ import objects.SaveGame;
 import objects.Tile;
 import objects.TileSet;
 import objects.WeaponSet;
+import util.UltimaMapRenderer;
+import util.UltimaTiledMapLoader;
 import util.Utils;
 import vendor.VendorClassSet;
 
@@ -33,10 +35,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -56,8 +56,12 @@ public class GameScreen extends BaseScreen {
 	public static VendorClassSet vendorClassSet;
 	
 	MapSet maps;
-	TextureAtlas atlas;
-	TextureAtlas u5atlas;
+	
+	public static final String TILESET_IMAGE_SOURCE = "tiles-ega.png";
+	public TextureAtlas egaatlas;
+	//public TextureAtlas atlas;
+	//public TextureAtlas u5atlas;
+	
 	TextureAtlas moonAtlas;
 	Animation avatar;
 	
@@ -84,8 +88,9 @@ public class GameScreen extends BaseScreen {
 		skin = new Skin(Gdx.files.classpath("skin/uiskin.json"));
 		
 		try {
-			atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
-			u5atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/ultima5-atlas.txt"));
+			egaatlas = new TextureAtlas(Gdx.files.classpath("tilemaps/tiles-ega-atlas.txt"));
+			//atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
+			//u5atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/ultima5-atlas.txt"));
 			
 			baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	
 			baseTileSet.setMaps();
@@ -101,10 +106,10 @@ public class GameScreen extends BaseScreen {
 			creatures = (CreatureSet) Utils.loadXml("creatures.xml", CreatureSet.class);
 			creatures.init();
 
-			avatar = new Animation(0.25f, atlas.findRegions("avatar"));
+			avatar = new Animation(0.25f, egaatlas.findRegions("avatar"));
 			
 			//textures for the moongates
-			moongateTextures = atlas.findRegions("moongate");
+			moongateTextures = egaatlas.findRegions("moongate");
 			//textures for the phases of  the moon
 			moonAtlas = new TextureAtlas(Gdx.files.classpath("graphics/moon-atlas.txt"));
 
@@ -169,23 +174,18 @@ public class GameScreen extends BaseScreen {
 			BaseMap bm = m.getMap();
 			context.setCurrentMap(bm);
 					
-			map = new TmxMapLoader().load("tilemaps/map_"+m.getId()+".tmx");
+			map = new UltimaTiledMapLoader(m, egaatlas, m.getMap().getWidth(), m.getMap().getHeight(), 16, 16).load();
 			context.setCurrentTiledMap(map);
-			
-			//set the other layers on the maps to invisible
-			for (MapLayer l : map.getLayers()) l.setVisible(false);
-			map.getLayers().get("Map Layer").setVisible(true);
 
 			if (renderer != null) renderer.dispose();
 			renderer = new UltimaMapRenderer(this, bm, map, 2f);
 
-			//if (mapBatch != null) mapBatch.dispose();
 			mapBatch = renderer.getBatch();
 	
 			MapProperties prop = map.getProperties();
 			mapPixelHeight = prop.get("height", Integer.class) * tilePixelWidth;
 			
-			bm.initObjects(this, u5atlas, atlas);
+			bm.initObjects(this, egaatlas, egaatlas);
 			
 			newMapPixelCoords = getMapPixelCoords(startx, starty);
 			changeMapPosition = true;
@@ -198,11 +198,11 @@ public class GameScreen extends BaseScreen {
 		Maps contextMap = Maps.get(context.getCurrentMap().getId());
 		BaseMap combatMap = combat.getMap();
 		
-		map = new TmxMapLoader().load("tilemaps/combat_"+combat.getId()+".tmx");
+		map = new UltimaTiledMapLoader(combat, egaatlas, combat.getMap().getWidth(), combat.getMap().getHeight(), 16, 16).load();
 		
 		context.setCurrentTiledMap(map);
 		
-		CombatScreen sc = new CombatScreen(mainGame, this, context.getParty(), contextMap, combatMap, map, cr.getTile(), creatures, u5atlas, atlas);
+		CombatScreen sc = new CombatScreen(mainGame, this, context, contextMap, combatMap, map, cr.getTile(), creatures, egaatlas, egaatlas);
 		mainGame.setScreen(sc);
 		
 		currentEncounter = cr;
@@ -215,20 +215,44 @@ public class GameScreen extends BaseScreen {
 			Tile tile = context.getCurrentMap().getTile(currentEncounter.currentX, currentEncounter.currentY);
 
 			if (isWon) {
+				
+				log("Victory!");
+				
+				if (!currentEncounter.getGood()) {
+                    context.getParty().adjustKarma(KarmaAction.KILLED_EVIL);
+				}
+				
 			    /* add a chest, if the creature leaves one */
 			    if (!currentEncounter.getNochest() && !tile.getRule().has(TileAttrib.unwalkable)) {
-			    	Drawable chest = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "chest", atlas);
+			    	Drawable chest = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "chest", egaatlas);
 			    	chest.setX(currentEncounter.currentPos.x);
 			    	chest.setY(currentEncounter.currentPos.y);
 			        stage.addActor(chest);
 			    }
 			    /* add a ship if you just defeated a pirate ship */
 			    else if (currentEncounter.getTile() == CreatureType.pirate_ship) {
-			    	Drawable ship = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "ship", atlas);
+			    	Drawable ship = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "ship", egaatlas);
 			    	ship.setX(currentEncounter.currentPos.x);
 			    	ship.setY(currentEncounter.currentPos.y);
 			        stage.addActor(ship);
 			    }
+			} else {
+				
+
+				if (context.getParty().getAbleCombatPlayers() > 0) {
+	                log("Battle is lost!");
+
+	                /* minus points for fleeing from evil creatures */
+	                if (!currentEncounter.getGood()) {
+	                    context.getParty().adjustKarma(KarmaAction.FLED_EVIL);
+	                } else {
+	                    context.getParty().adjustKarma(KarmaAction.FLED_GOOD);
+	                }
+	            } else {
+	            	//death scene
+	            	mainGame.setScreen(new DeathScreen(mainGame, this, context.getParty().getMember(0).getPlayer().name));
+	            	loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
+	            }
 			}
 			
 			context.getCurrentMap().removeCreature(currentEncounter);
@@ -559,27 +583,27 @@ public class GameScreen extends BaseScreen {
 
 		if (tile.getRule().has(TileAttrib.sailable)) {
 			randId = CreatureType.pirate_ship.getValue();
-			randId += rand.nextInt(7);
-			Creature cr = creatures.getInstance(CreatureType.get(randId), u5atlas, atlas);
+			randId += rand.nextInt(6);
+			Creature cr = creatures.getInstance(CreatureType.get(randId), egaatlas, egaatlas);
 			return cr;
 		} else if (tile.getRule().has(TileAttrib.swimmable)) {
 			randId = CreatureType.nixie.getValue();
-			randId += rand.nextInt(5);
-			Creature cr = creatures.getInstance(CreatureType.get(randId), u5atlas, atlas);
+			randId += rand.nextInt(4);
+			Creature cr = creatures.getInstance(CreatureType.get(randId), egaatlas, egaatlas);
 			return cr;
 		}
 
 		if (context.getParty().getSaveGame().moves > 30000) {
-			era = 0x0f;
+			era = 15;
 		} else if (context.getParty().getSaveGame().moves > 20000) {
-			era = 0x07;
+			era = 7;
 		} else {
-			era = 0x03;
+			era = 3;
 		}
 
 		randId = CreatureType.orc.getValue();
-		randId += era & rand.nextInt(0x10) & rand.nextInt(0x10);
-		Creature cr = creatures.getInstance(CreatureType.get(randId), u5atlas, atlas);
+		randId += era & rand.nextInt(16) & rand.nextInt(16);
+		Creature cr = creatures.getInstance(CreatureType.get(randId), egaatlas, egaatlas);
 		
 		return cr;
 	}

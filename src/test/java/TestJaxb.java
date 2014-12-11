@@ -81,18 +81,13 @@ public class TestJaxb {
 	//@Test
 	public void testMaps() throws Exception {
 				
-		File file2 = new File("target/classes/xml/tileset-base.xml");
-		JAXBContext jaxbContext = JAXBContext.newInstance(TileSet.class);
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		TileSet ts = (TileSet) jaxbUnmarshaller.unmarshal(file2);
-		ts.setMaps();
+		TileSet baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	
+		baseTileSet.setMaps();
+					
+		MapSet maps = (MapSet) Utils.loadXml("maps.xml", MapSet.class);
+		maps.init(baseTileSet);
 		
-		File file3 = new File("target/classes/xml/maps.xml");
-		jaxbContext = JAXBContext.newInstance(MapSet.class);
-		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		MapSet ms = (MapSet) jaxbUnmarshaller.unmarshal(file3);
-		
-		for (BaseMap map : ms.getMaps()) {
+		for (BaseMap map : maps.getMaps()) {
 			
 			if (map.getCity() == null || map.getCity().getTlk_fname() == null) {
 				continue;
@@ -409,7 +404,7 @@ public class TestJaxb {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testTileAttrib() throws Exception {
 		
 		for (TileAttrib r : TileAttrib.values()) {
@@ -422,6 +417,24 @@ public class TestJaxb {
 		assert(TileRule.water.has(TileAttrib.unwalkable));
 		assert(!TileRule.grass.has(TileAttrib.unwalkable));
 		
+	}
+	
+	@Test
+	public void testMovement() throws Exception {
+				
+		TileSet baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	
+		baseTileSet.setMaps();
+					
+		MapSet maps = (MapSet) Utils.loadXml("maps.xml", MapSet.class);
+		maps.init(baseTileSet);
+		
+		BaseMap map = Maps.BRICK_CON.getMap();
+		
+		int d = map.movementDistance(8, 3, 1, 9);
+
+
+		
+
 	}
 
 }

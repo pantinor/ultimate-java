@@ -97,8 +97,8 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants {
 
 	@Override
 	public void resize(int width, int height) {
-		mapCamera.viewportWidth = width;
-		mapCamera.viewportHeight = height;
+		//mapCamera.viewportWidth = width;
+		//mapCamera.viewportHeight = height;
 	}
 	
 	@Override

@@ -8,10 +8,7 @@ import objects.SaveGame.SaveGamePlayerRecord;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.badlogic.gdx.math.Vector3;
-
 import ultima.Constants;
-import ultima.GameScreen;
 import util.Utils;
 
 
@@ -154,8 +151,11 @@ public class Party implements Constants {
 		this.torchduration = torchduration;
 	}
 	
-	public void adjustFood(int food) {
-	    saveGame.food = Utils.adjustValue(saveGame.food, food, 999900, 0);
+	public void adjustFood(int v) {
+	    saveGame.food = Utils.adjustValue(saveGame.food, v, 999900, 0);
+	}
+	public void adjustGold(int v) {
+	    saveGame.gold = Utils.adjustValue(saveGame.gold, v, 9999, 0);
 	}
 
 	public class PartyMember {
@@ -303,7 +303,7 @@ public class Party implements Constants {
 			player.status = StatusType.GOOD;    
 		}
 		
-		public boolean applyDamage(int damage) {
+		public boolean applyDamage(int damage, boolean combatRelatedDamage) {
 		    int newHp = player.hp;
 
 		    if (isDead())
@@ -318,7 +318,7 @@ public class Party implements Constants {
 		    
 		    player.hp = newHp;
 
-		    if ((GameScreen.context.getCurrentMap().getType() == MapType.combat) && isDead()) {
+		    if (combatRelatedDamage && isDead()) {
 		        //Coords p = getCoords();                    
 		        //Map *map = getMap();
 		        //map->annotations->add(p, Tileset::findTileByName("corpse")->getId())->setTTL(party->size() * 2);
@@ -329,6 +329,15 @@ public class Party implements Constants {
 		    }
 
 		    return true;
+		}
+		
+		public int getAttackBonus() {
+		    if (player.dex >= 40) return 255;
+		    return player.dex;
+		}
+
+		public int getDefense() {
+		    return player.armor.getArmor().getDefense();
 		}
 
 	}
@@ -545,7 +554,7 @@ public class Party implements Constants {
 
 				case POISONED:
 					// soundPlay(SOUND_POISON_DAMAGE, false);
-					member.applyDamage(2);
+					member.applyDamage(2, false);
 					break;
 
 				default:

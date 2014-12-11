@@ -55,7 +55,7 @@ public class HealerService extends BaseVendor {
 			PartyMember pm = party.getMember(currentCount-1);
 			if (pm == null) break;
 			if (pm.heal(currentSelectedItem.getHealType())) {
-				party.getSaveGame().gold = party.getSaveGame().gold - currentSelectedItem.getPrice();
+				party.adjustGold(-currentSelectedItem.getPrice());
 				//Sounds.play(Sound.MOONGATE);
 				displayToScreen("There you are. Please be more careful next time.");
 			} else {

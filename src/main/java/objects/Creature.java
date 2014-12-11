@@ -1,7 +1,10 @@
 package objects;
 
+import java.util.Random;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ultima.Constants;
@@ -27,6 +30,8 @@ public class Creature implements Constants {
 	private boolean good;
 	
 	private int hp;
+	private StatusType status;
+	private boolean isVisible;
 	private int basehp;
 	private int id;
 	private String name;
@@ -371,7 +376,7 @@ public class Creature implements Constants {
 	public void setHP(int h) {
 		this.hp = h;
 	}
-	public CreatureStatus getStatus() {
+	public CreatureStatus getDamageStatus() {
 		
 		int heavy_threshold, light_threshold, crit_threshold;
 
@@ -405,6 +410,55 @@ public class Creature implements Constants {
 	@Override
 	public String toString() {
 		return String.format("Creature [id=%s, name=%s, tile=%s]", id, name, tile);
+	}
+
+	@XmlTransient
+	public StatusType getStatus() {
+		return status;
+	}
+
+	public void setStatus(StatusType status) {
+		this.status = status;
+	}
+	
+	public boolean castsSleep() {
+		return (casts != null && casts.equals("sleep"));
+	}
+	public boolean negates() {
+		return (casts != null && casts.equals("negate"));
+	}
+	
+	public boolean stealsFood() {
+		return (steals != null && steals.equals("food"));
+	}
+	public boolean stealsGold() {
+		return (steals != null && steals.equals("gold"));
+	}
+	
+	public int getAttackBonus() {
+	    return 0;
+	}
+
+	public int getDefense() {
+	    return 128;
+	}
+	
+	public int getDamage() {
+	    int damage, val, x;
+	    val = basehp;    
+	    x = new Random().nextInt(val >> 2);
+	    damage = (x >> 4) + ((x >> 2) & 0xfc);
+	    damage += x % 10;
+	    return damage;
+	}
+	
+	@XmlTransient
+	public boolean getVisible() {
+		return isVisible;
+	}
+
+	public void setVisible(boolean isVisible) {
+		this.isVisible = isVisible;
 	}
 
 

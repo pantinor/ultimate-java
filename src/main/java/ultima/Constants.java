@@ -141,6 +141,12 @@ public interface Constants {
 		FOLLOW_AVATAR,
 		ATTACK_AVATAR;
 	}
+	
+	public enum SlowedType {
+	    SLOWED_BY_NOTHING,
+	    SLOWED_BY_TILE,
+	    SLOWED_BY_WIND;
+	};
 
 	public enum TileSpeed {
 		FAST,
@@ -342,6 +348,21 @@ public interface Constants {
 			if (n==0) return null;
 			int rand = new Random().nextInt(n);
 			return d[rand];
+		}
+		
+		public static Direction reverse(Direction dir) {
+		    switch (dir) {
+		    case WEST:
+		        return EAST;
+		    case NORTH:
+		        return SOUTH;
+		    case EAST:
+		        return WEST;
+		    case SOUTH:
+		        return NORTH;
+		    default: break;
+		    }
+		    return null;
 		}
 
 	};
@@ -1055,6 +1076,15 @@ public interface Constants {
 		JOIN_NOT_EXPERIENCED,
 		JOIN_NOT_VIRTUOUS;
 	}
+	
+	public enum CombatAction {
+	    ATTACK,
+	    CAST_SLEEP,
+	    ADVANCE,
+	    RANGED,
+	    FLEE,
+	    TELEPORT ;
+	}
 
 
 	public enum CreatureAttrib {
@@ -1119,6 +1149,15 @@ public interface Constants {
 		BARELYWOUNDED;
 	}
 	
+	public enum AuraType {
+        NONE,
+        HORN,
+        JINX,
+        NEGATE,
+        PROTECTION,
+        QUICKNESS;
+	}
+	
 	public enum CreatureType {
 		horse1(0),
 		horse2(1),
@@ -1147,7 +1186,7 @@ public interface Constants {
 		sea_serpent(21),
 		sea_horse(22),
 		whirlpool(23),
-		twister(24),
+		//twister(24),
 		
 		rat(25),
 		bat(26),
@@ -1212,15 +1251,7 @@ public interface Constants {
 
 	public static final int MAX_CREATURES_ON_MAP = 4;
 	public static final int MAX_CREATURE_DISTANCE = 24;
-	
-	
-	public enum SlowedType {
-		SLOWED_BY_NOTHING,
-		SLOWED_BY_TILE,
-		SLOWED_BY_WIND;
-	}
-
-	
+		
 	public class ClasspathFileHandleResolver implements FileHandleResolver {
 		public FileHandle resolve(String fileName) {
 			return Gdx.files.classpath(fileName);
@@ -1302,6 +1333,22 @@ public interface Constants {
 		"With the final choice, the incense swells up around you.  The gypsy speaks as if from a great distance, her voice growing fainter with each word: \"So be it!  Thy path is chosen!\"",
 		"There is a moment of intense, wrenching vertigo.  As you open your eyes, a voice whispers within your mind, \"Seek the counsel of thy sovereign.\"  After a moment, the spinning subsides, and you open your eyes to..."
 	};
+	
+	public static final int REVIVE_WORLD_X  = 86;
+	public static final int REVIVE_WORLD_Y  = 107;
+	public static final int REVIVE_CASTLE_X  = 19;
+	public static final int REVIVE_CASTLE_Y  = 8;
+	
+	public static String[] deathMsgs = {
+		"All is Dark..." ,
+		"But wait..." ,
+		"Where am I?..." ,
+		"Am I dead?..." ,
+		"Afterlife?..." ,
+		"You hear:  %s" ,
+		"I feel motion..." ,
+		"Lord British says: I have pulled thy spirit and some possessions from the void.  Be more careful in the future!" 
+     };
 	
 	public class Vector {
 		int x;

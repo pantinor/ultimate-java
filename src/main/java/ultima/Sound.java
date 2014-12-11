@@ -12,7 +12,13 @@ public enum Sound {
 	PC_STRUCK ("sound/pc_struck.ogg", false, 0.3f),
 	NPC_ATTACK ("sound/npc_attack.ogg", false, 0.3f),
 	NPC_STRUCK ("sound/npc_struck.ogg", false, 0.3f),
-	
+	EVADE ("sound/evade.ogg", false, 0.3f),
+	ERROR ("sound/error.ogg", false, 0.3f),
+	POISON_EFFECT ("sound/poison_effect.ogg", false, 0.3f),
+	POISON_DAMAGE ("sound/poison_damage.ogg", false, 0.3f),
+	SLEEP ("sound/reaper_sleeper.ogg", false, 0.3f),
+
+
 	//music
 	OUTSIDE ("sound/Wanderer.mp3", false, 0.1f), 
 	TOWNS ("sound/Towns.mp3", false, 0.1f), 

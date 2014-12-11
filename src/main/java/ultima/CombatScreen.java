@@ -8,6 +8,7 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import objects.BaseMap;
 import objects.Creature;
@@ -57,14 +58,17 @@ public class CombatScreen extends BaseScreen {
 	private CreatureType crType;
 	private CreatureSet creatureSet;
 	
+	public Context context;
 	public Party party;
 	private Stage stage;
 	
 	private OrthogonalTiledMapRenderer renderer;
 	private SpriteBatch batch;
 	private SecondaryInputProcessor sip;
+	
+	private Random rand = new Random();
 
-	public CombatScreen(Ultima4 mainGame, BaseScreen returnScreen, Party party, Maps contextMap, BaseMap combatMap, TiledMap tmap, CreatureType cr, CreatureSet cs, TextureAtlas a1, TextureAtlas a2) {
+	public CombatScreen(Ultima4 mainGame, BaseScreen returnScreen, Context context, Maps contextMap, BaseMap combatMap, TiledMap tmap, CreatureType cr, CreatureSet cs, TextureAtlas a1, TextureAtlas a2) {
 		
 		scType = ScreenType.COMBAT;
 
@@ -75,7 +79,8 @@ public class CombatScreen extends BaseScreen {
 		
 		this.crType = cr;
 		
-		this.party = party;
+		this.context = context;
+		this.party = context.getParty();
 		this.creatureSet = cs;
 		
 		renderer = new OrthogonalTiledMapRenderer(tmap, 2f);
@@ -107,9 +112,9 @@ public class CombatScreen extends BaseScreen {
 		Iterator<MapObject> iter = mLayer.getObjects().iterator();
 		while(iter.hasNext()) {
 			MapObject obj = iter.next();
-			int index = Integer.parseInt((String)obj.getProperties().get("index"));
-			int startX = Integer.parseInt((String)obj.getProperties().get("startX"));
-			int startY = Integer.parseInt((String)obj.getProperties().get("startY"));
+			int index = (int)obj.getProperties().get("index");
+			int startX = (int)obj.getProperties().get("startX");
+			int startY = (int)obj.getProperties().get("startY");
 			
 			if (crSlots[index] == null) continue;
 			
@@ -126,9 +131,9 @@ public class CombatScreen extends BaseScreen {
 		iter = pLayer.getObjects().iterator();
 		while(iter.hasNext()) {
 			MapObject obj = iter.next();
-			int index = Integer.parseInt((String)obj.getProperties().get("index"));
-			int startX = Integer.parseInt((String)obj.getProperties().get("startX"));
-			int startY = Integer.parseInt((String)obj.getProperties().get("startY"));
+			int index = (int)obj.getProperties().get("index");
+			int startX = (int)obj.getProperties().get("startX");
+			int startY = (int)obj.getProperties().get("startY");
 			
 			if (index + 1 > party.getSaveGame().members) continue;
 			
@@ -239,10 +244,7 @@ public class CombatScreen extends BaseScreen {
 		mapCamera.update();
 		renderer.setView(mapCamera);
 		renderer.render();
-		
-		stage.act();
-		stage.draw();
-		
+				
 		renderer.getBatch().begin();
 		for (Creature cr : combatMap.getCreatures()) {
 			if (cr.currentPos == null  ) {
@@ -281,6 +283,9 @@ public class CombatScreen extends BaseScreen {
 			party.getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);
 		}
 		batch.end();
+		
+		stage.act();
+		stage.draw();
 
 		
 	}
@@ -367,10 +372,12 @@ public class CombatScreen extends BaseScreen {
 		
 		party.endTurn(MapType.combat);
 
-		combatMap.moveObjects(this, currentX, currentY);
-		
+		for (Creature cr : combatMap.getCreatures()) {
+			creatureAction(cr);
+		}
+	
 		PartyMember next = party.getAndSetNextActivePlayer();
-		Creature nextActivePlayer = next.combatCr; 
+		Creature nextActivePlayer = next.combatCr;
 		cursor.setPos(nextActivePlayer.currentPos);
 		
 	}
@@ -381,9 +388,8 @@ public class CombatScreen extends BaseScreen {
 		returnScreen.endCombat(isWon);
 		
 		combatMap.setCombatPlayers(null);
-		
 		party.reset();
-
+		
 		mainGame.setScreen(returnScreen);
 	}
 	
@@ -479,7 +485,7 @@ public class CombatScreen extends BaseScreen {
 	        return false;
 	    }
 	    
-	    if ((combatMap.getId() == Maps.ABYSS.getId() && !wt.getWeapon().getMagic()) || !attackHit(creature)) {
+	    if ((combatMap.getId() == Maps.ABYSS.getId() && !wt.getWeapon().getMagic()) || !attackHit(attacker, creature)) {
 	        log("Missed!\n");
 	    } else {
 	        Sounds.play(Sound.NPC_STRUCK);
@@ -489,38 +495,39 @@ public class CombatScreen extends BaseScreen {
 	    return true;
 	}
 	
-	private boolean attackHit(Creature defender) {
-	    int attackValue = rand.nextInt(0x100);
-	    int defenseValue = 128;
+	private boolean attackHit(Creature attacker, PartyMember defender) {
+	    int attackValue = rand.nextInt(0x100) + attacker.getAttackBonus();
+	    int defenseValue = defender.getDefense();
 	    return attackValue > defenseValue;
 	}
 	
-	private boolean dealDamage(PartyMember attacker, Creature cr) {
-	    int xp = cr.getExp();
-	    if (!damageCreature(cr, attacker.getDamage(), true)) {
+	private boolean attackHit(PartyMember attacker, Creature defender) {
+	    int attackValue = rand.nextInt(0x100) + attacker.getAttackBonus();
+	    int defenseValue = defender.getDefense();
+	    return attackValue > defenseValue;
+	}
+	
+	private boolean dealDamage(PartyMember attacker, Creature defender) {
+	    int xp = defender.getExp();
+	    if (!damageCreature(defender, attacker.getDamage(), true)) {
 	    	attacker.awardXP(xp);
 	        return false;
 	    }
 	    return true;
 	}
 	
-	/**
-	 * Applies damage to the creature.
-	 * Returns true if the creature still exists after the damage has been applied
-	 * or false, if the creature was destroyed
-	 *
-	 * If byplayer is false (when a monster is killed by walking through
-	 * fire or poison, or as a result of jinx) we don't report experience
-	 * on death
-	 */
+	private boolean dealDamage(Creature attacker, PartyMember defender) {
+		int damage = attacker.getDamage();
+	    return defender.applyDamage(damage, true);
+	}
+	
 	private boolean damageCreature(Creature cr, int damage, boolean byplayer) {
 	    
-		/* deal the damage */
 		if (cr.getTile() != CreatureType.lord_british) {
 	        cr.setHP(Utils.adjustValueMin(cr.getHP(), -damage, 0));
 	    }
 
-	    switch (cr.getStatus()) {
+	    switch (cr.getDamageStatus()) {
 
 	    case DEAD:        
 			if (byplayer) {
@@ -559,6 +566,296 @@ public class CombatScreen extends BaseScreen {
 	    return true;
 	}
 	
+	
+	public void creatureAction(Creature creature) {
+
+	    if (creature.getStatus() == StatusType.SLEEPING && rand.nextInt(8) == 0) {
+	        creature.setStatus(StatusType.GOOD); 
+	    }
+
+	    if (creature.getStatus() == StatusType.SLEEPING) {
+	        return;
+	    }
+
+	    if (creature.negates()) {
+	        context.setAura(AuraType.NEGATE, 2);
+	    }
+	    
+	    CombatAction action = null;
+
+	    if (creature.getTeleports() && rand.nextInt(8) == 0) {
+	        action = CombatAction.TELEPORT;
+	    } else if (creature.getRanged() && rand.nextInt(4) == 0 && (creature.getRangedhittile() != "magic_flash" || context.getAura().getType() != AuraType.NEGATE)) {
+	        action = CombatAction.RANGED;
+	    } else if (creature.castsSleep() && context.getAura().getType() != AuraType.NEGATE && rand.nextInt(4) == 0) {
+	        action = CombatAction.CAST_SLEEP;
+	    } else if (creature.getDamageStatus() == CreatureStatus.FLEEING) {
+	        action = CombatAction.FLEE;
+	    } else {
+	        action = CombatAction.ATTACK; 
+	    }
+	    
+	    /* 
+	     * now find out who to do it to
+	     */
+		DistanceWrapper dist = new DistanceWrapper(0);
+	    PartyMember target = nearestPartyMember(creature.currentX, creature.currentY, dist, action == CombatAction.RANGED);    
+	    if (target == null) {
+	        return;
+	    }
+
+	    if (action == CombatAction.ATTACK && dist.getVal() > 1) {
+	        action = CombatAction.ADVANCE;
+	    }
+
+	    /* let's see if the creature blends into the background, or if he appears... */
+	    if (creature.getCamouflage() && !hideOrShow(creature)) {
+	        return;
+	    }
+	    
+	    switch(action) {
+	    case ATTACK: {
+	        Sounds.play(Sound.NPC_ATTACK);
+
+	        if (attackHit(creature, target)) {
+	            Sounds.play(Sound.PC_STRUCK);
+	            //GameController::flashTile(target->getCoords(), "hit_flash", 4);
+
+	            if (!dealDamage(creature, target)) {
+	                target = null;
+	            }
+
+	            if (target != null) {
+	                if (creature.stealsFood() && rand.nextInt(4) == 0) {
+	                	Sounds.play(Sound.EVADE);
+	                    party.adjustGold(-(rand.nextInt(0x3f)));
+	                }
+	            
+	                if (creature.stealsGold()) {
+	                	Sounds.play(Sound.EVADE);
+	                    party.adjustFood(-2500);
+	                }
+	            }
+	        } else {
+	        	//GameController::flashTile(target->getCoords(), "miss_flash", 1);
+	        }
+	        break;
+	    }
+	    case CAST_SLEEP: {            
+	        log("Sleep!");
+            Sounds.play(Sound.SLEEP);
+            for (PartyMember p : party.getMembers()) {
+                if (rand.nextInt(2) == 0 && !p.isDisabled()) {
+                    p.putToSleep();
+                }
+            }
+	        break;
+	    }
+
+	    case TELEPORT: {
+//	        Coords new_c;
+//	        bool valid = false;
+//	        bool firstTry = true;                    
+//	        
+//	        while (!valid) {
+//	            Map *map = getMap();
+//	            new_c = Coords(rand.nextInt(map->width), rand.nextInt(map->height), c->location->coords.z);
+//	                
+//	            const Tile *tile = map->tileTypeAt(new_c, WITH_OBJECTS);
+//	            
+//	            if (tile->isCreatureWalkable()) {
+//	                /* If the tile would slow me down, try again! */
+//	                if (firstTry && tile->getSpeed() != FAST)
+//	                    firstTry = false;
+//	                /* OK, good enough! */
+//	                else
+//	                    valid = true;
+//	            }
+//	        }
+//	        
+//	        /* Teleport! */
+//	        setCoords(new_c);
+//	        break;
+	    }
+
+	    case RANGED: {
+//	        // if the creature has a random tile for a ranged weapon,
+//	        // let's switch it now!
+//	        if (hasRandomRanged())
+//	            setRandomRanged();
+//
+//	        MapCoords m_coords = getCoords(),
+//	            p_coords = target->getCoords();
+//
+//	        // figure out which direction to fire the weapon
+//	        int dir = m_coords.getRelativeDirection(p_coords);
+//
+//	        soundPlay(SOUND_NPC_ATTACK, false);                                    // NPC_ATTACK, ranged
+//
+//	        vector<Coords> path = gameGetDirectionalActionPath(dir, MASK_DIR_ALL, m_coords,
+//	                                                           1, 11, &Tile::canAttackOverTile, false);
+//	        bool hit = false;
+//	        for (vector<Coords>::iterator i = path.begin(); i != path.end(); i++) {
+//	            if (controller->rangedAttack(*i, this)) {
+//	                hit = true;
+//	                break;
+//	            }
+//	        }
+//	        if (!hit && path.size() > 0)
+//	            controller->rangedMiss(path[path.size() - 1], this);
+//
+//	        break;
+	    }
+
+	    case FLEE:
+	    case ADVANCE: {
+	    	moveCreature(action, creature, target.combatCr.currentX, target.combatCr.currentY);
+//	        Map *map = getMap();
+//	        if (moveCombatObject(action, map, this, target->getCoords())) {
+//	            Coords coords = getCoords();
+//
+//	            if (MAP_IS_OOB(map, coords)) {
+//	                log("\n%c%s Flees!%c\n", FG_YELLOW, name.c_str(), FG_WHITE);
+//	                
+//	                /* Congrats, you have a heart! */
+//	                if (isGood())
+//	                    c->party->adjustKarma(KA_SPARED_GOOD);
+//
+//	                map->removeObject(this);                
+//	            }
+//	        }
+	        break;
+	    }
+	    }
+	}
+	
+	public PartyMember nearestPartyMember(int fromX, int fromY, DistanceWrapper dist, boolean ranged) {
+		PartyMember opponent = null;
+		int d = 0;
+		int leastDist = 0xFFFF;
+		boolean jinx = (context.getAura().getType() == AuraType.JINX);
+
+		for (int i = 0; i < party.getMembers().size(); i++) {
+			
+			PartyMember pm = party.getMember(i);
+			if (pm.fled) continue;
+			
+			if (!jinx) {
+				if (ranged) {
+					d = combatMap.distance(fromX, fromY, pm.combatCr.currentX, pm.combatCr.currentY);
+				} else {
+					d = combatMap.movementDistance(fromX, fromY, pm.combatCr.currentX, pm.combatCr.currentY);
+				}
+
+				/* skip target 50% of time if same distance */
+				if (d < leastDist || (d == leastDist && rand.nextInt(2) == 0)) {
+					opponent = pm;
+					leastDist = d;
+				}
+			}
+		}
+
+		if (opponent != null) {
+			dist.setVal(leastDist);
+		}
+
+		return opponent;
+	}
+	
+	class DistanceWrapper {
+		private int val;
+		public DistanceWrapper(int val) {
+			this.val = val;
+		}
+
+		public int getVal() {
+			return val;
+		}
+		public void setVal(int val) {
+			this.val = val;
+		}
+	}
+
+	/**
+	 * Hides or shows a camouflaged creature, depending on its distance from
+	 * the nearest opponent
+	 */
+	public boolean hideOrShow(Creature cr) {
+	    /* find the nearest opponent */
+	    DistanceWrapper dist = new DistanceWrapper(0);
+	    
+	    /* ok, now we've got the nearest party member.  Now, see if they're close enough */
+		if (nearestPartyMember(cr.currentX, cr.currentY, dist, false) != null) {
+			if ((dist.getVal() < 5) && !cr.getVisible())
+				cr.setVisible(true); /* show yourself */
+			else if (dist.getVal() >= 5)
+				cr.setVisible(false); /* hide and take no action! */
+		}
+
+	    return cr.getVisible();
+	}
+	
+	
+	/**
+	 * Moves an object in combat according to its chosen combat action
+	 */
+	public boolean moveCreature(CombatAction action, Creature cr, int targetX, int targetY) {
+		
+        int mask = combatMap.getValidMovesMask(cr.currentX, cr.currentY, cr, -1, -1);
+        Direction dir;
+
+	    if (action == CombatAction.FLEE) {
+	        dir = combatMap.getPath(targetX, targetY, mask, false, cr.currentX, cr.currentY);
+	    } else {
+	        dir = combatMap.getPath(targetX, targetY, mask, true, cr.currentX, cr.currentY);
+	    }
+	    
+		Vector3 pos = null;
+		Vector3 pixelPos = null;
+	    
+		if (dir == null) {
+			return false;
+		} else {
+			pos = null;
+			if (dir == Direction.NORTH) pos = new Vector3(cr.currentX, cr.currentY-1, 0);
+			if (dir == Direction.SOUTH) pos = new Vector3(cr.currentX, cr.currentY+1, 0);
+			if (dir == Direction.EAST) pos = new Vector3(cr.currentX+1, cr.currentY, 0);
+			if (dir == Direction.WEST) pos = new Vector3(cr.currentX-1, cr.currentY, 0);
+		}
+		
+		
+	    boolean slowed = false;
+		SlowedType slowedType = SlowedType.SLOWED_BY_TILE;
+	    if (cr.getSwims() || cr.getSails()) {
+	        slowedType = SlowedType.SLOWED_BY_WIND;
+	    } else if (cr.getFlies()) {
+	        slowedType = SlowedType.SLOWED_BY_NOTHING;
+	    }
+
+	    switch(slowedType) {
+	    case SLOWED_BY_TILE:
+	        slowed = context.slowedByTile(combatMap.getTile(pos));
+	        break;
+	    case SLOWED_BY_WIND:
+	        slowed = context.slowedByWind(dir);
+	        break;
+	    case SLOWED_BY_NOTHING:
+	    default:
+	        break;
+	    }
+
+	    /* if the object wan't slowed... */
+	    if (!slowed) {        
+	        // Set the new coordinates
+			pixelPos = getMapPixelCoords((int)pos.x, (int)pos.y);
+			cr.currentPos = pixelPos;
+			cr.currentX = (int)pos.x;
+			cr.currentY = (int)pos.y;
+	        return true;
+	    }
+
+	    return false;
+	}
 	
 	
 	private Texture getCursorTexture() {

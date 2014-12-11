@@ -1,4 +1,4 @@
-package ultima;
+package util;
 
 
 import static com.badlogic.gdx.graphics.g2d.Batch.C1;
@@ -25,6 +25,8 @@ import objects.BaseMap;
 import objects.BaseMap.DoorStatus;
 import objects.Creature;
 import objects.Person;
+import ultima.Constants;
+import ultima.GameScreen;
 import util.ShadowFOV;
 
 import com.badlogic.gdx.Gdx;
@@ -54,9 +56,9 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 		
 		if (mainGame != null) {
 		
-			door = mainGame.atlas.findRegion("door");
-			brick_floor = mainGame.atlas.findRegion("brick_floor");
-			locked_door = mainGame.atlas.findRegion("locked_door");
+			door = mainGame.egaatlas.findRegion("door");
+			brick_floor = mainGame.egaatlas.findRegion("brick_floor");
+			locked_door = mainGame.egaatlas.findRegion("locked_door");
 			
 			door.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 			brick_floor.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);

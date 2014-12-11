@@ -391,7 +391,7 @@ public class BaseMap implements Constants {
 				case ATTACK_AVATAR:
 				case FOLLOW_AVATAR:
 			        int mask = getValidMovesMask(p.getX(), p.getY(), p.getEmulatingCreature(), avatarX, avatarY);
-			        dir = findPathTo(avatarX, avatarY, mask, true, p.getX(), p.getY());
+			        dir = getPath(avatarX, avatarY, mask, true, p.getX(), p.getY());
 					break;
 				case FIXED:
 					break;
@@ -421,7 +421,7 @@ public class BaseMap implements Constants {
 		
 		for (Creature cr : creatures) {
 	        int mask = getValidMovesMask(cr.currentX, cr.currentY, cr, avatarX, avatarY);
-	        Direction dir = findPathTo(avatarX, avatarY, mask, true, cr.currentX, cr.currentY);
+	        Direction dir = getPath(avatarX, avatarY, mask, true, cr.currentX, cr.currentY);
 			if (dir == null) continue;
 			Vector3 pos = null;
 			if (dir == Direction.NORTH) pos = new Vector3(cr.currentX, cr.currentY-1, 0);
@@ -436,9 +436,9 @@ public class BaseMap implements Constants {
 		
 	}
 	
-	public Direction findPathTo(int avatarX, int avatarY, int validMovesMask, boolean towards, int objX, int objY) {
+	public Direction getPath(int toX, int toY, int validMovesMask, boolean towards, int fromX, int fromY) {
 	    /* find the directions that lead [to/away from] our target */
-	    int directionsToObject = towards ? getRelativeDirection(avatarX,avatarY,objX,objY) : getRelativeDirection(avatarX,avatarY,objX,objY);
+	    int directionsToObject = towards ? getRelativeDirection(toX,toY,fromX,fromY) : getRelativeDirection(toX,toY,fromX,fromY);
 
 	    /* make sure we eliminate impossible options */
 	    directionsToObject &= validMovesMask;
@@ -560,28 +560,28 @@ public class BaseMap implements Constants {
 	 * itself accordingly. If the two coordinates are not on the same z-plane,
 	 * then this function return DIR_NONE.
 	 */
-	public int getRelativeDirection(int cx, int cy, int ax, int ay)  {
+	private int getRelativeDirection(int toX, int toY, int fromX, int fromY)  {
 	    int dx=0, dy=0;        
 	    int dirmask = 0;
 	    
 	    /* adjust our coordinates to find the closest path */
 		if (borderbehavior == MapBorderBehavior.wrap) {
 
-			if (Math.abs(ax - cx) > Math.abs(ax + width - cx))
-				ax += width;
-			else if (Math.abs(ax - cx) > Math.abs(ax - width - cx))
-				ax -= width;
+			if (Math.abs(fromX - toX) > Math.abs(fromX + width - toX))
+				fromX += width;
+			else if (Math.abs(fromX - toX) > Math.abs(fromX - width - toX))
+				fromX -= width;
 
-			if (Math.abs(ay - cy) > Math.abs(ay + width - cy))
-				ay += height;
-			else if (Math.abs(ay - cy) > Math.abs(ay - width - cy))
-				ay -= height;
+			if (Math.abs(fromY - toY) > Math.abs(fromY + width - toY))
+				fromY += height;
+			else if (Math.abs(fromY - toY) > Math.abs(fromY - width - toY))
+				fromY -= height;
 
-			dx = ax - cx;
-			dy = ay - cy;
+			dx = fromX - toX;
+			dy = fromY - toY;
 		} else {
-			dx = ax - cx;
-			dy = ay - cy;
+			dx = fromX - toX;
+			dy = fromY - toY;
 		}
 
 	    /* add x directions that lead towards to_x to the mask */
@@ -595,6 +595,60 @@ public class BaseMap implements Constants {
 	    /* return the result */
 	    return dirmask;
 	}
+	
+	
+	/**
+	 * Finds the movement distance (not using diagonals) from point a to point b
+	 * on a map, taking into account map boundaries and such.  If the two coords
+	 * are not on the same z-plane, then this function returns -1;
+	 */
+	public int movementDistance(int fromX, int fromY, int toX, int toY) {
+	    int dirmask = 0;;
+	    int dist = 0;
+
+	    /* get the direction(s) to the coordinates */
+	    dirmask = getRelativeDirection(toX, toY, fromX, fromY);
+
+	    while (fromX != toX || fromY != toY) {
+	    	
+	        if (fromX != toX) {
+	            if (Direction.isDirInMask(Direction.WEST, dirmask)) {
+	                fromX--;
+	            } else {               
+	            	fromX++;
+            	}
+	            dist++;
+	        }
+	        if (fromY != toY) {
+	            if (Direction.isDirInMask(Direction.NORTH, dirmask)) {
+	                fromY--;
+	            } else {               
+	            	fromY++;
+            	}
+	            dist++;
+	        }            
+	    }
+
+	    return dist;
+	}
+	
+	/**
+	 * Finds the distance (using diagonals) from point a to point b on a map
+	 * If the two coordinates are not on the same z-plane, then this function
+	 * returns -1. This function also takes into account map boundaries.
+	 */ 
+	public int distance(int fromX, int fromY, int toX, int toY) {
+	    int dist = movementDistance(fromX, fromY, toX, toY);
+	    if (dist <= 0)
+	        return dist;
+
+	    /* calculate how many fewer movements there would have been */
+	    dist -= Math.abs(fromX - toX) < Math.abs(fromY - toY) ? Math.abs(fromX - toX) : Math.abs(fromY - toY);
+
+	    return dist;
+	}
+	
+	
 	
 	public DoorStatus getDoor(int x, int y) {
 		for (DoorStatus ds : doors) {
@@ -665,7 +719,7 @@ public class BaseMap implements Constants {
 		if (tmp == null) return null;
 
 		int expPoints = 0;
-		ItemMapLabels label = ItemMapLabels.valueOf(tmp.getName());
+		ItemMapLabels label = ItemMapLabels.valueOf(ItemMapLabels.class, tmp.getName());
 		boolean added = false;
 
 		switch (label) {
@@ -914,6 +968,9 @@ public class BaseMap implements Constants {
 	public void setCombatPlayers(List<PartyMember> combatPlayers) {
 		this.combatPlayers = combatPlayers;
 	}
+	
+		
+
 	
 
 

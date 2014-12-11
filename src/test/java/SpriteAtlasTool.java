@@ -40,8 +40,8 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 	static int screenWidth = 1200;
 	static int screenHeight = 800;
 	
-	int tilePixelWidth = 32;
-	int tilePixelHeight = 32;
+	int tilePixelWidth = 16;
+	int tilePixelHeight = 16;
 
 	boolean initMapPosition = true;
 	
@@ -65,7 +65,7 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 	
 	public void create () {
 				
-		t = new Texture(Gdx.files.classpath("tilemaps/ultima_5_tileset.png"));
+		t = new Texture(Gdx.files.classpath("tilemaps/tiles-ega.png"));
 		sprBg = new Sprite(t, 0, 0, t.getWidth(), t.getHeight());
 		
 		gridNames = new MyListItem[Math.round(t.getWidth()/tilePixelWidth)][Math.round(t.getHeight()/tilePixelHeight)];

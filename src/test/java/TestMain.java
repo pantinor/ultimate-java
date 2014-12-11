@@ -7,14 +7,13 @@ import objects.TileSet;
 import objects.WeaponSet;
 import ultima.CombatScreen;
 import ultima.Constants;
-import ultima.Constants.NpcDefaults;
-import ultima.GameScreen;
-import ultima.Constants.CannotJoinError;
 import ultima.Constants.CreatureType;
 import ultima.Constants.Maps;
+import ultima.Constants.NpcDefaults;
 import ultima.Constants.WeaponType;
 import ultima.Context;
 import ultima.StartScreen;
+import util.UltimaTiledMapLoader;
 import util.Utils;
 
 import com.badlogic.gdx.Game;
@@ -28,7 +27,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.Array;
 
 public class TestMain extends Game {
@@ -83,12 +81,11 @@ public class TestMain extends Game {
 			
 			sg.players[0].weapon = WeaponType.SLING;
 			
-			TiledMap tmap = new TmxMapLoader().load("tilemaps/combat_"+Maps.SHIPSHOR_CON.getId()+".tmx");
-			
-			TextureAtlas a2 = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
-			TextureAtlas a1 = new TextureAtlas(Gdx.files.classpath("tilemaps/ultima5-atlas.txt"));
+			TextureAtlas a1 = new TextureAtlas(Gdx.files.classpath("tilemaps/tiles-ega-atlas.txt"));
+
+			TiledMap tmap = new UltimaTiledMapLoader(Maps.SHIPSHOR_CON, a1, Maps.SHIPSHOR_CON.getMap().getWidth(), Maps.SHIPSHOR_CON.getMap().getHeight(), 16, 16).load();
 	
-			setScreen(new CombatScreen(null, null, party, Maps.WORLD, Maps.SHIPSHOR_CON.getMap(), tmap, CreatureType.orc, cs, a1, a2));
+			setScreen(new CombatScreen(null, null, context, Maps.WORLD, Maps.SHIPSHOR_CON.getMap(), tmap, CreatureType.orc, cs, a1, a1));
 			
 		} catch (Exception e) {
 			e.printStackTrace();

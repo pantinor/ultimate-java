@@ -22,7 +22,7 @@ public class Ultima4 extends Game {
 
 	@Override
 	public void create() {
-		
+
 		setScreen(new StartScreen(this));
 		
 	}
