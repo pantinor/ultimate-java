@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import objects.Party.PartyMember;
 import ultima.BaseScreen;
 import ultima.Constants;
+import ultima.Constants.CreatureStatus;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -438,7 +439,7 @@ public class BaseMap implements Constants {
 	
 	public Direction getPath(int toX, int toY, int validMovesMask, boolean towards, int fromX, int fromY) {
 	    /* find the directions that lead [to/away from] our target */
-	    int directionsToObject = towards ? getRelativeDirection(toX,toY,fromX,fromY) : getRelativeDirection(toX,toY,fromX,fromY);
+	    int directionsToObject = towards ? getRelativeDirection(toX,toY,fromX,fromY) : ~getRelativeDirection(toX,toY,fromX,fromY);
 
 	    /* make sure we eliminate impossible options */
 	    directionsToObject &= validMovesMask;
@@ -545,6 +546,12 @@ public class BaseMap implements Constants {
 			}
 			
 			if (rule == null || canmove || isDoorOpen(x, y)) {
+				mask = Direction.addToMask(dir, mask);
+			}
+		} else {
+			//if the tile is not on the map then it is OOB, 
+			//so add this direction anyway so that monster flee operations work.
+			if (cr != null && cr.getDamageStatus() == CreatureStatus.FLEEING) {
 				mask = Direction.addToMask(dir, mask);
 			}
 		}

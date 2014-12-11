@@ -1,10 +1,9 @@
 package ultima;
 
-import java.util.List;
 import java.util.Random;
 
 import objects.Creature;
-import util.FixedSizeArrayList;
+import util.LogDisplay;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -34,8 +33,9 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants {
 	protected boolean changeMapPosition = true;
 	
 	protected OrthographicCamera mapCamera;
-	protected List<String> logs = new FixedSizeArrayList<String>(5);
 	protected int showZstats = 0;
+	
+	public static LogDisplay logs;
 	
 	protected BitmapFont font;
 

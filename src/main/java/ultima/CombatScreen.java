@@ -273,11 +273,7 @@ public class CombatScreen extends BaseScreen {
 			font.draw(batch, s, Ultima4.SCREEN_WIDTH - 125, y);
 		}
 
-		y = 18 * 5;
-		for (String s : logs) {
-			font.draw(batch, s, 5, y);
-			y = y - 18;
-		}
+		logs.render(batch);
 
 		if (showZstats > 0) {
 			party.getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);
@@ -321,6 +317,12 @@ public class CombatScreen extends BaseScreen {
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, combatMap, active.currentX, active.currentY);
 			return false;				
+		} else if (keycode == Keys.Z) {
+			showZstats = showZstats + 1;
+			if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
+				if (showZstats > party.getMembers().size()) showZstats = STATS_WEAPONS;
+			}
+			if (showZstats > STATS_SPELLS) showZstats = STATS_NONE;
 		}
 		
 		finishTurn(active.currentX,active.currentY);
@@ -372,8 +374,12 @@ public class CombatScreen extends BaseScreen {
 		
 		party.endTurn(MapType.combat);
 
-		for (Creature cr : combatMap.getCreatures()) {
-			creatureAction(cr);
+		Iterator<Creature> iter = combatMap.getCreatures().iterator();
+		while(iter.hasNext()) {
+			Creature cr = iter.next();
+			if (!creatureAction(cr)) {
+				iter.remove();
+			}
 		}
 	
 		PartyMember next = party.getAndSetNextActivePlayer();
@@ -566,15 +572,17 @@ public class CombatScreen extends BaseScreen {
 	    return true;
 	}
 	
-	
-	public void creatureAction(Creature creature) {
+	/**
+	 * Return false if to remove from map.
+	 */
+	private boolean creatureAction(Creature creature) {
 
 	    if (creature.getStatus() == StatusType.SLEEPING && rand.nextInt(8) == 0) {
 	        creature.setStatus(StatusType.GOOD); 
 	    }
 
 	    if (creature.getStatus() == StatusType.SLEEPING) {
-	        return;
+	        return true;
 	    }
 
 	    if (creature.negates()) {
@@ -594,14 +602,14 @@ public class CombatScreen extends BaseScreen {
 	    } else {
 	        action = CombatAction.ATTACK; 
 	    }
-	    
+	        
 	    /* 
 	     * now find out who to do it to
 	     */
 		DistanceWrapper dist = new DistanceWrapper(0);
 	    PartyMember target = nearestPartyMember(creature.currentX, creature.currentY, dist, action == CombatAction.RANGED);    
 	    if (target == null) {
-	        return;
+	        return true;
 	    }
 
 	    if (action == CombatAction.ATTACK && dist.getVal() > 1) {
@@ -610,7 +618,7 @@ public class CombatScreen extends BaseScreen {
 
 	    /* let's see if the creature blends into the background, or if he appears... */
 	    if (creature.getCamouflage() && !hideOrShow(creature)) {
-	        return;
+	        return true;
 	    }
 	    
 	    switch(action) {
@@ -710,23 +718,23 @@ public class CombatScreen extends BaseScreen {
 	    case FLEE:
 	    case ADVANCE: {
 	    	moveCreature(action, creature, target.combatCr.currentX, target.combatCr.currentY);
-//	        Map *map = getMap();
-//	        if (moveCombatObject(action, map, this, target->getCoords())) {
-//	            Coords coords = getCoords();
-//
-//	            if (MAP_IS_OOB(map, coords)) {
-//	                log("\n%c%s Flees!%c\n", FG_YELLOW, name.c_str(), FG_WHITE);
-//	                
-//	                /* Congrats, you have a heart! */
-//	                if (isGood())
-//	                    c->party->adjustKarma(KA_SPARED_GOOD);
-//
-//	                map->removeObject(this);                
-//	            }
-//	        }
+	    	
+    		//is map OOB
+    		if (creature.currentX > combatMap.getWidth()-1 || creature.currentX < 0 || 
+    				creature.currentY > combatMap.getHeight()-1 || creature.currentY < 0) {
+    			log(String.format("%s Flees!", creature.getName()));
+    			Sounds.play(Sound.EVADE);
+    			if (creature.getGood()) {
+    				party.adjustKarma(KarmaAction.SPARED_GOOD);
+    			}
+    			return false;
+    		}   		
+	    	
 	        break;
 	    }
 	    }
+	    
+	    return true;
 	}
 	
 	public PartyMember nearestPartyMember(int fromX, int fromY, DistanceWrapper dist, boolean ranged) {
@@ -801,29 +809,35 @@ public class CombatScreen extends BaseScreen {
 	 */
 	public boolean moveCreature(CombatAction action, Creature cr, int targetX, int targetY) {
 		
-        int mask = combatMap.getValidMovesMask(cr.currentX, cr.currentY, cr, -1, -1);
+		int nx = cr.currentX;
+		int ny = cr.currentY;
+		
+        int mask = combatMap.getValidMovesMask(nx, ny, cr, -1, -1);
         Direction dir;
 
 	    if (action == CombatAction.FLEE) {
-	        dir = combatMap.getPath(targetX, targetY, mask, false, cr.currentX, cr.currentY);
+	        dir = combatMap.getPath(targetX, targetY, mask, false, nx, ny);
+	        if (dir == null) {
+	        	//force a map exit
+	        	cr.currentX = -1;
+	        	cr.currentY = -1;
+	        	return true;
+	        }
 	    } else {
-	        dir = combatMap.getPath(targetX, targetY, mask, true, cr.currentX, cr.currentY);
+	        dir = combatMap.getPath(targetX, targetY, mask, true, nx, ny);
 	    }
 	    
-		Vector3 pos = null;
 		Vector3 pixelPos = null;
 	    
 		if (dir == null) {
 			return false;
 		} else {
-			pos = null;
-			if (dir == Direction.NORTH) pos = new Vector3(cr.currentX, cr.currentY-1, 0);
-			if (dir == Direction.SOUTH) pos = new Vector3(cr.currentX, cr.currentY+1, 0);
-			if (dir == Direction.EAST) pos = new Vector3(cr.currentX+1, cr.currentY, 0);
-			if (dir == Direction.WEST) pos = new Vector3(cr.currentX-1, cr.currentY, 0);
+			if (dir == Direction.NORTH) ny--;
+			if (dir == Direction.SOUTH) ny++;
+			if (dir == Direction.EAST) nx++;
+			if (dir == Direction.WEST) nx--;
 		}
-		
-		
+				
 	    boolean slowed = false;
 		SlowedType slowedType = SlowedType.SLOWED_BY_TILE;
 	    if (cr.getSwims() || cr.getSails()) {
@@ -834,7 +848,8 @@ public class CombatScreen extends BaseScreen {
 
 	    switch(slowedType) {
 	    case SLOWED_BY_TILE:
-	        slowed = context.slowedByTile(combatMap.getTile(pos));
+	    	Tile t = combatMap.getTile(nx, ny);
+	        if (t != null) slowed = context.slowedByTile(t);
 	        break;
 	    case SLOWED_BY_WIND:
 	        slowed = context.slowedByWind(dir);
@@ -844,13 +859,11 @@ public class CombatScreen extends BaseScreen {
 	        break;
 	    }
 
-	    /* if the object wan't slowed... */
 	    if (!slowed) {        
-	        // Set the new coordinates
-			pixelPos = getMapPixelCoords((int)pos.x, (int)pos.y);
+			pixelPos = getMapPixelCoords(nx, ny);
 			cr.currentPos = pixelPos;
-			cr.currentX = (int)pos.x;
-			cr.currentY = (int)pos.y;
+			cr.currentX = nx;
+			cr.currentY = ny;
 	        return true;
 	    }
 

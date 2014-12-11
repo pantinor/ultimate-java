@@ -595,20 +595,22 @@ public interface Constants {
 	
 	public enum Virtue {
 		
-		HONESTY("honest", "AHM", 0x01),
-		COMPASSION("compassionate", "MU", 0x02),
-		VALOR("valiant", "RA", 0x04),
-		JUSTICE("just", "BEH", 0x08),
-		SACRIFICE("sacrificial", "CAH", 0x10),
-		HONOR("honorable", "SUMM", 0x20),
-		SPIRITUALITY("spiritual", "OM", 0x40),
-		HUMILITY("humble", "LUM", 0x80);
+		HONESTY("HSTY","honest", "AHM", 0x01),
+		COMPASSION("COMP","compassionate", "MU", 0x02),
+		VALOR("VALO","valiant", "RA", 0x04),
+		JUSTICE("JUST","just", "BEH", 0x08),
+		SACRIFICE("SACR","sacrificial", "CAH", 0x10),
+		HONOR("HONR","honorable", "SUMM", 0x20),
+		SPIRITUALITY("SPIR","spiritual", "OM", 0x40),
+		HUMILITY("HUMI","humble", "LUM", 0x80);
 		
 		private String description;
+		private String abbr;
 		private String mantra;
 		private int loc;
 		
-		private Virtue(String d, String ab, int loc) {
+		private Virtue(String abbr, String d, String ab, int loc) {
+			this.abbr = abbr;
 			this.description = d;
 			this.mantra = ab;
 			this.loc = loc;
@@ -629,6 +631,9 @@ public interface Constants {
 		}
 		public int getLoc() {
 			return loc;
+		}
+		public String getAbbr() {
+			return abbr;
 		}
 	}
 	
@@ -776,8 +781,24 @@ public interface Constants {
 		}
 		        
 	}
-
 	
+	public static final int STATS_NONE = 0;
+	public static final int STATS_PLAYER1 = 1;
+	public static final int STATS_PLAYER2 = 2;
+	public static final int STATS_PLAYER3 = 3;
+	public static final int STATS_PLAYER4 = 4;
+	public static final int STATS_PLAYER5 = 5;
+	public static final int STATS_PLAYER6 = 6;
+	public static final int STATS_PLAYER7 = 7;
+	public static final int STATS_PLAYER8 = 8;
+	public static final int STATS_WEAPONS = 9;
+	public static final int STATS_ARMOR = 10;
+	public static final int STATS_ITEMS = 11;
+	public static final int STATS_REAGENTS = 12;
+	public static final int STATS_SPELLS = 13;
+
+
+		
 	public enum SexType {
 		MALE(0xB,"Male"),
 		FEMALE(0xC, "Female");

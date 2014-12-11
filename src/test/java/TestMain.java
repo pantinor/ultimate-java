@@ -13,6 +13,7 @@ import ultima.Constants.NpcDefaults;
 import ultima.Constants.WeaponType;
 import ultima.Context;
 import ultima.StartScreen;
+import util.LogDisplay;
 import util.UltimaTiledMapLoader;
 import util.Utils;
 
@@ -23,6 +24,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -75,9 +77,9 @@ public class TestMain extends Game {
 			
 			sg.players[0].hpMax = 500;
 			
-			party.join(NpcDefaults.Mariah.name());
+			party.join(NpcDefaults.Geoffrey.name());
 			party.join(NpcDefaults.Shamino.name());
-
+			party.join(NpcDefaults.Katrina.name());
 			
 			sg.players[0].weapon = WeaponType.SLING;
 			
@@ -85,7 +87,11 @@ public class TestMain extends Game {
 
 			TiledMap tmap = new UltimaTiledMapLoader(Maps.SHIPSHOR_CON, a1, Maps.SHIPSHOR_CON.getMap().getWidth(), Maps.SHIPSHOR_CON.getMap().getHeight(), 16, 16).load();
 	
-			setScreen(new CombatScreen(null, null, context, Maps.WORLD, Maps.SHIPSHOR_CON.getMap(), tmap, CreatureType.orc, cs, a1, a1));
+			CombatScreen sc = new CombatScreen(null, null, context, Maps.WORLD, Maps.SHIPSHOR_CON.getMap(), tmap, CreatureType.orc, cs, a1, a1);
+			
+			sc.logs = new LogDisplay(new BitmapFont());
+			
+			setScreen(sc);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

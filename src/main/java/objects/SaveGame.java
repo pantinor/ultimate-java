@@ -13,6 +13,9 @@ import ultima.Constants;
 import util.Utils;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.google.common.io.LittleEndianDataInputStream;
@@ -66,7 +69,9 @@ public class SaveGame implements Constants {
 	public int location = 0;
 	
 	private Random rand = new Random();
-
+	
+	Texture zstatsBox;
+	
 
 	public void write(String strFilePath) throws Exception {
 			
@@ -542,7 +547,7 @@ public class SaveGame implements Constants {
 			
 			sb1.append(
 					pc(p.name) + "  " +
-					pc(p.klass.toString()) + "  " +
+					pc(p.klass.toString()) + "|" +
 					pc(p.sex.getDesc()) + "  " +
 					p.status.getValue() + "|"
 					);
@@ -583,7 +588,7 @@ public class SaveGame implements Constants {
         	Virtue v = Constants.Virtue.get(i);
         	String st = ((this.stones & (1 << i)) > 0 ? "+STONE" : "") ;
         	String ru = ((this.runes & (1 << i)) > 0 ? "+RUNE" : "") ;
-			sb4.append(pc(v.getDescription()) + ": " + this.karma[v.ordinal()] + " " + st + " " + ru+ "|");
+			sb4.append(v.getAbbr() + ": " + this.karma[v.ordinal()] + " " + st + " " + ru+ "|");
         }
         
         for (Item item : Constants.Item.values()) {
@@ -619,16 +624,26 @@ public class SaveGame implements Constants {
 	
 	public void renderZstats(int showZstats, BitmapFont font, Batch batch, int SCREEN_HEIGHT) {
 		
+		if (zstatsBox == null) {
+			Pixmap pixmap = new Pixmap(175,300, Format.RGBA8888);
+			pixmap.setColor(0.2f,0.2f,0.2f,0.7f);
+			pixmap.fillRectangle(0, 0, 175, 300);
+			zstatsBox =  new Texture(pixmap);
+		}
+
+		batch.draw(zstatsBox, 5, SCREEN_HEIGHT - 40 - 300);
+		
 		int rx = 10;
 		int ry = SCREEN_HEIGHT - 50;
 		
 		String[] pages = getZstats();
-		if (showZstats == 1) {
+		if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
 			// players
 			String[] players = pages[0].split("\\~");
 			for (int i = 0; i < players.length; i++) {
 				String[] lines = players[i].split("\\|");
-				rx = 10 + i * 150;
+				if (i != showZstats - 1) continue;
+				rx = 10;
 				ry = SCREEN_HEIGHT - 50;
 				font.draw(batch, "Player " + (i + 1), rx, ry);
 				ry = ry - 18;
@@ -639,7 +654,7 @@ public class SaveGame implements Constants {
 					ry = ry - 18;
 				}
 			}
-		} else if (showZstats == 2) {
+		} else if (showZstats == STATS_WEAPONS) {
 			String[] lines = pages[1].split("\\|");
 			font.draw(batch, "Weapons", rx, ry);
 			ry = ry - 18;
@@ -649,7 +664,7 @@ public class SaveGame implements Constants {
 				font.draw(batch, lines[j], rx, ry);
 				ry = ry - 18;
 			}
-		} else if (showZstats == 3) {
+		} else if (showZstats == STATS_ARMOR) {
 			String[] lines = pages[2].split("\\|");
 			font.draw(batch, "Armor", rx, ry);
 			ry = ry - 18;
@@ -659,7 +674,7 @@ public class SaveGame implements Constants {
 				font.draw(batch, lines[j], rx, ry);
 				ry = ry - 18;
 			}
-		} else if (showZstats == 4) {
+		} else if (showZstats == STATS_ITEMS) {
 			String[] lines = pages[3].split("\\|");
 			font.draw(batch, "Items", rx, ry);
 			ry = ry - 18;
@@ -669,7 +684,7 @@ public class SaveGame implements Constants {
 				font.draw(batch, lines[j], rx, ry);
 				ry = ry - 18;
 			}
-		} else if (showZstats == 5) {
+		} else if (showZstats == STATS_REAGENTS) {
 			String[] lines = pages[4].split("\\|");
 			font.draw(batch, "Reagents", rx, ry);
 			ry = ry - 18;
@@ -679,7 +694,7 @@ public class SaveGame implements Constants {
 				font.draw(batch, lines[j], rx, ry);
 				ry = ry - 18;
 			}
-		} else if (showZstats == 6) {
+		} else if (showZstats == STATS_SPELLS) {
 			String[] lines = pages[5].split("\\|");
 			font.draw(batch, "Spell Mixtures", rx, ry);
 			ry = ry - 18;

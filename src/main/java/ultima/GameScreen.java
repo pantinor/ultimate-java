@@ -17,6 +17,7 @@ import objects.SaveGame;
 import objects.Tile;
 import objects.TileSet;
 import objects.WeaponSet;
+import util.LogDisplay;
 import util.UltimaMapRenderer;
 import util.UltimaTiledMapLoader;
 import util.Utils;
@@ -83,7 +84,7 @@ public class GameScreen extends BaseScreen {
 		scType = ScreenType.MAIN;
 		
 		this.mainGame = mainGame;
-		
+			
 		stage = new Stage(new ScreenViewport());
 		skin = new Skin(Gdx.files.classpath("skin/uiskin.json"));
 		
@@ -119,6 +120,8 @@ public class GameScreen extends BaseScreen {
 			font.setColor(Color.WHITE);		
 			batch = new SpriteBatch();
 			batch.enableBlending();
+			
+			if (logs == null) logs = new LogDisplay(font);
 			
 			mapCamera = new OrthographicCamera();
 			mapCamera.setToOrtho(false);
@@ -210,8 +213,9 @@ public class GameScreen extends BaseScreen {
 	}
 	
 	public void endCombat(boolean isWon) {
+		
 		if (currentEncounter != null) {
-			
+					
 			Tile tile = context.getCurrentMap().getTile(currentEncounter.currentX, currentEncounter.currentY);
 
 			if (isWon) {
@@ -222,8 +226,10 @@ public class GameScreen extends BaseScreen {
                     context.getParty().adjustKarma(KarmaAction.KILLED_EVIL);
 				}
 				
+				TileRule r = tile.getRule();
+				
 			    /* add a chest, if the creature leaves one */
-			    if (!currentEncounter.getNochest() && !tile.getRule().has(TileAttrib.unwalkable)) {
+			    if (!currentEncounter.getNochest() && (r == null || !r.has(TileAttrib.unwalkable))) {
 			    	Drawable chest = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "chest", egaatlas);
 			    	chest.setX(currentEncounter.currentPos.x);
 			    	chest.setY(currentEncounter.currentPos.y);
@@ -257,6 +263,7 @@ public class GameScreen extends BaseScreen {
 			
 			context.getCurrentMap().removeCreature(currentEncounter);
 			currentEncounter = null;
+
 		}
 	}
 
@@ -296,8 +303,9 @@ public class GameScreen extends BaseScreen {
 
 		// Vector3 v = getCurrentMapCoords();
 		// font.draw(batch2, "map coords: " + v, 10, 40);
-		// font.draw(batch2, "fps: " + Gdx.graphics.getFramesPerSecond(), 0,
-		// 20);
+		// font.draw(batch2, "fps: " + Gdx.graphics.getFramesPerSecond(), 0, 20);
+		//font.draw(batch, "mouse: " + currentMousePos, 10, 70);
+
 		font.draw(batch, "Food: " + context.getParty().getSaveGame().food / 100 + "    Gold: " + context.getParty().getSaveGame().gold, 5, Ultima4.SCREEN_HEIGHT - 5);
 
 		int y = 5;
@@ -307,12 +315,9 @@ public class GameScreen extends BaseScreen {
 			y = y + 18;
 			font.draw(batch, s, Ultima4.SCREEN_WIDTH - 125, y);
 		}
+		
 
-		y = 18 * 5;
-		for (String s : logs) {
-			font.draw(batch, s, 5, y);
-			y = y - 18;
-		}
+		logs.render(batch);
 
 		if (showZstats > 0) {
 			context.getParty().getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);
@@ -397,7 +402,10 @@ public class GameScreen extends BaseScreen {
 			return false;
 		} else if (keycode == Keys.Z) {
 			showZstats = showZstats + 1;
-			if (showZstats > 6) showZstats = 0;
+			if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
+				if (showZstats > context.getParty().getMembers().size()) showZstats = STATS_WEAPONS;
+			}
+			if (showZstats > STATS_SPELLS) showZstats = STATS_NONE;
 		}
 		
 		finishTurn((int)v.x, (int)v.y);
@@ -502,9 +510,7 @@ public class GameScreen extends BaseScreen {
 		int dx = 0;
         int dy = 0;
         int tmp = 0;
-        
-
-	    	
+            	
 		boolean ok = false;
 		int tries = 0;
 		int MAX_TRIES = 10;
@@ -693,6 +699,8 @@ public class GameScreen extends BaseScreen {
 		}
 		
 	}
+	
+	
     
 
 

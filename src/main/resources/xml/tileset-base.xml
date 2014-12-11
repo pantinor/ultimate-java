@@ -67,7 +67,7 @@
 	<tile name="moongate" rule="solid" index="64" />
 	<tile name="moongate" rule="solid" index="65" />
 	<tile name="moongate" rule="solid" index="66" />
-	<tile name="moongate" index="67" />
+	<tile name="moongate" rule="solid" index="67" />
 	<tile name="poison_field" rule="poison_field" animation="scroll" tiledInDungeon="true" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="68" />
 	<tile name="energy_field" rule="energy_field" animation="scroll" tiledInDungeon="true" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="69" />
 	<tile name="fire_field" rule="fire_field" animation="scroll" tiledInDungeon="true" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="70" />
