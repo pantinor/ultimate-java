@@ -15,7 +15,7 @@ public class Ultima4 extends Game {
 		cfg.title = "Ultima 4 - Quest of the Avatar";
 		cfg.width = SCREEN_WIDTH;
 		cfg.height = SCREEN_HEIGHT;
-		cfg.addIcon("graphics/ankh.png", FileType.Classpath);
+		cfg.addIcon("assets/graphics/ankh.png", FileType.Internal);
 		new LwjglApplication(new Ultima4(), cfg);
 
 	}

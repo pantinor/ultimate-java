@@ -1,8 +1,8 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: { 
-	default-font: { file: fonts/Arial_12.fnt },
-	corsiva-font: { file: fonts/corsiva.fnt },
-	corsiva-20-font: { file: fonts/Calisto_18.fnt } 
+	default-font: { file: assets/fonts/Arial_12.fnt },
+	corsiva-font: { file: assets/fonts/corsiva.fnt },
+	corsiva-20-font: { file: assets/fonts/Calisto_18.fnt } 
 },
 com.badlogic.gdx.graphics.Color: {
 	green: { a: 1, b: 0, g: 1, r: 0 },

@@ -2,33 +2,33 @@ package ultima;
 
 public enum Sound {
 		
-	MAGIC ("sound/magic.ogg", false, 0.3f), 
-	ATTACK ("sound/attack.ogg", false, 0.3f), 
-	MOONGATE ("sound/moongate_flash.ogg", false, 0.3f), 
-	BLOCKED ("sound/blocked.ogg", false, 0.3f),
-	FLEE ("sound/flee.ogg", false, 0.3f),
+	MAGIC ("magic.ogg", false, 0.3f), 
+	ATTACK ("attack.ogg", false, 0.3f), 
+	MOONGATE ("moongate_flash.ogg", false, 0.3f), 
+	BLOCKED ("blocked.ogg", false, 0.3f),
+	FLEE ("flee.ogg", false, 0.3f),
 
-	PC_ATTACK ("sound/pc_attack.ogg", false, 0.3f),
-	PC_STRUCK ("sound/pc_struck.ogg", false, 0.3f),
-	NPC_ATTACK ("sound/npc_attack.ogg", false, 0.3f),
-	NPC_STRUCK ("sound/npc_struck.ogg", false, 0.3f),
-	EVADE ("sound/evade.ogg", false, 0.3f),
-	ERROR ("sound/error.ogg", false, 0.3f),
-	POISON_EFFECT ("sound/poison_effect.ogg", false, 0.3f),
-	POISON_DAMAGE ("sound/poison_damage.ogg", false, 0.3f),
-	SLEEP ("sound/reaper_sleeper.ogg", false, 0.3f),
+	PC_ATTACK ("pc_attack.ogg", false, 0.3f),
+	PC_STRUCK ("pc_struck.ogg", false, 0.3f),
+	NPC_ATTACK ("npc_attack.ogg", false, 0.3f),
+	NPC_STRUCK ("npc_struck.ogg", false, 0.3f),
+	EVADE ("evade.ogg", false, 0.3f),
+	ERROR ("error.ogg", false, 0.3f),
+	POISON_EFFECT ("poison_effect.ogg", false, 0.3f),
+	POISON_DAMAGE ("poison_damage.ogg", false, 0.3f),
+	SLEEP ("reaper_sleeper.ogg", false, 0.3f),
 
 
 	//music
-	OUTSIDE ("sound/Wanderer.mp3", false, 0.1f), 
-	TOWNS ("sound/Towns.mp3", false, 0.1f), 
-	SHRINES ("sound/Shrines.mp3", false, 0.1f), 
-	SHOPPING ("sound/Shopping.mp3", false, 0.1f), 
-	RULEBRIT ("sound/Rule_Britannia.mp3", false, 0.1f), 
-	FANFARE ("sound/Fanfare_Of_Lord_British.mp3", false, 0.1f), 
-	DUNGEON ("sound/Dungeon.mp3", false, 0.1f), 
-	COMBAT ("sound/Combat.mp3", false, 0.1f), 
-	CASTLES ("sound/Castles.mp3", false, 0.1f);
+	OUTSIDE ("Wanderer.mp3", false, 0.1f), 
+	TOWNS ("Towns.mp3", false, 0.1f), 
+	SHRINES ("Shrines.mp3", false, 0.1f), 
+	SHOPPING ("Shopping.mp3", false, 0.1f), 
+	RULEBRIT ("Rule_Britannia.mp3", false, 0.1f), 
+	FANFARE ("Fanfare_Of_Lord_British.mp3", false, 0.1f), 
+	DUNGEON ("Dungeon.mp3", false, 0.1f), 
+	COMBAT ("Combat.mp3", false, 0.1f), 
+	CASTLES ("Castles.mp3", false, 0.1f);
 	
 	String file;
 	boolean looping;

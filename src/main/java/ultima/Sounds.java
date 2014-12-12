@@ -48,7 +48,7 @@ public class Sounds {
 	public static Music play(Sound sound) {
 		Music m = sounds.get(sound);
 		if (m == null) {
-			m = Gdx.audio.newMusic(Gdx.files.classpath(sound.getFile()));
+			m = Gdx.audio.newMusic(Gdx.files.internal("assets/sound/" + sound.getFile()));
 			m.setVolume(sound.getVolume());
 			m.setLooping(sound.getLooping());
 

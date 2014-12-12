@@ -86,10 +86,10 @@ public class GameScreen extends BaseScreen {
 		this.mainGame = mainGame;
 			
 		stage = new Stage(new ScreenViewport());
-		skin = new Skin(Gdx.files.classpath("skin/uiskin.json"));
+		skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
 		
 		try {
-			egaatlas = new TextureAtlas(Gdx.files.classpath("tilemaps/tiles-ega-atlas.txt"));
+			egaatlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-ega-atlas.txt"));
 			//atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
 			//u5atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/ultima5-atlas.txt"));
 			
@@ -112,7 +112,7 @@ public class GameScreen extends BaseScreen {
 			//textures for the moongates
 			moongateTextures = egaatlas.findRegions("moongate");
 			//textures for the phases of  the moon
-			moonAtlas = new TextureAtlas(Gdx.files.classpath("graphics/moon-atlas.txt"));
+			moonAtlas = new TextureAtlas(Gdx.files.internal("assets/graphics/moon-atlas.txt"));
 
 			//font = new BitmapFont(Gdx.files.classpath("fonts/Calisto_18.fnt"));
 			font = new BitmapFont();
@@ -167,7 +167,7 @@ public class GameScreen extends BaseScreen {
 		
 		if (m.getMap().getType() == MapType.dungeon) {
 			
-			DungeonScreen sc = new DungeonScreen(mainGame, stage, this, "/data/"+m.getMap().getFname());
+			DungeonScreen sc = new DungeonScreen(mainGame, stage, this, m.getMap().getFname());
 			mainGame.setScreen(sc);
 			
 		} else if (m.getMap().getType().equals("shrine")) {

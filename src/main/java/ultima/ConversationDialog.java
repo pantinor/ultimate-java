@@ -38,7 +38,7 @@ public class ConversationDialog extends Window implements Constants {
 	
 	public static int width = 300;
 	public static int height = 400;
-	static BitmapFont font = new BitmapFont(Gdx.files.classpath("fonts/corsiva-20.fnt"), false);
+	static BitmapFont font = new BitmapFont(Gdx.files.internal("assets/fonts/corsiva-20.fnt"), false);
 	
 	Table internalTable;
 	TextField input;

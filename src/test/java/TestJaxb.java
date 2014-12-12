@@ -419,7 +419,7 @@ public class TestJaxb {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testMovement() throws Exception {
 				
 		TileSet baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	

@@ -1,5 +1,6 @@
 package util;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 import objects.Tile;
@@ -85,7 +86,7 @@ public class UltimaTiledMapLoader implements Constants {
 	
 	private void loadCombatPositions(TiledMap map) throws Exception {
 		
-		InputStream is = UltimaTiledMapLoader.class.getResourceAsStream("/data/"+gameMap.getMap().getFname());
+		InputStream is = new FileInputStream("assets/data/"+gameMap.getMap().getFname());
 		byte[] bytes = IOUtils.toByteArray(is);
 		
 //		0x0 	16 	start_x for monsters 0-15

@@ -16,13 +16,10 @@
 	<fileSets>
 
 		<fileSet>
-			<directory>${project.basedir}/src/main/resources</directory>
-			<outputDirectory></outputDirectory>
-			<includes>
-				<include>*.*</include>
-			</includes>
+			<directory>${project.basedir}/assets</directory>
+			<outputDirectory>/assets</outputDirectory>
 		</fileSet>
-
+		
 		<fileSet>
 			<directory>${project.build.directory}</directory>
 			<outputDirectory></outputDirectory>

@@ -1,6 +1,7 @@
 package dungeon;
 
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,6 @@ import org.apache.commons.io.IOUtils;
 import ultima.BaseScreen;
 import ultima.GameScreen;
 import ultima.Ultima4;
-import ultima.Constants.ScreenType;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -108,24 +108,24 @@ public class DungeonScreen extends BaseScreen {
 		
 
 		
-		assets = new AssetManager(new ClasspathFileHandleResolver());
-		assets.load("graphics/dirt.png", Texture.class);
-		assets.load("graphics/rock.png", Texture.class);
-		assets.load("graphics/map.png", Texture.class);
-		assets.load("graphics/Stone_Masonry.jpg", Texture.class);
-		assets.load("graphics/door.png", Texture.class);
+		assets = new AssetManager();
+		assets.load("assets/graphics/dirt.png", Texture.class);
+		assets.load("assets/graphics/rock.png", Texture.class);
+		assets.load("assets/graphics/map.png", Texture.class);
+		assets.load("assets/graphics/Stone_Masonry.jpg", Texture.class);
+		assets.load("assets/graphics/door.png", Texture.class);
 
 
 		assets.update(2000);
 		
 		ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader(), new ClasspathFileHandleResolver());
-		fountainModel = gloader.loadModel(Gdx.files.classpath("graphics/fountain2.g3db"));
-		ladderModel = gloader.loadModel(Gdx.files.classpath("graphics/ladder.g3db"));
-		chestModel = gloader.loadModel(Gdx.files.classpath("graphics/chest.g3db"));
-		orbModel = gloader.loadModel(Gdx.files.classpath("graphics/orb.g3db"));
-		altarModel = gloader.loadModel(Gdx.files.classpath("graphics/altar.g3db"));
+		fountainModel = gloader.loadModel(Gdx.files.internal("assets/graphics/fountain2.g3db"));
+		ladderModel = gloader.loadModel(Gdx.files.internal("assets/graphics/ladder.g3db"));
+		chestModel = gloader.loadModel(Gdx.files.internal("assets/graphics/chest.g3db"));
+		orbModel = gloader.loadModel(Gdx.files.internal("assets/graphics/orb.g3db"));
+		altarModel = gloader.loadModel(Gdx.files.internal("assets/graphics/altar.g3db"));
 				
-		MINI_MAP_TEXTURE = assets.get("graphics/map.png", Texture.class);
+		MINI_MAP_TEXTURE = assets.get("assets/graphics/map.png", Texture.class);
 		font = new BitmapFont();
 		font.setColor(Color.WHITE);
 		
@@ -153,15 +153,14 @@ public class DungeonScreen extends BaseScreen {
 		ModelBuilder builder = new ModelBuilder();
 		for (int x=0;x<12;x++) {
 			for (int y=0;y<12;y++) {
-				Model sf = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("graphics/dirt.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);
+				Model sf = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("assets/graphics/dirt.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);
 				floor.add(new ModelInstance(sf, new Vector3(x-1.5f,-.5f,y-1.5f)));
 				ceiling.add(new ModelInstance(sf, new Vector3(x-1.5f,1.5f,y-1.5f)));
 			}
 		}
 		
 		try {
-			
-			InputStream is = DungeonScreen.class.getResourceAsStream(dungeonFileName);
+			InputStream is = new FileInputStream("assets/data/" + dungeonFileName.toUpperCase());
 			byte[] bytes = IOUtils.toByteArray(is);	
 						
 			int pos = 0 ;
@@ -271,7 +270,7 @@ public class DungeonScreen extends BaseScreen {
 	public void addBlock(int level, DungeonTile tile, float tx, float ty, float tz) {
 		ModelBuilder builder = new ModelBuilder();
 		if (tile == DungeonTile.WALL) {
-			Model model = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("graphics/rock.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
+			Model model = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("assets/graphics/rock.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
 			ModelInstance instance = new ModelInstance(model, tx, ty, tz);
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
@@ -336,12 +335,12 @@ public class DungeonScreen extends BaseScreen {
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
 		} else if (tile == DungeonTile.DOOR || tile == DungeonTile.SECRET_DOOR) {
-			Model model = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("graphics/rock.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
+			Model model = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("assets/graphics/rock.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
 			ModelInstance instance = new ModelInstance(model, tx, ty, tz);
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
 			
-			String texture = tile == DungeonTile.DOOR?"graphics/door.png":"graphics/rock.png";
+			String texture = tile == DungeonTile.DOOR?"assets/graphics/door.png":"assets/graphics/rock.png";
 			
 			model = builder.createBox(1.04f, .85f, .6f, new Material(TextureAttribute.createDiffuse(assets.get(texture, Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
 			instance = new ModelInstance(model, tx, .40f, tz);

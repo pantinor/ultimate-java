@@ -92,7 +92,7 @@ public class CombatScreen extends BaseScreen {
 		mapCamera.setToOrtho(false);
 		stage = new Stage();
 		stage.setViewport(new ScreenViewport(mapCamera));
-		skin = new Skin(Gdx.files.classpath("skin/uiskin.json"));
+		skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
 
 		cursor = new CursorActor();
 		stage.addActor(cursor);
@@ -112,9 +112,9 @@ public class CombatScreen extends BaseScreen {
 		Iterator<MapObject> iter = mLayer.getObjects().iterator();
 		while(iter.hasNext()) {
 			MapObject obj = iter.next();
-			int index = (int)obj.getProperties().get("index");
-			int startX = (int)obj.getProperties().get("startX");
-			int startY = (int)obj.getProperties().get("startY");
+			int index = (Integer)obj.getProperties().get("index");
+			int startX = (Integer)obj.getProperties().get("startX");
+			int startY = (Integer)obj.getProperties().get("startY");
 			
 			if (crSlots[index] == null) continue;
 			
@@ -131,9 +131,9 @@ public class CombatScreen extends BaseScreen {
 		iter = pLayer.getObjects().iterator();
 		while(iter.hasNext()) {
 			MapObject obj = iter.next();
-			int index = (int)obj.getProperties().get("index");
-			int startX = (int)obj.getProperties().get("startX");
-			int startY = (int)obj.getProperties().get("startY");
+			int index = (Integer)obj.getProperties().get("index");
+			int startX = (Integer)obj.getProperties().get("startX");
+			int startY = (Integer)obj.getProperties().get("startY");
 			
 			if (index + 1 > party.getSaveGame().members) continue;
 			

@@ -1,6 +1,7 @@
 package util;
 
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.CharBuffer;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class Utils implements Constants {
 	 */
 	public static void setMapTiles(BaseMap map, TileSet ts) throws Exception {
 		
-		InputStream is = Utils.class.getResourceAsStream("/data/" + map.getFname());
+		InputStream is = new FileInputStream("assets/data/" + map.getFname().toUpperCase());
 		byte[] bytes = IOUtils.toByteArray(is);
 
 		Tile[] tiles = new Tile[map.getWidth() * map.getHeight()];
@@ -87,7 +88,7 @@ public class Utils implements Constants {
 	public static List<Conversation> getDialogs(String fname) {
 		byte[] bytes;
 		try {
-			InputStream is = Utils.class.getResourceAsStream("/data/" + fname);
+			InputStream is = new FileInputStream("assets/data/" + fname);
 			bytes = IOUtils.toByteArray(is);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -144,7 +145,7 @@ public class Utils implements Constants {
 	public static Person[] getPeople(String fname, TileSet ts) {
 		byte[] bytes;
 		try {
-			InputStream is = Utils.class.getResourceAsStream("/data/" + fname);
+			InputStream is = new FileInputStream("assets/data/" + fname);
 			bytes = IOUtils.toByteArray(is);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -247,7 +248,7 @@ public class Utils implements Constants {
 	}
 	
 	public static Object loadXml(String fname, Class<?> clazz) throws Exception {
-		InputStream is = Utils.class.getResourceAsStream("/xml/"+fname);
+		InputStream is = new FileInputStream("assets/xml/"+fname);
 		JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
 		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 		return jaxbUnmarshaller.unmarshal(is);

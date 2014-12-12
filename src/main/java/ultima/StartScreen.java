@@ -85,7 +85,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 		
 		this.mainGame = mainGame;
 	
-		TextureAtlas ba = new TextureAtlas(Gdx.files.classpath("graphics/beasties-atlas.txt"));
+		TextureAtlas ba = new TextureAtlas(Gdx.files.internal("assets/graphics/beasties-atlas.txt"));
 		Array<AtlasRegion> anim1 = ba.findRegions("beast");
 		Array<AtlasRegion> anim2 = ba.findRegions("dragon");
 		Array<AtlasRegion> tmp1 = new Array<AtlasRegion>(beast1FrameIndexes.length);
@@ -95,13 +95,13 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 		beast1 = new Animation(0.25f, tmp1);
 		beast2 = new Animation(0.25f, tmp2);
 		
-		ta = new TextureAtlas(Gdx.files.classpath("graphics/initial-atlas.txt"));
+		ta = new TextureAtlas(Gdx.files.internal("assets/graphics/initial-atlas.txt"));
 		title = ta.createSprite("title");
 		
-		TextureAtlas ua = new TextureAtlas(Gdx.files.classpath("tilemaps/ultima5-atlas.txt"));
+		TextureAtlas ua = new TextureAtlas(Gdx.files.internal("assets/tilemaps/ultima5-atlas.txt"));
 		whirlpool = new Animation(0.50f, ua.findRegions("whirlpool"));
 		
-		font = new BitmapFont(Gdx.files.classpath("fonts/Calisto_24.fnt"));
+		font = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_24.fnt"));
 		font.setColor(Color.WHITE);
 		
 		batch = new SpriteBatch();
