@@ -69,17 +69,7 @@ public class Party implements Constants {
 	public void setMembers(List<PartyMember> members) {
 		this.members = members;
 	}
-	
-	public int getAbleCombatPlayers() {
-		int n = 0;
-		for (int i=0;i<members.size();i++) {
-			if (!members.get(i).isDisabled()) {
-				n++;
-			}
-		}
-		return n;
-	}
-	
+		
 	public PartyMember getActivePartyMember() {
 		return members.get(activePlayer);
 	}
@@ -108,7 +98,13 @@ public class Party implements Constants {
 		if (tmp >= members.size()) {
 			return true;
 		} 
-		return false;
+		boolean noMoreAble = true;;
+		for (int i=tmp;i<members.size();i++) {
+			if (!members.get(i).isDisabled()) {
+				noMoreAble = false;
+			}
+		}
+		return noMoreAble;
 	}
 
 	/**
@@ -121,7 +117,10 @@ public class Party implements Constants {
 				allbad = false;
 			}
 		}
-		if (allbad) return null;
+		if (allbad) {
+			activePlayer = members.size() - 1;
+			return null;
+		}
 
 		PartyMember p = null;
 		boolean flag = true;
@@ -136,6 +135,45 @@ public class Party implements Constants {
 			}
 		}
 		return p;		
+	}
+	
+	public boolean didAnyoneFlee() {
+		boolean anyonefled = false;
+		for (int i=0;i<members.size();i++) {
+			if (members.get(i).fled) {
+				anyonefled = true;
+			}
+		}
+		return anyonefled;
+	}
+	
+	public int getAbleCombatPlayers() {
+		int n = 0;
+		for (int i=0;i<members.size();i++) {
+			if (!members.get(i).isDisabled()) {
+				n++;
+			}
+		}
+		return n;
+	}
+	
+	public boolean isAnyoneAlive() {
+		boolean anyonealive = false;
+		for (int i=0;i<members.size();i++) {
+			if (members.get(i).getPlayer().status != StatusType.DEAD) {
+				anyonealive = true;
+			}
+		}
+		return anyonealive;
+	}
+	
+	public void reviveAll() {
+		activePlayer  = 0;
+		for (PartyMember pm : members) {
+			pm.fled = false;
+			pm.getPlayer().status = StatusType.GOOD;
+			pm.getPlayer().hp = pm.getPlayer().hpMax;
+		}
 	}
 	
 	public void reset() {
@@ -196,7 +234,7 @@ public class Party implements Constants {
 			int exp = Utils.adjustValueMax(player.xp, value, 9999);
 			player.xp = exp;
 		}
-		
+				
 		public boolean heal(HealType type) {
 			switch (type) {
 

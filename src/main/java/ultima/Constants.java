@@ -559,7 +559,11 @@ public interface Constants {
 		
 	}
 	
-	
+	public enum AttackResult {
+		NONE,
+		HIT,
+		MISS;
+	}
 	
 	public enum ArmorType {
 		NONE,
@@ -1374,13 +1378,19 @@ public interface Constants {
 	public class Vector {
 		int x;
 		int y;
+		AttackResult res;
 		Vector(int x, int y) {
 			this.x=x;
 			this.y=y;
 		}
+		
+		public void setResult(AttackResult r) {
+			this.res = r;
+		}
+
 		@Override
 		public String toString() {
-			return String.format("[x=%s, y=%s]", x, y);
+			return String.format("[res=%s x=%s, y=%s]", res, x, y);
 		}
 		
 	}

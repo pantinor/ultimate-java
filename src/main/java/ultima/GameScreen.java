@@ -73,6 +73,7 @@ public class GameScreen extends BaseScreen {
 	Array<AtlasRegion> moongateTextures = new Array<AtlasRegion>();
 	int phase = 0, trammelphase = 0, trammelSubphase = 0, feluccaphase = 0;
 
+	Stage mapObjectsStage;
 	
 	public SecondaryInputProcessor sip;
 	Random rand = new Random();
@@ -85,7 +86,6 @@ public class GameScreen extends BaseScreen {
 		
 		this.mainGame = mainGame;
 			
-		stage = new Stage(new ScreenViewport());
 		skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
 		
 		try {
@@ -108,7 +108,7 @@ public class GameScreen extends BaseScreen {
 			creatures.init();
 
 			avatar = new Animation(0.25f, egaatlas.findRegions("avatar"));
-			
+					
 			//textures for the moongates
 			moongateTextures = egaatlas.findRegions("moongate");
 			//textures for the phases of  the moon
@@ -126,8 +126,13 @@ public class GameScreen extends BaseScreen {
 			mapCamera = new OrthographicCamera();
 			mapCamera.setToOrtho(false);
 			
+			stage = new Stage(new ScreenViewport());
+			mapObjectsStage = new Stage(new ScreenViewport(mapCamera));
+				        
 			sip = new SecondaryInputProcessor(this, stage);
 
+			
+			
 			context = new Context();
 
 			SaveGame sg = new SaveGame();
@@ -142,7 +147,7 @@ public class GameScreen extends BaseScreen {
 			loadNextMap(Maps.WORLD, sg.x, sg.y);
 						
 			gameTimer = new GameTimer();
-					
+			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -214,10 +219,12 @@ public class GameScreen extends BaseScreen {
 	
 	public void endCombat(boolean isWon) {
 		
+		mainGame.setScreen(this);
+		
 		if (currentEncounter != null) {
 					
 			Tile tile = context.getCurrentMap().getTile(currentEncounter.currentX, currentEncounter.currentY);
-
+			
 			if (isWon) {
 				
 				log("Victory!");
@@ -233,30 +240,31 @@ public class GameScreen extends BaseScreen {
 			    	Drawable chest = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "chest", egaatlas);
 			    	chest.setX(currentEncounter.currentPos.x);
 			    	chest.setY(currentEncounter.currentPos.y);
-			        stage.addActor(chest);
+			    	mapObjectsStage.addActor(chest);
 			    }
 			    /* add a ship if you just defeated a pirate ship */
 			    else if (currentEncounter.getTile() == CreatureType.pirate_ship) {
 			    	Drawable ship = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "ship", egaatlas);
 			    	ship.setX(currentEncounter.currentPos.x);
 			    	ship.setY(currentEncounter.currentPos.y);
-			        stage.addActor(ship);
+			    	mapObjectsStage.addActor(ship);
 			    }
 			} else {
-				
 
-				if (context.getParty().getAbleCombatPlayers() > 0) {
+				if (context.getParty().didAnyoneFlee()) {
 	                log("Battle is lost!");
 
 	                /* minus points for fleeing from evil creatures */
 	                if (!currentEncounter.getGood()) {
+	                	//lose karma points here
 	                    context.getParty().adjustKarma(KarmaAction.FLED_EVIL);
 	                } else {
+	                	//get extra karma points
 	                    context.getParty().adjustKarma(KarmaAction.FLED_GOOD);
 	                }
-	            } else {
+	            } else if (!context.getParty().isAnyoneAlive()) {
 	            	//death scene
-	            	mainGame.setScreen(new DeathScreen(mainGame, this, context.getParty().getMember(0).getPlayer().name));
+	            	mainGame.setScreen(new DeathScreen(mainGame, this, context.getParty()));
 	            	loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
 	            }
 			}
@@ -333,7 +341,8 @@ public class GameScreen extends BaseScreen {
 		stage.act();
 		stage.draw();
 		
-		
+		mapObjectsStage.act();
+		mapObjectsStage.draw();
 		
 	}
 
@@ -406,6 +415,8 @@ public class GameScreen extends BaseScreen {
 				if (showZstats > context.getParty().getMembers().size()) showZstats = STATS_WEAPONS;
 			}
 			if (showZstats > STATS_SPELLS) showZstats = STATS_NONE;
+		} else if (keycode == Keys.SPACE) {
+			log("Pass");
 		}
 		
 		finishTurn((int)v.x, (int)v.y);

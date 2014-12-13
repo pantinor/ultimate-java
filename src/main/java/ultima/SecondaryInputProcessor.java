@@ -191,19 +191,28 @@ public class SecondaryInputProcessor extends InputAdapter {
 	
 	public void animateAttack(final CombatScreen scr, PartyMember attacker, Direction dir, int x, int y, int range) {
 	    
-		Vector target = scr.attack(attacker, dir, x, y, range);
+		final Vector target = scr.attack(attacker, dir, x, y, range);
 
-		ProjectileActor p = scr.new ProjectileActor(Color.RED, x, y);
+		final ProjectileActor p = scr.new ProjectileActor(Color.RED, x, y, target.res);
 		
 		Vector3 v = scr.getMapPixelCoords(target.x, target.y);
 		
-		p.addAction(sequence(moveTo(v.x, v.y, .3f),fadeOut(.2f), new Action() {
+		p.addAction(sequence(moveTo(v.x, v.y, .3f), new Action() {
 			public boolean act(float delta) {
-				Creature active = scr.party.getMembers().get(scr.party.getActivePlayer()).combatCr;
-				scr.finishTurn(active.currentX,active.currentY);
+				
+				switch(p.res) {
+				case HIT:
+					p.resultTexture = CombatScreen.hitTile;
+					break;
+				case MISS:
+					p.resultTexture = CombatScreen.missTile;
+					break;
+				}
+				
+				scr.finishPlayerTurn();
 				return true;
 			}
-		}, removeActor(p)));
+		}, fadeOut(.2f), removeActor(p)));
 		
     	stage.addActor(p);
 	}

@@ -30,9 +30,9 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
@@ -73,6 +73,11 @@ public class CombatScreen extends BaseScreen {
 	
 	private Random rand = new Random();
 	
+	public static TextureRegion hitTile;
+	public static TextureRegion missTile;
+	public static TextureRegion corpse;
+
+
 	public CombatScreen(Ultima4 mainGame, BaseScreen returnScreen, Context context, Maps contextMap, BaseMap combatMap, TiledMap tmap, CreatureType cr, CreatureSet cs, TextureAtlas a1, TextureAtlas a2) {
 		
 		scType = ScreenType.COMBAT;
@@ -109,6 +114,10 @@ public class CombatScreen extends BaseScreen {
 		font.setColor(Color.WHITE);		
 
 		sip = new SecondaryInputProcessor(this, stage);
+		
+		hitTile = a1.findRegion("hit_flash");
+		missTile = a1.findRegion("miss_flash");
+		corpse = a1.findRegion("corpse");
 
 		
 	    fillCreatureTable(crType);
@@ -185,14 +194,15 @@ public class CombatScreen extends BaseScreen {
 			} while (crSlots[j] != null);
 
 			/* see if creature is a leader or leader's leader */
-			if (CreatureType.get(baseType.getCreature().getLeader()) != baseType.getCreature().getTile() && i != (numCreatures - 1)) { 
-				if (rand.nextInt(32) == 0) { // leader's leader
-					CreatureType t1 = CreatureType.get(baseType.getCreature().getLeader());
-					CreatureType t2 = CreatureType.get(t1.getCreature().getLeader());
-					current = t2;
-				}
-				else if (rand.nextInt(8) == 0) { // leader
-					current = CreatureType.get(baseType.getCreature().getLeader());
+			if (baseType.getCreature().getLeader() != 0) {
+				if (CreatureType.get(baseType.getCreature().getLeader()) != baseType.getCreature().getTile() && i != (numCreatures - 1)) { 
+					if (rand.nextInt(32) == 0) { // leader's leader
+						CreatureType t1 = CreatureType.get(baseType.getCreature().getLeader());
+						CreatureType t2 = CreatureType.get(t1.getCreature().getLeader());
+						current = t2;
+					} else if (rand.nextInt(8) == 0) { // leader
+						current = CreatureType.get(baseType.getCreature().getLeader());
+					}
 				}
 			}
 
@@ -262,7 +272,11 @@ public class CombatScreen extends BaseScreen {
 			if (p.combatCr == null || p.combatCr.currentPos == null || p.fled) {
 				continue;
 			}
-			renderer.getBatch().draw(p.combatCr.getAnim().getKeyFrame(time, true), p.combatCr.currentPos.x, p.combatCr.currentPos.y, tilePixelWidth, tilePixelHeight);
+			if (p.getPlayer().status != StatusType.DEAD && p.getPlayer().status != StatusType.SLEEPING) {
+				renderer.getBatch().draw(p.combatCr.getAnim().getKeyFrame(time, true), p.combatCr.currentPos.x, p.combatCr.currentPos.y, tilePixelWidth, tilePixelHeight);
+			} else {
+				renderer.getBatch().draw(corpse, p.combatCr.currentPos.x, p.combatCr.currentPos.y, tilePixelWidth, tilePixelHeight);
+			}
 		}
 		
 		renderer.getBatch().end();
@@ -273,8 +287,12 @@ public class CombatScreen extends BaseScreen {
 		int y = 5;
 		for (int i = party.getMembers().size() - 1; i >= 0; i--) {
 			PartyMember pm = party.getMember(i);
-			String s = (i + 1) + " - " + pm.getPlayer().name + "   " + pm.getPlayer().hp + "" + pm.getPlayer().status.getValue();
+			String s = (i + 1) + " - " + pm.getPlayer().name + " " + pm.getPlayer().hp + " " + pm.getPlayer().status.getValue();
 			y = y + 18;
+			font.setColor(i == party.getActivePlayer()? new Color(.35f, .93f, 0.91f, 1) : Color.WHITE);
+			if (pm.getPlayer().status == StatusType.POISONED) font.setColor(Color.GREEN);
+			if (pm.getPlayer().status == StatusType.SLEEPING) font.setColor(Color.YELLOW);
+			if (pm.getPlayer().status == StatusType.DEAD) font.setColor(Color.GRAY);
 			font.draw(batch, s, Ultima4.SCREEN_WIDTH - 125, y);
 		}
 
@@ -295,9 +313,12 @@ public class CombatScreen extends BaseScreen {
 	@Override
 	public boolean keyUp (int keycode) {
 				
-		Creature active = party.getActivePartyMember().combatCr;
+		PartyMember ap = party.getActivePartyMember();
+		Creature active = ap.combatCr;
 		
-		if (keycode == Keys.UP) {
+		if (keycode == Keys.SPACE || ap.isDisabled()) {
+			log("Pass");
+		} else if (keycode == Keys.UP) {
 			if (!preMove(active, Direction.NORTH)) return false;
 			active.currentY--;
 			active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
@@ -381,8 +402,11 @@ public class CombatScreen extends BaseScreen {
 		
 		PartyMember next = party.getAndSetNextActivePlayer();
 		if (next != null) {
+			cursor.setVisible(true);
 			Creature nextActivePlayer = next.combatCr;
 			cursor.setPos(nextActivePlayer.currentPos);
+		} else {
+			cursor.setVisible(false);
 		}
 		
 		if (roundIsDone) {
@@ -427,6 +451,9 @@ public class CombatScreen extends BaseScreen {
 		public boolean act(float delta) {
 			//enable input again
 			Gdx.input.setInputProcessor(CombatScreen.this);
+			if (!party.isAnyoneAlive()) {
+				end();
+			}
 			return true;
 		}
 	}
@@ -439,7 +466,6 @@ public class CombatScreen extends BaseScreen {
 		combatMap.setCombatPlayers(null);
 		party.reset();
 		
-		mainGame.setScreen(returnScreen);
 	}
 	
 
@@ -455,8 +481,10 @@ public class CombatScreen extends BaseScreen {
 	    Vector target = null;
 	    int distance = 1;
 	    for (Vector v : path) {
+            AttackResult res = attackAt(v, attacker, dir, range, distance);
             target = v;
-	        if (attackAt(v, attacker, dir, range, distance)) {
+            target.setResult(res);
+	        if (res != AttackResult.NONE) {
 	            break;
 	        }
 	        distance++;
@@ -515,8 +543,8 @@ public class CombatScreen extends BaseScreen {
 	    return path;
 	}
 	
-	private boolean attackAt(Vector target, PartyMember attacker, Direction dir, int range, int distance) {
-
+	private AttackResult attackAt(Vector target, PartyMember attacker, Direction dir, int range, int distance) {
+		AttackResult res = AttackResult.NONE;
 	    Creature creature = null;
 	    for (Creature c : combatMap.getCreatures()) {
 	    	if (c.currentX == target.x && c.currentY == target.y) {
@@ -531,17 +559,19 @@ public class CombatScreen extends BaseScreen {
 	    if (creature == null || wrongRange) {
 	        if (!wt.getWeapon().getDontshowtravel()) {
 	        }
-	        return false;
+	        return res;
 	    }
 	    
 	    if ((combatMap.getId() == Maps.ABYSS.getId() && !wt.getWeapon().getMagic()) || !attackHit(attacker, creature)) {
 	        log("Missed!\n");
+	        res = AttackResult.MISS;
 	    } else {
 	        Sounds.play(Sound.NPC_STRUCK);
 	        dealDamage(attacker, creature);
+	        res = AttackResult.HIT;
 	    }
 
-	    return true;
+        return res;
 	}
 	
 	private boolean attackAt(Vector target, Creature attacker) {
@@ -555,17 +585,25 @@ public class CombatScreen extends BaseScreen {
 	    }
 	    
 	    if (defender == null) return false;
-	    	    
-	    if (attackHit(attacker, defender)) {
+	    AttackResult res = attackHit(attacker, defender);	    
+	    if (res == AttackResult.HIT) {
 	    	
-			ProjectileActor p = new ProjectileActor(Color.YELLOW, attacker.currentX, attacker.currentY);
+			final ProjectileActor p = new ProjectileActor(Color.YELLOW, attacker.currentX, attacker.currentY, res);
 			Vector3 v = getMapPixelCoords(defender.combatCr.currentX, defender.combatCr.currentY);
-			p.addAction(sequence(moveTo(v.x, v.y, .3f),fadeOut(.2f), new Action() {
+			p.addAction(sequence(moveTo(v.x, v.y, .3f), new Action() {
 				public boolean act(float delta) {
+					switch(p.res) {
+					case HIT:
+						p.resultTexture = CombatScreen.hitTile;
+						break;
+					case MISS:
+						p.resultTexture = CombatScreen.missTile;
+						break;
+					}
 			        Sounds.play(Sound.PC_STRUCK);
 					return true;
 				}
-			}, removeActor(p)));
+			}, fadeOut(.2f), removeActor(p)));
 			
 	    	stage.addActor(p);
 	    	
@@ -577,10 +615,10 @@ public class CombatScreen extends BaseScreen {
 	    return false;
 	}
 	
-	private boolean attackHit(Creature attacker, PartyMember defender) {
+	private AttackResult attackHit(Creature attacker, PartyMember defender) {
 	    int attackValue = rand.nextInt(0x100) + attacker.getAttackBonus();
 	    int defenseValue = defender.getDefense();
-	    return attackValue > defenseValue;
+	    return attackValue > defenseValue ? AttackResult.HIT : AttackResult.MISS;
 	}
 	
 	private boolean attackHit(PartyMember attacker, Creature defender) {
@@ -701,7 +739,7 @@ public class CombatScreen extends BaseScreen {
 	    case ATTACK: {
 	        Sounds.play(Sound.NPC_ATTACK);
 
-	        if (attackHit(creature, target)) {
+	        if (attackHit(creature, target) == AttackResult.HIT) {
 	            Sounds.play(Sound.PC_STRUCK);
 	            //GameController::flashTile(target->getCoords(), "hit_flash", 4);
 
@@ -810,7 +848,7 @@ public class CombatScreen extends BaseScreen {
 		for (int i = 0; i < party.getMembers().size(); i++) {
 			
 			PartyMember pm = party.getMember(i);
-			if (pm.fled) continue;
+			if (pm.fled || pm.getPlayer().status == StatusType.DEAD) continue;
 			
 			if (!jinx) {
 				if (ranged) {
@@ -948,36 +986,38 @@ public class CombatScreen extends BaseScreen {
 	
 	class CursorActor extends Actor {
 		Texture texture;
-		Sprite sprite;
+		boolean visible = true;
 		CursorActor() {
 			texture = getCursorTexture();
-			sprite = new Sprite(texture);
 		}
 		void setPos(Vector3 v) {
 			setX(v.x);
 			setY(v.y);
 		}
-		
+		public void setVisible(boolean v) {
+			this.visible = v;
+		}
 		@Override
 		public void draw(Batch batch, float parentAlpha) {
 			
 			Color color = getColor();
 			batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
 			
-			batch.draw(sprite, getX(), getY());
+			if (visible) batch.draw(texture, getX(), getY());
 		}
 		
 	}
 	
 	class ProjectileActor extends Actor {
 		Texture texture;
-		Sprite sprite;
-		ProjectileActor(Color color, int x, int y) {
+		TextureRegion resultTexture;
+		AttackResult res;
+		ProjectileActor(Color color, int x, int y, AttackResult res) {
+			this.res = res;
 			Pixmap pixmap = new Pixmap(tilePixelHeight,tilePixelHeight, Format.RGBA8888);
 			pixmap.setColor(color);
 			pixmap.fillCircle(16,16,3);
 			texture = new Texture(pixmap);
-			sprite = new Sprite(texture);
 			
 			Vector3 v = getMapPixelCoords(x, y);
 			this.setX(v.x);
@@ -990,10 +1030,14 @@ public class CombatScreen extends BaseScreen {
 			Color color = getColor();
 			batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
 			
-			batch.draw(sprite, getX(), getY());
+			if (resultTexture == null) {
+				batch.draw(texture, getX(), getY());
+			} else {
+				batch.draw(resultTexture, getX(), getY(), tilePixelWidth, tilePixelHeight);
+			}
 		}
 		
 	}
-	
+		
 
 }
