@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang.StringUtils;
+
 import ultima.Constants;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -435,6 +437,9 @@ public class Creature implements Constants {
 		return (steals != null && steals.equals("gold"));
 	}
 	
+	public boolean rangedAttackIs(String tile) {
+		return StringUtils.equals(rangedhittile, tile);
+	}
 	public int getAttackBonus() {
 	    return 0;
 	}

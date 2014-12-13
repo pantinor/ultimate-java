@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -34,6 +35,7 @@ import ultima.Constants.KarmaAction;
 import ultima.Constants.Maps;
 import ultima.Constants.TileAttrib;
 import ultima.Constants.TileRule;
+import ultima.Constants.Vector;
 import ultima.Constants.Virtue;
 import util.ShadowFOV;
 import util.Utils;
@@ -419,7 +421,7 @@ public class TestJaxb {
 		
 	}
 	
-	//@Test
+	@Test
 	public void testMovement() throws Exception {
 				
 		TileSet baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	
@@ -430,11 +432,14 @@ public class TestJaxb {
 		
 		BaseMap map = Maps.BRICK_CON.getMap();
 		
-		int d = map.movementDistance(8, 3, 1, 9);
+		//int d = map.movementDistance(8, 3, 1, 9);
 
+	    int dirmask = map.getRelativeDirection(7, 7, 1, 1);
 
 		
 
 	}
+	
+
 
 }

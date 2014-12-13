@@ -9,6 +9,8 @@ import objects.SaveGame.SaveGamePlayerRecord;
 import org.apache.commons.lang.StringUtils;
 
 import ultima.Constants;
+import ultima.Sound;
+import ultima.Sounds;
 import util.Utils;
 
 
@@ -68,10 +70,6 @@ public class Party implements Constants {
 		this.members = members;
 	}
 	
-	public PartyMember getActivePartyMember() {
-		return members.get(activePlayer);
-	}
-	
 	public int getAbleCombatPlayers() {
 		int n = 0;
 		for (int i=0;i<members.size();i++) {
@@ -82,19 +80,15 @@ public class Party implements Constants {
 		return n;
 	}
 	
+	public PartyMember getActivePartyMember() {
+		return members.get(activePlayer);
+	}
+	
 	/**
 	 * Gets the next active index without changing the active index
 	 */
 	public int getNextActiveIndex() {
-		boolean allbad = true;
-		for (int i=0;i<members.size();i++) {
-			if (!members.get(i).isDisabled()) {
-				allbad = false;
-			}
-		}
-		if (allbad) return -1;
-		
-		int tmp = activePlayer;
+ 		int tmp = activePlayer;
 		boolean flag = true;
 		while (flag) {
 			tmp ++;
@@ -107,12 +101,20 @@ public class Party implements Constants {
 		}
 		return tmp;
 	}
+	
+	public boolean isRoundDone() {
+ 		int tmp = activePlayer;
+		tmp ++;
+		if (tmp >= members.size()) {
+			return true;
+		} 
+		return false;
+	}
 
 	/**
-	 * Gets and sets the next axctive player
+	 * Gets and sets the next active player
 	 */
 	public PartyMember getAndSetNextActivePlayer() {
-		
 		boolean allbad = true;
 		for (int i=0;i<members.size();i++) {
 			if (!members.get(i).isDisabled()) {
@@ -120,7 +122,7 @@ public class Party implements Constants {
 			}
 		}
 		if (allbad) return null;
-		
+
 		PartyMember p = null;
 		boolean flag = true;
 		while (flag) {
@@ -133,7 +135,7 @@ public class Party implements Constants {
 				flag = false;
 			}
 		}
-		return p;
+		return p;		
 	}
 	
 	public void reset() {
@@ -553,7 +555,7 @@ public class Party implements Constants {
 					break;
 
 				case POISONED:
-					// soundPlay(SOUND_POISON_DAMAGE, false);
+					Sounds.play(Sound.POISON_DAMAGE);
 					member.applyDamage(2, false);
 					break;
 

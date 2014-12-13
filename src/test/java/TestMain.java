@@ -83,11 +83,11 @@ public class TestMain extends Game {
 			
 			sg.players[0].weapon = WeaponType.SLING;
 			
-			TextureAtlas a1 = new TextureAtlas(Gdx.files.classpath("tilemaps/tiles-ega-atlas.txt"));
+			TextureAtlas a1 = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-ega-atlas.txt"));
 
 			TiledMap tmap = new UltimaTiledMapLoader(Maps.SHIPSHOR_CON, a1, Maps.SHIPSHOR_CON.getMap().getWidth(), Maps.SHIPSHOR_CON.getMap().getHeight(), 16, 16).load();
 	
-			CombatScreen sc = new CombatScreen(null, null, context, Maps.WORLD, Maps.SHIPSHOR_CON.getMap(), tmap, CreatureType.orc, cs, a1, a1);
+			CombatScreen sc = new CombatScreen(null, null, context, Maps.WORLD, Maps.SHIPSHOR_CON.getMap(), tmap, CreatureType.cyclops, cs, a1, a1);
 			
 			sc.logs = new LogDisplay(new BitmapFont());
 			

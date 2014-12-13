@@ -14,7 +14,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import objects.Party.PartyMember;
 import ultima.BaseScreen;
 import ultima.Constants;
-import ultima.Constants.CreatureStatus;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -452,17 +451,20 @@ public class BaseMap implements Constants {
 	    else return null;//Direction.getRandomValidDirection(validMovesMask);
 	}
 	
-	public boolean isTileBlockedForRangedAttack(int x, int y) {
+	public boolean isTileBlockedForRangedAttack(int x, int y, boolean checkForCreatures) {
 		Tile tile = getTile(x,y);
 		TileRule rule = tile.getRule();
 		boolean blocked = false;
 		if (rule != null) {
+			//projectiles cannot go thru walls, but can over water or if they can be attacked over, like certain solids
 			blocked = rule.has(TileAttrib.unwalkable) && !rule.has(TileAttrib.canattackover) && !rule.has(TileAttrib.swimmable);
 		}
-		for(Creature cre : creatures) {
-			if (cre.currentX == x && cre.currentY == y) {
-				blocked = true;
-				break;
+		if (checkForCreatures) {
+			for(Creature cre : creatures) {
+				if (cre.currentX == x && cre.currentY == y) {
+					blocked = true;
+					break;
+				}
 			}
 		}
 		return blocked;
@@ -567,7 +569,7 @@ public class BaseMap implements Constants {
 	 * itself accordingly. If the two coordinates are not on the same z-plane,
 	 * then this function return DIR_NONE.
 	 */
-	private int getRelativeDirection(int toX, int toY, int fromX, int fromY)  {
+	public int getRelativeDirection(int toX, int toY, int fromX, int fromY)  {
 	    int dx=0, dy=0;        
 	    int dirmask = 0;
 	    

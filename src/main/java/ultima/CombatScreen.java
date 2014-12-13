@@ -3,6 +3,8 @@ package ultima;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeIn;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.forever;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
 import java.util.ArrayList;
@@ -37,8 +39,11 @@ import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -67,7 +72,7 @@ public class CombatScreen extends BaseScreen {
 	private SecondaryInputProcessor sip;
 	
 	private Random rand = new Random();
-
+	
 	public CombatScreen(Ultima4 mainGame, BaseScreen returnScreen, Context context, Maps contextMap, BaseMap combatMap, TiledMap tmap, CreatureType cr, CreatureSet cs, TextureAtlas a1, TextureAtlas a2) {
 		
 		scType = ScreenType.COMBAT;
@@ -289,7 +294,7 @@ public class CombatScreen extends BaseScreen {
 
 	@Override
 	public boolean keyUp (int keycode) {
-		
+				
 		Creature active = party.getActivePartyMember().combatCr;
 		
 		if (keycode == Keys.UP) {
@@ -325,7 +330,7 @@ public class CombatScreen extends BaseScreen {
 			if (showZstats > STATS_SPELLS) showZstats = STATS_NONE;
 		}
 		
-		finishTurn(active.currentX,active.currentY);
+		finishPlayerTurn();
 
 		return false;
 
@@ -370,22 +375,60 @@ public class CombatScreen extends BaseScreen {
 		return true;
 	}
 	
+	public void finishPlayerTurn() {
+		
+		boolean roundIsDone = party.isRoundDone();
+		
+		PartyMember next = party.getAndSetNextActivePlayer();
+		if (next != null) {
+			Creature nextActivePlayer = next.combatCr;
+			cursor.setPos(nextActivePlayer.currentPos);
+		}
+		
+		if (roundIsDone) {
+			finishTurn(0,0);
+		}
+	}
+	
+	@Override
 	public void finishTurn(int currentX, int currentY) {
 		
 		party.endTurn(MapType.combat);
-
-		Iterator<Creature> iter = combatMap.getCreatures().iterator();
-		while(iter.hasNext()) {
-			Creature cr = iter.next();
-			if (!creatureAction(cr)) {
-				iter.remove();
-			}
-		}
-	
-		PartyMember next = party.getAndSetNextActivePlayer();
-		Creature nextActivePlayer = next.combatCr;
-		cursor.setPos(nextActivePlayer.currentPos);
 		
+		//accept no input starting now
+		Gdx.input.setInputProcessor(null);
+		
+		SequenceAction seq = Actions.action(SequenceAction.class);
+		for (Creature cr : combatMap.getCreatures()) {
+			seq.addAction(new CreatureActionsAction(cr));
+			seq.addAction(Actions.delay(.04f));
+		}
+		seq.addAction(new FinishCreatureAction());
+		stage.addAction(seq);
+				
+	}
+	
+	class CreatureActionsAction extends Action {
+		private Creature cr;
+		public CreatureActionsAction(Creature cr) {
+			super();
+			this.cr = cr;
+		}
+		public boolean act(float delta) {
+			if (!creatureAction(cr)) {
+				//remove creature from map
+				combatMap.getCreatures().remove(cr);
+			}
+			return true;
+		}
+	}
+	
+	class FinishCreatureAction extends Action {
+		public boolean act(float delta) {
+			//enable input again
+			Gdx.input.setInputProcessor(CombatScreen.this);
+			return true;
+		}
 	}
 	
 	public void end() {
@@ -407,7 +450,7 @@ public class CombatScreen extends BaseScreen {
 	    WeaponType wt = attacker.getPlayer().weapon;
 		boolean weaponCanAttackThroughObjects = wt.getWeapon().getAttackthroughobjects();
 	    
-	    List<Vector> path = getDirectionalActionPath(dir, x, y, 1, range, weaponCanAttackThroughObjects);
+	    List<Vector> path = getDirectionalActionPath(Direction.getMask(dir), x, y, 1, range, weaponCanAttackThroughObjects, true);
 	    
 	    Vector target = null;
 	    int distance = 1;
@@ -430,7 +473,8 @@ public class CombatScreen extends BaseScreen {
 	 * fails.  If a tile is blocked, that tile is included in the path
 	 * only if includeBlocked is true.
 	 */
-	private List<Vector> getDirectionalActionPath(Direction dir, int x, int y, int minDistance, int maxDistance, boolean weaponCanAttackThroughObjects) {
+	private List<Vector> getDirectionalActionPath(int dirmask, int x, int y, int minDistance, int maxDistance, 
+			boolean weaponCanAttackThroughObjects, boolean checkForCreatures) {
 		
 	    List<Vector> path = new ArrayList<Vector>();
 
@@ -448,9 +492,10 @@ public class CombatScreen extends BaseScreen {
 				break;
 			}
 
-			boolean blocked = combatMap.isTileBlockedForRangedAttack(nx, ny);
+			boolean blocked = combatMap.isTileBlockedForRangedAttack(nx, ny, checkForCreatures);
 			Tile tile = combatMap.getTile(nx, ny);
-			boolean canAttackOverSolid = (tile != null && tile.getRule() != null && tile.getRule() == TileRule.solid_attackover && weaponCanAttackThroughObjects);
+			boolean canAttackOverSolid = (tile != null && tile.getRule() != null 
+					&& tile.getRule() == TileRule.solid_attackover && weaponCanAttackThroughObjects);
 
 			if (!blocked || canAttackOverSolid) {
 				path.add(new Vector(nx, ny));
@@ -459,12 +504,11 @@ public class CombatScreen extends BaseScreen {
 				break;
 			}
 			
-			switch (dir) {
-			case NORTH:	ny--;break;
-			case SOUTH:	ny++;break;
-			case EAST:	nx++;break;
-			case WEST:	nx--;break;
-			}
+			if (Direction.isDirInMask(Direction.NORTH, dirmask)) ny--;
+			if (Direction.isDirInMask(Direction.SOUTH, dirmask)) ny++;
+			if (Direction.isDirInMask(Direction.EAST, dirmask)) nx++;
+			if (Direction.isDirInMask(Direction.WEST, dirmask)) nx--;
+			
 
 		}
 
@@ -484,7 +528,6 @@ public class CombatScreen extends BaseScreen {
 	    WeaponType wt = attacker.getPlayer().weapon;
 	    boolean wrongRange = (wt.getWeapon().getAbsolute_range() > 0 && (distance != range));
 
-
 	    if (creature == null || wrongRange) {
 	        if (!wt.getWeapon().getDontshowtravel()) {
 	        }
@@ -499,6 +542,39 @@ public class CombatScreen extends BaseScreen {
 	    }
 
 	    return true;
+	}
+	
+	private boolean attackAt(Vector target, Creature attacker) {
+
+	    PartyMember defender = null;
+	    for (PartyMember p : party.getMembers()) {
+	    	if (p.combatCr.currentX == target.x && p.combatCr.currentY == target.y) {
+	    		defender = p;
+	    		break;
+	    	}
+	    }
+	    
+	    if (defender == null) return false;
+	    	    
+	    if (attackHit(attacker, defender)) {
+	    	
+			ProjectileActor p = new ProjectileActor(Color.YELLOW, attacker.currentX, attacker.currentY);
+			Vector3 v = getMapPixelCoords(defender.combatCr.currentX, defender.combatCr.currentY);
+			p.addAction(sequence(moveTo(v.x, v.y, .3f),fadeOut(.2f), new Action() {
+				public boolean act(float delta) {
+			        Sounds.play(Sound.PC_STRUCK);
+					return true;
+				}
+			}, removeActor(p)));
+			
+	    	stage.addActor(p);
+	    	
+	        dealDamage(attacker, defender);
+		    return true;
+
+	    }
+
+	    return false;
 	}
 	
 	private boolean attackHit(Creature attacker, PartyMember defender) {
@@ -593,7 +669,7 @@ public class CombatScreen extends BaseScreen {
 
 	    if (creature.getTeleports() && rand.nextInt(8) == 0) {
 	        action = CombatAction.TELEPORT;
-	    } else if (creature.getRanged() && rand.nextInt(4) == 0 && (creature.getRangedhittile() != "magic_flash" || context.getAura().getType() != AuraType.NEGATE)) {
+	    } else if (creature.getRanged() && rand.nextInt(4) == 0 && (!creature.rangedAttackIs("magic_flash") || context.getAura().getType() != AuraType.NEGATE)) {
 	        action = CombatAction.RANGED;
 	    } else if (creature.castsSleep() && context.getAura().getType() != AuraType.NEGATE && rand.nextInt(4) == 0) {
 	        action = CombatAction.CAST_SLEEP;
@@ -602,7 +678,7 @@ public class CombatScreen extends BaseScreen {
 	    } else {
 	        action = CombatAction.ATTACK; 
 	    }
-	        
+	            
 	    /* 
 	     * now find out who to do it to
 	     */
@@ -687,32 +763,20 @@ public class CombatScreen extends BaseScreen {
 	    }
 
 	    case RANGED: {
-//	        // if the creature has a random tile for a ranged weapon,
-//	        // let's switch it now!
-//	        if (hasRandomRanged())
-//	            setRandomRanged();
-//
-//	        MapCoords m_coords = getCoords(),
-//	            p_coords = target->getCoords();
-//
-//	        // figure out which direction to fire the weapon
-//	        int dir = m_coords.getRelativeDirection(p_coords);
-//
-//	        soundPlay(SOUND_NPC_ATTACK, false);                                    // NPC_ATTACK, ranged
-//
-//	        vector<Coords> path = gameGetDirectionalActionPath(dir, MASK_DIR_ALL, m_coords,
-//	                                                           1, 11, &Tile::canAttackOverTile, false);
-//	        bool hit = false;
-//	        for (vector<Coords>::iterator i = path.begin(); i != path.end(); i++) {
-//	            if (controller->rangedAttack(*i, this)) {
-//	                hit = true;
-//	                break;
-//	            }
-//	        }
-//	        if (!hit && path.size() > 0)
-//	            controller->rangedMiss(path[path.size() - 1], this);
-//
-//	        break;
+
+	        // figure out which direction to fire the weapon
+		    int dirmask = combatMap.getRelativeDirection(target.combatCr.currentX, target.combatCr.currentY, creature.currentX, creature.currentY);
+
+	        Sounds.play(Sound.NPC_ATTACK);
+	        
+		    List<Vector> path = getDirectionalActionPath(dirmask, creature.currentX, creature.currentY, 1, 11, false, false);
+		    for (Vector v : path) {
+		        if (attackAt(v, creature)) {
+		            break;
+		        }
+		    }
+
+	        break;
 	    }
 
 	    case FLEE:
@@ -817,7 +881,7 @@ public class CombatScreen extends BaseScreen {
 
 	    if (action == CombatAction.FLEE) {
 	        dir = combatMap.getPath(targetX, targetY, mask, false, nx, ny);
-	        if (dir == null) {
+	        if (dir == null && (nx == 0 || ny == 0)) {
 	        	//force a map exit
 	        	cr.currentX = -1;
 	        	cr.currentY = -1;
