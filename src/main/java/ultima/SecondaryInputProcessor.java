@@ -12,7 +12,9 @@ import objects.Person;
 import objects.Tile;
 import ultima.CombatScreen.ProjectileActor;
 import ultima.Constants.Direction;
+import ultima.Constants.Maps;
 import ultima.Constants.ScreenType;
+import ultima.Constants.TileAttrib;
 import ultima.Constants.TileRule;
 import ultima.Constants.Vector;
 import ultima.Constants.WeaponType;
@@ -113,9 +115,12 @@ public class SecondaryInputProcessor extends InputAdapter {
 				
 				screen.log("Look > " + dir.toString());
 				
-			} else if (initialKeyCode == Keys.S) {
+			} else if (initialKeyCode == Keys.G) {
 				
-				screen.log("Search > " + dir.toString());
+				if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+					GameScreen gameScreen = (GameScreen)screen;
+					gameScreen.getChest(keycode - 7 - 1, x, y);
+				}
 				
 			} else if (initialKeyCode == Keys.A) {
 				
@@ -125,8 +130,17 @@ public class SecondaryInputProcessor extends InputAdapter {
 				
 				for (Creature c : bm.getCreatures()) {
 					if (c.currentX == x && c.currentY == y) {
-						Tile t = bm.getTile(x, y);
-						gameScreen.attackAt(t.getCombatMap(), c);
+						Tile ct = bm.getTile(x, y);
+						Maps cm = ct.getCombatMap();
+						
+						TileRule ptr = bm.getTile(currentX, currentY).getRule();
+						if (c.getSwims() && !ptr.has(TileAttrib.unwalkable)) {
+							cm = Maps.SHORE_CON;
+						} else if (c.getSails() && !ptr.has(TileAttrib.unwalkable)) {
+							cm = Maps.SHORSHIP_CON;
+						}
+						
+						gameScreen.attackAt(cm, c);
 						return false;
 					}
 				}

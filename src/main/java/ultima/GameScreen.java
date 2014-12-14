@@ -39,6 +39,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
@@ -293,7 +294,6 @@ public class GameScreen extends BaseScreen {
 
 		mapBatch.begin();
 
-		mapBatch.draw(avatar.getKeyFrame(time, true), mapCamera.position.x, mapCamera.position.y, tilePixelWidth, tilePixelHeight);
 
 		if (context.getCurrentMap().getMoongates() != null) {
 			for (Moongate g : context.getCurrentMap().getMoongates()) {
@@ -343,6 +343,11 @@ public class GameScreen extends BaseScreen {
 		
 		mapObjectsStage.act();
 		mapObjectsStage.draw();
+		
+		mapBatch.begin();
+		mapBatch.draw(avatar.getKeyFrame(time, true), mapCamera.position.x, mapCamera.position.y, tilePixelWidth, tilePixelHeight);
+		mapBatch.end();
+
 		
 	}
 
@@ -404,6 +409,11 @@ public class GameScreen extends BaseScreen {
 			if (l != null) {
 				log("You found " + l.getDesc() + ".");
 			}
+		} else if (keycode == Keys.G) {
+			log("Which party member?");
+			Gdx.input.setInputProcessor(sip);
+			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);
+			return false;
 			
 		} else if (keycode == Keys.T || keycode == Keys.O || keycode == Keys.L || keycode == Keys.A) {
 			Gdx.input.setInputProcessor(sip);
@@ -712,7 +722,92 @@ public class GameScreen extends BaseScreen {
 	}
 	
 	
-    
+	
+	public void getChest(int index, int x, int y) {
+
+		if (context.getParty().isFlying()) {
+			log("Not in a ballon!");
+			return;
+		}
+
+		Drawable chest = null;
+		for (Actor a : mapObjectsStage.getActors()) {
+			if (a instanceof Drawable) {
+				Drawable d = (Drawable)a;
+				if (d.getCx() == x && d.getCy() == y) {
+					chest = (Drawable)a;
+				}
+			}
+		}
+
+		if (chest != null) {
+			PartyMember pm = context.getParty().getMember(index);
+			chest.remove();
+			getChestTrapHandler(pm);
+			log(String.format("The Chest Holds: %d Gold", context.getParty().getChestGold()));
+			if (context.getCurrentMap().getType() == MapType.city) {
+				context.getParty().adjustKarma(KarmaAction.STOLE_CHEST);
+			}
+		} else {
+			log("Not Here!");
+		}
+	}
+
+	private boolean getChestTrapHandler(PartyMember pm) {
+
+		TileEffect trapType;
+		int randNum = rand.nextInt(4);
+		boolean passTest = (rand.nextInt(2) == 0);
+
+		/* Chest is trapped! 50/50 chance */
+		if (passTest) {
+			/* Figure out which trap the chest has */
+			switch (randNum) {
+			case 0:
+				trapType = TileEffect.FIRE;
+				break; /* acid trap (56% chance - 9/16) */
+			case 1:
+				trapType = TileEffect.SLEEP;
+				break; /* sleep trap (19% chance - 3/16) */
+			case 2:
+				trapType = TileEffect.POISON;
+				break; /* poison trap (19% chance - 3/16) */
+			case 3:
+				trapType = TileEffect.LAVA;
+				break; /* bomb trap (6% chance - 1/16) */
+			default:
+				trapType = TileEffect.FIRE;
+				break;
+			}
+
+			/* apply the effects from the trap */
+			if (trapType == TileEffect.FIRE)
+				log("Acid Trap!");
+			else if (trapType == TileEffect.POISON)
+				log("Poison Trap!");
+			else if (trapType == TileEffect.SLEEP)
+				log("Sleep Trap!");
+			else if (trapType == TileEffect.LAVA)
+				log("Bomb Trap!");
+
+			// player is null when using the Open spell (immune to traps)
+			// if the chest was opened by a PC, see if the trap was
+			// evaded by testing the PC's dex
+			if (pm.getPlayer().dex + 25 < rand.nextInt(100)) {
+				if (trapType == TileEffect.LAVA) {/* bomb trap */
+					context.getParty().applyEffect(trapType);
+				} else {
+					pm.applyEffect(trapType);
+				}
+			} else {
+				log("Evaded!");
+			}
+
+			return true;
+		}
+
+		return false;
+	}
 
 
 

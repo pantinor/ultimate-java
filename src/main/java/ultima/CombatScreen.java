@@ -49,8 +49,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class CombatScreen extends BaseScreen {
 	
-	private Ultima4 mainGame;
-	
 	public static int AREA_CREATURES = 16;
 	public static int AREA_PLAYERS  =  8;
 	
@@ -398,6 +396,15 @@ public class CombatScreen extends BaseScreen {
 	
 	public void finishPlayerTurn() {
 		
+		//remove dead creatures
+		Iterator<Creature> iter = combatMap.getCreatures().iterator();
+		while(iter.hasNext()) {
+			Creature c = iter.next();
+			if (c.getDamageStatus() == CreatureStatus.DEAD) {
+				iter.remove();
+			}
+		}
+		
 		boolean roundIsDone = party.isRoundDone();
 		
 		PartyMember next = party.getAndSetNextActivePlayer();
@@ -655,8 +662,6 @@ public class CombatScreen extends BaseScreen {
 			} else {
 				log(String.format("%s Killed!", cr.getName()));
 			}
-
-	        combatMap.removeCreature(cr);
 	        return false;        
 	    case FLEEING:
 			log(String.format("%s Fleeing!", cr.getName()));
@@ -730,7 +735,6 @@ public class CombatScreen extends BaseScreen {
 	        action = CombatAction.ADVANCE;
 	    }
 
-	    /* let's see if the creature blends into the background, or if he appears... */
 	    if (creature.getCamouflage() && !hideOrShow(creature)) {
 	        return true;
 	    }
@@ -741,7 +745,6 @@ public class CombatScreen extends BaseScreen {
 
 	        if (attackHit(creature, target) == AttackResult.HIT) {
 	            Sounds.play(Sound.PC_STRUCK);
-	            //GameController::flashTile(target->getCoords(), "hit_flash", 4);
 
 	            if (!dealDamage(creature, target)) {
 	                target = null;
@@ -758,8 +761,6 @@ public class CombatScreen extends BaseScreen {
 	                    party.adjustFood(-2500);
 	                }
 	            }
-	        } else {
-	        	//GameController::flashTile(target->getCoords(), "miss_flash", 1);
 	        }
 	        break;
 	    }

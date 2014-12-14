@@ -197,6 +197,35 @@ public class Party implements Constants {
 	public void adjustGold(int v) {
 	    saveGame.gold = Utils.adjustValue(saveGame.gold, v, 9999, 0);
 	}
+	
+	public int getChestGold() {
+	    int gold = rand.nextInt(50) + rand.nextInt(8) + 10;
+	    adjustGold(gold);    
+	    return gold;
+	}
+	
+	public boolean isFlying() {
+	    return (saveGame.balloonstate > 0 && saveGame.torchduration <= 0);        
+	}
+	
+	public void applyEffect(TileEffect effect) {
+	    for (int i = 0; i < members.size(); i++) {
+	        switch(effect) {
+	        case NONE:
+	        case ELECTRICITY:
+	            members.get(i).applyEffect(effect);
+	        case LAVA:
+	        case FIRE:        
+	        case SLEEP:
+	            if (rand.nextInt(2) == 0)
+	            	members.get(i).applyEffect(effect);
+	        case POISONFIELD:
+	        case POISON:
+	            if (rand.nextInt(5) == 0)
+	            	members.get(i).applyEffect(effect);
+	        }        
+	    }
+	}
 
 	public class PartyMember {
 		
@@ -228,6 +257,34 @@ public class Party implements Constants {
 		    if (maxDamage > 255)
 		        maxDamage = 255;
 		    return rand.nextInt(maxDamage);
+		}
+		
+		public void applyEffect(TileEffect effect) {
+		    if (player.status == StatusType.DEAD)
+		        return;
+
+		    switch (effect) {
+		    case NONE:
+		        break;
+		    case LAVA:
+		    case FIRE:
+		        applyDamage(16 + (rand.nextInt(32)), false);
+		        break;
+		    case SLEEP:        
+		        putToSleep();
+		        break;
+		    case POISONFIELD:
+		    case POISON:
+		        if (player.status == StatusType.POISONED) {
+		            Sounds.play(Sound.POISON_EFFECT);
+		            player.status = StatusType.POISONED;
+		        }
+		        break;
+		    case ELECTRICITY: 
+		    	break;
+		    default:
+		    }
+
 		}
 			
 		public void awardXP(int value) {
