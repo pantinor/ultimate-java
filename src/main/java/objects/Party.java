@@ -626,7 +626,7 @@ public class Party implements Constants {
 	}
 
 	private void adjustKarmaMin(int[] karma, Virtue v, int value, int min) {
-		int n = Utils.adjustValueMax(karma[v.ordinal()], value, min);
+		int n = Utils.adjustValueMin(karma[v.ordinal()], value, min);
 		karma[v.ordinal()] = n;
 	}
 	

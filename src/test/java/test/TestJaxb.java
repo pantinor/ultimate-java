@@ -215,7 +215,7 @@ public class TestJaxb {
 	}
 	
 
-	//@Test
+	@Test
 	public void testReadSaveGame() throws Exception {
 		
 		InputStream is = new FileInputStream(Constants.PARTY_SAV_BASE_FILENAME);
@@ -244,13 +244,16 @@ public class TestJaxb {
 		Party p = new Party(sg);
 		
 		
-		//for (int i=0;i<8;i++) 
-			//System.err.println(Virtue.get(i) + " " + sg2.karma[i]);
+		for (int i=0;i<8;i++) 
+			System.err.println(Virtue.get(i) + " " + sg.karma[i]);
+        System.err.println("---------------");
+
+		p.adjustKarma(KarmaAction.ATTACKED_GOOD);
+
+
 		
-		p.adjustKarma(KarmaAction.FOUND_ITEM);
-		
-		//for (int i=0;i<8;i++) 
-			//System.err.println(Virtue.get(i) + " " + sg2.karma[i]);
+		for (int i=0;i<8;i++) 
+			System.err.println(Virtue.get(i) + " " + sg.karma[i]);
 			
         for (int i = 0; i < 8; i++) {
         	Virtue v = Constants.Virtue.get(i);
@@ -422,7 +425,7 @@ public class TestJaxb {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testMovement() throws Exception {
 				
 		TileSet baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	

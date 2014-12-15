@@ -59,7 +59,6 @@ public class GameScreen extends BaseScreen {
 	
 	MapSet maps;
 	
-	public static final String TILESET_IMAGE_SOURCE = "tiles-ega.png";
 	public TextureAtlas egaatlas;
 	//public TextureAtlas atlas;
 	//public TextureAtlas u5atlas;
@@ -90,7 +89,7 @@ public class GameScreen extends BaseScreen {
 		skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
 		
 		try {
-			egaatlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-ega-atlas.txt"));
+			egaatlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-vga-atlas.txt"));
 			//atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
 			//u5atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/ultima5-atlas.txt"));
 			

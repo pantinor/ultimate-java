@@ -11,6 +11,7 @@ import javax.xml.bind.Unmarshaller;
 
 import objects.Tile;
 import objects.TileSet;
+import util.Utils;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -66,7 +67,7 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 	
 	public void create () {
 				
-		t = new Texture(Gdx.files.classpath("tilemaps/tiles-ega.png"));
+		t = new Texture(Gdx.files.absolute("C:\\Users\\Paul\\Desktop\\U4TilesV.png"));
 		sprBg = new Sprite(t, 0, 0, t.getWidth(), t.getHeight());
 		
 		gridNames = new MyListItem[Math.round(t.getWidth()/tilePixelWidth)][Math.round(t.getHeight()/tilePixelHeight)];
@@ -76,13 +77,10 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 		font.setColor(Color.WHITE);
 		
 		batch2 = new SpriteBatch();
-		skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+		skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
 		
 		try {
-			File file = new File("target/classes/xml/tileset-base.xml");
-			JAXBContext jaxbContext = JAXBContext.newInstance(TileSet.class);
-			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			TileSet ts = (TileSet) jaxbUnmarshaller.unmarshal(file);
+			TileSet ts = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	
 			tileNames = new MyListItem[ts.getTiles().size()];
 			int x=0;
 			for (Tile t : ts.getTiles()) {
