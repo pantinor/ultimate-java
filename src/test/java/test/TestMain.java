@@ -1,3 +1,4 @@
+package test;
 import objects.ArmorSet;
 import objects.CreatureSet;
 import objects.MapSet;

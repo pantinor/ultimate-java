@@ -1,3 +1,4 @@
+package test;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 

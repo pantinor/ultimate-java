@@ -592,34 +592,40 @@ public class CombatScreen extends BaseScreen {
 	    }
 	    
 	    if (defender == null) return false;
+	    
 	    AttackResult res = attackHit(attacker, defender);	    
-	    if (res == AttackResult.HIT) {
 	    	
-			final ProjectileActor p = new ProjectileActor(Color.YELLOW, attacker.currentX, attacker.currentY, res);
-			Vector3 v = getMapPixelCoords(defender.combatCr.currentX, defender.combatCr.currentY);
-			p.addAction(sequence(moveTo(v.x, v.y, .3f), new Action() {
-				public boolean act(float delta) {
-					switch(p.res) {
-					case HIT:
-						p.resultTexture = CombatScreen.hitTile;
-						break;
-					case MISS:
-						p.resultTexture = CombatScreen.missTile;
-						break;
-					}
-			        Sounds.play(Sound.PC_STRUCK);
-					return true;
+    	Color col = Color.WHITE;
+    	if (attacker.getPoisons()) {
+    		col = Color.GREEN;
+    	} else if (attacker.rangedAttackIs("magic_flash")) {
+    		col = Color.BLUE;
+    	}
+    	
+		final ProjectileActor p = new ProjectileActor(col, attacker.currentX, attacker.currentY, res);
+		Vector3 v = getMapPixelCoords(defender.combatCr.currentX, defender.combatCr.currentY);
+		p.addAction(sequence(moveTo(v.x, v.y, .3f), new Action() {
+			public boolean act(float delta) {
+				switch(p.res) {
+				case HIT:
+					p.resultTexture = CombatScreen.hitTile;
+					break;
+				case MISS:
+					p.resultTexture = CombatScreen.missTile;
+					break;
 				}
-			}, fadeOut(.2f), removeActor(p)));
-			
-	    	stage.addActor(p);
+		        Sounds.play(Sound.PC_STRUCK);
+				return true;
+			}
+		}, fadeOut(.2f), removeActor(p)));
+		
+    	stage.addActor(p);
 	    	
+	    if (res == AttackResult.HIT) {
 	        dealDamage(attacker, defender);
-		    return true;
-
 	    }
 
-	    return false;
+	    return res == AttackResult.HIT;
 	}
 	
 	private AttackResult attackHit(Creature attacker, PartyMember defender) {
