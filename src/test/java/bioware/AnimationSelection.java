@@ -33,9 +33,9 @@ public class AnimationSelection extends InputAdapter implements ApplicationListe
 	public static final String BAMDIR = "C:\\Users\\Paul\\Desktop\\BAMS";
 
 	public static final String[] prefixes = {
-		    //"MAIR","MAIS","MAKH","MASG","MASL","MBAS","MBEG",
-			//"MBEH","MBER","MBES","MCAR","MDJI","MDJL","MDKN",
-			//"MDLI","MDOG",
+		    "MAIR","MAIS","MAKH","MASG","MASL","MBAS","MBEG",
+			"MBEH","MBER","MBES","MCAR","MDJI","MDJL","MDKN",
+			"MDLI","MDOG",
 			//"MDOP","MDRO","MDSW","MEAE","MEAS","METN","METT","MEYE","MFDR","MFIE","MFIG","MFIS",
 			//"MGCL","MGCP","MGHL","MGIB","MGIT","MGLC","MGNL","MGO1","MGO2","MGO3","MGO4","MGWE",
 			//"MHOB","MIGO","MIMP","MKOB","MLER","MLIC","MLIZ",

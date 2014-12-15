@@ -3,6 +3,7 @@ package bioware;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -56,25 +57,24 @@ public class CreateBamSprites  extends InputAdapter implements ApplicationListen
 //		animNamesMap.put("MGO3", "STAND1-1");
 //		animNamesMap.put("MGO4", "STAND1-1");
 //		animNamesMap.put("MGWE", "STAND1-9");
-//		animNamesMap.put("MIGO", "STAND2-1");
 //		animNamesMap.put("MLER", "STAND2-1");
 //		animNamesMap.put("MLIC", "STAND2-1");
 //		animNamesMap.put("MLIZ", "STAND2-1");
 //		animNamesMap.put("MMEL", "STAND1-19");
 //		animNamesMap.put("MMIN", "STAND2-1");
-//		animNamesMap.put("MMIS", "STAND2-1");
-//		animNamesMap.put("MMST", "STAND1-1");
-//		animNamesMap.put("MMUM", "STAND1-1");
-//		animNamesMap.put("MMY2", "STAND2-1");
-//		animNamesMap.put("MMYC", "STAND2-1");
-//		animNamesMap.put("MNO1", "STAND2-1");
-//		animNamesMap.put("MNO2", "STAND2-1");
-//		animNamesMap.put("MNO3", "STAND2-1");
-//		animNamesMap.put("MOR1", "STAND2-1");
-//		animNamesMap.put("MOR3", "STAND2-1");
-//		animNamesMap.put("MOR5", "STAND2-1");
-//		animNamesMap.put("MOTY", "STAND2-1");
-//		animNamesMap.put("MRAK", "STAND2-1");
+		animNamesMap.put("MMIS", "STAND2-1");
+		animNamesMap.put("MMST", "STAND1-1");
+		animNamesMap.put("MMUM", "STAND1-1");
+		animNamesMap.put("MMY2", "STAND2-1");
+		animNamesMap.put("MMYC", "STAND2-1");
+		animNamesMap.put("MNO1", "STAND2-1");
+		animNamesMap.put("MNO2", "STAND2-1");
+		animNamesMap.put("MNO3", "STAND2-1");
+		animNamesMap.put("MOR1", "STAND2-1");
+		animNamesMap.put("MOR3", "STAND2-1");
+		animNamesMap.put("MOR5", "STAND2-1");
+		//animNamesMap.put("MOTY", "STAND2-1");
+		//animNamesMap.put("MRAK", "STAND2-1");
 		animNamesMap.put("MSA2", "STAND2-1");
 		animNamesMap.put("MSAH", "STAND2-1");
 		animNamesMap.put("MSAL", "STAND2-1");
@@ -83,8 +83,8 @@ public class CreateBamSprites  extends InputAdapter implements ApplicationListen
 		animNamesMap.put("MSLY", "STAND2-1");
 		animNamesMap.put("MSPI", "STAND1-9");
 		animNamesMap.put("MSPS", "STAND2-1");
-		animNamesMap.put("MTRO", "STAND2-1");
-		animNamesMap.put("MUMB", "STAND2-1");
+		//animNamesMap.put("MTRO", "STAND2-1");
+		//animNamesMap.put("MUMB", "STAND2-1");
 		animNamesMap.put("MVAF", "STAND1-1");
 		animNamesMap.put("MWER", "STAND1-9");
 		animNamesMap.put("MWFM", "STAND2-1");
@@ -95,6 +95,16 @@ public class CreateBamSprites  extends InputAdapter implements ApplicationListen
 			
 			BamAnimationStore store = new BamAnimationStore(BAMDIR, bamName);
 			store.init();
+			
+			System.out.println("animations size="+store.gdxAnimations.size());
+			Iterator<String> iter = store.gdxAnimations.keySet().iterator();
+			while (iter.hasNext()) {
+				String key = iter.next();
+				if (!key.startsWith("STAND")) {
+					iter.remove();
+					continue;
+				}
+			}
 			
 			imgMap.put(bamName, store.gdxAnimations.get(animNamesMap.get(bamName)));
 		}
@@ -111,7 +121,7 @@ public class CreateBamSprites  extends InputAdapter implements ApplicationListen
 		
 		try {
 			AnimationPixmapPackerIO pp = new AnimationPixmapPackerIO();
-			pp.save(new FileHandle(new File("bioware-sprites-3")), packer);
+			pp.save(new FileHandle(new File("bioware-sprites-2")), packer);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
