@@ -187,9 +187,10 @@ public class Context implements Constants {
     public boolean slowedByTile(Tile tile) {
         boolean slow;
         
-        TileSpeed ts = tile.getRule().getSpeed();
+        TileRule ts = tile.getRule();
+        if (ts == null) return false;
         
-        switch (ts) {
+        switch (ts.getSpeed()) {
         case SLOW:
             slow = rand.nextInt(8) == 0;
             break;

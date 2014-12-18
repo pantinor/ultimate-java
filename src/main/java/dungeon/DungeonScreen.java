@@ -4,13 +4,24 @@ package dungeon;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+
+import objects.BaseMap;
+import objects.Creature;
+import objects.Tile;
+import objects.TileSet;
 
 import org.apache.commons.io.IOUtils;
 
 import ultima.BaseScreen;
+import ultima.CombatScreen;
+import ultima.DeathScreen;
 import ultima.GameScreen;
 import ultima.Ultima4;
+import ultima.Constants.KarmaAction;
+import ultima.Constants.Maps;
+import util.DungeonRoomTiledMapLoader;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -41,12 +52,16 @@ import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader.Config;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.UBJsonReader;
 
 public class DungeonScreen extends BaseScreen {
 	
+	private Maps dngMap;
 	private String dungeonFileName;
 	private GameScreen gameScreen;
 	private Stage stage;
@@ -73,7 +88,9 @@ public class DungeonScreen extends BaseScreen {
 	
 	public static final int DUNGEON_MAP = 8;
 	public DungeonTile[][][] dungeonTiles = new DungeonTile[DUNGEON_MAP][DUNGEON_MAP][DUNGEON_MAP];
-
+	public DungeonRoom[] rooms = new DungeonRoom[64];//can have up to 64 rooms (abyss), 11x11 map grid
+	public List<RoomLocater> locaters = new ArrayList<RoomLocater>();
+	
 	public List<DungeonTileModelInstance> modelInstances = new ArrayList<DungeonTileModelInstance>();
 	public List<ModelInstance> floor = new ArrayList<ModelInstance>();
 	public List<ModelInstance> ceiling = new ArrayList<ModelInstance>();
@@ -83,11 +100,11 @@ public class DungeonScreen extends BaseScreen {
 	public Vector3 currentPos;
 	public Direction currentDir = Direction.EAST;
 		
-	public DungeonScreen(Ultima4 mainGame, Stage stage, GameScreen gameScreen, String dungeonFileName) {
+	public DungeonScreen(Ultima4 mainGame, Stage stage, GameScreen gameScreen, Maps map) {
 		
 		scType = ScreenType.DUNGEON;
-
-		this.dungeonFileName = dungeonFileName;
+		this.dngMap = map;
+		this.dungeonFileName = map.getMap().getFname();
 		this.mainGame = mainGame;
 		this.gameScreen = gameScreen;
 		this.stage = stage;
@@ -172,6 +189,38 @@ public class DungeonScreen extends BaseScreen {
 						DungeonTile tile = DungeonTile.getTileByValue(index);
 						dungeonTiles[i][x][y] = tile;
 						addBlock(i, tile, x+.5f,.5f,y+.5f);
+					}
+				}
+			}
+			
+			//rooms
+			pos = 0x200;
+			for (int i=0;i<rooms.length;i++) {
+				if (pos >= bytes.length) continue;
+				rooms[i] = new DungeonRoom(bytes, pos);
+				pos = pos + 256;
+			}
+			
+			for (int i = 0;i<DUNGEON_MAP;i++) { 
+				for (int y = 0; y < DUNGEON_MAP; y++) {
+					for (int x = 0; x < DUNGEON_MAP; x++) {
+						DungeonTile tile = dungeonTiles[i][x][y];
+						if (tile.getValue() >= 208 && tile.getValue() <= 223) {
+							DungeonRoom room = rooms[tile.getValue() - 207 - 1];
+							if (dngMap == Maps.ABYSS) {
+								if (i==0 || i==1) {
+									//nothing
+								} else if (i==2 || i==3) {
+									room = rooms[tile.getValue() - 207 + 16 - 1];
+								} else if (i==4 || i==5) {
+									room = rooms[tile.getValue() - 207 + 32 - 1];
+								} else if (i==6 || i==7) {
+									room = rooms[tile.getValue() - 207 + 48 - 1];
+								}
+							}
+							RoomLocater loc = new RoomLocater(x,y,i,room);
+							locaters.add(loc);
+						}
 					}
 				}
 			}
@@ -394,9 +443,11 @@ public class DungeonScreen extends BaseScreen {
 				if (tile == DungeonTile.WALL || tile == DungeonTile.SECRET_DOOR  ) {
 					pixmap.setColor(0.3f, 0.3f, 0.3f, 0.7f);
 					pixmap.fillRectangle(35 + (x * 12), 35 + (y * 12), 12, 12);
-				}
-				if (tile == DungeonTile.DOOR) {
+				} else if (tile == DungeonTile.DOOR) {
 					pixmap.setColor(0.6f, 0.6f, 0.6f, 0.7f);
+					pixmap.fillRectangle(35 + (x * 12), 35 + (y * 12), 12, 12);
+				} else if (tile.getValue() >= 208 && tile.getValue() <= 223) { //room indicator
+					pixmap.setColor(0.36f, 0.04f, 0.04f, 0.7f);
 					pixmap.fillRectangle(35 + (x * 12), 35 + (y * 12), 12, 12);
 				}
 			}
@@ -451,7 +502,60 @@ public class DungeonScreen extends BaseScreen {
 		}
 	}
 	
+	public void enterRoom(RoomLocater loc, Direction entryDir) {
+		
+		if (loc == null) return;
+		Maps contextMap = Maps.get(dngMap.getId());
+		
+		TiledMap tiledMap = new DungeonRoomTiledMapLoader(loc.room, entryDir, GameScreen.standardAtlas).load();
+		
+		BaseMap baseMap = new BaseMap();
+		baseMap.setTiles(loc.room.tiles);
+		baseMap.setWidth(11);
+		baseMap.setHeight(11);
+		baseMap.setType(MapType.combat);
+		
+		CombatScreen sc = new CombatScreen(mainGame, this, GameScreen.context, contextMap, baseMap, tiledMap, null, GameScreen.creatures, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+		
+		MapLayer mLayer = tiledMap.getLayers().get("Monster Positions");
+		Iterator<MapObject> iter = mLayer.getObjects().iterator();
+		while(iter.hasNext()) {
+			MapObject obj = iter.next();
+			int tile = (Integer)obj.getProperties().get("tile");
+			int startX = (Integer)obj.getProperties().get("startX");
+			int startY = (Integer)obj.getProperties().get("startY");
+			
+			if (tile == 0) continue;
+			
+			Tile t = GameScreen.baseTileSet.getTileByIndex(tile);
+			
+			Creature c = GameScreen.creatures.getInstance(CreatureType.get(t.getName()), GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+			
+			c.currentX = startX;
+			c.currentY = startY;
+			c.currentPos = sc.getMapPixelCoords(startX, startY);
 
+			baseMap.addCreature(c);
+		}
+		
+		mainGame.setScreen(sc);
+		
+	}
+	
+	public void endCombat(boolean isWon) {
+		mainGame.setScreen(this);
+		if (isWon) {
+            GameScreen.context.getParty().adjustKarma(KarmaAction.KILLED_EVIL);
+		} else {
+			if (GameScreen.context.getParty().didAnyoneFlee()) {
+                log("Battle is lost!");
+                GameScreen.context.getParty().adjustKarma(KarmaAction.FLED_EVIL);
+            } else if (!GameScreen.context.getParty().isAnyoneAlive()) {
+            	mainGame.setScreen(new DeathScreen(mainGame, this, GameScreen.context.getParty()));
+            	gameScreen.loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
+            }
+		}
+	}
 	
 
 	
@@ -520,6 +624,17 @@ public class DungeonScreen extends BaseScreen {
 					cam.lookAt(currentPos.x, currentPos.y, currentPos.z+1);
 				}
 			}
+			
+			if (tile.getValue() >= 208 && tile.getValue() <= 223) {
+				RoomLocater loc = null;
+				for (RoomLocater r : locaters) {
+					if (r.z == currentLevel && r.x == x && r.y == y) {
+						loc = r;
+						break;
+					}
+				}
+				enterRoom(loc, Direction.reverse(currentDir));
+			}
 
 		} else if (keycode == Keys.DOWN) {
 
@@ -549,6 +664,17 @@ public class DungeonScreen extends BaseScreen {
 				}
 			}
 			
+			if (tile.getValue() >= 208 && tile.getValue() <= 223) {
+				RoomLocater loc = null;
+				for (RoomLocater r : locaters) {
+					if (r.z == currentLevel && r.x == x && r.y == y) {
+						loc = r;
+						break;
+					}
+				}
+				enterRoom(loc, currentDir);
+			}
+			
 			
 		} else if (keycode == Keys.K) {
 			//klimb
@@ -573,6 +699,132 @@ public class DungeonScreen extends BaseScreen {
 	public void finishTurn(int currentX, int currentY) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public class RoomLocater {
+		public int x,y,z;
+		public DungeonRoom room;
+		public RoomLocater(int x, int y, int z, DungeonRoom room) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.room = room;
+		}
+	}
+	
+	
+	public class DungeonRoom {
+		
+//		0x0 	16 	floor triggers (4 bytes each X 4 triggers possible)
+//		0x10 	16 	tile for monsters 0-15 (0 means no monster and 0's come FIRST)
+//		0x20 	16 	start_x for monsters 0-15
+//		0x30 	16 	start_y for monsters 0-15
+//		0x40 	8 	start_x for party member 0-7 (north entry)
+//		0x48 	8 	start_y for party member 0-7 (north entry)
+//		0x50 	8 	start_x for party member 0-7 (east entry)
+//		0x58 	8 	start_y for party member 0-7 (east entry)
+//		0x60 	8 	start_x for party member 0-7 (south entry)
+//		0x68 	8 	start_y for party member 0-7 (south entry)
+//		0x70 	8 	start_x for party member 0-7 (west entry)
+//		0x78 	8 	start_y for party member 0-7 (west entry)
+//		0x80 	121 	11x11 map matrix for room 
+		
+		public byte[][] triggers = new byte[4][4];
+		
+		public byte[] monsters = new byte[16];
+		public byte[] monStartX = new byte[16];
+		public byte[] monStartY = new byte[16];
+		
+		public byte[] plStartXNorth = new byte[8];
+		public byte[] plStartYNorth = new byte[8];
+		
+		public byte[] plStartXEast = new byte[8];
+		public byte[] plStartYEast = new byte[8];
+		
+		public byte[] plStartXSouth = new byte[8];
+		public byte[] plStartYSouth = new byte[8];
+		
+		public byte[] plStartXWest = new byte[8];
+		public byte[] plStartYWest = new byte[8];
+		
+		public Tile[] tiles = new Tile[11*11];
+		
+		public DungeonRoom(byte[] data, int pos) {
+			
+			for (int i=0;i<4;i++) {
+				for (int j=0;j<4;j++) {
+					triggers[j][i] = data[pos];
+					pos++;
+				}
+			}
+			for (int i=0;i<16;i++) {
+				monsters[i] = data[pos];
+				pos++;
+			}
+			for (int i=0;i<16;i++) {
+				monStartX[i] = data[pos];
+				pos++;
+			}
+			for (int i=0;i<16;i++) {
+				monStartY[i] = data[pos];
+				pos++;
+			}
+			for (int i=0;i<8;i++) {
+				plStartXNorth[i] = data[pos];
+				pos++;
+			}
+			for (int i=0;i<8;i++) {
+				plStartYNorth[i] = data[pos];
+				pos++;
+			}
+			for (int i=0;i<8;i++) {
+				plStartXEast[i] = data[pos];
+				pos++;
+			}
+			for (int i=0;i<8;i++) {
+				plStartYEast[i] = data[pos];
+				pos++;
+			}
+			for (int i=0;i<8;i++) {
+				plStartXSouth[i] = data[pos];
+				pos++;
+			}
+			for (int i=0;i<8;i++) {
+				plStartYSouth[i] = data[pos];
+				pos++;
+			}
+			for (int i=0;i<8;i++) {
+				plStartXWest[i] = data[pos];
+				pos++;
+			}
+			for (int i=0;i<8;i++) {
+				plStartYWest[i] = data[pos];
+				pos++;
+			}
+			
+			TileSet ts = GameScreen.baseTileSet;
+			
+			for (int y=0;y<11;y++) {
+				for (int x=0;x<11;x++) {
+					tiles[x+(y*11)] = ts.getTileByIndex(data[pos]&0xff);
+					pos++;
+				}
+			}
+			
+		}
+		
+		public Tile getTile(int x, int y) {
+			if (x < 0 || y < 0) {
+				return null;
+			}
+			if (x + (y * 11) >= tiles.length) {
+				return null;
+			}
+			return tiles[x + (y * 11)];
+		}
+
+		
+
 	}
 
 

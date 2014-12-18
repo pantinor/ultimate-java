@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="256" height="256" tilewidth="16" tileheight="16" backgroundcolor="#000000">
  <tileset firstgid="1" name="world.map" tilewidth="16" tileheight="16">
-  <image source="tiles.png" width="256" height="256"/>
+  <image source="tiles-vga.png" width="256" height="256"/>
  </tileset>
  <layer name="Map Layer" width="256" height="256">
   <data encoding="csv">

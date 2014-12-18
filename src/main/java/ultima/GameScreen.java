@@ -50,18 +50,15 @@ import dungeon.DungeonScreen;
 public class GameScreen extends BaseScreen {
 	
 	public static Context context;
-	
 	public static TileSet baseTileSet;
 	public static WeaponSet weapons;
 	public static ArmorSet armors;
 	public static CreatureSet creatures;
 	public static VendorClassSet vendorClassSet;
+	public static TextureAtlas standardAtlas;
+	public static TextureAtlas enhancedAtlas;
 	
 	MapSet maps;
-	
-	public TextureAtlas standardAtlas;
-	public TextureAtlas enhancedAtlas;
-	
 	TextureAtlas moonAtlas;
 	Animation avatar;
 	
@@ -143,7 +140,7 @@ public class GameScreen extends BaseScreen {
 			
 			//TODO look for whether SAVE is in dungeon or on surface here
 			loadNextMap(Maps.WORLD, sg.x, sg.y);
-						
+			
 			gameTimer = new GameTimer();
 			
 		} catch(Exception e) {
@@ -170,7 +167,7 @@ public class GameScreen extends BaseScreen {
 		
 		if (m.getMap().getType() == MapType.dungeon) {
 			
-			DungeonScreen sc = new DungeonScreen(mainGame, stage, this, m.getMap().getFname());
+			DungeonScreen sc = new DungeonScreen(mainGame, stage, this, m);
 			mainGame.setScreen(sc);
 			
 		} else if (m.getMap().getType().equals("shrine")) {
@@ -394,10 +391,12 @@ public class GameScreen extends BaseScreen {
 				log(p.getMessage());
 			}
 		} else if (keycode == Keys.E) {
-			if (ct.enterable()) {
+			//if (ct.enterable()) {
 				Portal p = context.getCurrentMap().getPortal(v.x, v.y);
-				loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
-			}
+				if (p != null) {
+					loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
+				}
+			//}
 		} else if (keycode == Keys.Q) {
 			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
 				context.saveGame(this, v);

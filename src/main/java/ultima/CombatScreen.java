@@ -119,7 +119,9 @@ public class CombatScreen extends BaseScreen {
 		corpse = a2.findRegion("corpse");
 
 		
-	    fillCreatureTable(crType);
+	    if (crType != null) {
+	    	fillCreatureTable(crType);
+	    }
 	    
 		MapLayer mLayer = tmap.getLayers().get("Monster Positions");
 		Iterator<MapObject> iter = mLayer.getObjects().iterator();
