@@ -11,6 +11,7 @@ import ultima.Constants.CreatureType;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
 @XmlRootElement(name = "creatures")
@@ -45,9 +46,14 @@ public class CreatureSet {
 				if (tr == null || tr.size == 0) {
 					tr = atlas2.findRegions(cr.getTile().toString());
 				}
+				
 				int frameRate = ThreadLocalRandom.current().nextInt(1,3);
-				newCr.setAnim(new Animation(frameRate, tr));
-				//System.out.println(type + " new instance created. texture =" + tr);
+				
+				int fr = ThreadLocalRandom.current().nextInt(0,tr.size);
+				TextureRegion reg = tr.get(fr);
+				
+				newCr.setAnim(new Animation(frameRate, reg));
+				
 				return newCr;
 			}
 		}

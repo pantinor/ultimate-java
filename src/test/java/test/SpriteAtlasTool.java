@@ -220,20 +220,20 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 		if (x < 0 || y < 0) {
 			return null;
 		}
-		if (x + (y * dim) >= gridNames.length) {
+		if (x + (y * canvasGridWidth) >= gridNames.length) {
 			return null;
 		}
-		return gridNames[x + (y * dim)];
+		return gridNames[x + (y * canvasGridWidth)];
 	}
 	
 	public void setItem(int x, int y, MyListItem item) {
 		if (x < 0 || y < 0) {
 			return;
 		}
-		if (x + (y * dim) >= gridNames.length) {
+		if (x + (y * canvasGridWidth) >= gridNames.length) {
 			return;
 		}
-		gridNames[x + (y * dim)] = item;
+		gridNames[x + (y * canvasGridWidth)] = item;
 	}
 	
 	

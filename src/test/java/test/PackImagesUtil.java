@@ -26,9 +26,9 @@ public class PackImagesUtil {
 	    return fileTree;
 	}
 	
-	public static void main2(String[] argv) throws Exception {
+	public static void main(String[] argv) throws Exception {
 
-		List<File> files = listFileTree(new File("C:\\Users\\Paul\\Desktop\\crawl-tiles Oct-5-2010\\dc-mon"));
+		List<File> files = listFileTree(new File("C:\\Users\\Paul\\Desktop\\crawl-tiles Oct-5-2010\\dc-dngn"));
 		Collections.sort(files);
 		
 		Map<String,BufferedImage> imgMap = new TreeMap<String,BufferedImage>();
@@ -59,7 +59,7 @@ public class PackImagesUtil {
 		
 		System.out.println("Writing: number of res: " + imgMap.size());
 		
-		tp.pack(new File("."), "utumno-mon");
+		tp.pack(new File("."), "utumno-dngn");
 		
 	    System.out.println("done");
 		
@@ -67,7 +67,7 @@ public class PackImagesUtil {
 
 	}
 	
-	public static void main(String[] argv) throws Exception {
+	public static void main2(String[] argv) throws Exception {
 
 		List<File> files = listFileTree(new File("C:\\Users\\Paul\\Desktop\\crawl-tiles Oct-5-2010\\Monsters"));
 		Collections.sort(files);
