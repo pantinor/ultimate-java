@@ -2,87 +2,64 @@ package test;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.imageio.ImageIO;
 
+import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 
 public class PackImagesUtil {
 
 	public static File dir = new File("D:\\xu4-source\\u4\\graphics\\png");
+	
+	public static List<File> listFileTree(File dir) {
+		List<File> fileTree = new ArrayList<File>();
+	    for (File entry : dir.listFiles()) {
+	        if (entry.isFile()) fileTree.add(entry);
+	        else fileTree.addAll(listFileTree(entry));
+	    }
+	    return fileTree;
+	}
+	
+	public static void main2(String[] argv) throws Exception {
 
-	public static void main(String[] argv) throws Exception {
-
-		File[] files = new File[11];
+		List<File> files = listFileTree(new File("C:\\Users\\Paul\\Desktop\\crawl-tiles Oct-5-2010\\dc-mon"));
+		Collections.sort(files);
 		
-		files[0] = new File("target\\classes\\graphics\\abacus.png");
-		files[1] = new File("target\\classes\\graphics\\inside.png");
-		files[2] = new File("target\\classes\\graphics\\outside.png");
-		files[3] = new File("target\\classes\\graphics\\wagon.png");
-		files[4] = new File("target\\classes\\graphics\\honcom.png");
-		files[5] = new File("target\\classes\\graphics\\portal.png");
-		files[6] = new File("target\\classes\\graphics\\spirhum.png");
-		files[7] = new File("target\\classes\\graphics\\gypsy.png");
-		files[8] = new File("target\\classes\\graphics\\sachonor.png");
-		files[9] = new File("target\\classes\\graphics\\tree.png");
-		files[10] = new File("target\\classes\\graphics\\valjus.png");
-
-		
-		Map<String,BufferedImage> imgMap = new HashMap<String,BufferedImage>();
+		Map<String,BufferedImage> imgMap = new TreeMap<String,BufferedImage>();
 		
 		for (File file : files) {
+			if (file.isDirectory() || !file.getName().endsWith("png")) continue;
 			String name = file.getName();
-			BufferedImage input = ImageIO.read(file);
-			BufferedImage fr = input.getSubimage(0, 0, 320, 152);
+			BufferedImage fr = ImageIO.read(file);
 			imgMap.put(name, fr);
 		}
 
 		Settings settings = new Settings();
-		settings.maxWidth = 500;
-		settings.maxHeight = 2000;
-		settings.paddingX = 5;
-		settings.paddingY = 5;
-		settings.fast = false;
-		MaxRectsPacker mrp = new MaxRectsPacker(settings);
-		ArrayList<MaxRectsPacker.Rect> packedRects = new ArrayList<MaxRectsPacker.Rect>();
-		
+		settings.maxWidth = 768;
+		settings.maxHeight = 768;
+		settings.paddingX = 0;
+		settings.paddingY = 0;
+		settings.fast = true;
+		settings.pot = false;
+		settings.grid = true;
+
+		TexturePacker tp = new TexturePacker(settings);
 		
 		for (String name : imgMap.keySet()) {
-			BufferedImage img = imgMap.get(name);
-			MaxRectsPacker.Rect rect = new MaxRectsPacker.Rect(img,0,0,320,152);
-			rect.name = name;
-			rect.index = 0;
-			packedRects.add(rect);
+			BufferedImage image = imgMap.get(name);
+			tp.addImage(image, name);
 		}
 		
-		BufferedImage tit = ImageIO.read(new File("target\\classes\\graphics\\title.png"));
-		MaxRectsPacker.Rect rect = new MaxRectsPacker.Rect(tit,0,0,tit.getWidth(),tit.getHeight());
-		rect.name = "title";
-		rect.index = 0;
-		packedRects.add(rect);
 		
-		BufferedImage abacus = ImageIO.read(new File("target\\classes\\graphics\\abacus.png"));
-		BufferedImage wb = abacus.getSubimage(8, 187, 8, 12);
-		BufferedImage bb = abacus.getSubimage(24, 187, 8, 12);
+		System.out.println("Writing: number of res: " + imgMap.size());
 		
-		MaxRectsPacker.Rect rect2 = new MaxRectsPacker.Rect(wb,0,0,8,12);
-		rect2.name = "white-bead";
-		rect2.index = 0;
-		packedRects.add(rect2);
-		
-		MaxRectsPacker.Rect rect3 = new MaxRectsPacker.Rect(bb,0,0,8,12);
-		rect3.name = "black-bead";
-		rect3.index = 0;
-		packedRects.add(rect3);
-		
-		
-		System.out.println("Writing: number of sprites: " +packedRects.size());
-		
-		ArrayList<MaxRectsPacker.Page> pages = mrp.pack(packedRects);
-		mrp.writeImages(new File("."), pages, "initial-screens");
-		mrp.writePackFile(new File("."), pages, "initial-atlas.txt");
+		tp.pack(new File("."), "utumno-mon");
 		
 	    System.out.println("done");
 		
@@ -90,58 +67,59 @@ public class PackImagesUtil {
 
 	}
 	
-	public static void main3(String[] argv) throws Exception {
-		MaxRectsPacker mrp = new MaxRectsPacker();
-		ArrayList<MaxRectsPacker.Rect> packedRects = new ArrayList<MaxRectsPacker.Rect>();
-		int rows = 2;
-		int cols = 4;
-		int w = 50;
-		for (int i=0;i<rows;i++) {
-			for (int j=0;j<cols;j++) {
-				MaxRectsPacker.Rect rect = new MaxRectsPacker.Rect(i*w,j*w,w,w);
-				rect.name = "phase";
-				rect.index = 0;
-				packedRects.add(rect);
-			}
-		}
-		
-		System.out.println("Writing: number of sprites: " +packedRects.size());
-		
-		mrp.writePackFileWithRects(new File("."), "moon-atlas.txt",packedRects, "moonPhases.png");
-		
-	    System.out.println("done");
-	
-	}
-	
-	public static void main4(String[] argv) throws Exception {
-		
-		String inputFileName = "C:\\Users\\Paul\\Desktop\\ultima_v_5_warriors_of_destiny_tileset.png";
-		String outputFileName = "C:\\Users\\Paul\\Desktop\\ultima_5_tileset.png";
+	public static void main(String[] argv) throws Exception {
 
-	
-		//ImageTransparency.convert(inputFileName, outputFileName);		
+		List<File> files = listFileTree(new File("C:\\Users\\Paul\\Desktop\\crawl-tiles Oct-5-2010\\Monsters"));
+		Collections.sort(files);
 		
-		MaxRectsPacker mrp = new MaxRectsPacker();
-		ArrayList<MaxRectsPacker.Rect> packedRects = new ArrayList<MaxRectsPacker.Rect>();
-		int rows = 16;
-		int cols = 32;
-		int w = 32;
-		for (int i=0;i<rows;i++) {
-			for (int j=0;j<cols;j++) {
-				MaxRectsPacker.Rect rect = new MaxRectsPacker.Rect(i*w,j*w,w,w);
-				rect.name = "phase";
-				rect.index = 0;
-				packedRects.add(rect);
-			}
+		List<File> files2 = listFileTree(new File("C:\\Users\\Paul\\Desktop\\crawl-tiles Oct-5-2010\\dc-mon"));
+		Collections.sort(files2);
+
+		Map<String,BufferedImage> imgMap = new TreeMap<String,BufferedImage>();
+		
+		for (File file : files) {
+			if (file.isDirectory() || !file.getName().endsWith("PNG")) continue;
+			String name = file.getName();
+			BufferedImage fr = ImageIO.read(file);
+			BufferedImage sub = fr.getSubimage(11, 11, 32, 32);
+			imgMap.put(name, sub);
 		}
 		
-		System.out.println("Writing: number of sprites: " +packedRects.size());
+		for (File file : files2) {
+			if (file.isDirectory() || !file.getName().endsWith("png")) continue;
+			String name = file.getName();
+			BufferedImage fr = ImageIO.read(file);
+			imgMap.put(name, fr);
+		}
 		
-		mrp.writePackFileWithRects(new File("."), "ultima5-atlas.txt",packedRects, "ultima_5_tileset.png");
+		System.out.println("Writing: number of images: " + imgMap.size());
+
+
+		Settings settings = new Settings();
+		settings.maxWidth = 1440;
+		settings.maxHeight = 2048;
+		settings.paddingX = 0;
+		settings.paddingY = 0;
+		settings.fast = true;
+		settings.pot = false;
+		settings.grid = true;
+
+		TexturePacker tp = new TexturePacker(settings);
+		for (String name : imgMap.keySet()) {
+			BufferedImage image = imgMap.get(name);
+			tp.addImage(image, name);
+		}
+		tp.pack(new File("."), "monsters");
+		
+		java.awt.Color[] col = {java.awt.Color.MAGENTA};
+		ImageTransparency.convert("monsters.png", "monsters-trans.png", col);
 		
 	    System.out.println("done");
-	
+		
+
+
 	}
+
 	
 
 	

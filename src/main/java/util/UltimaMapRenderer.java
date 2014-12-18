@@ -56,9 +56,9 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 		
 		if (mainGame != null) {
 		
-			door = mainGame.egaatlas.findRegion("door");
-			brick_floor = mainGame.egaatlas.findRegion("brick_floor");
-			locked_door = mainGame.egaatlas.findRegion("locked_door");
+			door = mainGame.standardAtlas.findRegion("door");
+			brick_floor = mainGame.standardAtlas.findRegion("brick_floor");
+			locked_door = mainGame.standardAtlas.findRegion("locked_door");
 			
 			door.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 			brick_floor.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);

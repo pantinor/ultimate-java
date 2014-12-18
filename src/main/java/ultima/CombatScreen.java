@@ -76,7 +76,8 @@ public class CombatScreen extends BaseScreen {
 	public static TextureRegion corpse;
 
 
-	public CombatScreen(Ultima4 mainGame, BaseScreen returnScreen, Context context, Maps contextMap, BaseMap combatMap, TiledMap tmap, CreatureType cr, CreatureSet cs, TextureAtlas a1, TextureAtlas a2) {
+	public CombatScreen(Ultima4 mainGame, BaseScreen returnScreen, Context context, Maps contextMap, 
+			BaseMap combatMap, TiledMap tmap, CreatureType cr, CreatureSet cs, TextureAtlas a1, TextureAtlas a2) {
 		
 		scType = ScreenType.COMBAT;
 
@@ -113,9 +114,9 @@ public class CombatScreen extends BaseScreen {
 
 		sip = new SecondaryInputProcessor(this, stage);
 		
-		hitTile = a1.findRegion("hit_flash");
-		missTile = a1.findRegion("miss_flash");
-		corpse = a1.findRegion("corpse");
+		hitTile = a2.findRegion("hit_flash");
+		missTile = a2.findRegion("miss_flash");
+		corpse = a2.findRegion("corpse");
 
 		
 	    fillCreatureTable(crType);
@@ -581,7 +582,7 @@ public class CombatScreen extends BaseScreen {
         return res;
 	}
 	
-	private boolean attackAt(Vector target, Creature attacker) {
+	private boolean rangedAttackAt(Vector target, Creature attacker) {
 
 	    PartyMember defender = null;
 	    for (PartyMember p : party.getMembers()) {
@@ -593,13 +594,26 @@ public class CombatScreen extends BaseScreen {
 	    
 	    if (defender == null) return false;
 	    
-	    AttackResult res = attackHit(attacker, defender);	    
-	    	
+	    AttackResult res = attackHit(attacker, defender);	
+	    
+	    TileEffect effect = TileEffect.NONE;
     	Color col = Color.WHITE;
-    	if (attacker.getPoisons()) {
+	    	
+    	if (attacker.rangedAttackIs("poison_field")) {
+    		effect = TileEffect.POISON;
     		col = Color.GREEN;
     	} else if (attacker.rangedAttackIs("magic_flash")) {
+    		effect = TileEffect.NONE;
     		col = Color.BLUE;
+    	} else if (attacker.rangedAttackIs("fire_field")) {
+    		effect = TileEffect.FIRE;
+    		col = Color.RED;
+    	} else if (attacker.rangedAttackIs("sleep_field")) {
+    		effect = TileEffect.SLEEP;
+    		col = Color.YELLOW;
+    	} else if (attacker.rangedAttackIs("energy_field")) {
+    		effect = TileEffect.ELECTRICITY;
+    		col = Color.TEAL;
     	}
     	
 		final ProjectileActor p = new ProjectileActor(col, attacker.currentX, attacker.currentY, res);
@@ -620,6 +634,40 @@ public class CombatScreen extends BaseScreen {
 		}, fadeOut(.2f), removeActor(p)));
 		
     	stage.addActor(p);
+    	
+    	switch (effect) {
+		case ELECTRICITY:
+	        Sounds.play(Sound.PC_STRUCK);
+	        log("Electrified!");
+	        dealDamage(attacker, defender);
+			break;
+		case FIRE:
+		case LAVA:
+	        Sounds.play(Sound.PC_STRUCK);
+	        log("Fiery Hit!");
+	        dealDamage(attacker, defender);
+			break;
+		case NONE:
+			break;
+		case POISON:
+		case POISONFIELD:
+			if (rand.nextInt(2) == 0 && defender.getPlayer().status != StatusType.POISONED) {
+		        Sounds.play(Sound.POISON_EFFECT);
+		        log("Poisoned!");
+		        defender.getPlayer().status = StatusType.POISONED;
+			}
+			break;
+		case SLEEP:
+			if (rand.nextInt(2) == 0) {
+		        Sounds.play(Sound.SLEEP);
+		        log("Slept!");
+		        defender.putToSleep();
+			}
+			break;
+		default:
+			break;
+    	
+    	}
 	    	
 	    if (res == AttackResult.HIT) {
 	        dealDamage(attacker, defender);
@@ -816,7 +864,7 @@ public class CombatScreen extends BaseScreen {
 	        
 		    List<Vector> path = getDirectionalActionPath(dirmask, creature.currentX, creature.currentY, 1, 11, false, false);
 		    for (Vector v : path) {
-		        if (attackAt(v, creature)) {
+		        if (rangedAttackAt(v, creature)) {
 		            break;
 		        }
 		    }

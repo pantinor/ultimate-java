@@ -109,6 +109,8 @@ public class Creature implements Constants {
 		this.wontattack = clone.wontattack;
 		this.worldrangedtile = clone.worldrangedtile;
 		this.tile = clone.tile;
+		
+		setRandomRanged();
 	}
 
 	
@@ -455,6 +457,24 @@ public class Creature implements Constants {
 	    damage = (x >> 4) + ((x >> 2) & 0xfc);
 	    damage += x % 10;
 	    return damage;
+	}
+	
+	private void setRandomRanged() {
+		if (!rangedAttackIs("random")) return;
+	    switch(new Random().nextInt(4)) {
+	    case 0:
+	        rangedhittile = rangedmisstile = "poison_field";
+	        break;
+	    case 1:
+	        rangedhittile = rangedmisstile = "energy_field";
+	        break;
+	    case 2:
+	        rangedhittile = rangedmisstile = "fire_field";
+	        break;
+	    case 3:
+	        rangedhittile = rangedmisstile = "sleep_field";
+	        break;
+	    }
 	}
 	
 	@XmlTransient

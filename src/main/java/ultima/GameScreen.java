@@ -59,9 +59,8 @@ public class GameScreen extends BaseScreen {
 	
 	MapSet maps;
 	
-	public TextureAtlas egaatlas;
-	//public TextureAtlas atlas;
-	//public TextureAtlas u5atlas;
+	public TextureAtlas standardAtlas;
+	public TextureAtlas enhancedAtlas;
 	
 	TextureAtlas moonAtlas;
 	Animation avatar;
@@ -89,9 +88,8 @@ public class GameScreen extends BaseScreen {
 		skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
 		
 		try {
-			egaatlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-vga-atlas.txt"));
-			//atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/tile-atlas.txt"));
-			//u5atlas = new TextureAtlas(Gdx.files.classpath("tilemaps/ultima5-atlas.txt"));
+			standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-vga-atlas.txt"));
+			enhancedAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/monsters-u4.atlas"));
 			
 			baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	
 			baseTileSet.setMaps();
@@ -107,10 +105,10 @@ public class GameScreen extends BaseScreen {
 			creatures = (CreatureSet) Utils.loadXml("creatures.xml", CreatureSet.class);
 			creatures.init();
 
-			avatar = new Animation(0.25f, egaatlas.findRegions("avatar"));
+			avatar = new Animation(0.25f, enhancedAtlas.findRegions("avatar"));
 					
 			//textures for the moongates
-			moongateTextures = egaatlas.findRegions("moongate");
+			moongateTextures = standardAtlas.findRegions("moongate");
 			//textures for the phases of  the moon
 			moonAtlas = new TextureAtlas(Gdx.files.internal("assets/graphics/moon-atlas.txt"));
 
@@ -182,7 +180,7 @@ public class GameScreen extends BaseScreen {
 			BaseMap bm = m.getMap();
 			context.setCurrentMap(bm);
 					
-			map = new UltimaTiledMapLoader(m, egaatlas, m.getMap().getWidth(), m.getMap().getHeight(), 16, 16).load();
+			map = new UltimaTiledMapLoader(m, standardAtlas, m.getMap().getWidth(), m.getMap().getHeight(), 16, 16).load();
 			context.setCurrentTiledMap(map);
 
 			if (renderer != null) renderer.dispose();
@@ -193,7 +191,7 @@ public class GameScreen extends BaseScreen {
 			MapProperties prop = map.getProperties();
 			mapPixelHeight = prop.get("height", Integer.class) * tilePixelWidth;
 			
-			bm.initObjects(this, egaatlas, egaatlas);
+			bm.initObjects(this, enhancedAtlas, standardAtlas);
 			
 			newMapPixelCoords = getMapPixelCoords(startx, starty);
 			changeMapPosition = true;
@@ -206,11 +204,11 @@ public class GameScreen extends BaseScreen {
 		Maps contextMap = Maps.get(context.getCurrentMap().getId());
 		BaseMap combatMap = combat.getMap();
 		
-		map = new UltimaTiledMapLoader(combat, egaatlas, combat.getMap().getWidth(), combat.getMap().getHeight(), 16, 16).load();
+		map = new UltimaTiledMapLoader(combat, standardAtlas, combat.getMap().getWidth(), combat.getMap().getHeight(), 16, 16).load();
 		
 		context.setCurrentTiledMap(map);
 		
-		CombatScreen sc = new CombatScreen(mainGame, this, context, contextMap, combatMap, map, cr.getTile(), creatures, egaatlas, egaatlas);
+		CombatScreen sc = new CombatScreen(mainGame, this, context, contextMap, combatMap, map, cr.getTile(), creatures, enhancedAtlas, standardAtlas);
 		mainGame.setScreen(sc);
 		
 		currentEncounter = cr;
@@ -237,14 +235,14 @@ public class GameScreen extends BaseScreen {
 				
 			    /* add a chest, if the creature leaves one */
 			    if (!currentEncounter.getNochest() && (r == null || !r.has(TileAttrib.unwalkable))) {
-			    	Drawable chest = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "chest", egaatlas);
+			    	Drawable chest = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "chest", standardAtlas);
 			    	chest.setX(currentEncounter.currentPos.x);
 			    	chest.setY(currentEncounter.currentPos.y);
 			    	mapObjectsStage.addActor(chest);
 			    }
 			    /* add a ship if you just defeated a pirate ship */
 			    else if (currentEncounter.getTile() == CreatureType.pirate_ship) {
-			    	Drawable ship = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "ship", egaatlas);
+			    	Drawable ship = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "ship", standardAtlas);
 			    	ship.setX(currentEncounter.currentPos.x);
 			    	ship.setY(currentEncounter.currentPos.y);
 			    	mapObjectsStage.addActor(ship);
@@ -320,10 +318,16 @@ public class GameScreen extends BaseScreen {
 			PartyMember pm = context.getParty().getMember(i);
 			String s = (i + 1) + " - " + pm.getPlayer().name + "   " + pm.getPlayer().hp + "" + pm.getPlayer().status.getValue();
 			y = y + 18;
+			
+			font.setColor(i == context.getParty().getActivePlayer()? new Color(.35f, .93f, 0.91f, 1) : Color.WHITE);
+			if (pm.getPlayer().status == StatusType.POISONED) font.setColor(Color.GREEN);
+			if (pm.getPlayer().status == StatusType.SLEEPING) font.setColor(Color.YELLOW);
+			if (pm.getPlayer().status == StatusType.DEAD) font.setColor(Color.GRAY);
+			
 			font.draw(batch, s, Ultima4.SCREEN_WIDTH - 125, y);
 		}
 		
-
+		font.setColor(Color.WHITE);
 		logs.render(batch);
 
 		if (showZstats > 0) {
@@ -610,12 +614,12 @@ public class GameScreen extends BaseScreen {
 		if (tile.getRule().has(TileAttrib.sailable)) {
 			randId = CreatureType.pirate_ship.getValue();
 			randId += rand.nextInt(6);
-			Creature cr = creatures.getInstance(CreatureType.get(randId), egaatlas, egaatlas);
+			Creature cr = creatures.getInstance(CreatureType.get(randId), enhancedAtlas, standardAtlas);
 			return cr;
 		} else if (tile.getRule().has(TileAttrib.swimmable)) {
 			randId = CreatureType.nixie.getValue();
 			randId += rand.nextInt(4);
-			Creature cr = creatures.getInstance(CreatureType.get(randId), egaatlas, egaatlas);
+			Creature cr = creatures.getInstance(CreatureType.get(randId), enhancedAtlas, standardAtlas);
 			return cr;
 		}
 
@@ -629,7 +633,7 @@ public class GameScreen extends BaseScreen {
 
 		randId = CreatureType.orc.getValue();
 		randId += era & rand.nextInt(16) & rand.nextInt(16);
-		Creature cr = creatures.getInstance(CreatureType.get(randId), egaatlas, egaatlas);
+		Creature cr = creatures.getInstance(CreatureType.get(randId), enhancedAtlas, standardAtlas);
 		
 		return cr;
 	}
@@ -779,16 +783,20 @@ public class GameScreen extends BaseScreen {
 				break;
 			}
 
-			/* apply the effects from the trap */
-			if (trapType == TileEffect.FIRE)
+			if (trapType == TileEffect.FIRE) {
 				log("Acid Trap!");
-			else if (trapType == TileEffect.POISON)
+				Sounds.play(Sound.PC_STRUCK);
+			} else if (trapType == TileEffect.POISON) {
 				log("Poison Trap!");
-			else if (trapType == TileEffect.SLEEP)
+				Sounds.play(Sound.POISON_EFFECT);
+			} else if (trapType == TileEffect.SLEEP) {
 				log("Sleep Trap!");
-			else if (trapType == TileEffect.LAVA)
+				Sounds.play(Sound.PC_STRUCK);
+			} else if (trapType == TileEffect.LAVA) {
 				log("Bomb Trap!");
-
+				Sounds.play(Sound.PC_STRUCK);
+			}
+			
 			// player is null when using the Open spell (immune to traps)
 			// if the chest was opened by a PC, see if the trap was
 			// evaded by testing the PC's dex

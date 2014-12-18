@@ -6,21 +6,25 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
 import objects.Tile;
 import objects.TileSet;
+
+import org.apache.commons.io.FileUtils;
+
+import test.AtlasWriter.Rect;
 import util.Utils;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -34,16 +38,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 
 public class SpriteAtlasTool extends InputAdapter implements ApplicationListener {
 			
-	Batch mapBatch, batch2;
+	Batch batch;
 	
-	static int screenWidth = 1200;
-	static int screenHeight = 800;
+	static int screenWidth = 1600;
+	static int screenHeight = 1024;
 	
-	int tilePixelWidth = 16;
-	int tilePixelHeight = 16;
+	int dim = 32;
+	int canvasGridWidth;
+	int canvasGridHeight;
 
 	boolean initMapPosition = true;
 	
@@ -61,23 +67,37 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 	Skin skin;
 	MyListItem[] tileNames;
 	MyListItem selectedTileName;
-	
-	MyListItem[][] gridNames;
-
+		
+	MyListItem[] gridNames;
+	Texture box;
 	
 	public void create () {
-				
-		t = new Texture(Gdx.files.absolute("C:\\Users\\Paul\\Desktop\\U4TilesV.png"));
+		
+		Pixmap pixmap = new Pixmap(dim,dim, Format.RGBA8888);
+		pixmap.setColor(new Color(1, 1, 0, .8f));
+		int w = 1;
+		pixmap.fillRectangle(0, 0, w, dim);
+		pixmap.fillRectangle(dim - w, 0, w, dim);
+		pixmap.fillRectangle(w, 0, dim-2*w, w);
+		pixmap.fillRectangle(w, dim - w, dim-2*w, w);
+		box = new Texture(pixmap);
+		
+		t = new Texture(Gdx.files.internal("assets/tilemaps/monsters.png"));
+		canvasGridWidth = t.getWidth() / dim;
+		canvasGridHeight = t.getHeight() / dim;
+
 		sprBg = new Sprite(t, 0, 0, t.getWidth(), t.getHeight());
 		
-		gridNames = new MyListItem[Math.round(t.getWidth()/tilePixelWidth)][Math.round(t.getHeight()/tilePixelHeight)];
+		gridNames = new MyListItem[canvasGridWidth * canvasGridHeight];
 
 	
 		font = new BitmapFont();
 		font.setColor(Color.WHITE);
 		
-		batch2 = new SpriteBatch();
+		batch = new SpriteBatch();
 		skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
+		
+		readAtlas();
 		
 		try {
 			TileSet ts = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	
@@ -132,41 +152,88 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 						
-		batch2.begin();
+		batch.begin();
 		
-		sprBg.draw(batch2);
+		sprBg.draw(batch);
 		
-		font.draw(batch2, "current mouse coords: " + currentMapCoords, 10, screenHeight - 60);
-		font.draw(batch2, "selectedMapCoords: " + selectedMapCoords, 10, screenHeight - 40);
-		font.draw(batch2, "selectedTileName: " + selectedTileName, 10, screenHeight - 20);
+		font.draw(batch, "current mouse coords: " + currentMapCoords, 10, screenHeight - 60);
+		font.draw(batch, "selectedMapCoords: " + selectedMapCoords, 10, screenHeight - 40);
+		font.draw(batch, "selectedTileName: " + selectedTileName, 10, screenHeight - 20);
+		
+		for (int i=0;i<gridNames.length;i++) {
+				MyListItem it = gridNames[i];
+				if (it == null) continue;
+				batch.draw(box, it.x*dim, screenHeight - it.y*dim);
+				font.draw(batch, it.name.subSequence(0, 2), it.x*dim + 5, screenHeight - it.y*dim + 16);
+			
+		}
 
-		batch2.end();
+		batch.end();
 		
-		stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+		stage.act();
 		stage.draw();
 	}
 	
 	@Override
 	public boolean mouseMoved (int screenX, int screenY) {
-		currentMapCoords = new MyVector(Math.round(screenX/tilePixelHeight), Math.abs(Math.round((screenHeight - screenY)/tilePixelHeight - (t.getHeight()/tilePixelHeight))+1));		 
+		currentMapCoords = new MyVector(Math.round(screenX/dim), Math.abs(Math.round((screenHeight - screenY)/dim - (t.getHeight()/dim))+1));		 
 		return false;
 	}
 	
 	@Override
 	public boolean touchDown (int screenX, int screenY, int pointer, int button) {
-		int y = Math.round((screenHeight - screenY)/tilePixelHeight - (t.getHeight()/tilePixelHeight))+1;
-		int x = Math.round(screenX/tilePixelHeight);
+		int y = Math.round((screenHeight - screenY)/dim - (t.getHeight()/dim))+1;
+		int x = Math.round(screenX/dim);
 		
-		if (y <= 0 && x < tilePixelWidth) {
-			selectedMapCoords = new MyVector(x, y*-1);	
+		if (y <= 0 && x < canvasGridWidth) {
+			
+			int nx = x;
+			int ny = y*-1;
+			
+			selectedMapCoords = new MyVector(nx, ny);	
 			
 			if (selectedTileName != null) {
-				gridNames[x][y*-1] = new MyListItem(selectedTileName.name,x ,y*-1 );
+				
+				MyListItem it = getItem(nx, ny);
+				if (it == null) {
+					setItem(nx, ny, new MyListItem(selectedTileName.name,nx, ny));
+				} else {
+					setItem(nx, ny, null);
+				}
 			}
+			
 			
 		}
 				
 		return false;
+	}
+	
+	@Override
+	public boolean keyUp(int keycode) {
+		if (keycode == Keys.SPACE) {
+			new PopupDialog(this.skin, this.gridNames).show(stage);
+		}
+		return false;
+	}
+	
+	public MyListItem getItem(int x, int y) {
+		if (x < 0 || y < 0) {
+			return null;
+		}
+		if (x + (y * dim) >= gridNames.length) {
+			return null;
+		}
+		return gridNames[x + (y * dim)];
+	}
+	
+	public void setItem(int x, int y, MyListItem item) {
+		if (x < 0 || y < 0) {
+			return;
+		}
+		if (x + (y * dim) >= gridNames.length) {
+			return;
+		}
+		gridNames[x + (y * dim)] = item;
 	}
 	
 	
@@ -195,10 +262,10 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 	}
 	
 	public class MyListItem {
-		private String name;
-		private int x;
-		private int y;
-		private MyListItem(String name, int x, int y) {
+		public String name;
+		public int x;
+		public int y;
+		public MyListItem(String name, int x, int y) {
 			this.name = name;
 			this.x = x;
 			this.y = y;
@@ -207,7 +274,39 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 		public String toString() {
 			return String.format("%s %s, %s", name, x, y);
 		}
-		
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			result = prime * result + x;
+			result = prime * result + y;
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			
+			MyListItem other = (MyListItem) obj;
+
+			if (name == null) {
+				if (other.name != null)
+					return false;
+			} else if (!name.equals(other.name))
+				return false;
+			if (x != other.x)
+				return false;
+			if (y != other.y)
+				return false;
+			return true;
+		}		
+
 	}
 
 
@@ -237,17 +336,20 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 	
 	
 	public void makeAtlas() {
-				
-		MaxRectsPacker mrp = new MaxRectsPacker();
-		ArrayList<MaxRectsPacker.Rect> packedRects = new ArrayList<MaxRectsPacker.Rect>();
-		int w = tilePixelWidth;
-		for (int y=0;y<gridNames[0].length;y++) {
-			for (int x=0;x<gridNames.length;x++) {
-				MaxRectsPacker.Rect rect = new MaxRectsPacker.Rect(x*w,y*w,w,w);
-				rect.name = (gridNames[x][y] != null?gridNames[x][y].name:"col-"+x+"-row-"+y );
-				rect.index = 0;
-				packedRects.add(rect);
-			}
+		
+		Settings settings = new Settings();
+		AtlasWriter mrp = new AtlasWriter(settings);
+		
+
+		
+		ArrayList<Rect> packedRects = new ArrayList<Rect>();
+		for (int i=0;i<gridNames.length;i++) {
+			MyListItem it = gridNames[i];
+			if (it == null) continue;
+			Rect rect = new Rect(it.x*dim, it.y*dim, dim, dim);
+			rect.name = it.name;
+			rect.index = 0;
+			packedRects.add(rect);
 		}
 		
 		System.out.println("Writing: number of sprites: " +packedRects.size());
@@ -260,6 +362,30 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 		
 	    System.out.println("done");
 	
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void readAtlas() {
+		
+		try {
+			java.util.List<String> lines = FileUtils.readLines(new File("sprites-atlas.txt"));
+			for (int i=4;i<lines.size();i+=7) {
+				String name = lines.get(i).trim();
+				String xy = lines.get(i+2).trim();
+				String[] sp = xy.split(":|,| ");
+				//System.out.println(name + " "  + sp[2] + "," + sp[4]);
+				
+				int mx = Integer.parseInt(sp[2]) / 32;
+				int my = Integer.parseInt(sp[4]) / 32;
+				MyListItem item = new MyListItem(name, mx, my);
+				setItem(mx, my, item);
+			}
+			
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	

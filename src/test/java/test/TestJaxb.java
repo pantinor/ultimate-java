@@ -223,7 +223,7 @@ public class TestJaxb {
 		
 		SaveGame sg = new SaveGame();
 		sg.read(dis);
-		
+				
 				
 //		SaveGame.SaveGamePlayerRecord avatar = sg.new SaveGamePlayerRecord();
 //		avatar.name = "paul";
@@ -244,16 +244,16 @@ public class TestJaxb {
 		Party p = new Party(sg);
 		
 		
-		for (int i=0;i<8;i++) 
-			System.err.println(Virtue.get(i) + " " + sg.karma[i]);
-        System.err.println("---------------");
+		//for (int i=0;i<8;i++) 
+			//System.err.println(Virtue.get(i) + " " + sg.karma[i]);
+        //System.err.println("---------------");
 
 		p.adjustKarma(KarmaAction.ATTACKED_GOOD);
 
 
 		
-		for (int i=0;i<8;i++) 
-			System.err.println(Virtue.get(i) + " " + sg.karma[i]);
+		//for (int i=0;i<8;i++) 
+			//System.err.println(Virtue.get(i) + " " + sg.karma[i]);
 			
         for (int i = 0; i < 8; i++) {
         	Virtue v = Constants.Virtue.get(i);

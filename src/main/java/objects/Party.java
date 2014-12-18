@@ -275,8 +275,7 @@ public class Party implements Constants {
 		        break;
 		    case POISONFIELD:
 		    case POISON:
-		        if (player.status == StatusType.POISONED) {
-		            Sounds.play(Sound.POISON_EFFECT);
+		        if (player.status != StatusType.POISONED) {
 		            player.status = StatusType.POISONED;
 		        }
 		        break;
@@ -390,9 +389,7 @@ public class Party implements Constants {
 
 		public void putToSleep() {    
 		    if (!isDead()) {
-		        //soundPlay(SOUND_SLEEP, false);
 				player.status = StatusType.SLEEPING;    
-		        //setTile(Tileset::findTileByName("corpse")->getId());
 		    }
 		}
 
