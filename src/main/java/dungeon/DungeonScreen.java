@@ -79,7 +79,13 @@ public class DungeonScreen extends BaseScreen {
 	public static Model orbModel;
 	public static Model altarModel;
 	
+	boolean isTorchOn = true;
+	private Vector3 vdll = new Vector3(.04f, .04f, .04f);
+	private Vector3 nll2 = new Vector3(1f, 0.8f, 0.6f);
+	private Vector3 nll = new Vector3(.96f, .58f, 0.08f);
+
 	private PointLight circlingLight;
+	private DirectionalLight fixedLight;
 	private float lightPosition = 0;
 	private Vector3 lightPathCenter = new Vector3(4, 4, 4);
 	private float lightPathRadius = 3f;
@@ -143,7 +149,7 @@ public class DungeonScreen extends BaseScreen {
 		font.setColor(Color.WHITE);
 		
 		environment = new Environment();
-		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.05f, 0.05f, 0.05f, 1f));
 		
 		DefaultShader.Config config = new Config();
 		config.numDirectionalLights = 1;
@@ -152,7 +158,9 @@ public class DungeonScreen extends BaseScreen {
 		
 		circlingLight = new PointLight().set(1, .8f, .6f, 0f, 4f, 0f, 10);
 		environment.add(circlingLight);
-		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, 4f, 4f, 4f));
+		
+		fixedLight = new DirectionalLight().set(1f, 0.8f, 0.6f, 4f, 4f, 4f);
+		environment.add(fixedLight);
 		
 		modelBatch = new ModelBatch(new DefaultShaderProvider(config));
 		batch = new SpriteBatch();
@@ -263,11 +271,36 @@ public class DungeonScreen extends BaseScreen {
 		
 	}
 	
-	public void restoreSaveGameLocation(int x, int y, int z) {
+	public void setStartPosition() {
+		for (int y = 0; y < DUNGEON_MAP; y++) {
+			for (int x = 0; x < DUNGEON_MAP; x++) {
+				DungeonTile tile = dungeonTiles[currentLevel][x][y];
+				if (tile == DungeonTile.NOTHING && currentPos == null) {
+					currentPos = new Vector3(x+.5f,.5f,y+.5f);
+				}
+				if (tile == DungeonTile.LADDER_UP) {
+					currentPos = new Vector3(x+.5f,.5f,y+.5f);
+				}
+			}
+		}
+	}
+	
+	public void restoreSaveGameLocation(int x, int y, int z, Direction orientation) {
+		
 		currentPos = new Vector3(x+.5f,.5f,y+.5f);
 		cam.position.set(currentPos);
-		cam.lookAt(currentPos.x+1, currentPos.y, currentPos.z);
+		currentDir = orientation;
 		currentLevel = z;
+
+		if (currentDir == Direction.EAST) {
+			cam.lookAt(currentPos.x+1, currentPos.y, currentPos.z);
+		} else if (currentDir == Direction.WEST) {
+			cam.lookAt(currentPos.x-1, currentPos.y, currentPos.z);
+		} else if (currentDir == Direction.NORTH) {
+			cam.lookAt(currentPos.x, currentPos.y, currentPos.z-1);
+		} else if (currentDir == Direction.SOUTH) {
+			cam.lookAt(currentPos.x, currentPos.y, currentPos.z+1);
+		}
 	}
 	
 	@Override
@@ -289,8 +322,11 @@ public class DungeonScreen extends BaseScreen {
 		float lx = (float) (lightPathRadius * Math.cos(lightPosition));
 		float ly = (float) (lightPathRadius * Math.sin(lightPosition));
 		Vector3 lightVector = new Vector3(lx, 0, ly).add(lightPathCenter);
-		circlingLight.set(0.8f, 0.8f, 0.8f, lightVector, 10);
-
+		
+		Vector3 ll = isTorchOn ? nll : vdll;
+		circlingLight.set(ll.x, ll.y,  ll.z, lightVector, 10);
+		ll = isTorchOn ? nll2 : vdll;
+		fixedLight.set(ll.x, ll.y,  ll.z, 4f, 4f, 4f);
 				
 		modelBatch.begin(cam);
 		
@@ -382,7 +418,7 @@ public class DungeonScreen extends BaseScreen {
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
 		} else if (tile.getValue() >= 208 && tile.getValue() <= 223) { //room indicator
-			Model model = builder.createBox(1, 1, 1, new Material(ColorAttribute.createDiffuse(Color.DARK_GRAY), ColorAttribute.createSpecular(Color.DARK_GRAY), new BlendingAttribute(0.4f)), Usage.Position | Usage.Normal);		
+			Model model = builder.createBox(1, 1, 1, new Material(ColorAttribute.createDiffuse(Color.DARK_GRAY), ColorAttribute.createSpecular(Color.DARK_GRAY), new BlendingAttribute(0.6f)), Usage.Position | Usage.Normal);		
 			ModelInstance instance = new ModelInstance(model, tx, .5f, tz);
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
@@ -485,26 +521,12 @@ public class DungeonScreen extends BaseScreen {
 				1f, 1f, 0, 0, 0, MINI_MAP_TEXTURE.getWidth(), MINI_MAP_TEXTURE.getHeight(), false, false);
 		
 		font.draw(batch, "Level: " + (currentLevel+1) + " x,y: " + (Math.round(currentPos.x)-1) + ", " + (Math.round(currentPos.z)-1), 10, 40);
-		font.draw(batch, "Direction: " + currentDir , 10, 20);
+		font.draw(batch, "Direction: " + currentDir, 10, 20);
 
 		
 		batch.end();
 	}
-	
-	public void setStartPosition() {
-		for (int y = 0; y < DUNGEON_MAP; y++) {
-			for (int x = 0; x < DUNGEON_MAP; x++) {
-				DungeonTile tile = dungeonTiles[currentLevel][x][y];
-				if (tile == DungeonTile.NOTHING && currentPos == null) {
-					currentPos = new Vector3(x+.5f,.5f,y+.5f);
-				}
-				if (tile == DungeonTile.LADDER_UP) {
-					currentPos = new Vector3(x+.5f,.5f,y+.5f);
-				}
-			}
-		}
-	}
-	
+		
 	public void enterRoom(RoomLocater loc, Direction entryDir) {
 		
 		if (loc == null) return;
@@ -516,7 +538,8 @@ public class DungeonScreen extends BaseScreen {
 		baseMap.setTiles(loc.room.tiles);
 		baseMap.setWidth(11);
 		baseMap.setHeight(11);
-		baseMap.setType(MapType.combat);
+		baseMap.setType(MapType.dungeon);
+		baseMap.setPortals(dngMap.getMap().getPortals(loc.x, loc.y, loc.z));
 		
 		CombatScreen sc = new CombatScreen(mainGame, this, GameScreen.context, contextMap, baseMap, tiledMap, null, GameScreen.creatures, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
 		
@@ -545,8 +568,11 @@ public class DungeonScreen extends BaseScreen {
 		
 	}
 	
-	public void endCombat(boolean isWon) {
+	@Override
+	public void endCombat(boolean isWon, BaseMap combatMap) {
+		
 		mainGame.setScreen(this);
+		
 		if (isWon) {
             GameScreen.context.getParty().adjustKarma(KarmaAction.KILLED_EVIL);
 		} else {
@@ -555,12 +581,56 @@ public class DungeonScreen extends BaseScreen {
                 GameScreen.context.getParty().adjustKarma(KarmaAction.FLED_EVIL);
             } else if (!GameScreen.context.getParty().isAnyoneAlive()) {
             	mainGame.setScreen(new DeathScreen(mainGame, gameScreen, GameScreen.context.getParty()));
-            	gameScreen.loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y, 0, 0, 0, false);
+            	gameScreen.loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
             }
 		}
-	}
-	
-
+		
+		//if exiting dungeon rooms, move out of the room with orientation to next coordinate
+		if (combatMap.getType() == MapType.dungeon) {
+			Direction exitDirection = GameScreen.context.getParty().getActivePartyMember().combatMapExitDirection;
+			currentDir = exitDirection;
+			
+			int x = (Math.round(currentPos.x)-1);
+			int y = (Math.round(currentPos.z)-1);
+			
+			if (exitDirection == Direction.EAST) {
+				x=x+1;if(x>7)x=0; 
+			} else if (exitDirection == Direction.WEST) {
+				x=x-1;if(x<0)x=7; 
+			} else if (exitDirection == Direction.NORTH) {
+				y=y-1;if(y<0)y=7; 
+			} else if (exitDirection == Direction.SOUTH) {
+				y=y+1;if(y>7)y=0; 
+			}
+			
+			DungeonTile tile = dungeonTiles[currentLevel][x][y];
+			if (tile != DungeonTile.WALL) {
+				currentPos = new Vector3(x+.5f,.5f,y+.5f);
+				cam.position.set(currentPos);
+				if (currentDir == Direction.EAST) {
+					cam.lookAt(currentPos.x+1, currentPos.y, currentPos.z);
+				} else if (currentDir == Direction.WEST) {
+					cam.lookAt(currentPos.x-1, currentPos.y, currentPos.z);
+				} else if (currentDir == Direction.NORTH) {
+					cam.lookAt(currentPos.x, currentPos.y, currentPos.z-1);
+				} else if (currentDir == Direction.SOUTH) {
+					cam.lookAt(currentPos.x, currentPos.y, currentPos.z+1);
+				}
+			}
+			
+			if (tile.getValue() >= 208 && tile.getValue() <= 223) {
+				RoomLocater loc = null;
+				for (RoomLocater r : locaters) {
+					if (r.z == currentLevel && r.x == x && r.y == y) {
+						loc = r;
+						break;
+					}
+				}
+				enterRoom(loc, Direction.reverse(currentDir));
+			}
+		}
+		
+	}	
 	
 	@Override
 	public boolean keyUp (int keycode) {
@@ -680,28 +750,145 @@ public class DungeonScreen extends BaseScreen {
 			
 			
 		} else if (keycode == Keys.K) {
-			//klimb
-			currentLevel --;
-			if (currentLevel < 0) {
-				currentLevel = 0;
-				if (mainGame != null) {
-					mainGame.setScreen(gameScreen);
+			
+			DungeonTile tile = dungeonTiles[currentLevel][x][y];
+			if (tile == DungeonTile.LADDER_UP || tile == DungeonTile.LADDER_UP_DOWN) {
+				currentLevel --;
+				if (currentLevel < 0) {
+					currentLevel = 0;
+					if (mainGame != null) {
+						mainGame.setScreen(gameScreen);
+					}
 				}
 			}
 
 		} else if (keycode == Keys.D) {
-			//descend
-			currentLevel ++;
-			if (currentLevel > DUNGEON_MAP) currentLevel = DUNGEON_MAP;
+			
+			DungeonTile tile = dungeonTiles[currentLevel][x][y];
+			if (tile == DungeonTile.LADDER_DOWN || tile == DungeonTile.LADDER_UP_DOWN) {
+				currentLevel ++;
+				if (currentLevel > DUNGEON_MAP) {
+					currentLevel = DUNGEON_MAP;
+				}
+			}
 			
 		} else if (keycode == Keys.Q) {
-			GameScreen.context.saveGame(x,y,currentLevel,dngMap);
+			GameScreen.context.saveGame(x, y, currentLevel, currentDir, dngMap);
 			log("Saved Game.");
+			
+		} else if (keycode == Keys.Z) {
+			isTorchOn = !isTorchOn;
 		}
 			
 			
 		return false;
 	}
+	
+	
+	/**
+	 * Touch the magical ball at the current location
+	 */
+//	public void dungeonTouchOrb() {
+//	    log("You find a Magical Orb...Who touches? ");
+//	    int player = gameGetPlayer(false, false);
+//	    if (player == -1)
+//	        return;
+//
+//	    int stats = 0;
+//	    int damage = 0;    
+//	    
+//	    /* Get current position and find a replacement tile for it */   
+//	    Tile * orb_tile = c->location->map->tileset->getByName("magic_orb");
+//	    MapTile replacementTile(c->location->getReplacementTile(c->location->coords, orb_tile));
+//
+//	    switch(c->location->map->id) {
+//	    case MAP_DECEIT:    stats = STATSBONUS_INT; break;
+//	    case MAP_DESPISE:   stats = STATSBONUS_DEX; break;
+//	    case MAP_DESTARD:   stats = STATSBONUS_STR; break;
+//	    case MAP_WRONG:     stats = STATSBONUS_INT | STATSBONUS_DEX; break;
+//	    case MAP_COVETOUS:  stats = STATSBONUS_DEX | STATSBONUS_STR; break;
+//	    case MAP_SHAME:     stats = STATSBONUS_INT | STATSBONUS_STR; break;
+//	    case MAP_HYTHLOTH:  stats = STATSBONUS_INT | STATSBONUS_DEX | STATSBONUS_STR; break;
+//	    default: break;
+//	    }
+//
+//	    /* give stats bonuses */
+//	    if (stats & STATSBONUS_STR) {
+//	        screenMessage("Strength + 5\n");
+//	        AdjustValueMax(c->saveGame->players[player].str, 5, 50);
+//	        damage += 200;
+//	    }
+//	    if (stats & STATSBONUS_DEX) {
+//	        screenMessage("Dexterity + 5\n");
+//	        AdjustValueMax(c->saveGame->players[player].dex, 5, 50);        
+//	        damage += 200;
+//	    }
+//	    if (stats & STATSBONUS_INT) {
+//	        screenMessage("Intelligence + 5\n");
+//	        AdjustValueMax(c->saveGame->players[player].intel, 5, 50);        
+//	        damage += 200;
+//	    }   
+//	    
+//	    /* deal damage to the party member who touched the orb */
+//	    c->party->member(player)->applyDamage(damage);    
+//	    /* remove the orb from the map */
+//	    c->location->map->annotations->add(c->location->coords, replacementTile);
+//	}
+	
+	/**
+	 * Drink from the fountain at the current location
+	 */
+//	void dungeonDrinkFountain() {
+//	    screenMessage("You find a Fountain.\nWho drinks? ");
+//	    int player = gameGetPlayer(false, false);
+//	    if (player == -1)
+//	        return;
+//
+//	    Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
+//	    FountainType type = (FountainType) dungeon->currentSubToken();    
+//
+//	    switch(type) {
+//	    /* plain fountain */
+//	    case FOUNTAIN_NORMAL: 
+//	        screenMessage("\nHmmm--No Effect!\n");
+//	        break;
+//
+//	    /* healing fountain */
+//	    case FOUNTAIN_HEALING: 
+//	        if (c->party->member(player)->heal(HT_FULLHEAL))
+//	            screenMessage("\nAhh-Refreshing!\n");
+//	        else screenMessage("\nHmmm--No Effect!\n");
+//	        break;
+//	    
+//	    /* acid fountain */
+//	    case FOUNTAIN_ACID:
+//	        c->party->member(player)->applyDamage(100); /* 100 damage to drinker */        
+//	        screenMessage("\nBleck--Nasty!\n");
+//	        break;
+//
+//	    /* cure fountain */
+//	    case FOUNTAIN_CURE:
+//	        if (c->party->member(player)->heal(HT_CURE))        
+//	            screenMessage("\nHmmm--Delicious!\n");
+//	        else screenMessage("\nHmmm--No Effect!\n");
+//	        break;
+//
+//	    /* poison fountain */
+//	    case FOUNTAIN_POISON: 
+//	        if (c->party->member(player)->getStatus() != STAT_POISONED) {
+//	            soundPlay(SOUND_POISON_DAMAGE);
+//	            c->party->member(player)->applyEffect(EFFECT_POISON);
+//	            c->party->member(player)->applyDamage(100); /* 100 damage to drinker also */            
+//	            screenMessage("\nArgh-Choke-Gasp!\n");
+//	        }
+//	        else screenMessage("\nHmm--No Effect!\n");
+//	        break;
+//
+//	    default:
+//	        ASSERT(0, "Invalid call to dungeonDrinkFountain: no fountain at current location");
+//	    }
+//	}
+	
 
 	@Override
 	public void finishTurn(int currentX, int currentY) {

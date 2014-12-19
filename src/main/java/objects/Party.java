@@ -2,6 +2,7 @@ package objects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 import java.util.Random;
 
 import objects.SaveGame.SaveGamePlayerRecord;
@@ -9,12 +10,10 @@ import objects.SaveGame.SaveGamePlayerRecord;
 import org.apache.commons.lang.StringUtils;
 
 import ultima.Constants;
-import ultima.Sound;
-import ultima.Sounds;
 import util.Utils;
 
 
-public class Party implements Constants {
+public class Party extends Observable implements Constants {
 	
 	private SaveGame saveGame;
 	private List<PartyMember> members = new ArrayList<PartyMember>();
@@ -137,6 +136,15 @@ public class Party implements Constants {
 		return p;		
 	}
 	
+	public boolean isOKtoExitDirection(Direction dir) {
+		for (PartyMember pm : members) {
+			if (pm.combatMapExitDirection != null && pm.combatMapExitDirection != dir) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public boolean didAnyoneFlee() {
 		boolean anyonefled = false;
 		for (int i=0;i<members.size();i++) {
@@ -179,6 +187,7 @@ public class Party implements Constants {
 	public void reset() {
 		for (PartyMember pm : members) {
 			pm.fled = false;
+			pm.combatMapExitDirection = null;
 		}
 		activePlayer  = 0;
 	}
@@ -233,6 +242,7 @@ public class Party implements Constants {
 		private Party party;
 		
 		public boolean fled;
+		public Direction combatMapExitDirection;
 		public Creature combatCr;
 
 		
@@ -607,6 +617,8 @@ public class Party implements Constants {
 			if (maxVal[v] == 100) { // already an avatar
 				if (newKarma[v] < 100) { // but lost it
 					saveGame.karma[v] = newKarma[v];
+					setChanged();
+					notifyObservers(PartyEvent.LOST_EIGHTH);
 				} else { // return to u4dos compatibility
 					saveGame.karma[v] = 0;
 				}
@@ -637,18 +649,21 @@ public class Party implements Constants {
 
 			if (mapType != MapType.combat) {
 
-				if (member.player.status != StatusType.DEAD)
+				if (member.player.status != StatusType.DEAD) {
 					adjustFood(-1);
-
+				}
+				
 				switch (member.player.status) {
 				case SLEEPING:
-					if (rand.nextInt(5) == 0)
+					if (rand.nextInt(5) == 0) {
 						member.wakeUp();
+					}
 					break;
 
 				case POISONED:
-					Sounds.play(Sound.POISON_DAMAGE);
 					member.applyDamage(2, false);
+					setChanged();
+					notifyObservers(PartyEvent.POISON_DAMAGE);
 					break;
 
 				default:
@@ -662,14 +677,12 @@ public class Party implements Constants {
 			}
 		}
 
-		// /* The party is starving! */
-		// if ((saveGame.food == 0) && ((c->location->context & CTX_NON_COMBAT)
-		// == c->location->context)) {
-		// setChanged();
-		// PartyEvent event(PartyEvent::STARVING, 0);
-		// notifyObservers(event);
-		// }
-		//
+		/* The party is starving! */
+		if ((saveGame.food == 0)) {
+			setChanged();
+			notifyObservers(PartyEvent.STARVING);
+		}
+		
 		// /* heal ship (25% chance it is healed each turn) */
 		// if ((c->location->context == CTX_WORLDMAP) && (saveGame->shiphull <
 		// 50) && xu4_random(4) == 0) {

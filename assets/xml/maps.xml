@@ -1,41 +1,41 @@
 <maps>
 	<!-- world map -->
 	<map id="0" type="world" fname="world.map" width="256" height="256" levels="1" chunkwidth="32" chunkheight="32" borderbehavior="wrap" showavatar="true" music="1" tileset="base" tilemap="base">
-		<portal x="86" y="107" destmapid="1" startx="15" starty="30" action="enter" savelocation="true" transport="footorhorse" />
-		<portal x="218" y="107" destmapid="2" startx="15" starty="30" action="enter" savelocation="true" transport="footorhorse" />
-		<portal x="28" y="50" destmapid="3" startx="15" starty="30" action="enter" savelocation="true" transport="footorhorse" />
-		<portal x="146" y="241" destmapid="4" startx="15" starty="30" action="enter" savelocation="true" transport="footorhorse" />
+		<portal x="86" y="107" destmapid="1" startx="15" starty="30"  savelocation="true" transport="footorhorse" />
+		<portal x="218" y="107" destmapid="2" startx="15" starty="30"  savelocation="true" transport="footorhorse" />
+		<portal x="28" y="50" destmapid="3" startx="15" starty="30"  savelocation="true" transport="footorhorse" />
+		<portal x="146" y="241" destmapid="4" startx="15" starty="30"  savelocation="true" transport="footorhorse" />
 
-		<portal x="232" y="135" destmapid="5" startx="1" starty="15" action="enter" savelocation="true" transport="footorhorse" />
-		<portal x="82" y="106" destmapid="6" startx="1" starty="15" action="enter" savelocation="true" transport="footorhorse" />
-		<portal x="36" y="222" destmapid="7" startx="1" starty="15" action="enter" savelocation="true" transport="footorhorse" />
-		<portal x="58" y="43" destmapid="8" startx="1" starty="15" action="enter" savelocation="true" transport="footorhorse" />
-		<portal x="159" y="20" destmapid="9" startx="1" starty="15" action="enter" savelocation="true" transport="footorhorse" />
-		<portal x="106" y="184" destmapid="10" startx="1" starty="15" action="enter" savelocation="true" transport="footorhorse" />
-		<portal x="22" y="128" destmapid="11" startx="1" starty="15" action="enter" savelocation="true" transport="footorhorse" />
-		<portal x="187" y="169" destmapid="12" startx="1" starty="15" action="enter" savelocation="true" transport="footorhorse" />
+		<portal x="232" y="135" destmapid="5" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
+		<portal x="82" y="106" destmapid="6" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
+		<portal x="36" y="222" destmapid="7" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
+		<portal x="58" y="43" destmapid="8" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
+		<portal x="159" y="20" destmapid="9" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
+		<portal x="106" y="184" destmapid="10" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
+		<portal x="22" y="128" destmapid="11" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
+		<portal x="187" y="169" destmapid="12" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
 
-		<portal x="98" y="145" destmapid="13" startx="1" starty="15" action="enter" savelocation="true" transport="footorhorse" />
-		<portal x="136" y="158" destmapid="14" startx="1" starty="15" action="enter" savelocation="true" transport="footorhorse" />
-		<portal x="201" y="59" destmapid="15" startx="1" starty="15" action="enter" savelocation="true" transport="footorhorse" />
-		<portal x="136" y="90" destmapid="16" startx="1" starty="15" action="enter" savelocation="true" transport="footorhorse" />
+		<portal x="98" y="145" destmapid="13" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
+		<portal x="136" y="158" destmapid="14" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
+		<portal x="201" y="59" destmapid="15" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
+		<portal x="136" y="90" destmapid="16" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
 
-		<portal x="240" y="73" destmapid="17" startx="1" starty="1" action="enter" savelocation="true" transport="foot" />
-		<portal x="91" y="67" destmapid="18" startx="1" starty="1" action="enter" savelocation="true" transport="foot" />
-		<portal x="72" y="168" destmapid="19" startx="1" starty="1" action="enter" savelocation="true" transport="foot" />
-		<portal x="126" y="20" destmapid="20" startx="1" starty="1" action="enter" savelocation="true" transport="foot" />
-		<portal x="156" y="27" destmapid="21" startx="1" starty="1" action="enter" savelocation="true" transport="foot" />
-		<portal x="58" y="102" destmapid="22" startx="1" starty="1" action="enter" savelocation="true" transport="foot" />
-		<portal x="239" y="240" destmapid="23" startx="1" starty="1" action="enter" savelocation="true" transport="foot" />
-		<portal x="233" y="233" destmapid="24" startx="1" starty="1" action="enter" condition="abyss" savelocation="true" message="Enter the Great Stygian Abyss!" transport="foot" />
+		<portal x="240" y="73" destmapid="17" startx="1" starty="1"  savelocation="true" transport="foot" />
+		<portal x="91" y="67" destmapid="18" startx="1" starty="1"  savelocation="true" transport="foot" />
+		<portal x="72" y="168" destmapid="19" startx="1" starty="1"  savelocation="true" transport="foot" />
+		<portal x="126" y="20" destmapid="20" startx="1" starty="1"  savelocation="true" transport="foot" />
+		<portal x="156" y="27" destmapid="21" startx="1" starty="1"  savelocation="true" transport="foot" />
+		<portal x="58" y="102" destmapid="22" startx="1" starty="1"  savelocation="true" transport="foot" />
+		<portal x="239" y="240" destmapid="23" startx="1" starty="1"  savelocation="true" transport="foot" />
+		<portal x="233" y="233" destmapid="24" startx="1" starty="1"  condition="abyss" savelocation="true" message="Enter the Great Stygian Abyss!" transport="foot" />
 
-		<portal x="233" y="66" destmapid="25" startx="0" starty="0" action="enter" condition="shrine" savelocation="true" transport="footorhorse" />
-		<portal x="128" y="92" destmapid="26" startx="0" starty="0" action="enter" condition="shrine" savelocation="true" transport="footorhorse" />
-		<portal x="36" y="229" destmapid="27" startx="0" starty="0" action="enter" condition="shrine" savelocation="true" transport="footorhorse" />
-		<portal x="73" y="11" destmapid="28" startx="0" starty="0" action="enter" condition="shrine" savelocation="true" transport="footorhorse" />
-		<portal x="205" y="45" destmapid="29" startx="0" starty="0" action="enter" condition="shrine" savelocation="true" transport="footorhorse" />
-		<portal x="81" y="207" destmapid="30" startx="0" starty="0" action="enter" condition="shrine" savelocation="true" transport="footorhorse" />
-		<portal x="231" y="216" destmapid="32" startx="0" starty="0" action="enter" condition="shrine" savelocation="true" transport="footorhorse" />
+		<portal x="233" y="66" destmapid="25" startx="0" starty="0"  condition="shrine" savelocation="true" transport="footorhorse" />
+		<portal x="128" y="92" destmapid="26" startx="0" starty="0"  condition="shrine" savelocation="true" transport="footorhorse" />
+		<portal x="36" y="229" destmapid="27" startx="0" starty="0"  condition="shrine" savelocation="true" transport="footorhorse" />
+		<portal x="73" y="11" destmapid="28" startx="0" starty="0"  condition="shrine" savelocation="true" transport="footorhorse" />
+		<portal x="205" y="45" destmapid="29" startx="0" starty="0"  condition="shrine" savelocation="true" transport="footorhorse" />
+		<portal x="81" y="207" destmapid="30" startx="0" starty="0"  condition="shrine" savelocation="true" transport="footorhorse" />
+		<portal x="231" y="216" destmapid="32" startx="0" starty="0"  condition="shrine" savelocation="true" transport="footorhorse" />
 
 		<moongate name="moonglow" phase="0" x="224" y="133" d1="moonglow" d2="britain" d3="jhelom" dm1="0" dm2="1" dm3="2" />
 		<moongate name="britain" phase="1" x="96" y="102" d1="yew" d2="minoc" d3="trinsic" dm1="3" dm2="4" dm3="5" />
@@ -67,9 +67,9 @@
 			<personrole type="HEALER" role="healer" id="28" />
 			<personrole role="hawkwind" id="29" />
 		</city>
-		<portal x="3" y="3" destmapid="100" startx="3" starty="3" action="klimb" savelocation="false" message="Klimb to second floor!" transport="foot" />
-		<portal x="27" y="3" destmapid="100" startx="27" starty="3" action="klimb" savelocation="false" message="Klimb to second floor!" transport="foot" />
-		<portal x="7" y="2" destmapid="23" startx="5" starty="5" action="descend" savelocation="false" message="Descend into the depths!" transport="foot">
+		<portal x="3" y="3" destmapid="100" startx="3" starty="3"  savelocation="false" message="Klimb to second floor!" transport="foot" />
+		<portal x="27" y="3" destmapid="100" startx="27" starty="3"  savelocation="false" message="Klimb to second floor!" transport="foot" />
+		<portal x="7" y="2" destmapid="23" startx="5" starty="5"  savelocation="false" message="Descend into the depths!" transport="foot">
 			<retroActiveDest x="239" y="240" mapid="0" />
 		</portal>
 		<label name="spiritualityrune" x="17" y="8" />
@@ -78,8 +78,8 @@
 		<city name="Britannia" type="castle" tlk_fname="lcb.tlk">
 			<personrole role="lordbritish" id="31" />
 		</city>
-		<portal x="3" y="3" destmapid="1" startx="3" starty="3" action="descend" savelocation="false" message="Descend to first floor!" transport="foot" />
-		<portal x="27" y="3" destmapid="1" startx="27" starty="3" action="descend" savelocation="false" message="Descend to first floor!" transport="foot" />
+		<portal x="3" y="3" destmapid="1" startx="3" starty="3"  savelocation="false" message="Descend to first floor!" transport="foot" />
+		<portal x="27" y="3" destmapid="1" startx="27" starty="3"  savelocation="false" message="Descend to first floor!" transport="foot" />
 	</map>
 	<map id="2" type="city" fname="lycaeum.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="9" tileset="base" tilemap="base">
 		<city name="Lycaeum" type="castle" tlk_fname="lycaeum.tlk">
@@ -218,19 +218,19 @@
 	<map id="17" type="dungeon" fname="deceit.dng" width="8" height="8" levels="8" borderbehavior="wrap" firstperson="true" music="7" tileset="dungeon" tilemap="dungeon">
 		<dungeon name="Deceit" rooms="16" />
 		<!-- Deceit -->
-		<portal x="1" y="1" z="7" destmapid="17" startx="1" starty="1" startlevel="7" action="exit_north" savelocation="false" message="into Dungeon Deceit" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="17" startx="1" starty="1" startlevel="7" exitDirection="NORTH" savelocation="false" message="into Dungeon Deceit" transport="foot">
 			<retroActiveDest x="240" y="73" mapid="0" />
 		</portal>
 		<!-- Shame -->
-		<portal x="1" y="1" z="7" destmapid="22" startx="1" starty="1" startlevel="7" action="exit_east" savelocation="false" message="into Dungeon Shame" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="22" startx="1" starty="1" startlevel="7" exitDirection="EAST" savelocation="false" message="into Dungeon Shame" transport="foot">
 			<retroActiveDest x="58" y="102" mapid="0" />
 		</portal>
 		<!-- Hythloth -->
-		<portal x="1" y="1" z="7" destmapid="23" startx="1" starty="1" startlevel="7" action="exit_south" savelocation="false" message="into Dungeon Hythloth" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="23" startx="1" starty="1" startlevel="7" exitDirection="SOUTH" savelocation="false" message="into Dungeon Hythloth" transport="foot">
 			<retroActiveDest x="239" y="240" mapid="0" />
 		</portal>
 		<!-- Wrong -->
-		<portal x="1" y="1" z="7" destmapid="20" startx="1" starty="1" startlevel="7" action="exit_west" savelocation="false" message="into Dungeon Wrong" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="20" startx="1" starty="1" startlevel="7" exitDirection="WEST" savelocation="false" message="into Dungeon Wrong" transport="foot">
 			<retroActiveDest x="126" y="20" mapid="0" />
 		</portal>
 		<label name="bluestone" x="1" y="7" z="6" />
@@ -238,19 +238,19 @@
 	<map id="18" type="dungeon" fname="despise.dng" width="8" height="8" levels="8" borderbehavior="wrap" firstperson="true" music="7" tileset="dungeon" tilemap="dungeon">
 		<dungeon name="Despise" rooms="16" />
 		<!-- Despise -->
-		<portal x="3" y="3" z="7" destmapid="18" startx="3" starty="3" startlevel="7" action="exit_north" savelocation="false" message="into Dungeon Despise" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="18" startx="3" starty="3" startlevel="7" exitDirection="NORTH" savelocation="false" message="into Dungeon Despise" transport="foot">
 			<retroActiveDest x="91" y="67" mapid="0" />
 		</portal>
 		<!-- Wrong -->
-		<portal x="3" y="3" z="7" destmapid="20" startx="3" starty="3" startlevel="7" action="exit_east" savelocation="false" message="into Dungeon Wrong" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="20" startx="3" starty="3" startlevel="7" exitDirection="EAST" savelocation="false" message="into Dungeon Wrong" transport="foot">
 			<retroActiveDest x="126" y="20" mapid="0" />
 		</portal>
 		<!-- Hythloth -->
-		<portal x="3" y="3" z="7" destmapid="23" startx="3" starty="3" startlevel="7" action="exit_south" savelocation="false" message="into Dungeon Hythloth" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="23" startx="3" starty="3" startlevel="7" exitDirection="SOUTH" savelocation="false" message="into Dungeon Hythloth" transport="foot">
 			<retroActiveDest x="239" y="240" mapid="0" />
 		</portal>
 		<!-- Covetous -->
-		<portal x="3" y="3" z="7" destmapid="21" startx="3" starty="3" startlevel="7" action="exit_west" savelocation="false" message="into Dungeon Covetous" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="21" startx="3" starty="3" startlevel="7" exitDirection="WEST" savelocation="false" message="into Dungeon Covetous" transport="foot">
 			<retroActiveDest x="156" y="27" mapid="0" />
 		</portal>
 		<label name="yellowstone" x="3" y="5" z="4" />
@@ -258,19 +258,19 @@
 	<map id="19" type="dungeon" fname="destard.dng" width="8" height="8" levels="8" borderbehavior="wrap" firstperson="true" music="7" tileset="dungeon" tilemap="dungeon">
 		<dungeon name="Destard" rooms="16" />
 		<!-- Destard -->
-		<portal x="7" y="7" z="7" destmapid="19" startx="7" starty="7" startlevel="7" action="exit_north" savelocation="false" message="into Dungeon Destard" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="19" startx="7" starty="7" startlevel="7" exitDirection="NORTH" savelocation="false" message="into Dungeon Destard" transport="foot">
 			<retroActiveDest x="72" y="168" mapid="0" />
 		</portal>
 		<!-- Covetous -->
-		<portal x="7" y="7" z="7" destmapid="21" startx="7" starty="7" startlevel="7" action="exit_east" savelocation="false" message="into Dungeon Covetous" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="21" startx="7" starty="7" startlevel="7" exitDirection="EAST" savelocation="false" message="into Dungeon Covetous" transport="foot">
 			<retroActiveDest x="156" y="27" mapid="0" />
 		</portal>
 		<!-- Hythloth -->
-		<portal x="7" y="7" z="7" destmapid="23" startx="7" starty="7" startlevel="7" action="exit_south" savelocation="false" message="into Dungeon Hythloth" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="23" startx="7" starty="7" startlevel="7" exitDirection="SOUTH" savelocation="false" message="into Dungeon Hythloth" transport="foot">
 			<retroActiveDest x="239" y="240" mapid="0" />
 		</portal>
 		<!-- Shame -->
-		<portal x="7" y="7" z="7" destmapid="22" startx="7" starty="7" startlevel="7" action="exit_west" savelocation="false" message="into Dungeon Shame" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="22" startx="7" starty="7" startlevel="7" exitDirection="WEST" savelocation="false" message="into Dungeon Shame" transport="foot">
 			<retroActiveDest x="58" y="102" mapid="0" />
 		</portal>
 		<label name="redstone" x="3" y="7" z="6" />
@@ -278,35 +278,35 @@
 	<map id="20" type="dungeon" fname="wrong.dng" width="8" height="8" levels="8" borderbehavior="wrap" firstperson="true" music="7" tileset="dungeon" tilemap="dungeon">
 		<dungeon name="Wrong" rooms="16" />
 		<!-- Deceit -->
-		<portal x="1" y="1" z="7" destmapid="17" startx="1" starty="1" startlevel="7" action="exit_north" savelocation="false" message="into Dungeon Deceit" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="17" startx="1" starty="1" startlevel="7" exitDirection="NORTH" savelocation="false" message="into Dungeon Deceit" transport="foot">
 			<retroActiveDest x="240" y="73" mapid="0" />
 		</portal>
 		<!-- Shame -->
-		<portal x="1" y="1" z="7" destmapid="22" startx="1" starty="1" startlevel="7" action="exit_east" savelocation="false" message="into Dungeon Shame" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="22" startx="1" starty="1" startlevel="7" exitDirection="EAST" savelocation="false" message="into Dungeon Shame" transport="foot">
 			<retroActiveDest x="58" y="102" mapid="0" />
 		</portal>
 		<!-- Hythloth -->
-		<portal x="1" y="1" z="7" destmapid="23" startx="1" starty="1" startlevel="7" action="exit_south" savelocation="false" message="into Dungeon Hythloth" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="23" startx="1" starty="1" startlevel="7" exitDirection="SOUTH" savelocation="false" message="into Dungeon Hythloth" transport="foot">
 			<retroActiveDest x="239" y="240" mapid="0" />
 		</portal>
 		<!-- Wrong -->
-		<portal x="1" y="1" z="7" destmapid="20" startx="1" starty="1" startlevel="7" action="exit_west" savelocation="false" message="into Dungeon Wrong" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="20" startx="1" starty="1" startlevel="7" exitDirection="WEST" savelocation="false" message="into Dungeon Wrong" transport="foot">
 			<retroActiveDest x="126" y="20" mapid="0" />
 		</portal>
 		<!-- Despise -->
-		<portal x="3" y="3" z="7" destmapid="18" startx="3" starty="3" startlevel="7" action="exit_north" savelocation="false" message="into Dungeon Despise" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="18" startx="3" starty="3" startlevel="7" exitDirection="NORTH" savelocation="false" message="into Dungeon Despise" transport="foot">
 			<retroActiveDest x="91" y="67" mapid="0" />
 		</portal>
 		<!-- Wrong -->
-		<portal x="3" y="3" z="7" destmapid="20" startx="3" starty="3" startlevel="7" action="exit_east" savelocation="false" message="into Dungeon Wrong" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="20" startx="3" starty="3" startlevel="7" exitDirection="EAST" savelocation="false" message="into Dungeon Wrong" transport="foot">
 			<retroActiveDest x="126" y="20" mapid="0" />
 		</portal>
 		<!-- Hythloth -->
-		<portal x="3" y="3" z="7" destmapid="23" startx="3" starty="3" startlevel="7" action="exit_south" savelocation="false" message="into Dungeon Hythloth" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="23" startx="3" starty="3" startlevel="7" exitDirection="SOUTH" savelocation="false" message="into Dungeon Hythloth" transport="foot">
 			<retroActiveDest x="239" y="240" mapid="0" />
 		</portal>
 		<!-- Covetous -->
-		<portal x="3" y="3" z="7" destmapid="21" startx="3" starty="3" startlevel="7" action="exit_west" savelocation="false" message="into Dungeon Covetous" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="21" startx="3" starty="3" startlevel="7" exitDirection="WEST" savelocation="false" message="into Dungeon Covetous" transport="foot">
 			<retroActiveDest x="156" y="27" mapid="0" />
 		</portal>
 		<label name="greenstone" x="6" y="3" z="7" />
@@ -314,35 +314,35 @@
 	<map id="21" type="dungeon" fname="covetous.dng" width="8" height="8" levels="8" borderbehavior="wrap" firstperson="true" music="7" tileset="dungeon" tilemap="dungeon">
 		<dungeon name="Covetous" rooms="16" />
 		<!-- Despise -->
-		<portal x="3" y="3" z="7" destmapid="18" startx="3" starty="3" startlevel="7" action="exit_north" savelocation="false" message="into Dungeon Despise" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="18" startx="3" starty="3" startlevel="7" exitDirection="NORTH" savelocation="false" message="into Dungeon Despise" transport="foot">
 			<retroActiveDest x="91" y="67" mapid="0" />
 		</portal>
 		<!-- Wrong -->
-		<portal x="3" y="3" z="7" destmapid="20" startx="3" starty="3" startlevel="7" action="exit_east" savelocation="false" message="into Dungeon Wrong" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="20" startx="3" starty="3" startlevel="7" exitDirection="EAST" savelocation="false" message="into Dungeon Wrong" transport="foot">
 			<retroActiveDest x="126" y="20" mapid="0" />
 		</portal>
 		<!-- Hythloth -->
-		<portal x="3" y="3" z="7" destmapid="23" startx="3" starty="3" startlevel="7" action="exit_south" savelocation="false" message="into Dungeon Hythloth" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="23" startx="3" starty="3" startlevel="7" exitDirection="SOUTH" savelocation="false" message="into Dungeon Hythloth" transport="foot">
 			<retroActiveDest x="239" y="240" mapid="0" />
 		</portal>
 		<!-- Covetous -->
-		<portal x="3" y="3" z="7" destmapid="21" startx="3" starty="3" startlevel="7" action="exit_west" savelocation="false" message="into Dungeon Covetous" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="21" startx="3" starty="3" startlevel="7" exitDirection="WEST" savelocation="false" message="into Dungeon Covetous" transport="foot">
 			<retroActiveDest x="156" y="27" mapid="0" />
 		</portal>
 		<!-- Destard -->
-		<portal x="7" y="7" z="7" destmapid="19" startx="7" starty="7" startlevel="7" action="exit_north" savelocation="false" message="into Dungeon Destard" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="19" startx="7" starty="7" startlevel="7" exitDirection="NORTH" savelocation="false" message="into Dungeon Destard" transport="foot">
 			<retroActiveDest x="72" y="168" mapid="0" />
 		</portal>
 		<!-- Covetous -->
-		<portal x="7" y="7" z="7" destmapid="21" startx="7" starty="7" startlevel="7" action="exit_east" savelocation="false" message="into Dungeon Covetous" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="21" startx="7" starty="7" startlevel="7" exitDirection="EAST" savelocation="false" message="into Dungeon Covetous" transport="foot">
 			<retroActiveDest x="156" y="27" mapid="0" />
 		</portal>
 		<!-- Hythloth -->
-		<portal x="7" y="7" z="7" destmapid="23" startx="7" starty="7" startlevel="7" action="exit_south" savelocation="false" message="into Dungeon Hythloth" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="23" startx="7" starty="7" startlevel="7" exitDirection="SOUTH" savelocation="false" message="into Dungeon Hythloth" transport="foot">
 			<retroActiveDest x="239" y="240" mapid="0" />
 		</portal>
 		<!-- Shame -->
-		<portal x="7" y="7" z="7" destmapid="22" startx="7" starty="7" startlevel="7" action="exit_west" savelocation="false" message="into Dungeon Shame" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="22" startx="7" starty="7" startlevel="7" exitDirection="WEST" savelocation="false" message="into Dungeon Shame" transport="foot">
 			<retroActiveDest x="58" y="102" mapid="0" />
 		</portal>
 		<label name="orangestone" x="7" y="1" z="6" />
@@ -350,35 +350,35 @@
 	<map id="22" type="dungeon" fname="shame.dng" width="8" height="8" levels="8" borderbehavior="wrap" firstperson="true" music="7" tileset="dungeon" tilemap="dungeon">
 		<dungeon name="Shame" rooms="16" />
 		<!-- Deceit -->
-		<portal x="1" y="1" z="7" destmapid="17" startx="1" starty="1" startlevel="7" action="exit_north" savelocation="false" message="into Dungeon Deceit" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="17" startx="1" starty="1" startlevel="7" exitDirection="NORTH" savelocation="false" message="into Dungeon Deceit" transport="foot">
 			<retroActiveDest x="240" y="73" mapid="0" />
 		</portal>
 		<!-- Shame -->
-		<portal x="1" y="1" z="7" destmapid="22" startx="1" starty="1" startlevel="7" action="exit_east" savelocation="false" message="into Dungeon Shame" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="22" startx="1" starty="1" startlevel="7" exitDirection="EAST" savelocation="false" message="into Dungeon Shame" transport="foot">
 			<retroActiveDest x="58" y="102" mapid="0" />
 		</portal>
 		<!-- Hythloth -->
-		<portal x="1" y="1" z="7" destmapid="23" startx="1" starty="1" startlevel="7" action="exit_south" savelocation="false" message="into Dungeon Hythloth" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="23" startx="1" starty="1" startlevel="7" exitDirection="SOUTH" savelocation="false" message="into Dungeon Hythloth" transport="foot">
 			<retroActiveDest x="239" y="240" mapid="0" />
 		</portal>
 		<!-- Wrong -->
-		<portal x="1" y="1" z="7" destmapid="20" startx="1" starty="1" startlevel="7" action="exit_west" savelocation="false" message="into Dungeon Wrong" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="20" startx="1" starty="1" startlevel="7" exitDirection="WEST" savelocation="false" message="into Dungeon Wrong" transport="foot">
 			<retroActiveDest x="126" y="20" mapid="0" />
 		</portal>
 		<!-- Destard -->
-		<portal x="7" y="7" z="7" destmapid="19" startx="7" starty="7" startlevel="7" action="exit_north" savelocation="false" message="into Dungeon Destard" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="19" startx="7" starty="7" startlevel="7" exitDirection="NORTH" savelocation="false" message="into Dungeon Destard" transport="foot">
 			<retroActiveDest x="72" y="168" mapid="0" />
 		</portal>
 		<!-- Covetous -->
-		<portal x="7" y="7" z="7" destmapid="21" startx="7" starty="7" startlevel="7" action="exit_east" savelocation="false" message="into Dungeon Covetous" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="21" startx="7" starty="7" startlevel="7" exitDirection="EAST" savelocation="false" message="into Dungeon Covetous" transport="foot">
 			<retroActiveDest x="156" y="27" mapid="0" />
 		</portal>
 		<!-- Hythloth -->
-		<portal x="7" y="7" z="7" destmapid="23" startx="7" starty="7" startlevel="7" action="exit_south" savelocation="false" message="into Dungeon Hythloth" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="23" startx="7" starty="7" startlevel="7" exitDirection="SOUTH" savelocation="false" message="into Dungeon Hythloth" transport="foot">
 			<retroActiveDest x="239" y="240" mapid="0" />
 		</portal>
 		<!-- Shame -->
-		<portal x="7" y="7" z="7" destmapid="22" startx="7" starty="7" startlevel="7" action="exit_west" savelocation="false" message="into Dungeon Shame" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="22" startx="7" starty="7" startlevel="7" exitDirection="WEST" savelocation="false" message="into Dungeon Shame" transport="foot">
 			<retroActiveDest x="58" y="102" mapid="0" />
 		</portal>
 		<label name="purplestone" x="7" y="7" z="1" />
@@ -386,51 +386,51 @@
 	<map id="23" type="dungeon" fname="hythloth.dng" width="8" height="8" levels="8" borderbehavior="wrap" firstperson="true" music="7" tileset="dungeon" tilemap="dungeon">
 		<dungeon name="Hythloth" rooms="16" />
 		<!-- Deceit -->
-		<portal x="1" y="1" z="7" destmapid="17" startx="1" starty="1" startlevel="7" action="exit_north" savelocation="false" message="into Dungeon Deceit" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="17" startx="1" starty="1" startlevel="7" exitDirection="NORTH" savelocation="false" message="into Dungeon Deceit" transport="foot">
 			<retroActiveDest x="240" y="73" mapid="0" />
 		</portal>
 		<!-- Shame -->
-		<portal x="1" y="1" z="7" destmapid="22" startx="1" starty="1" startlevel="7" action="exit_east" savelocation="false" message="into Dungeon Shame" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="22" startx="1" starty="1" startlevel="7" exitDirection="EAST" savelocation="false" message="into Dungeon Shame" transport="foot">
 			<retroActiveDest x="58" y="102" mapid="0" />
 		</portal>
 		<!-- Hythloth -->
-		<portal x="1" y="1" z="7" destmapid="23" startx="1" starty="1" startlevel="7" action="exit_south" savelocation="false" message="into Dungeon Hythloth" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="23" startx="1" starty="1" startlevel="7" exitDirection="SOUTH" savelocation="false" message="into Dungeon Hythloth" transport="foot">
 			<retroActiveDest x="239" y="240" mapid="0" />
 		</portal>
 		<!-- Wrong -->
-		<portal x="1" y="1" z="7" destmapid="20" startx="1" starty="1" startlevel="7" action="exit_west" savelocation="false" message="into Dungeon Wrong" transport="foot">
+		<portal x="1" y="1" z="7" destmapid="20" startx="1" starty="1" startlevel="7" exitDirection="WEST" savelocation="false" message="into Dungeon Wrong" transport="foot">
 			<retroActiveDest x="126" y="20" mapid="0" />
 		</portal>
 		<!-- Despise -->
-		<portal x="3" y="3" z="7" destmapid="18" startx="3" starty="3" startlevel="7" action="exit_north" savelocation="false" message="into Dungeon Despise" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="18" startx="3" starty="3" startlevel="7" exitDirection="NORTH" savelocation="false" message="into Dungeon Despise" transport="foot">
 			<retroActiveDest x="91" y="67" mapid="0" />
 		</portal>
 		<!-- Wrong -->
-		<portal x="3" y="3" z="7" destmapid="20" startx="3" starty="3" startlevel="7" action="exit_east" savelocation="false" message="into Dungeon Wrong" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="20" startx="3" starty="3" startlevel="7" exitDirection="EAST" savelocation="false" message="into Dungeon Wrong" transport="foot">
 			<retroActiveDest x="126" y="20" mapid="0" />
 		</portal>
 		<!-- Hythloth -->
-		<portal x="3" y="3" z="7" destmapid="23" startx="3" starty="3" startlevel="7" action="exit_south" savelocation="false" message="into Dungeon Hythloth" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="23" startx="3" starty="3" startlevel="7" exitDirection="SOUTH" savelocation="false" message="into Dungeon Hythloth" transport="foot">
 			<retroActiveDest x="239" y="240" mapid="0" />
 		</portal>
 		<!-- Covetous -->
-		<portal x="3" y="3" z="7" destmapid="21" startx="3" starty="3" startlevel="7" action="exit_west" savelocation="false" message="into Dungeon Covetous" transport="foot">
+		<portal x="3" y="3" z="7" destmapid="21" startx="3" starty="3" startlevel="7" exitDirection="WEST" savelocation="false" message="into Dungeon Covetous" transport="foot">
 			<retroActiveDest x="156" y="27" mapid="0" />
 		</portal>
 		<!-- Destard -->
-		<portal x="7" y="7" z="7" destmapid="19" startx="7" starty="7" startlevel="7" action="exit_north" savelocation="false" message="into Dungeon Destard" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="19" startx="7" starty="7" startlevel="7" exitDirection="NORTH" savelocation="false" message="into Dungeon Destard" transport="foot">
 			<retroActiveDest x="72" y="168" mapid="0" />
 		</portal>
 		<!-- Covetous -->
-		<portal x="7" y="7" z="7" destmapid="21" startx="7" starty="7" startlevel="7" action="exit_east" savelocation="false" message="into Dungeon Covetous" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="21" startx="7" starty="7" startlevel="7" exitDirection="EAST" savelocation="false" message="into Dungeon Covetous" transport="foot">
 			<retroActiveDest x="156" y="27" mapid="0" />
 		</portal>
 		<!-- Hythloth -->
-		<portal x="7" y="7" z="7" destmapid="23" startx="7" starty="7" startlevel="7" action="exit_south" savelocation="false" message="into Dungeon Hythloth" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="23" startx="7" starty="7" startlevel="7" exitDirection="SOUTH" savelocation="false" message="into Dungeon Hythloth" transport="foot">
 			<retroActiveDest x="239" y="240" mapid="0" />
 		</portal>
 		<!-- Shame -->
-		<portal x="7" y="7" z="7" destmapid="22" startx="7" starty="7" startlevel="7" action="exit_west" savelocation="false" message="into Dungeon Shame" transport="foot">
+		<portal x="7" y="7" z="7" destmapid="22" startx="7" starty="7" startlevel="7" exitDirection="WEST" savelocation="false" message="into Dungeon Shame" transport="foot">
 			<retroActiveDest x="58" y="102" mapid="0" />
 		</portal>
 	</map>

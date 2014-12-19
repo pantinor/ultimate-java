@@ -371,18 +371,24 @@ public class CombatScreen extends BaseScreen {
 				
 		if (next.x > combatMap.getWidth()-1 || next.x < 0 || next.y > combatMap.getHeight()-1 || next.y < 0) {
 		    
-			/* active player left/fled combat */
-			PartyMember ap = party.getActivePartyMember();
-			ap.fled = true;
-			Sounds.play(Sound.FLEE);
-			
-			if (party.getAbleCombatPlayers() == 0) {
-				end();
+			if (combatMap.getType() == MapType.dungeon && !party.isOKtoExitDirection(dir)) {
+				log("Cannot exit in that direction!");
+				Sounds.play(Sound.BLOCKED);
 				return false;
 			} else {
-				int ni = party.getNextActiveIndex();
-				Creature nextActivePlayer = party.getMember(ni).combatCr; 
-				cursor.setPos(nextActivePlayer.currentPos);
+				PartyMember ap = party.getActivePartyMember();
+				ap.fled = true;
+				ap.combatMapExitDirection = dir;
+				Sounds.play(Sound.FLEE);
+				
+				if (party.getAbleCombatPlayers() == 0) {
+					end();
+					return false;
+				} else {
+					int ni = party.getNextActiveIndex();
+					Creature nextActivePlayer = party.getMember(ni).combatCr; 
+					cursor.setPos(nextActivePlayer.currentPos);
+				}
 			}
 			
 		} else {
@@ -471,11 +477,10 @@ public class CombatScreen extends BaseScreen {
 	public void end() {
 		
 		boolean isWon = combatMap.getCreatures().size() == 0;
-		returnScreen.endCombat(isWon);
+		returnScreen.endCombat(isWon, combatMap);
 		
 		combatMap.setCombatPlayers(null);
 		party.reset();
-		
 	}
 	
 
@@ -639,13 +644,13 @@ public class CombatScreen extends BaseScreen {
     	
     	switch (effect) {
 		case ELECTRICITY:
-	        Sounds.play(Sound.PC_STRUCK);
+	        Sounds.play(Sound.LIGHTNING);
 	        log("Electrified!");
 	        dealDamage(attacker, defender);
 			break;
 		case FIRE:
 		case LAVA:
-	        Sounds.play(Sound.PC_STRUCK);
+	        Sounds.play(Sound.FIREBALL);
 	        log("Fiery Hit!");
 	        dealDamage(attacker, defender);
 			break;
@@ -808,12 +813,12 @@ public class CombatScreen extends BaseScreen {
 
 	            if (target != null) {
 	                if (creature.stealsFood() && rand.nextInt(4) == 0) {
-	                	Sounds.play(Sound.EVADE);
+	                	Sounds.play(Sound.NEGATIVE_EFFECT);
 	                    party.adjustGold(-(rand.nextInt(0x3f)));
 	                }
 	            
 	                if (creature.stealsGold()) {
-	                	Sounds.play(Sound.EVADE);
+	                	Sounds.play(Sound.NEGATIVE_EFFECT);
 	                    party.adjustFood(-2500);
 	                }
 	            }

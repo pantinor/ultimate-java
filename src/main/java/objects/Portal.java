@@ -3,6 +3,7 @@ package objects;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ultima.Constants;
 
@@ -12,11 +13,12 @@ public class Portal implements Constants {
 	private String name;
 	private int x;
 	private int y;
+	private int z;
+	private int destmapid;
 	private int startx;
 	private int starty;
-	private int destmapid;
 	private int startlevel;
-	private String action;
+	private Direction exitDirection;
 	private String condition;
 	private boolean savelocation;
 	private String message;
@@ -33,6 +35,10 @@ public class Portal implements Constants {
 		return y;
 	}
 	@XmlAttribute
+	public int getZ() {
+		return z;
+	}
+	@XmlAttribute
 	public int getDestmapid() {
 		return destmapid;
 	}
@@ -41,9 +47,10 @@ public class Portal implements Constants {
 	public int getStartlevel() {
 		return startlevel;
 	}
-	@XmlAttribute
-	public String getAction() {
-		return action;
+	@XmlAttribute(name="exitDirection")
+	@XmlJavaTypeAdapter(DirectionTypeAdapter.class)
+	public Direction getExitDirection() {
+		return exitDirection;
 	}
 	@XmlAttribute
 	public String getCondition() {
@@ -74,6 +81,9 @@ public class Portal implements Constants {
 	public void setY(int y) {
 		this.y = y;
 	}
+	public void setZ(int z) {
+		this.z = z;
+	}
 	public void setDestmapid(int destmapid) {
 		this.destmapid = destmapid;
 	}
@@ -81,8 +91,8 @@ public class Portal implements Constants {
 	public void setStartlevel(int startlevel) {
 		this.startlevel = startlevel;
 	}
-	public void setAction(String action) {
-		this.action = action;
+	public void setExitDirection(Direction dir) {
+		this.exitDirection = dir;
 	}
 	public void setCondition(String condition) {
 		this.condition = condition;

@@ -364,6 +364,17 @@ public interface Constants {
 		    }
 		    return null;
 		}
+		
+		public static Direction getByValue(int val) {
+			Direction ret = Direction.WEST;
+			for (Direction d : Direction.values()) {
+				if (val == d.getVal()) {
+					ret = d;
+					break;
+				}
+			}
+			return ret;
+		}
 
 	};
 	
@@ -1142,6 +1153,20 @@ public interface Constants {
 		}
 
 	}
+	
+    public enum PartyEvent {
+        GENERIC,
+        LOST_EIGHTH,
+        ADVANCED_LEVEL,
+        STARVING,
+        POISON_DAMAGE,
+        TRANSPORT_CHANGED,
+        PLAYER_KILLED,
+        ACTIVE_PLAYER_CHANGED,
+        MEMBER_JOINED,
+        PARTY_REVIVED,
+        INVENTORY_ADDED,
+    };
 
 	public enum CreatureMovementAttrib {
 		STATIONARY(0x1),
@@ -1234,7 +1259,7 @@ public interface Constants {
 		cyclops(43),
 		wisp(44),
 		evil_mage(45),
-		lich(46),
+		liche(46),
 		lava_lizard(47),
 		zorn(48),
 		daemon(49),

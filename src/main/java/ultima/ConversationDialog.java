@@ -192,7 +192,7 @@ public class ConversationDialog extends Window implements Constants {
 					}
 				}
 				
-				if (playSound) Sounds.play(Sound.MOONGATE);
+				if (playSound) Sounds.play(Sound.MAGIC);
 								
 			} else {
 				scrollPane.add("You meet " + person.getConversation().getDescription().toLowerCase() + ".");

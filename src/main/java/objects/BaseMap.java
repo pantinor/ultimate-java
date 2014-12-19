@@ -90,13 +90,16 @@ public class BaseMap implements Constants {
 		return null;
 	}
 	
-	public Portal getPortal(Maps map) {
+	public List<Portal> getPortals(int x, int y, int z) {
 		if (portals == null) return null;
+		List<Portal> ps = new ArrayList<Portal>();
 		for (Portal p : portals) {
-			if (p.getDestmapid() == map.getId()) 
-				return p;
+			if (p.getX() == x && p.getY() == y && p.getZ() == z) {
+				ps.add(p);
+			}
 		}
-		return null;
+		if (ps.size() == 0) return null;
+		return ps;
 	}
 	
 	@XmlAttribute

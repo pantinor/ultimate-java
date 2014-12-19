@@ -75,7 +75,6 @@ public class GameScreen extends BaseScreen {
 	Random rand = new Random();
 	
 	GameTimer gameTimer;
-	boolean loadDungeonFromSavedGame = false;
 	
 	public GameScreen(Ultima4 mainGame) {
 		
@@ -127,24 +126,6 @@ public class GameScreen extends BaseScreen {
 				        
 			sip = new SecondaryInputProcessor(this, stage);
 
-			
-			context = new Context();
-
-			SaveGame sg = new SaveGame();
-			sg.read(PARTY_SAV_BASE_FILENAME);
-			
-			Party party = new Party(sg);
-			context.setParty(party);
-			
-			phase = sg.trammelphase * 3;
-		
-			//loadNextMap(Maps.WORLD, 233, 234, 0,0,0,false);
-			loadNextMap(Maps.WORLD, sg.x, sg.y, 0,0,0,false);
-			
-			if (Maps.get(sg.location) != Maps.WORLD) {
-				loadDungeonFromSavedGame = true;
-			}
-
 			gameTimer = new GameTimer();
 			
 		} catch(Exception e) {
@@ -159,10 +140,32 @@ public class GameScreen extends BaseScreen {
 		gameTimer.run = true;
 		new Thread(gameTimer).start();
 		
-		if (loadDungeonFromSavedGame) {
-			SaveGame sg = context.getParty().getSaveGame();
-			loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.dngx, sg.dngy, sg.dnglevel, true);
-			loadDungeonFromSavedGame = false;
+		//load save game if initializing
+		if (context == null) {
+			context = new Context();
+			SaveGame sg = new SaveGame();
+			try {
+				sg.read(PARTY_SAV_BASE_FILENAME);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			Party party = new Party(sg);
+			context.setParty(party);
+			
+			party.join(NpcDefaults.Geoffrey.name());
+			party.join(NpcDefaults.Shamino.name());
+			party.join(NpcDefaults.Katrina.name());
+		
+			//load the surface world first
+			loadNextMap(Maps.WORLD, sg.x, sg.y);
+			//loadNextMap(Maps.WORLD, 85, 106, 0,0,0,false);
+
+			//load the dungeon if save game starts in dungeon
+			if (Maps.get(sg.location) != Maps.WORLD) {
+				loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.dngx, sg.dngy, sg.dnglevel, Direction.getByValue(sg.orientation+1), true);
+				//loadNextMap(Maps.DESPISE, 0, 0, 1, 3, 7, Direction.EAST, true);
+			}
 		}
 	}
 	
@@ -170,8 +173,12 @@ public class GameScreen extends BaseScreen {
 	public void hide() {
 		gameTimer.run = false;
 	}
+	
+	public void loadNextMap(Maps m, int x, int y) {
+		loadNextMap(m, x, y, 0, 0, 0, null, false);
+	}
 		
-	public void loadNextMap(Maps m, int x, int y, int dngx, int dngy, int dngLevel, boolean restoreSG) {
+	public void loadNextMap(Maps m, int x, int y, int dngx, int dngy, int dngLevel, Direction orientation, boolean restoreSG) {
 		
 		log("Entering " + m.getLabel() + "!");
 		
@@ -180,7 +187,7 @@ public class GameScreen extends BaseScreen {
 			DungeonScreen sc = new DungeonScreen(mainGame, stage, this, m);
 			
 			if (restoreSG) {
-				sc.restoreSaveGameLocation(dngx, dngy, dngLevel);
+				sc.restoreSaveGameLocation(dngx, dngy, dngLevel, orientation);
 			}
 			
 			mainGame.setScreen(sc);
@@ -227,7 +234,8 @@ public class GameScreen extends BaseScreen {
 
 	}
 	
-	public void endCombat(boolean isWon) {
+	@Override
+	public void endCombat(boolean isWon, BaseMap combatMap) {
 		
 		mainGame.setScreen(this);
 		
@@ -275,7 +283,7 @@ public class GameScreen extends BaseScreen {
 	            } else if (!context.getParty().isAnyoneAlive()) {
 	            	//death scene
 	            	mainGame.setScreen(new DeathScreen(mainGame, this, context.getParty()));
-	            	loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y, 0, 0, 0, false);
+	            	loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
 	            }
 			}
 			
@@ -404,19 +412,19 @@ public class GameScreen extends BaseScreen {
 		} else if (keycode == Keys.K || keycode == Keys.D) {
 			if (ct.climbable()) {
 				Portal p = context.getCurrentMap().getPortal(v.x, v.y);
-				loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty(), 0, 0, 0, false);
+				loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
 				log(p.getMessage());
 			}
 		} else if (keycode == Keys.E) {
 			//if (ct.enterable()) {
 				Portal p = context.getCurrentMap().getPortal(v.x, v.y);
 				if (p != null) {
-					loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty(), 0, 0, 0, false);
+					loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
 				}
 			//}
 		} else if (keycode == Keys.Q) {
 			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
-				context.saveGame(v.x,v.y,0,Maps.WORLD);
+				context.saveGame(v.x,v.y,0,null,Maps.WORLD);
 				log("Saved Game.");
 			} else {
 				log("Cannot save inside!");
@@ -467,7 +475,7 @@ public class GameScreen extends BaseScreen {
 		if (bm.getBorderbehavior() == MapBorderBehavior.exit) {
 			if (nextTile.x > bm.getWidth()-1 || nextTile.x < 0 || nextTile.y > bm.getHeight()-1 || nextTile.y < 0) {
 				Portal p = Maps.WORLD.getMap().getPortal(bm.getId());
-				loadNextMap(Maps.WORLD, p.getX(), p.getY(), 0, 0, 0, false);
+				loadNextMap(Maps.WORLD, p.getX(), p.getY());
 				return false;
 			}
 		}
@@ -801,16 +809,16 @@ public class GameScreen extends BaseScreen {
 
 			if (trapType == TileEffect.FIRE) {
 				log("Acid Trap!");
-				Sounds.play(Sound.PC_STRUCK);
+				Sounds.play(Sound.ACID);
 			} else if (trapType == TileEffect.POISON) {
 				log("Poison Trap!");
 				Sounds.play(Sound.POISON_EFFECT);
 			} else if (trapType == TileEffect.SLEEP) {
 				log("Sleep Trap!");
-				Sounds.play(Sound.PC_STRUCK);
+				Sounds.play(Sound.SLEEP);
 			} else if (trapType == TileEffect.LAVA) {
 				log("Bomb Trap!");
-				Sounds.play(Sound.PC_STRUCK);
+				Sounds.play(Sound.BOOM);
 			}
 			
 			// player is null when using the Open spell (immune to traps)

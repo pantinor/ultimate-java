@@ -2,15 +2,14 @@ package ultima;
 
 import java.util.Random;
 
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.math.Vector3;
-
 import objects.Aura;
 import objects.BaseMap;
 import objects.Party;
 import objects.Portal;
 import objects.Tile;
 import ultima.Constants.Direction;
+
+import com.badlogic.gdx.maps.tiled.TiledMap;
 
 
 public class Context implements Constants {
@@ -119,7 +118,7 @@ public class Context implements Constants {
 		this.party = party;
 	}
 
-    public void saveGame(float x, float y, float z, Maps map) {
+    public void saveGame(float x, float y, float z, Direction orientation, Maps map) {
     	
     	if (map == Maps.WORLD) {
     		party.getSaveGame().x = (int)x;
@@ -127,13 +126,15 @@ public class Context implements Constants {
 			party.getSaveGame().dngx = 0;
 			party.getSaveGame().dngy = 0;
 	    	party.getSaveGame().dnglevel = 0xFFFF;
+    		party.getSaveGame().orientation = 0;
     	} else {
-    		Portal p = Maps.WORLD.getMap().getPortal(map);
+    		Portal p = Maps.WORLD.getMap().getPortal(map.getId());
     		party.getSaveGame().x = p.getX();
     		party.getSaveGame().y = p.getY();
     		party.getSaveGame().dngx = (int)x;
     		party.getSaveGame().dngy = (int)y;
     		party.getSaveGame().dnglevel = (int)z;
+    		party.getSaveGame().orientation = orientation.getVal()-1;
     	}
 
 		party.getSaveGame().location = map.getId();
