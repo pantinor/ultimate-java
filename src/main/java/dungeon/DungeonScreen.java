@@ -19,8 +19,6 @@ import ultima.CombatScreen;
 import ultima.DeathScreen;
 import ultima.GameScreen;
 import ultima.Ultima4;
-import ultima.Constants.KarmaAction;
-import ultima.Constants.Maps;
 import util.DungeonRoomTiledMapLoader;
 
 import com.badlogic.gdx.Gdx;
@@ -122,9 +120,7 @@ public class DungeonScreen extends BaseScreen {
 
 	
 	public void init() {
-		
-
-		
+				
 		assets = new AssetManager();
 		assets.load("assets/graphics/dirt.png", Texture.class);
 		assets.load("assets/graphics/rock.png", Texture.class);
@@ -265,6 +261,13 @@ public class DungeonScreen extends BaseScreen {
 		}
 				
 		
+	}
+	
+	public void restoreSaveGameLocation(int x, int y, int z) {
+		currentPos = new Vector3(x+.5f,.5f,y+.5f);
+		cam.position.set(currentPos);
+		cam.lookAt(currentPos.x+1, currentPos.y, currentPos.z);
+		currentLevel = z;
 	}
 	
 	@Override
@@ -551,8 +554,8 @@ public class DungeonScreen extends BaseScreen {
                 log("Battle is lost!");
                 GameScreen.context.getParty().adjustKarma(KarmaAction.FLED_EVIL);
             } else if (!GameScreen.context.getParty().isAnyoneAlive()) {
-            	mainGame.setScreen(new DeathScreen(mainGame, this, GameScreen.context.getParty()));
-            	gameScreen.loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
+            	mainGame.setScreen(new DeathScreen(mainGame, gameScreen, GameScreen.context.getParty()));
+            	gameScreen.loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y, 0, 0, 0, false);
             }
 		}
 	}
@@ -690,7 +693,12 @@ public class DungeonScreen extends BaseScreen {
 			//descend
 			currentLevel ++;
 			if (currentLevel > DUNGEON_MAP) currentLevel = DUNGEON_MAP;
+			
+		} else if (keycode == Keys.Q) {
+			GameScreen.context.saveGame(x,y,currentLevel,dngMap);
+			log("Saved Game.");
 		}
+			
 			
 		return false;
 	}
@@ -714,21 +722,7 @@ public class DungeonScreen extends BaseScreen {
 	
 	
 	public class DungeonRoom {
-		
-//		0x0 	16 	floor triggers (4 bytes each X 4 triggers possible)
-//		0x10 	16 	tile for monsters 0-15 (0 means no monster and 0's come FIRST)
-//		0x20 	16 	start_x for monsters 0-15
-//		0x30 	16 	start_y for monsters 0-15
-//		0x40 	8 	start_x for party member 0-7 (north entry)
-//		0x48 	8 	start_y for party member 0-7 (north entry)
-//		0x50 	8 	start_x for party member 0-7 (east entry)
-//		0x58 	8 	start_y for party member 0-7 (east entry)
-//		0x60 	8 	start_x for party member 0-7 (south entry)
-//		0x68 	8 	start_y for party member 0-7 (south entry)
-//		0x70 	8 	start_x for party member 0-7 (west entry)
-//		0x78 	8 	start_y for party member 0-7 (west entry)
-//		0x80 	121 	11x11 map matrix for room 
-		
+				
 		public byte[][] triggers = new byte[4][4];
 		
 		public byte[] monsters = new byte[16];

@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import objects.Aura;
 import objects.BaseMap;
 import objects.Party;
+import objects.Portal;
 import objects.Tile;
 import ultima.Constants.Direction;
 
@@ -118,11 +119,25 @@ public class Context implements Constants {
 		this.party = party;
 	}
 
-    public void saveGame(GameScreen game, Vector3 currentPos) {
-		party.getSaveGame().x = (int)currentPos.x;
-		party.getSaveGame().y = (int)currentPos.y;
-		party.getSaveGame().trammelphase = game.trammelphase;
-		party.getSaveGame().feluccaphase = game.feluccaphase;
+    public void saveGame(float x, float y, float z, Maps map) {
+    	
+    	if (map == Maps.WORLD) {
+    		party.getSaveGame().x = (int)x;
+    		party.getSaveGame().y = (int)y;
+			party.getSaveGame().dngx = 0;
+			party.getSaveGame().dngy = 0;
+	    	party.getSaveGame().dnglevel = 0xFFFF;
+    	} else {
+    		Portal p = Maps.WORLD.getMap().getPortal(map);
+    		party.getSaveGame().x = p.getX();
+    		party.getSaveGame().y = p.getY();
+    		party.getSaveGame().dngx = (int)x;
+    		party.getSaveGame().dngy = (int)y;
+    		party.getSaveGame().dnglevel = (int)z;
+    	}
+
+		party.getSaveGame().location = map.getId();
+
 		try {
 			party.getSaveGame().write(PARTY_SAV_BASE_FILENAME);
 		} catch (Exception e) {

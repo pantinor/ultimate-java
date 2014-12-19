@@ -75,6 +75,7 @@ public class GameScreen extends BaseScreen {
 	Random rand = new Random();
 	
 	GameTimer gameTimer;
+	boolean loadDungeonFromSavedGame = false;
 	
 	public GameScreen(Ultima4 mainGame) {
 		
@@ -127,7 +128,6 @@ public class GameScreen extends BaseScreen {
 			sip = new SecondaryInputProcessor(this, stage);
 
 			
-			
 			context = new Context();
 
 			SaveGame sg = new SaveGame();
@@ -137,10 +137,14 @@ public class GameScreen extends BaseScreen {
 			context.setParty(party);
 			
 			phase = sg.trammelphase * 3;
+		
+			//loadNextMap(Maps.WORLD, 233, 234, 0,0,0,false);
+			loadNextMap(Maps.WORLD, sg.x, sg.y, 0,0,0,false);
 			
-			//TODO look for whether SAVE is in dungeon or on surface here
-			loadNextMap(Maps.WORLD, sg.x, sg.y);
-			
+			if (Maps.get(sg.location) != Maps.WORLD) {
+				loadDungeonFromSavedGame = true;
+			}
+
 			gameTimer = new GameTimer();
 			
 		} catch(Exception e) {
@@ -154,6 +158,12 @@ public class GameScreen extends BaseScreen {
 		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
 		gameTimer.run = true;
 		new Thread(gameTimer).start();
+		
+		if (loadDungeonFromSavedGame) {
+			SaveGame sg = context.getParty().getSaveGame();
+			loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.dngx, sg.dngy, sg.dnglevel, true);
+			loadDungeonFromSavedGame = false;
+		}
 	}
 	
 	@Override
@@ -161,13 +171,18 @@ public class GameScreen extends BaseScreen {
 		gameTimer.run = false;
 	}
 		
-	public void loadNextMap(Maps m, int startx, int starty) {
+	public void loadNextMap(Maps m, int x, int y, int dngx, int dngy, int dngLevel, boolean restoreSG) {
 		
 		log("Entering " + m.getLabel() + "!");
 		
 		if (m.getMap().getType() == MapType.dungeon) {
 			
 			DungeonScreen sc = new DungeonScreen(mainGame, stage, this, m);
+			
+			if (restoreSG) {
+				sc.restoreSaveGameLocation(dngx, dngy, dngLevel);
+			}
+			
 			mainGame.setScreen(sc);
 			
 		} else if (m.getMap().getType().equals("shrine")) {
@@ -190,7 +205,7 @@ public class GameScreen extends BaseScreen {
 			
 			bm.initObjects(this, enhancedAtlas, standardAtlas);
 			
-			newMapPixelCoords = getMapPixelCoords(startx, starty);
+			newMapPixelCoords = getMapPixelCoords(x, y);
 			changeMapPosition = true;
 		}
 						
@@ -260,7 +275,7 @@ public class GameScreen extends BaseScreen {
 	            } else if (!context.getParty().isAnyoneAlive()) {
 	            	//death scene
 	            	mainGame.setScreen(new DeathScreen(mainGame, this, context.getParty()));
-	            	loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
+	            	loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y, 0, 0, 0, false);
 	            }
 			}
 			
@@ -276,6 +291,8 @@ public class GameScreen extends BaseScreen {
 		time += delta;
 
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		if (renderer == null) return;
 		
 		if (changeMapPosition) {
 			mapCamera.position.set(newMapPixelCoords);
@@ -387,19 +404,19 @@ public class GameScreen extends BaseScreen {
 		} else if (keycode == Keys.K || keycode == Keys.D) {
 			if (ct.climbable()) {
 				Portal p = context.getCurrentMap().getPortal(v.x, v.y);
-				loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
+				loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty(), 0, 0, 0, false);
 				log(p.getMessage());
 			}
 		} else if (keycode == Keys.E) {
 			//if (ct.enterable()) {
 				Portal p = context.getCurrentMap().getPortal(v.x, v.y);
 				if (p != null) {
-					loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
+					loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty(), 0, 0, 0, false);
 				}
 			//}
 		} else if (keycode == Keys.Q) {
 			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
-				context.saveGame(this, v);
+				context.saveGame(v.x,v.y,0,Maps.WORLD);
 				log("Saved Game.");
 			} else {
 				log("Cannot save inside!");
@@ -450,7 +467,7 @@ public class GameScreen extends BaseScreen {
 		if (bm.getBorderbehavior() == MapBorderBehavior.exit) {
 			if (nextTile.x > bm.getWidth()-1 || nextTile.x < 0 || nextTile.y > bm.getHeight()-1 || nextTile.y < 0) {
 				Portal p = Maps.WORLD.getMap().getPortal(bm.getId());
-				loadNextMap(Maps.WORLD, p.getX(), p.getY());
+				loadNextMap(Maps.WORLD, p.getX(), p.getY(), 0, 0, 0, false);
 				return false;
 			}
 		}

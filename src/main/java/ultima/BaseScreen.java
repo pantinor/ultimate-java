@@ -30,7 +30,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants {
 
 	protected int mapPixelHeight;
 	protected Vector3 newMapPixelCoords;
-	protected boolean changeMapPosition = true;
+	protected boolean changeMapPosition = false;
 	
 	protected OrthographicCamera mapCamera;
 	protected int showZstats = 0;
