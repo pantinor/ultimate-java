@@ -37,7 +37,11 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -46,6 +50,9 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+import dungeon.DungeonScreen.DungeonRoom;
+import dungeon.DungeonScreen.Trigger;
 
 public class CombatScreen extends BaseScreen {
 	
@@ -65,6 +72,7 @@ public class CombatScreen extends BaseScreen {
 	public Party party;
 	private Stage stage;
 	
+	private TiledMap tmap;
 	private OrthogonalTiledMapRenderer renderer;
 	private SpriteBatch batch;
 	private SecondaryInputProcessor sip;
@@ -92,6 +100,7 @@ public class CombatScreen extends BaseScreen {
 		this.party = context.getParty();
 		this.creatureSet = cs;
 		
+		this.tmap = tmap;
 		renderer = new OrthogonalTiledMapRenderer(tmap, 2f);
 		
 		MapProperties prop = tmap.getProperties();
@@ -323,27 +332,36 @@ public class CombatScreen extends BaseScreen {
 			if (!preMove(active, Direction.NORTH)) return false;
 			active.currentY--;
 			active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
-			
+			checkTrigger(active.currentX,active.currentY);
 		} else if (keycode == Keys.DOWN) {
 			if (!preMove(active, Direction.SOUTH)) return false;
 			active.currentY++;
 			active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
-			
+			checkTrigger(active.currentX,active.currentY);
 		} else if (keycode == Keys.RIGHT) {
 			if (!preMove(active, Direction.EAST)) return false;
 			active.currentX++;
 			active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
-			
+			checkTrigger(active.currentX,active.currentY);
 		} else if (keycode == Keys.LEFT) {
 			if (!preMove(active, Direction.WEST)) return false;
 			active.currentX--;
 			active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
-			
+			checkTrigger(active.currentX,active.currentY);
 		} else if (keycode == Keys.A) {
 			log("Attack: ");
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, combatMap, active.currentX, active.currentY);
-			return false;				
+			return false;		
+		} else if (keycode == Keys.U) {
+			Tile tile = combatMap.getTile(active.currentX,active.currentY);
+			if (tile.getIndex() == 74) { //altar
+				log("Use which item: ");
+				log("");
+				Gdx.input.setInputProcessor(sip);
+				sip.setinitialKeyCode(keycode, combatMap, active.currentX, active.currentY);
+				return false;
+			}
 		} else if (keycode == Keys.Z) {
 			showZstats = showZstats + 1;
 			if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
@@ -356,6 +374,46 @@ public class CombatScreen extends BaseScreen {
 
 		return false;
 
+	}
+	
+	private void checkTrigger(int x, int y) {
+		DungeonRoom room = (DungeonRoom)tmap.getProperties().get("dungeonRoom");
+		if (room != null) {
+			for (int i=0;i<4;i++) {
+				Trigger tr = room.triggers[i];
+				if (tr.tile.getIndex() != 0 && tr.trigX == x && tr.trigY == y) {
+					
+					Sounds.play(Sound.TRIGGER);
+					
+					TiledMapTileLayer layer = (TiledMapTileLayer)tmap.getLayers().get("Map Layer");
+					TileRule rule = tr.tile.getRule();
+					
+					boolean nullplace1 = tr.t1X == 0 && tr.t1Y == 0;
+					boolean nullplace2 = tr.t2X == 0 && tr.t2Y == 0;
+					
+					if (rule == TileRule.monster) {
+	
+					} else {
+						if (!nullplace1) {
+							TextureRegion texture = GameScreen.standardAtlas.findRegion(tr.tile.getName());
+							Cell cell = layer.getCell(tr.t1X, 11 - 1 - tr.t1Y);
+							TiledMapTile tmt = new StaticTiledMapTile(texture);
+							tmt.setId(tr.t1Y * 11 + tr.t1X);
+							cell.setTile(tmt);
+							combatMap.setTile(tr.tile, tr.t1X, tr.t1Y);
+						}
+						if (!nullplace2) {
+							TextureRegion texture = GameScreen.standardAtlas.findRegion(tr.tile.getName());
+							Cell cell = layer.getCell(tr.t2X, 11 - 1 - tr.t2Y);
+							TiledMapTile tmt = new StaticTiledMapTile(texture);
+							tmt.setId(tr.t2Y * 11 + tr.t2X);
+							cell.setTile(tmt);
+							combatMap.setTile(tr.tile, tr.t2X, tr.t2Y);
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	private boolean preMove(Creature active, Direction dir) {
@@ -1099,6 +1157,49 @@ public class CombatScreen extends BaseScreen {
 			}
 		}
 		
+	}
+	
+	@SuppressWarnings("incomplete-switch")
+	public void useStones(Stone c1, Stone c2, Stone c3, Stone c4) {
+			    
+		DungeonRoom room = (DungeonRoom)tmap.getProperties().get("dungeonRoom");
+		if (room != null) {
+			
+		    int mask = c1.getLoc() | c2.getLoc() | c3.getLoc()  | c4.getLoc();
+
+		    int TRUTH   = Stone.WHITE.getLoc() | Stone.PURPLE.getLoc() | Stone.GREEN.getLoc()  | Stone.BLUE.getLoc();
+		    int LOVE   = Stone.WHITE.getLoc() | Stone.YELLOW.getLoc() | Stone.GREEN.getLoc()  | Stone.ORANGE.getLoc();
+		    int COURAGE   = Stone.WHITE.getLoc() | Stone.RED.getLoc() | Stone.PURPLE.getLoc()  | Stone.ORANGE.getLoc();
+		    
+		    int attrib = 0;
+		    Item key = null;
+		    
+			switch(room.altarRoomVirtue) {
+			case COURAGE:
+				attrib = COURAGE;
+				key = Item.KEY_C;
+				break;
+			case LOVE:
+				attrib = LOVE;
+				key = Item.KEY_L;
+				break;
+			case TRUTH:
+				attrib = TRUTH;
+				key = Item.KEY_T;
+				break;
+			}
+			
+            if (mask == attrib && (party.getSaveGame().items & key.getLoc()) > 0) {
+                log("Thou doth find the "+key.getDesc());
+                log("one third of the Three Part Key!");
+                party.getSaveGame().items |= key.getLoc();
+            } else {
+            	log("Hmm...No effect!");
+            }
+						
+		}
+    	    
+		finishPlayerTurn();
 	}
 		
 

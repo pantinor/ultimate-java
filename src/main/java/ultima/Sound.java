@@ -8,7 +8,8 @@ public enum Sound {
 	BLOCKED ("blocked.ogg", false, 0.3f),
 	FLEE ("flee.ogg", false, 0.3f),
 	ERROR ("error.ogg", false, 0.3f),
-	
+	TRIGGER ("trigger.ogg", false, 0.3f),
+
 	PC_ATTACK ("pc_attack.ogg", false, 0.3f),
 	PC_STRUCK ("pc_struck.ogg", false, 0.3f),
 	NPC_ATTACK ("npc_attack.ogg", false, 0.3f),

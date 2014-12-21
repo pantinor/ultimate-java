@@ -21,6 +21,9 @@ import static com.badlogic.gdx.graphics.g2d.Batch.Y1;
 import static com.badlogic.gdx.graphics.g2d.Batch.Y2;
 import static com.badlogic.gdx.graphics.g2d.Batch.Y3;
 import static com.badlogic.gdx.graphics.g2d.Batch.Y4;
+
+import java.util.List;
+
 import objects.BaseMap;
 import objects.BaseMap.DoorStatus;
 import objects.Creature;
@@ -188,8 +191,9 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 			
 		}
 		
-		if (bm.getCreatures().size() > 0) {
-			for (Creature cr : bm.getCreatures()) {
+		List<Creature> crs = bm.getCreatures();
+		if (crs.size() > 0) {
+			for (Creature cr : crs) {
 				if (cr.currentPos == null  ) {
 					continue;
 				}

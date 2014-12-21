@@ -303,6 +303,16 @@ public class BaseMap implements Constants {
 	public void setTiles(Tile[] tiles) {
 		this.tiles = tiles;
 	}
+	
+	public void setTile(Tile tile, int x, int y) {
+		if (x < 0 || y < 0) {
+			return;
+		}
+		if (x + (y * width) >= tiles.length) {
+			return;
+		}
+		tiles[x + (y * width)] = tile;
+	}
 
 	public synchronized Tile getTile(int x, int y) {
 		if (x < 0 || y < 0) {
@@ -727,7 +737,7 @@ public class BaseMap implements Constants {
 	/**
 	 * Add item to inventory and add experience etc for a found item
 	 */
-	public ItemMapLabels searchLocation(Party p, int x, int y) {
+	public ItemMapLabels searchLocation(Party p, int x, int y, int z) {
 		SaveGame sg = p.getSaveGame();
 		
 		if (labels == null)	return null;
@@ -990,9 +1000,4 @@ public class BaseMap implements Constants {
 		this.combatPlayers = combatPlayers;
 	}
 	
-		
-
-	
-
-
 }

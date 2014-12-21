@@ -18,6 +18,7 @@ import ultima.BaseScreen;
 import ultima.CombatScreen;
 import ultima.DeathScreen;
 import ultima.GameScreen;
+import ultima.SecondaryInputProcessor;
 import ultima.Ultima4;
 import util.DungeonRoomTiledMapLoader;
 
@@ -59,7 +60,7 @@ import com.badlogic.gdx.utils.UBJsonReader;
 
 public class DungeonScreen extends BaseScreen {
 	
-	private Maps dngMap;
+	public Maps dngMap;
 	private String dungeonFileName;
 	private GameScreen gameScreen;
 	private Stage stage;
@@ -104,6 +105,8 @@ public class DungeonScreen extends BaseScreen {
 	public Vector3 currentPos;
 	public Direction currentDir = Direction.EAST;
 		
+	public SecondaryInputProcessor sip;
+
 	public DungeonScreen(Ultima4 mainGame, Stage stage, GameScreen gameScreen, Maps map) {
 		
 		scType = ScreenType.DUNGEON;
@@ -112,6 +115,9 @@ public class DungeonScreen extends BaseScreen {
 		this.mainGame = mainGame;
 		this.gameScreen = gameScreen;
 		this.stage = stage;
+		
+		sip = new SecondaryInputProcessor(this, stage);
+
 		init();
 	}
 	
@@ -222,6 +228,16 @@ public class DungeonScreen extends BaseScreen {
 									room = rooms[tile.getValue() - 207 + 48 - 1];
 								}
 							}
+							
+							//System.out.println(dngMap.name() + " " + tile.toString() + " " + x + "," + y + ", " + i);
+							//for (int j=0;j<4;j++) if (room.triggers[j].tile.getIndex() != 0) System.out.println(room.triggers[j].toString());
+							
+							if (room.hasAltar) {
+					            if (x == 3) room.altarRoomVirtue = BaseVirtue.LOVE;
+					            else if (x <= 2) room.altarRoomVirtue = BaseVirtue.TRUTH;
+					            else room.altarRoomVirtue = BaseVirtue.COURAGE;
+							}
+							
 							RoomLocater loc = new RoomLocater(x,y,i,room);
 							locaters.add(loc);
 						}
@@ -514,15 +530,14 @@ public class DungeonScreen extends BaseScreen {
 		
 		batch.begin();
 		
-		batch.draw(MINI_MAP_TEXTURE, 16, 10, 16, 16, MINI_MAP_TEXTURE.getWidth(), MINI_MAP_TEXTURE.getHeight(), 
-				1f, 1f, 0, 0, 0, MINI_MAP_TEXTURE.getWidth(), MINI_MAP_TEXTURE.getHeight(), false, false);
-		
-		batch.draw(texture, 16, 10, 16, 16, MINI_MAP_TEXTURE.getWidth(), MINI_MAP_TEXTURE.getHeight(), 
-				1f, 1f, 0, 0, 0, MINI_MAP_TEXTURE.getWidth(), MINI_MAP_TEXTURE.getHeight(), false, false);
-		
-		font.draw(batch, "Level: " + (currentLevel+1) + " x,y: " + (Math.round(currentPos.x)-1) + ", " + (Math.round(currentPos.z)-1), 10, 40);
-		font.draw(batch, "Direction: " + currentDir, 10, 20);
+		int xalign = Ultima4.SCREEN_WIDTH - MINI_MAP_TEXTURE.getWidth() - 16;
+		batch.draw(MINI_MAP_TEXTURE, xalign, 10);
+		batch.draw(texture, xalign, 10);
+		font.draw(batch, "Level: " + (currentLevel+1) + " x,y: " + (Math.round(currentPos.x)-1) + ", " + (Math.round(currentPos.z)-1), xalign + 10, 40);
+		font.draw(batch, "Direction: " + currentDir, xalign + 10, 20);
 
+		font.setColor(Color.WHITE);
+		logs.render(batch);
 		
 		batch.end();
 	}
@@ -542,6 +557,10 @@ public class DungeonScreen extends BaseScreen {
 		baseMap.setPortals(dngMap.getMap().getPortals(loc.x, loc.y, loc.z));
 		
 		CombatScreen sc = new CombatScreen(mainGame, this, GameScreen.context, contextMap, baseMap, tiledMap, null, GameScreen.creatures, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+		
+	    if (loc.room.hasAltar) {
+	        sc.log("The Altar Room of " + loc.room.altarRoomVirtue.toString());    
+	    } 
 		
 		MapLayer mLayer = tiledMap.getLayers().get("Monster Positions");
 		Iterator<MapObject> iter = mLayer.getObjects().iterator();
@@ -616,6 +635,7 @@ public class DungeonScreen extends BaseScreen {
 				} else if (currentDir == Direction.SOUTH) {
 					cam.lookAt(currentPos.x, currentPos.y, currentPos.z+1);
 				}
+				checkTrap(tile, x, y);
 			}
 			
 			if (tile.getValue() >= 208 && tile.getValue() <= 223) {
@@ -637,6 +657,7 @@ public class DungeonScreen extends BaseScreen {
 		
 		int x = (Math.round(currentPos.x)-1);
 		int y = (Math.round(currentPos.z)-1);
+		DungeonTile tile = dungeonTiles[currentLevel][x][y];
 		
 		if (keycode == Keys.LEFT) {
 			
@@ -683,7 +704,7 @@ public class DungeonScreen extends BaseScreen {
 				y=y+1;if(y>7)y=0; 
 			}
 			
-			DungeonTile tile = dungeonTiles[currentLevel][x][y];
+			tile = dungeonTiles[currentLevel][x][y];
 			if (tile != DungeonTile.WALL) {
 				currentPos = new Vector3(x+.5f,.5f,y+.5f);
 				cam.position.set(currentPos);
@@ -696,6 +717,7 @@ public class DungeonScreen extends BaseScreen {
 				} else if (currentDir == Direction.SOUTH) {
 					cam.lookAt(currentPos.x, currentPos.y, currentPos.z+1);
 				}
+				checkTrap(tile, x, y);
 			}
 			
 			if (tile.getValue() >= 208 && tile.getValue() <= 223) {
@@ -721,8 +743,7 @@ public class DungeonScreen extends BaseScreen {
 			} else if (currentDir == Direction.SOUTH) {
 				y=y-1;if(y<0)y=7; 
 			}
-			
-			DungeonTile tile = dungeonTiles[currentLevel][x][y];
+			tile = dungeonTiles[currentLevel][x][y];
 			if (tile != DungeonTile.WALL) {
 				currentPos = new Vector3(x+.5f,.5f,y+.5f);
 				cam.position.set(currentPos);
@@ -735,6 +756,7 @@ public class DungeonScreen extends BaseScreen {
 				} else if (currentDir == Direction.SOUTH) {
 					cam.lookAt(currentPos.x, currentPos.y, currentPos.z+1);
 				}
+				checkTrap(tile, x, y);
 			}
 			
 			if (tile.getValue() >= 208 && tile.getValue() <= 223) {
@@ -750,8 +772,6 @@ public class DungeonScreen extends BaseScreen {
 			
 			
 		} else if (keycode == Keys.K) {
-			
-			DungeonTile tile = dungeonTiles[currentLevel][x][y];
 			if (tile == DungeonTile.LADDER_UP || tile == DungeonTile.LADDER_UP_DOWN) {
 				currentLevel --;
 				if (currentLevel < 0) {
@@ -763,8 +783,6 @@ public class DungeonScreen extends BaseScreen {
 			}
 
 		} else if (keycode == Keys.D) {
-			
-			DungeonTile tile = dungeonTiles[currentLevel][x][y];
 			if (tile == DungeonTile.LADDER_DOWN || tile == DungeonTile.LADDER_UP_DOWN) {
 				currentLevel ++;
 				if (currentLevel > DUNGEON_MAP) {
@@ -776,19 +794,50 @@ public class DungeonScreen extends BaseScreen {
 			GameScreen.context.saveGame(x, y, currentLevel, currentDir, dngMap);
 			log("Saved Game.");
 			
-		} else if (keycode == Keys.Z) {
+		} else if (keycode == Keys.I) {
+			
 			isTorchOn = !isTorchOn;
+			
+		} else if (keycode == Keys.S) {
+			if (tile == DungeonTile.ALTAR) {
+				log("Search Altar");
+				ItemMapLabels l = dngMap.getMap().searchLocation(GameScreen.context.getParty(), x, y, currentLevel);
+				if (l != null) {
+					log("You found " + l.getDesc() + ".");
+				} else {
+					log("Nothing!");
+				}
+			} else {
+				log("Who searches?");
+				Gdx.input.setInputProcessor(sip);
+				sip.setinitialKeyCode(keycode, tile, x, y);
+				return false;
+			}
 		}
 			
 			
 		return false;
 	}
 	
+	@SuppressWarnings("incomplete-switch")
+	public void checkTrap(DungeonTile tile, int x, int y) {
+		switch (tile) {
+		case WIND_TRAP:
+			log("Wind extinguished your torch!");
+			isTorchOn = false;
+			break;
+		case PIT_TRAP:
+			break;
+		case ROCK_TRAP:
+			break;
+		}
+	}
+	
 	
 	/**
 	 * Touch the magical ball at the current location
 	 */
-//	public void dungeonTouchOrb() {
+	public void dungeonTouchOrb(int index) {
 //	    log("You find a Magical Orb...Who touches? ");
 //	    int player = gameGetPlayer(false, false);
 //	    if (player == -1)
@@ -833,12 +882,12 @@ public class DungeonScreen extends BaseScreen {
 //	    c->party->member(player)->applyDamage(damage);    
 //	    /* remove the orb from the map */
 //	    c->location->map->annotations->add(c->location->coords, replacementTile);
-//	}
+	}
 	
 	/**
 	 * Drink from the fountain at the current location
 	 */
-//	void dungeonDrinkFountain() {
+	public void dungeonDrinkFountain(DungeonTile tile, int index) {
 //	    screenMessage("You find a Fountain.\nWho drinks? ");
 //	    int player = gameGetPlayer(false, false);
 //	    if (player == -1)
@@ -887,7 +936,7 @@ public class DungeonScreen extends BaseScreen {
 //	    default:
 //	        ASSERT(0, "Invalid call to dungeonDrinkFountain: no fountain at current location");
 //	    }
-//	}
+	}
 	
 
 	@Override
@@ -910,7 +959,7 @@ public class DungeonScreen extends BaseScreen {
 	
 	public class DungeonRoom {
 				
-		public byte[][] triggers = new byte[4][4];
+		public Trigger[] triggers = new Trigger[4];
 		
 		public byte[] monsters = new byte[16];
 		public byte[] monStartX = new byte[16];
@@ -930,14 +979,23 @@ public class DungeonScreen extends BaseScreen {
 		
 		public Tile[] tiles = new Tile[11*11];
 		
+		public boolean hasAltar;
+		public BaseVirtue altarRoomVirtue;
+		
 		public DungeonRoom(byte[] data, int pos) {
 			
+			byte[][] tr = new byte[4][4];
 			for (int i=0;i<4;i++) {
 				for (int j=0;j<4;j++) {
-					triggers[j][i] = data[pos];
+					tr[i][j] = data[pos];
 					pos++;
 				}
 			}
+			
+			for (int i=0;i<4;i++) {
+				triggers[i] = new Trigger(tr[i]);
+			}
+			
 			for (int i=0;i<16;i++) {
 				monsters[i] = data[pos];
 				pos++;
@@ -987,11 +1045,22 @@ public class DungeonScreen extends BaseScreen {
 			
 			for (int y=0;y<11;y++) {
 				for (int x=0;x<11;x++) {
-					tiles[x+(y*11)] = ts.getTileByIndex(data[pos]&0xff);
+					Tile t = ts.getTileByIndex(data[pos]&0xff);
+					tiles[x+(y*11)] = t;
+					if (t.getIndex() == 74) hasAltar = true;
 					pos++;
 				}
 			}
 			
+		}
+		
+		public Trigger getTriggerAt(int x, int y) {
+			
+			for (int i=0;i<4;i++) 
+				if (triggers[i].tile.getIndex() != 0 && triggers[i].trigX == x && triggers[i].trigY == y) 
+					return triggers[i];
+			
+			return null;
 		}
 		
 		public Tile getTile(int x, int y) {
@@ -1003,8 +1072,31 @@ public class DungeonScreen extends BaseScreen {
 			}
 			return tiles[x + (y * 11)];
 		}
+				
 
-		
+	}
+	
+	public class Trigger {
+		public Tile tile;
+		public int trigX;
+		public int trigY;
+		public int t1X;
+		public int t1Y;
+		public int t2X;
+		public int t2Y;
+		public Trigger(byte[] data) {
+			this.tile = GameScreen.baseTileSet.getTileByIndex(data[0]&0xff);
+			this.trigX = (data[1] >> 4) & 0x0f;
+			this.trigY = data[1] & 0x0f;
+			this.t1X = (data[2] >> 4) & 0x0f;
+			this.t1Y = data[2] & 0x0f;
+			this.t2X = (data[3] >> 4) & 0x0f;
+			this.t2Y = data[3] & 0x0f;
+		}
+		@Override
+		public String toString() {
+			return String.format("Trigger [tile=%s, trigX=%s, trigY=%s, t1X=%s, t1Y=%s, t2X=%s, t2Y=%s]", tile.getName(), trigX, trigY, t1X, t1Y, t2X, t2Y);
+		}
 
 	}
 

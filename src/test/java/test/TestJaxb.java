@@ -215,7 +215,7 @@ public class TestJaxb {
 	}
 	
 
-	@Test
+	//@Test
 	public void testReadSaveGame() throws Exception {
 		
 		InputStream is = new FileInputStream(Constants.PARTY_SAV_BASE_FILENAME);
@@ -444,6 +444,15 @@ public class TestJaxb {
 
 	}
 	
+	@Test
+	public void testNibbles() throws Exception {
+		byte[] data = new byte[4];
+		data[1] = (byte)0x85;
+		int x = (data[1] >> 4) & 0x0f;
+		int y = data[1] & 0x0f; 
+		
+		int z = x;
+	}
 
 
 }

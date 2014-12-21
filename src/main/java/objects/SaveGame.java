@@ -64,7 +64,7 @@ public class SaveGame implements Constants {
 	public int dngy = 0;
 	//dungeon orientation
 	public int orientation = 0;
-	public int dnglevel = (int) 0xFFFF;
+	public int dnglevel = 0;
 	//see Constants.Maps enum for locations
 	public int location = 0;
 	

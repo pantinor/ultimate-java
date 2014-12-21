@@ -79,6 +79,12 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 	public void log(String s) {
 		logs.add(s);
 	}
+	public void logAppend(String s) {
+		logs.append(s);
+	}
+	public void logDeleteLastChar() {
+		logs.logDeleteLastChar();
+	}
 	
 	public abstract void finishTurn(int currentX, int currentY) ;
 

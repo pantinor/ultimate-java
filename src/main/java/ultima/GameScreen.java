@@ -17,6 +17,7 @@ import objects.SaveGame;
 import objects.Tile;
 import objects.TileSet;
 import objects.WeaponSet;
+import ultima.Constants.Stone;
 import util.LogDisplay;
 import util.UltimaMapRenderer;
 import util.UltimaTiledMapLoader;
@@ -156,15 +157,17 @@ public class GameScreen extends BaseScreen {
 			party.join(NpcDefaults.Geoffrey.name());
 			party.join(NpcDefaults.Shamino.name());
 			party.join(NpcDefaults.Katrina.name());
+			sg.food = 30000;
 		
 			//load the surface world first
 			loadNextMap(Maps.WORLD, sg.x, sg.y);
-			//loadNextMap(Maps.WORLD, 85, 106, 0,0,0,false);
+			//loadNextMap(Maps.WORLD, 86, 108);
 
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
-				loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.dngx, sg.dngy, sg.dnglevel, Direction.getByValue(sg.orientation+1), true);
-				//loadNextMap(Maps.DESPISE, 0, 0, 1, 3, 7, Direction.EAST, true);
+				loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation+1), true);
+				//sg.stones |= Stone.YELLOW.getLoc();
+				//loadNextMap(Maps.DESPISE, 0, 0, 3, 5, 4, Direction.EAST, true);
 			}
 		}
 	}
@@ -432,7 +435,7 @@ public class GameScreen extends BaseScreen {
 		} else if (keycode == Keys.S) {
 
 			BaseMap bm = context.getCurrentMap();
-			ItemMapLabels l = bm.searchLocation(context.getParty(), (int)v.x, (int)v.y);
+			ItemMapLabels l = bm.searchLocation(context.getParty(), (int)v.x, (int)v.y, 0);
 			if (l != null) {
 				log("You found " + l.getDesc() + ".");
 			}

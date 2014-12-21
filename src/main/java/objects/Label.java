@@ -8,6 +8,7 @@ public class Label {
 	private String name;
 	private int x;
 	private int y;
+	private int z;
 	
 	@XmlAttribute
 	public String getName() {
@@ -21,6 +22,10 @@ public class Label {
 	public int getY() {
 		return y;
 	}
+	@XmlAttribute
+	public int getZ() {
+		return z;
+	}
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -29,6 +34,9 @@ public class Label {
 	}
 	public void setY(int y) {
 		this.y = y;
+	}
+	public void setZ(int z) {
+		this.z = z;
 	}
 
 	@Override

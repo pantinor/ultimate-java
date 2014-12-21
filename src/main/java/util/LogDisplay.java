@@ -24,6 +24,22 @@ public class LogDisplay {
 		background = new Texture(pixmap);
 	}
 	
+	public void append(String s) {
+		if (logs.size() == 0) logs.add("");
+		String l = logs.get(logs.size()-1);
+		l = l + s;
+		logs.remove(logs.size()-1);
+		logs.add(l);
+	}
+	
+	public void logDeleteLastChar() {
+		if (logs.size() == 0) return;
+		String l = logs.get(logs.size()-1);
+		l = l.substring(0, l.length() - 1);
+		logs.remove(logs.size()-1);
+		logs.add(l);
+	}
+	
 	public void add(String s) {
 		logs.add(s);
 	}

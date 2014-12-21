@@ -12,8 +12,10 @@ import objects.Person;
 import objects.Tile;
 import ultima.CombatScreen.ProjectileActor;
 import ultima.Constants.Direction;
+import ultima.Constants.DungeonTile;
 import ultima.Constants.Maps;
 import ultima.Constants.ScreenType;
+import ultima.Constants.Stone;
 import ultima.Constants.TileAttrib;
 import ultima.Constants.TileRule;
 import ultima.Constants.Vector;
@@ -28,6 +30,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
+import dungeon.DungeonScreen;
+
 public class SecondaryInputProcessor extends InputAdapter {
 	
 	private BaseScreen screen;
@@ -38,6 +42,11 @@ public class SecondaryInputProcessor extends InputAdapter {
 	private int currentY;
 	//used for flaming oil only
 	private Direction rangeInputModeDirection = null;
+	//only for dungeon screen
+	private DungeonTile dngTile;
+	
+	private StringBuilder buffer;
+
 	
 	public SecondaryInputProcessor(BaseScreen screen, Stage stage) {
 		this.screen = screen;
@@ -49,6 +58,15 @@ public class SecondaryInputProcessor extends InputAdapter {
 		this.bm = bm;
 		this.currentX = x;
 		this.currentY = y;
+		buffer = new StringBuilder();
+	}
+	
+	public void setinitialKeyCode(int k, DungeonTile dngTile, int x, int y) {
+		this.initialKeyCode = k;
+		this.dngTile = dngTile;
+		this.currentX = x;
+		this.currentY = y;
+		buffer = new StringBuilder();
 	}
 	
 	@Override
@@ -180,7 +198,6 @@ public class SecondaryInputProcessor extends InputAdapter {
 					rangeInputModeDirection = null;
 
 				} else {
-					
 
 				    if (wt.getWeapon().getChoosedistance()) {
 				    	rangeInputModeDirection = dir;
@@ -195,7 +212,65 @@ public class SecondaryInputProcessor extends InputAdapter {
 				Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
 				return false;
 
+			} else if (initialKeyCode == Keys.U) {
+				
+				if (keycode == Keys.ENTER) {
+					if (buffer.length() < 1) return false;
+					String useItem = buffer.toString();
+					screen.log(useItem);
+					if (useItem.startsWith("stone")) {
+						screen.log("There are holes for 4 stones.");
+						screen.log("What colors?");
+						screen.log("1: ");
+						buffer = new StringBuilder();
+						StoneColorsInputAdapter scia = new StoneColorsInputAdapter(combatScreen);
+						Gdx.input.setInputProcessor(scia);
+					} else {
+						screen.log("Not a usable item!");
+						Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
+						combatScreen.finishPlayerTurn();
+					}
+				} else if (keycode == Keys.BACKSPACE) {
+					if (buffer.length() > 0) {
+						buffer.deleteCharAt(buffer.length() - 1);
+						screen.logDeleteLastChar();
+					}
+				} else if (keycode >= 29 && keycode <= 54) {
+					buffer.append(Keys.toString(keycode).toLowerCase());
+					screen.logAppend(Keys.toString(keycode).toLowerCase());
+				}
+				
+				return false;
+				
 			}
+			
+		} else if (screen.scType == ScreenType.DUNGEON) {
+			DungeonScreen dngScreen = (DungeonScreen)screen;
+			
+			if (initialKeyCode == Keys.S) {
+				
+				switch(dngTile) {
+				case FOUNTAIN_PLAIN:
+				case FOUNTAIN_HEAL:
+				case FOUNTAIN_ACID:
+				case FOUNTAIN_CURE:
+				case FOUNTAIN_POISON:
+					if (keycode >= Keys.NUM_0 && keycode <= Keys.NUM_9) {
+						dngScreen.dungeonDrinkFountain(dngTile, keycode - 7);
+					}
+					break;
+				case ORB:
+					if (keycode >= Keys.NUM_0 && keycode <= Keys.NUM_9) {
+						dngScreen.dungeonTouchOrb(keycode - 7);
+					}
+					break;
+				default:
+					break;
+				}
+				
+			}
+			
+			Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
 
 		}
 		
@@ -229,6 +304,70 @@ public class SecondaryInputProcessor extends InputAdapter {
 		}, fadeOut(.2f), removeActor(p)));
 		
     	stage.addActor(p);
+	}
+	
+	class StoneColorsInputAdapter extends InputAdapter {
+		public int pos = 1;
+		public Stone st1;
+		public Stone st2;
+		public Stone st3;
+		public Stone st4;
+		CombatScreen combatScreen;
+		
+
+		public StoneColorsInputAdapter(CombatScreen combatScreen) {
+			this.combatScreen = combatScreen;
+		}
+
+
+		@Override
+		public boolean keyUp(int keycode) {
+			if (keycode == Keys.ENTER) {
+				if (buffer.length() < 1) return false;
+				String color = buffer.toString().toUpperCase();	
+				try {
+					Stone stone = Stone.valueOf(Stone.class, color);
+					
+					if ((GameScreen.context.getParty().getSaveGame().stones & stone.getLoc()) == 0) {
+						screen.log("None owned!");
+						Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
+						combatScreen.finishPlayerTurn();
+						return false;
+					}
+				
+					switch(pos) {
+					case 1:st1 = stone;break;
+					case 2:st2 = stone;break;
+					case 3:st3 = stone;break;
+					case 4:st4 = stone;break;
+					}
+					
+					if (pos == 4) {
+						Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
+						combatScreen.useStones(st1, st2, st3, st4);
+					} else {
+						buffer = new StringBuilder();
+						pos++;
+						screen.log(pos + ": ");
+					}
+
+				} catch (IllegalArgumentException e) {
+					screen.log("None owned!");
+					Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
+					combatScreen.finishPlayerTurn();
+				}
+				
+			} else if (keycode == Keys.BACKSPACE) {
+				if (buffer.length() > 0) {
+					buffer.deleteCharAt(buffer.length() - 1);
+					screen.logDeleteLastChar();
+				}
+			} else if (keycode >= 29 && keycode <= 54) {
+				buffer.append(Keys.toString(keycode).toLowerCase());
+				screen.logAppend(Keys.toString(keycode).toLowerCase());
+			}
+			return false;
+		}
 	}
 	
 
