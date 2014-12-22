@@ -44,10 +44,9 @@ public class SecondaryInputProcessor extends InputAdapter {
 	private Direction rangeInputModeDirection = null;
 	//only for dungeon screen
 	private DungeonTile dngTile;
-	
+
 	private StringBuilder buffer;
 
-	
 	public SecondaryInputProcessor(BaseScreen screen, Stage stage) {
 		this.screen = screen;
 		this.stage = stage;
@@ -170,7 +169,17 @@ public class SecondaryInputProcessor extends InputAdapter {
 				Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
 			}
 
-		
+		} else if (screen.scType == ScreenType.SHRINE) {
+			ShrineScreen shrineScreen = (ShrineScreen)screen;
+			if (keycode >= Keys.NUM_0 && keycode <= Keys.NUM_3) {
+				shrineScreen.meditate(keycode - 7);
+			} else {
+				screen.log("For how many Cycles (0-3)?");
+				return false;
+			}
+			Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
+			return false;
+
 		} else if (screen.scType == ScreenType.COMBAT) {
 			
 			CombatScreen combatScreen = (CombatScreen)screen;
@@ -369,6 +378,8 @@ public class SecondaryInputProcessor extends InputAdapter {
 			return false;
 		}
 	}
+	
+
 	
 
 }

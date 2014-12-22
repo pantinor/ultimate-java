@@ -2,7 +2,6 @@ package util;
 
 import objects.Tile;
 import ultima.Constants;
-import ultima.GameScreen;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -58,7 +57,7 @@ public class DungeonRoomTiledMapLoader implements Constants {
 		for (int y = 0; y < mapHeight; y++) {
 			for (int x = 0; x < mapWidth; x++) {
 				Tile ct = room.getTile(x,y);
-				//if (room.getTriggerAt(x, y) != null) ct = GameScreen.baseTileSet.getTileByIndex(3); //temp debugging
+				//if (room.getTriggerAt(x, y) != null) ct = GameScreen.baseTileSet.getTileByIndex(3); //temp debugging triggers
 				Cell cell = new Cell();
 				TextureRegion tileRegion = atlas.findRegion(ct.getName());
 				TiledMapTile tmt = new StaticTiledMapTile(tileRegion);

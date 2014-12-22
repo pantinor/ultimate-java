@@ -191,6 +191,19 @@ public class Party extends Observable implements Constants {
 		}
 		activePlayer  = 0;
 	}
+	
+	public boolean canEnterShrine(Virtue virtue) {
+	    return ((saveGame.runes & virtue.getLoc()) > 0);
+	}
+	
+	public boolean attemptElevation(Virtue virtue) {
+	    if (saveGame.karma[virtue.ordinal()] == 99) {
+	        saveGame.karma[virtue.ordinal()] = 0;
+	        return true;
+	    } else {
+	        return false;
+	    }
+	}
 
 	public void setTransport(Tile transport) {
 		this.transport = transport;
@@ -496,6 +509,9 @@ public class Party extends Observable implements Constants {
         
 				members.add(new PartyMember(this, saveGame.players[saveGame.members++]));
 								
+				setChanged();
+				notifyObservers(PartyEvent.MEMBER_JOINED);
+				
 				return CannotJoinError.JOIN_SUCCEEDED;
 			}
 		}
@@ -632,11 +648,17 @@ public class Party extends Observable implements Constants {
 	private void adjustKarmaMax(int[] karma, Virtue v, int value, int[] max) {
 		int n = Utils.adjustValueMax(karma[v.ordinal()], value, max[v.ordinal()]);
 		karma[v.ordinal()] = n;
+		
+		setChanged();
+		notifyObservers(PartyEvent.POSITIVE_KARMA);
 	}
 
 	private void adjustKarmaMin(int[] karma, Virtue v, int value, int min) {
 		int n = Utils.adjustValueMin(karma[v.ordinal()], value, min);
 		karma[v.ordinal()] = n;
+		
+		setChanged();
+		notifyObservers(PartyEvent.NEGATIVE_KARMA);
 	}
 	
 	public void endTurn(MapType mapType) {

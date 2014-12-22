@@ -17,7 +17,6 @@ import objects.SaveGame;
 import objects.Tile;
 import objects.TileSet;
 import objects.WeaponSet;
-import ultima.Constants.Stone;
 import util.LogDisplay;
 import util.UltimaMapRenderer;
 import util.UltimaTiledMapLoader;
@@ -140,7 +139,7 @@ public class GameScreen extends BaseScreen {
 		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
 		gameTimer.run = true;
 		new Thread(gameTimer).start();
-		
+
 		//load save game if initializing
 		if (context == null) {
 			context = new Context();
@@ -154,27 +153,34 @@ public class GameScreen extends BaseScreen {
 			Party party = new Party(sg);
 			context.setParty(party);
 			
-			party.join(NpcDefaults.Geoffrey.name());
-			party.join(NpcDefaults.Shamino.name());
-			party.join(NpcDefaults.Katrina.name());
-			sg.food = 30000;
-		
+			//party.join(NpcDefaults.Geoffrey.name());
+			//party.join(NpcDefaults.Shamino.name());
+			//party.join(NpcDefaults.Katrina.name());
+			//sg.food = 30000;
+			//sg.runes |= Virtue.JUSTICE.getLoc();
+			//sg.moves = 2800;
+			//sg.karma[Virtue.JUSTICE.ordinal()] = 99;
+			//sg.stones |= Stone.YELLOW.getLoc();
+
 			//load the surface world first
 			loadNextMap(Maps.WORLD, sg.x, sg.y);
-			//loadNextMap(Maps.WORLD, 86, 108);
+			//loadNextMap(Maps.WORLD, 73, 11);
 
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
 				loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation+1), true);
-				//sg.stones |= Stone.YELLOW.getLoc();
-				//loadNextMap(Maps.DESPISE, 0, 0, 3, 5, 4, Direction.EAST, true);
+				//loadNextMap(Maps.HYTHLOTH, 0, 0, 5, 3, 5, Direction.EAST, true);
 			}
 		}
+		
+		context.getParty().addObserver(this);
+
 	}
 	
 	@Override
 	public void hide() {
 		gameTimer.run = false;
+		context.getParty().deleteObserver(this);
 	}
 	
 	public void loadNextMap(Maps m, int x, int y) {
@@ -195,8 +201,14 @@ public class GameScreen extends BaseScreen {
 			
 			mainGame.setScreen(sc);
 			
-		} else if (m.getMap().getType().equals("shrine")) {
-			
+		} else if (m.getMap().getType() == MapType.shrine) {
+			Maps contextMap = Maps.WORLD;
+			BaseMap sm = m.getMap();
+			map = new UltimaTiledMapLoader(m, standardAtlas, sm.getWidth(), sm.getHeight(), 16, 16).load();
+			context.setCurrentTiledMap(map);
+			Virtue virtue = Virtue.get(sm.getId() - 25);
+			ShrineScreen sc = new ShrineScreen(mainGame, this, virtue, map, enhancedAtlas, standardAtlas);
+			mainGame.setScreen(sc);
 		} else {
 			
 			BaseMap bm = m.getMap();
@@ -419,12 +431,20 @@ public class GameScreen extends BaseScreen {
 				log(p.getMessage());
 			}
 		} else if (keycode == Keys.E) {
-			//if (ct.enterable()) {
-				Portal p = context.getCurrentMap().getPortal(v.x, v.y);
-				if (p != null) {
+			Portal p = context.getCurrentMap().getPortal(v.x, v.y);
+			if (p != null) {
+				if (Maps.get(p.getDestmapid()).getMap().getType() == MapType.shrine) {
+					Virtue virtue = Virtue.get(Maps.get(p.getDestmapid()).getId() - 25);
+					if (context.getParty().canEnterShrine(virtue)) {
+						loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
+					} else {
+						log("Thou dost not bear the rune of entry!");
+						log("A strange force keeps you out!");
+					}
+				} else {
 					loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
 				}
-			//}
+			}
 		} else if (keycode == Keys.Q) {
 			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
 				context.saveGame(v.x,v.y,0,null,Maps.WORLD);

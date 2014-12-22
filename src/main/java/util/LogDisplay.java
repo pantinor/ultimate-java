@@ -1,5 +1,6 @@
 package util;
 
+import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Pixmap;
@@ -49,8 +50,9 @@ public class LogDisplay {
 
 		batch.draw(background, 0, 0);
 		
-		for (String s : logs) {
-			font.draw(batch, s, 5, y);
+		Iterator<String> iter = logs.iterator();
+		while (iter.hasNext()) {
+			font.draw(batch, iter.next(), 5, y);
 			y = y - 18;
 		}
 	}

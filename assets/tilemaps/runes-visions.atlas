@@ -1,0 +1,68 @@
+runes-visions.png
+size: 176,1584
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+MAIN
+  rotate: false
+  xy: 0, 0
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1
+HONESTY
+  rotate: false
+  xy: 0, 176
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1
+COMPASSION
+  rotate: false
+  xy: 0, 352
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1
+VALOR
+  rotate: false
+  xy: 0, 528
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1
+JUSTICE
+  rotate: false
+  xy: 0, 704
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1
+HONOR
+  rotate: false
+  xy: 0, 880
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1
+SACRIFICE
+  rotate: false
+  xy: 0, 1056
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1
+SPIRITUALITY
+  rotate: false
+  xy: 0, 1232
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1
+HUMILITY
+  rotate: false
+  xy: 0, 1408
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1

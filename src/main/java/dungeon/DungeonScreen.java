@@ -9,6 +9,7 @@ import java.util.List;
 
 import objects.BaseMap;
 import objects.Creature;
+import objects.Party.PartyMember;
 import objects.Tile;
 import objects.TileSet;
 
@@ -19,8 +20,11 @@ import ultima.CombatScreen;
 import ultima.DeathScreen;
 import ultima.GameScreen;
 import ultima.SecondaryInputProcessor;
+import ultima.Sound;
+import ultima.Sounds;
 import ultima.Ultima4;
 import util.DungeonRoomTiledMapLoader;
+import util.Utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -128,6 +132,13 @@ public class DungeonScreen extends BaseScreen {
 		} else {
 			Gdx.input.setInputProcessor(this);
 		}
+		GameScreen.context.getParty().addObserver(this);
+	}
+	
+	@Override
+	public void hide() {
+		Gdx.input.setInputProcessor(null);
+		GameScreen.context.getParty().deleteObserver(this);
 	}
 
 	
@@ -229,8 +240,8 @@ public class DungeonScreen extends BaseScreen {
 								}
 							}
 							
-							//System.out.println(dngMap.name() + " " + tile.toString() + " " + x + "," + y + ", " + i);
-							//for (int j=0;j<4;j++) if (room.triggers[j].tile.getIndex() != 0) System.out.println(room.triggers[j].toString());
+							System.out.println(dngMap.name() + " " + tile.toString() + " " + x + "," + y + ", " + i);
+							for (int j=0;j<4;j++) if (room.triggers[j].tile.getIndex() != 0) System.out.println(room.triggers[j].toString());
 							
 							if (room.hasAltar) {
 					            if (x == 3) room.altarRoomVirtue = BaseVirtue.LOVE;
@@ -252,17 +263,25 @@ public class DungeonScreen extends BaseScreen {
 			//cam.position.set(4,10,4);
 			//cam.lookAt(4,0,4);
 			
-			//duplicate some of the outer edge tiles around the outside so that the wrapping is not so naked on the sides
+			//duplicate some of the outer edge tiles around the outside 
+			//so that the wrapping is not so naked on the sides
+			//i went 2 layers duplicated on each edge
 			for (int i = 0;i<DUNGEON_MAP;i++) {
 				{
 					int y = 0;
 					for (int x = 0; x < DUNGEON_MAP; x++) {
 						DungeonTile tile = dungeonTiles[i][x][y + DUNGEON_MAP - 1];
 						addBlock(i, tile, x+.5f,.5f,y-.5f);
+						
+						tile = dungeonTiles[i][x][y + DUNGEON_MAP - 2];
+						addBlock(i, tile, x+.5f,.5f,y-1.5f);
 					}
 					for (int x = 0; x < DUNGEON_MAP; x++) {
 						DungeonTile tile = dungeonTiles[i][x][y];
 						addBlock(i, tile, x+.5f,.5f,y+.5f+DUNGEON_MAP);
+						
+						tile = dungeonTiles[i][x][y+1];
+						addBlock(i, tile, x+.5f,.5f,y+.5f+DUNGEON_MAP+1);
 					}
 				}
 				{
@@ -270,10 +289,16 @@ public class DungeonScreen extends BaseScreen {
 					for (int y = 0; y < DUNGEON_MAP; y++) {
 						DungeonTile tile = dungeonTiles[i][x][y];
 						addBlock(i, tile, x+.5f+DUNGEON_MAP,.5f,y+.5f);
+						
+						tile = dungeonTiles[i][x+1][y];
+						addBlock(i, tile, x+.5f+DUNGEON_MAP+1,.5f,y+.5f);
 					}
 					for (int y = 0; y < DUNGEON_MAP; y++) {
 						DungeonTile tile = dungeonTiles[i][x+DUNGEON_MAP-1][y];
 						addBlock(i, tile, x-.5f,.5f,y+.5f);
+						
+						tile = dungeonTiles[i][x+DUNGEON_MAP-2][y];
+						addBlock(i, tile, x-1.5f,.5f,y+.5f);
 					}
 				}
 			}
@@ -412,11 +437,13 @@ public class DungeonScreen extends BaseScreen {
 			instance.calculateTransforms();
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
+			in.x=(int)tx;in.y=(int)tz;
 		} else if (tile == DungeonTile.ORB) {
 			ModelInstance instance = new ModelInstance(orbModel, tx, .5f, tz);
 			instance.nodes.get(0).scale.set(.0025f, .0025f, .0025f);
 			instance.calculateTransforms();
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+			in.x=(int)tx;in.y=(int)tz;
 			modelInstances.add(in);
 		} else if (tile == DungeonTile.ALTAR) {
 			ModelInstance instance = new ModelInstance(altarModel, tx-.40f, 0, tz+.45f);
@@ -429,10 +456,11 @@ public class DungeonScreen extends BaseScreen {
 			if (tile == DungeonTile.FIELD_ENERGY) c = Color.ORANGE;
 			if (tile == DungeonTile.FIELD_FIRE) c = Color.RED;
 			if (tile == DungeonTile.FIELD_SLEEP) c = Color.YELLOW;
-			Model model = builder.createBox(1, .02f, 1, new Material(ColorAttribute.createDiffuse(c), ColorAttribute.createSpecular(c), new BlendingAttribute(0.4f)), Usage.Position | Usage.Normal);		
-			ModelInstance instance = new ModelInstance(model, tx, 0, tz);
+			Model model = builder.createBox(1, 1, 1, new Material(ColorAttribute.createDiffuse(c), ColorAttribute.createSpecular(c), new BlendingAttribute(0.7f)), Usage.Position | Usage.Normal);		
+			ModelInstance instance = new ModelInstance(model, tx, .5f, tz);
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
+			in.x=(int)tx;in.y=(int)tz;
 		} else if (tile.getValue() >= 208 && tile.getValue() <= 223) { //room indicator
 			Model model = builder.createBox(1, 1, 1, new Material(ColorAttribute.createDiffuse(Color.DARK_GRAY), ColorAttribute.createSpecular(Color.DARK_GRAY), new BlendingAttribute(0.6f)), Usage.Position | Usage.Normal);		
 			ModelInstance instance = new ModelInstance(model, tx, .5f, tz);
@@ -462,6 +490,8 @@ public class DungeonScreen extends BaseScreen {
 		private ModelInstance instance;
 		private DungeonTile tile;
 		private int level;
+		public int x;
+		public int y;
 		
 		private DungeonTileModelInstance(ModelInstance instance, DungeonTile tile, int level) {
 			this.instance = instance;
@@ -504,6 +534,13 @@ public class DungeonScreen extends BaseScreen {
 				} else if (tile.getValue() >= 208 && tile.getValue() <= 223) { //room indicator
 					pixmap.setColor(0.36f, 0.04f, 0.04f, 0.7f);
 					pixmap.fillRectangle(35 + (x * 12), 35 + (y * 12), 12, 12);
+				} else if (tile.getValue() >= 160 && tile.getValue() <= 163) { //fields
+					Color c = Color.GREEN;
+					if (tile == DungeonTile.FIELD_ENERGY) c = Color.ORANGE;
+					if (tile == DungeonTile.FIELD_FIRE) c = Color.RED;
+					if (tile == DungeonTile.FIELD_SLEEP) c = Color.YELLOW;
+					pixmap.setColor(c);
+					pixmap.fillRectangle(35 + (x * 12), 35 + (y * 12), 12, 12);
 				}
 			}
 		}
@@ -533,8 +570,8 @@ public class DungeonScreen extends BaseScreen {
 		int xalign = Ultima4.SCREEN_WIDTH - MINI_MAP_TEXTURE.getWidth() - 16;
 		batch.draw(MINI_MAP_TEXTURE, xalign, 10);
 		batch.draw(texture, xalign, 10);
-		font.draw(batch, "Level: " + (currentLevel+1) + " x,y: " + (Math.round(currentPos.x)-1) + ", " + (Math.round(currentPos.z)-1), xalign + 10, 40);
-		font.draw(batch, "Direction: " + currentDir, xalign + 10, 20);
+		
+		font.draw(batch, (Math.round(currentPos.x)-1) + ", " + (Math.round(currentPos.z)-1) + ", " + (currentLevel+1), 5, Ultima4.SCREEN_HEIGHT - 5);
 
 		font.setColor(Color.WHITE);
 		logs.render(batch);
@@ -607,46 +644,50 @@ public class DungeonScreen extends BaseScreen {
 		//if exiting dungeon rooms, move out of the room with orientation to next coordinate
 		if (combatMap.getType() == MapType.dungeon) {
 			Direction exitDirection = GameScreen.context.getParty().getActivePartyMember().combatMapExitDirection;
-			currentDir = exitDirection;
-			
-			int x = (Math.round(currentPos.x)-1);
-			int y = (Math.round(currentPos.z)-1);
-			
-			if (exitDirection == Direction.EAST) {
-				x=x+1;if(x>7)x=0; 
-			} else if (exitDirection == Direction.WEST) {
-				x=x-1;if(x<0)x=7; 
-			} else if (exitDirection == Direction.NORTH) {
-				y=y-1;if(y<0)y=7; 
-			} else if (exitDirection == Direction.SOUTH) {
-				y=y+1;if(y>7)y=0; 
-			}
-			
-			DungeonTile tile = dungeonTiles[currentLevel][x][y];
-			if (tile != DungeonTile.WALL) {
-				currentPos = new Vector3(x+.5f,.5f,y+.5f);
-				cam.position.set(currentPos);
-				if (currentDir == Direction.EAST) {
-					cam.lookAt(currentPos.x+1, currentPos.y, currentPos.z);
-				} else if (currentDir == Direction.WEST) {
-					cam.lookAt(currentPos.x-1, currentPos.y, currentPos.z);
-				} else if (currentDir == Direction.NORTH) {
-					cam.lookAt(currentPos.x, currentPos.y, currentPos.z-1);
-				} else if (currentDir == Direction.SOUTH) {
-					cam.lookAt(currentPos.x, currentPos.y, currentPos.z+1);
+			if (exitDirection != null) {
+				currentDir = exitDirection;
+				
+				int x = (Math.round(currentPos.x)-1);
+				int y = (Math.round(currentPos.z)-1);
+				
+				if (exitDirection == Direction.EAST) {
+					x=x+1;if(x>7)x=0; 
+				} else if (exitDirection == Direction.WEST) {
+					x=x-1;if(x<0)x=7; 
+				} else if (exitDirection == Direction.NORTH) {
+					y=y-1;if(y<0)y=7; 
+				} else if (exitDirection == Direction.SOUTH) {
+					y=y+1;if(y>7)y=0; 
 				}
-				checkTrap(tile, x, y);
-			}
-			
-			if (tile.getValue() >= 208 && tile.getValue() <= 223) {
-				RoomLocater loc = null;
-				for (RoomLocater r : locaters) {
-					if (r.z == currentLevel && r.x == x && r.y == y) {
-						loc = r;
-						break;
+				
+				DungeonTile tile = dungeonTiles[currentLevel][x][y];
+				if (tile != DungeonTile.WALL) {
+					currentPos = new Vector3(x+.5f,.5f,y+.5f);
+					cam.position.set(currentPos);
+					if (currentDir == Direction.EAST) {
+						cam.lookAt(currentPos.x+1, currentPos.y, currentPos.z);
+					} else if (currentDir == Direction.WEST) {
+						cam.lookAt(currentPos.x-1, currentPos.y, currentPos.z);
+					} else if (currentDir == Direction.NORTH) {
+						cam.lookAt(currentPos.x, currentPos.y, currentPos.z-1);
+					} else if (currentDir == Direction.SOUTH) {
+						cam.lookAt(currentPos.x, currentPos.y, currentPos.z+1);
 					}
+					checkTrap(tile, x, y);
 				}
-				enterRoom(loc, Direction.reverse(currentDir));
+				
+				if (tile.getValue() >= 208 && tile.getValue() <= 223) {
+					RoomLocater loc = null;
+					for (RoomLocater r : locaters) {
+						if (r.z == currentLevel && r.x == x && r.y == y) {
+							loc = r;
+							break;
+						}
+					}
+					enterRoom(loc, Direction.reverse(currentDir));
+				}
+			} else {
+				//no one exited, perhaps they all died, death screen will show up next
 			}
 		}
 		
@@ -808,7 +849,15 @@ public class DungeonScreen extends BaseScreen {
 					log("Nothing!");
 				}
 			} else {
-				log("Who searches?");
+				
+				if (tile.getValue() >= 144 && tile.getValue() <= 148) {
+					log("You find a Fountain. Who drinks?");
+				} else if (tile == DungeonTile.ORB) {
+					log("You find a Magical Orb...Who touches?");
+				} else {
+					log("Who searches?");
+				}
+
 				Gdx.input.setInputProcessor(sip);
 				sip.setinitialKeyCode(keycode, tile, x, y);
 				return false;
@@ -824,118 +873,126 @@ public class DungeonScreen extends BaseScreen {
 		switch (tile) {
 		case WIND_TRAP:
 			log("Wind extinguished your torch!");
+            Sounds.play(Sound.WIND);
 			isTorchOn = false;
 			break;
 		case PIT_TRAP:
+	        log("Pit!");
+	        GameScreen.context.getParty().applyEffect(TileEffect.LAVA);
+            Sounds.play(Sound.BOOM);
+    		dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
 			break;
 		case ROCK_TRAP:
+	        log("Falling Rocks!");
+	        GameScreen.context.getParty().applyEffect(TileEffect.LAVA);
+            Sounds.play(Sound.ROCKS);
+    		dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
 			break;
 		}
 	}
 	
-	
-	/**
-	 * Touch the magical ball at the current location
-	 */
 	public void dungeonTouchOrb(int index) {
-//	    log("You find a Magical Orb...Who touches? ");
-//	    int player = gameGetPlayer(false, false);
-//	    if (player == -1)
-//	        return;
-//
-//	    int stats = 0;
-//	    int damage = 0;    
-//	    
-//	    /* Get current position and find a replacement tile for it */   
-//	    Tile * orb_tile = c->location->map->tileset->getByName("magic_orb");
-//	    MapTile replacementTile(c->location->getReplacementTile(c->location->coords, orb_tile));
-//
-//	    switch(c->location->map->id) {
-//	    case MAP_DECEIT:    stats = STATSBONUS_INT; break;
-//	    case MAP_DESPISE:   stats = STATSBONUS_DEX; break;
-//	    case MAP_DESTARD:   stats = STATSBONUS_STR; break;
-//	    case MAP_WRONG:     stats = STATSBONUS_INT | STATSBONUS_DEX; break;
-//	    case MAP_COVETOUS:  stats = STATSBONUS_DEX | STATSBONUS_STR; break;
-//	    case MAP_SHAME:     stats = STATSBONUS_INT | STATSBONUS_STR; break;
-//	    case MAP_HYTHLOTH:  stats = STATSBONUS_INT | STATSBONUS_DEX | STATSBONUS_STR; break;
-//	    default: break;
-//	    }
-//
-//	    /* give stats bonuses */
-//	    if (stats & STATSBONUS_STR) {
-//	        screenMessage("Strength + 5\n");
-//	        AdjustValueMax(c->saveGame->players[player].str, 5, 50);
-//	        damage += 200;
-//	    }
-//	    if (stats & STATSBONUS_DEX) {
-//	        screenMessage("Dexterity + 5\n");
-//	        AdjustValueMax(c->saveGame->players[player].dex, 5, 50);        
-//	        damage += 200;
-//	    }
-//	    if (stats & STATSBONUS_INT) {
-//	        screenMessage("Intelligence + 5\n");
-//	        AdjustValueMax(c->saveGame->players[player].intel, 5, 50);        
-//	        damage += 200;
-//	    }   
-//	    
-//	    /* deal damage to the party member who touched the orb */
-//	    c->party->member(player)->applyDamage(damage);    
-//	    /* remove the orb from the map */
-//	    c->location->map->annotations->add(c->location->coords, replacementTile);
+		
+	    PartyMember pm = GameScreen.context.getParty().getMember(index);
+		int x = (Math.round(currentPos.x)-1);
+		int y = (Math.round(currentPos.z)-1);
+		
+	    int stats = 0;
+	    int damage = 0;       
+
+	    switch(dngMap) {
+	    case DECEIT:    stats = STATSBONUS_INT; break;
+	    case DESPISE:   stats = STATSBONUS_DEX; break;
+	    case DESTARD:   stats = STATSBONUS_STR; break;
+	    case WRONG:     stats = STATSBONUS_INT | STATSBONUS_DEX; break;
+	    case COVETOUS:  stats = STATSBONUS_DEX | STATSBONUS_STR; break;
+	    case SHAME:     stats = STATSBONUS_INT | STATSBONUS_STR; break;
+	    case HYTHLOTH:  stats = STATSBONUS_INT | STATSBONUS_DEX | STATSBONUS_STR; break;
+	    default: break;
+	    }
+
+	    if ((stats & STATSBONUS_STR) > 0) {
+	        log("Strength + 5");
+			int n = Utils.adjustValueMax(pm.getPlayer().str, 5, 50);
+			pm.getPlayer().str = n;
+	        damage += 200;
+	    }
+	    if ((stats & STATSBONUS_DEX) > 0) {
+	        log("Dexterity + 5");
+			int n = Utils.adjustValueMax(pm.getPlayer().dex, 5, 50);
+			pm.getPlayer().dex = n;
+	        damage += 200;
+	    }
+	    if ((stats & STATSBONUS_INT) > 0) {
+	        log("Intelligence + 5");
+			int n = Utils.adjustValueMax(pm.getPlayer().intel, 5, 50);
+			pm.getPlayer().intel = n;
+	        damage += 200;
+	    }   
+	    
+	    pm.applyDamage(damage, false);
+	    
+	    Sounds.play(Sound.LIGHTNING);
+	    
+	    //remove orb model instance
+	    DungeonTileModelInstance orb = null;
+	    for (DungeonTileModelInstance dmi : modelInstances) {
+	    	if (dmi.tile == DungeonTile.ORB) {
+	    		if (dmi.x == x && dmi.y == y) {
+	    			orb = dmi;
+		    		break;
+	    		}
+	    	}
+	    }
+	    modelInstances.remove(orb);
+		dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
+
 	}
 	
-	/**
-	 * Drink from the fountain at the current location
-	 */
-	public void dungeonDrinkFountain(DungeonTile tile, int index) {
-//	    screenMessage("You find a Fountain.\nWho drinks? ");
-//	    int player = gameGetPlayer(false, false);
-//	    if (player == -1)
-//	        return;
-//
-//	    Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
-//	    FountainType type = (FountainType) dungeon->currentSubToken();    
-//
-//	    switch(type) {
-//	    /* plain fountain */
-//	    case FOUNTAIN_NORMAL: 
-//	        screenMessage("\nHmmm--No Effect!\n");
-//	        break;
-//
-//	    /* healing fountain */
-//	    case FOUNTAIN_HEALING: 
-//	        if (c->party->member(player)->heal(HT_FULLHEAL))
-//	            screenMessage("\nAhh-Refreshing!\n");
-//	        else screenMessage("\nHmmm--No Effect!\n");
-//	        break;
-//	    
-//	    /* acid fountain */
-//	    case FOUNTAIN_ACID:
-//	        c->party->member(player)->applyDamage(100); /* 100 damage to drinker */        
-//	        screenMessage("\nBleck--Nasty!\n");
-//	        break;
-//
-//	    /* cure fountain */
-//	    case FOUNTAIN_CURE:
-//	        if (c->party->member(player)->heal(HT_CURE))        
-//	            screenMessage("\nHmmm--Delicious!\n");
-//	        else screenMessage("\nHmmm--No Effect!\n");
-//	        break;
-//
-//	    /* poison fountain */
-//	    case FOUNTAIN_POISON: 
-//	        if (c->party->member(player)->getStatus() != STAT_POISONED) {
-//	            soundPlay(SOUND_POISON_DAMAGE);
-//	            c->party->member(player)->applyEffect(EFFECT_POISON);
-//	            c->party->member(player)->applyDamage(100); /* 100 damage to drinker also */            
-//	            screenMessage("\nArgh-Choke-Gasp!\n");
-//	        }
-//	        else screenMessage("\nHmm--No Effect!\n");
-//	        break;
-//
-//	    default:
-//	        ASSERT(0, "Invalid call to dungeonDrinkFountain: no fountain at current location");
-//	    }
+
+	@SuppressWarnings("incomplete-switch")
+	public void dungeonDrinkFountain(DungeonTile type, int index) {
+	    PartyMember pm = GameScreen.context.getParty().getMember(index);
+	    switch(type) {
+	    case FOUNTAIN_PLAIN: 
+	        log("Hmmm--No Effect!");
+	        break;
+	    case FOUNTAIN_HEAL: 
+	        if (pm.heal(HealType.FULLHEAL)) {
+	            Sounds.play(Sound.HEALING);
+	        	log("Ahh-Refreshing!");
+	        } else {
+	        	log("Hmmm--No Effect!");
+	        }
+	        break;
+	    case FOUNTAIN_ACID:
+	        pm.applyDamage(100, false); 
+            Sounds.play(Sound.DAMAGE_EFFECT);
+	        log("Bleck--Nasty!");
+	        break;
+	    case FOUNTAIN_CURE:
+	        if (pm.heal(HealType.CURE)) {
+	            Sounds.play(Sound.HEALING);
+	        	log("Hmmm--Delicious!");
+	        } else {
+	        	log("Hmmm--No Effect!");
+	        }
+	        break;
+	    case FOUNTAIN_POISON: 
+	        if (pm.getPlayer().status != StatusType.POISONED) {
+	            Sounds.play(Sound.DAMAGE_EFFECT);
+	            pm.applyEffect(TileEffect.POISON);
+	            pm.applyDamage(100, false);            
+	            log("Argh-Choke-Gasp!");
+	        } else {
+	        	log("Hmm--No Effect!");
+	        }
+	        break;
+	    }
+	}
+	
+	public boolean validTeleportLocation(int x, int y, int z) {
+		return 	dungeonTiles[z][x][y] == DungeonTile.NOTHING;
 	}
 	
 

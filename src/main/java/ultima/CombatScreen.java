@@ -181,6 +181,13 @@ public class CombatScreen extends BaseScreen {
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(this);
+		party.addObserver(this);
+	}
+	
+	@Override
+	public void hide() {
+		Gdx.input.setInputProcessor(null);
+		party.deleteObserver(this);
 	}
 	
 	private void fillCreatureTable(CreatureType ct) {
@@ -498,37 +505,37 @@ public class CombatScreen extends BaseScreen {
 		
 		SequenceAction seq = Actions.action(SequenceAction.class);
 		for (Creature cr : combatMap.getCreatures()) {
-			seq.addAction(new CreatureActionsAction(cr));
+			seq.addAction(Actions.run(new CreatureActionsAction(cr)));
 			seq.addAction(Actions.delay(.04f));
 		}
-		seq.addAction(new FinishCreatureAction());
+		seq.addAction(Actions.run(new FinishCreatureAction()));
 		stage.addAction(seq);
 				
 	}
 	
-	class CreatureActionsAction extends Action {
+	class CreatureActionsAction implements Runnable {
 		private Creature cr;
 		public CreatureActionsAction(Creature cr) {
 			super();
 			this.cr = cr;
 		}
-		public boolean act(float delta) {
+		@Override
+		public void run() {
 			if (!creatureAction(cr)) {
 				//remove creature from map
 				combatMap.getCreatures().remove(cr);
 			}
-			return true;
 		}
 	}
 	
-	class FinishCreatureAction extends Action {
-		public boolean act(float delta) {
+	class FinishCreatureAction implements Runnable {
+		@Override
+		public void run() {
 			//enable input again
 			Gdx.input.setInputProcessor(CombatScreen.this);
 			if (!party.isAnyoneAlive()) {
 				end();
 			}
-			return true;
 		}
 	}
 	

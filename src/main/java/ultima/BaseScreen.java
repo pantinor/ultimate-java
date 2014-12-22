@@ -102,7 +102,11 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 				log("Thou art now Level");
 				Sounds.play(Sound.MAGIC);
 				break;
-			case GENERIC:
+			case POSITIVE_KARMA:
+				Sounds.play(Sound.POSITIVE_EFFECT);
+				break;
+			case NEGATIVE_KARMA:
+				Sounds.play(Sound.NEGATIVE_EFFECT);
 				break;
 			case INVENTORY_ADDED:
 				break;

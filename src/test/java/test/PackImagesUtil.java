@@ -26,7 +26,7 @@ public class PackImagesUtil {
 	    return fileTree;
 	}
 	
-	public static void main(String[] argv) throws Exception {
+	public static void main1(String[] argv) throws Exception {
 
 		List<File> files = listFileTree(new File("C:\\Users\\Paul\\Desktop\\crawl-tiles Oct-5-2010\\dc-dngn"));
 		Collections.sort(files);
@@ -120,7 +120,42 @@ public class PackImagesUtil {
 
 	}
 
-	
+	public static void main(String[] argv) throws Exception {
+
+		String dir = "D:\\xu4-source\\u4\\graphics\\png\\";
+		File[] files = new File[9];
+		for (int i=0;i<9;i++) files[i] = new File(dir + "rune" + i + ".png");
+		
+		Map<String,BufferedImage> imgMap = new TreeMap<String,BufferedImage>();
+		
+		for (File file : files) {
+			String name = file.getName();
+			BufferedImage fr = ImageIO.read(file);
+			BufferedImage sub = fr.getSubimage(8, 8, 176, 176);
+			imgMap.put(name, sub);
+		}
+		
+		System.out.println("Writing: number of images: " + imgMap.size());
+
+
+		Settings settings = new Settings();
+		settings.maxWidth = 176;
+		settings.maxHeight = 2048;
+		settings.paddingX = 0;
+		settings.paddingY = 0;
+		settings.fast = true;
+		settings.pot = false;
+		settings.grid = true;
+
+		TexturePacker tp = new TexturePacker(settings);
+		for (String name : imgMap.keySet()) {
+			BufferedImage image = imgMap.get(name);
+			tp.addImage(image, name);
+		}
+		tp.pack(new File("."), "runes-visions");
+		
+	    System.out.println("done");
+	}
 
 	
 

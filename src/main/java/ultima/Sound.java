@@ -19,6 +19,7 @@ public enum Sound {
 	
 	EVADE ("evade.ogg", false, 0.3f),
 	POISON_EFFECT ("Poison.ogg", false, 0.3f),
+	DAMAGE_EFFECT ("poison_effect.ogg", false, 0.3f),
 	POISON_DAMAGE ("poison_damage.ogg", false, 0.3f),
 	SLEEP ("Hypnosis.ogg", false, 0.3f),
 	BOOM ("boom.ogg", false, 0.3f),
@@ -30,6 +31,8 @@ public enum Sound {
 	ACID ("AcidicRain.ogg", false, 0.3f),
 	LIGHTNING ("LightningBolt.ogg", false, 0.3f),
 	FIREBALL ("Fireball.ogg", false, 0.3f),
+	ROCKS ("StoneRain.ogg", false, 0.3f),
+	WIND ("tornado.ogg", false, 0.3f),
 
 	//music
 	OUTSIDE ("Wanderer.mp3", false, 0.1f), 

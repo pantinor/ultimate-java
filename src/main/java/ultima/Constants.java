@@ -15,7 +15,7 @@ import com.badlogic.gdx.files.FileHandle;
 public interface Constants {
 	
 	public enum ScreenType {
-		MAIN,COMBAT,DUNGEON;
+		MAIN,COMBAT,DUNGEON,SHRINE;
 	}
 	
 	public static int tilePixelWidth = 32;
@@ -360,7 +360,6 @@ public interface Constants {
 		        return WEST;
 		    case SOUTH:
 		        return NORTH;
-		    default: break;
 		    }
 		    return null;
 		}
@@ -812,7 +811,10 @@ public interface Constants {
 	public static final int STATS_REAGENTS = 12;
 	public static final int STATS_SPELLS = 13;
 
-
+	//for touching orbs
+	public static final int STATSBONUS_INT = 0x1;
+	public static final int STATSBONUS_DEX = 0x2;
+	public static final int STATSBONUS_STR = 0x4;
 		
 	public enum SexType {
 		MALE(0xB,"Male"),
@@ -1155,7 +1157,8 @@ public interface Constants {
 	}
 	
     public enum PartyEvent {
-        GENERIC,
+        POSITIVE_KARMA,
+        NEGATIVE_KARMA,
         LOST_EIGHTH,
         ADVANCED_LEVEL,
         STARVING,
@@ -1382,6 +1385,33 @@ public interface Constants {
 		"Humility",
 		"With the final choice, the incense swells up around you.  The gypsy speaks as if from a great distance, her voice growing fainter with each word: \"So be it!  Thy path is chosen!\"",
 		"There is a moment of intense, wrenching vertigo.  As you open your eyes, a voice whispers within your mind, \"Seek the counsel of thy sovereign.\"  After a moment, the spinning subsides, and you open your eyes to..."
+	};
+	
+	public static String[] shrineAdvice = {
+		"Take not the gold of others found in towns and castles for yours it is not!",
+		"Cheat not the merchants and peddlers for tis an evil thing to do!",
+		"Second, read the Book of Truth at the entrance to the Great Stygian Abyss!",
+		"Kill not the non-evil beasts of the land, and do not attack the fair people!",
+		"Give of thy purse to those who beg and thy deed shall not be forgotten!",
+		"Third, light the Candle of Love at the entrance to the Great Stygian Abyss!",
+		"Victories scored over evil creatures help to build a valorous soul!",
+		"To flee from battle with less than grievous wounds often shows a coward!",
+		"First, ring the Bell of Courage at the entrance to the Great Stygian Abyss!",
+		"To take the gold of others is injustice not soon forgotten. Take only thy due!",
+		"Attack not a peaceful citizen for that action deserves strict punishment!",
+		"Kill not a non-evil beast for they deserve not death, even if in hunger they attack thee!",
+		"To give thy last gold piece unto the needy shows good measure of self-sacrifice!",
+		"For thee to flee and leave thy companions is a self-serving action to be avoided!",
+		"To give of thy life's blood so that others may live is a virtue of great praise!",
+		"Take not the gold of others for this shall bring dishonor upon thee!",
+		"To strike first a non-evil being is by no means an honorable deed!",
+		"Seek ye to solve the many Quests before thee, and honor shall be a reward!",
+		"Seek ye to know thyself.  Visit the seer often for he can see into thy inner being!",
+		"Meditation leads to enlightenment Seek ye all Wisdom and Knowledge!",
+		"If thou dost seek the White Stone, search ye not under the ground, but in Serpent's Spine!",
+		"Claim not to be that which thou art not.  Humble actions speak well of thee!",
+		"Strive not to wield the Great Force of Evil for its power will overcome thee!",
+		"If thou dost seek the Black Stone, search ye at the Time and Place of the Gate on the darkest of all nights!"
 	};
 	
 	public static final int REVIVE_WORLD_X  = 86;
