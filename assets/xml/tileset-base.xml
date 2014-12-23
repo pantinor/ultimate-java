@@ -90,7 +90,7 @@
 	<tile name="jester" rule="person" animation="frame" index="86" />
 	<tile name="jester" rule="person" animation="frame" index="87" />
 	<tile name="beggar" rule="person" animation="frame" index="88" />
-	<tile name="lord_british" rule="person" animation="frame" index="89" />
+	<tile name="beggar" rule="person" animation="frame" index="89" />
 	<tile name="child" rule="person" animation="frame" index="90" />
 	<tile name="child" rule="person" animation="frame" index="91" />
 	<tile name="bull" rule="person" animation="frame" index="92" />

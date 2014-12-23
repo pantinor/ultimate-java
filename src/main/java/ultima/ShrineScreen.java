@@ -4,7 +4,6 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.delay;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeIn;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
 import java.util.Random;
@@ -96,7 +95,7 @@ public class ShrineScreen extends BaseScreen {
 		avatar.setPos(v1);
 		stage.addActor(avatar);
 		
-		avatar.addAction(sequence(sequence(
+		avatar.addAction(sequence(
 				delay(.8f, moveTo(v2.x, v2.y, .1f)),
 				delay(.8f, moveTo(v3.x, v3.y, .1f)),
 				delay(.8f, moveTo(v4.x, v4.y, .1f)),
@@ -107,7 +106,7 @@ public class ShrineScreen extends BaseScreen {
 						return true;
 					}
 				}
-				)));
+				));
 
 		batch = new SpriteBatch();
 		
@@ -157,7 +156,7 @@ public class ShrineScreen extends BaseScreen {
 		font.draw(batch, "moves: " + party.getSaveGame().moves, 5, 360);
 		font.draw(batch, "lastmeditation: " + party.getSaveGame().lastmeditation, 5, 340);
 		font.draw(batch, "divisor moves: " + party.getSaveGame().moves / SHRINE_MEDITATION_INTERVAL, 5, 320);
-		font.draw(batch, "divisor mask: " + ((party.getSaveGame().moves / SHRINE_MEDITATION_INTERVAL) & 0xffff), 5, 300);
+		font.draw(batch, "karma: " + party.getSaveGame().karma[virtue.ordinal()], 5, 300);
 
 
 		logs.render(batch);
@@ -239,7 +238,7 @@ public class ShrineScreen extends BaseScreen {
 	        AvatarActor runeVisionActor = new AvatarActor(vision);
 			Vector3 pos = getMapPixelCoords(3, 7);
 	        runeVisionActor.setPos(pos);
-	        runeVisionActor.addAction(sequence(fadeOut(.01f), fadeIn(2), delay(8f), fadeOut(2), removeActor()));
+	        runeVisionActor.addAction(sequence(fadeOut(.01f), fadeIn(3f)));
 	        stage.addActor(runeVisionActor);
 	        Sounds.play(Sound.SLEEP);
 	    } else {
@@ -297,8 +296,8 @@ public class ShrineScreen extends BaseScreen {
 					screen.logDeleteLastChar();
 				}
 			} else if (keycode >= 29 && keycode <= 54) {
-				buffer.append(Keys.toString(keycode).toLowerCase());
-				screen.logAppend(Keys.toString(keycode).toLowerCase());
+				buffer.append(Keys.toString(keycode).toUpperCase());
+				screen.logAppend(Keys.toString(keycode).toUpperCase());
 			}
 			return false;
 		}

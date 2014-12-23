@@ -5,6 +5,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import objects.Conversation.Topic;
 import ultima.Constants.MapType;
 import ultima.Constants.Maps;
 import util.Utils;
@@ -47,6 +48,16 @@ public class MapSet {
 						for (PersonRole pr : m.getCity().getPersonRoles()) {
 							if (p.getId() == pr.getId()) p.setRole(pr); 
 						}
+						
+						//set beggars give conversations
+						if (p.getTile().getIndex() == 88 || p.getTile().getIndex() == 89) {
+							Topic giveTopic = p.getConversation().matchTopic("give");
+							giveTopic.setPhrase("How much?");
+							CustomInputConversation cic = new CustomInputConversation(p.getTile(), p.getConversation());
+							cic.setCustomInputQuery("give");
+							p.setConversation(cic);
+						}
+
 					}
 				}
 				

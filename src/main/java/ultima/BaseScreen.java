@@ -76,6 +76,11 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 				0);
 	}
 	
+	@Override
+	public void dispose() {
+		
+	}
+	
 	public void log(String s) {
 		logs.add(s);
 	}
@@ -221,10 +226,6 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 		
 	}
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 }

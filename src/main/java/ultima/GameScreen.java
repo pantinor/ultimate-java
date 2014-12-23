@@ -157,19 +157,23 @@ public class GameScreen extends BaseScreen {
 			//party.join(NpcDefaults.Shamino.name());
 			//party.join(NpcDefaults.Katrina.name());
 			//sg.food = 30000;
-			//sg.runes |= Virtue.JUSTICE.getLoc();
+			//sg.runes |= Virtue.VALOR.getLoc();
 			//sg.moves = 2800;
-			//sg.karma[Virtue.JUSTICE.ordinal()] = 99;
+			//sg.karma[Virtue.VALOR.ordinal()] = 99;
 			//sg.stones |= Stone.YELLOW.getLoc();
+			//party.getMember(0).getPlayer().status = StatusType.POISONED;
+			//party.getMember(1).getPlayer().xp = 600;
+			//party.getMember(0).getPlayer().weapon = WeaponType.OIL;
+			//party.getSaveGame().weapons[9] = 99;
 
 			//load the surface world first
 			loadNextMap(Maps.WORLD, sg.x, sg.y);
-			//loadNextMap(Maps.WORLD, 73, 11);
+			//loadNextMap(Maps.WORLD, 86, 107);
 
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
 				loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation+1), true);
-				//loadNextMap(Maps.HYTHLOTH, 0, 0, 5, 3, 5, Direction.EAST, true);
+				//loadNextMap(Maps.HYTHLOTH, 0, 0, 5, 2, 5, Direction.EAST, true);
 			}
 		}
 		
@@ -377,9 +381,6 @@ public class GameScreen extends BaseScreen {
 		}
 
 		batch.end();
-
-		stage.act();
-		stage.draw();
 		
 		mapObjectsStage.act();
 		mapObjectsStage.draw();
@@ -387,7 +388,9 @@ public class GameScreen extends BaseScreen {
 		mapBatch.begin();
 		mapBatch.draw(avatar.getKeyFrame(time, true), mapCamera.position.x, mapCamera.position.y, tilePixelWidth, tilePixelHeight);
 		mapBatch.end();
-
+		
+		stage.act();
+		stage.draw();
 		
 	}
 

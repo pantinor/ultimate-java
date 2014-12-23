@@ -354,14 +354,17 @@ public class BaseMap implements Constants {
 				if (p == null) continue;
 				String tname = p.getTile().getName();
 				
+				AtlasRegion ar = atlas1.findRegion(tname);
+				if (ar == null) {
+					ar = atlas2.findRegion(tname);
+				}
+				p.setTextureRegion(ar);
+				
 				Array<AtlasRegion> tr = atlas1.findRegions(tname);
 				if (tr == null || tr.size == 0) {
 					tr = atlas2.findRegions(tname);
 				}
-				
-				//give some randomness to the animations
-				//tr.shuffle();
-				
+								
 				//random rate between 1 and 4
 				int frameRate = ThreadLocalRandom.current().nextInt(1,4);
 				p.setAnim(new Animation(frameRate, tr));

@@ -1,7 +1,6 @@
 package ultima;
 
 import objects.Party;
-import objects.Party.PartyMember;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -33,6 +32,18 @@ public class DeathScreen extends BaseScreen implements Constants {
 		initTime = System.currentTimeMillis();
 		
 		party.reviveAll();
+		
+		//You will keep EQUIPPED weapons and armor, 
+		//as well as QUEST items, and spells that you have mixed. 
+		//Everything else will be gone.
+		for (int i = 0; i < 8; i++) {
+			party.getSaveGame().weapons[i] = 0;
+			party.getSaveGame().armor[i] = 0;
+			party.getSaveGame().reagents[i] = 0;
+		}
+		
+		party.getSaveGame().food = 30000;
+		party.getSaveGame().gold = 200;
 
 	}
 	

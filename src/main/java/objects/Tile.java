@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ultima.Constants.Maps;
+import ultima.Constants.TileAttrib;
 import ultima.Constants.TileRule;
 
 @XmlRootElement(name = "tile")
@@ -111,24 +112,13 @@ public class Tile {
 		return String.format("Tile [name=%s, rule=%s]", name, rule);
 	}
 	
-	public boolean enterable() {
-		switch(index) {
-		case 9:
-		case 10:
-		case 11:
-		case 12:
-		case 14:
-		case 29:
-		case 30:
-		{
+	public boolean walkable() {
+		if (rule != null && !rule.has(TileAttrib.unwalkable)) {
 			return true;
 		}
-		default:
-			
-		}
-		
 		return false;
 	}
+	
 	
 	public boolean climbable() {
 		switch(index) {

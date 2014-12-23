@@ -1,11 +1,7 @@
 package objects;
 
-import objects.Party.PartyMember;
 import ultima.Constants;
 import ultima.GameScreen;
-import ultima.Sound;
-import ultima.Sounds;
-import ultima.Ultima4;
 
 public class LordBritishConversation extends Conversation implements Constants {
 	
@@ -84,9 +80,11 @@ public class LordBritishConversation extends Conversation implements Constants {
 				sb.append("Lord British says:  Welcome " + party.getMember(0).getPlayer().name + "\nand thy worthy\nAdventurers!\n\n");
 			}
 		} else {
-			sb.append("Lord British rises and says: At long last!\n\n" + party.getMember(0).getPlayer().name + " thou hast come!\n\nWe have waited such a long, long time..."
+			sb.append("Lord British rises and says: At long last!\n\n" + party.getMember(0).getPlayer().name + 
+					" thou hast come!\n\nWe have waited such a long, long time..."
 					+ "\n\nLord British sits and says: A new age is upon Britannia. The great evil Lords are gone but our people lack direction and purpose in their lives...\n"
-					+ "A champion of virtue is called for. Thou may be this champion, but only time shall tell.  I will aid thee any way that I can!\n" + "How may I help thee?");
+					+ "A champion of virtue is called for. Thou may be this champion, but only time shall tell.  I will aid thee any way that I can!\n" + 
+					"How may I help thee?");
 			
 			sg.lbintro = 1;
 		}
@@ -109,26 +107,32 @@ public class LordBritishConversation extends Conversation implements Constants {
 		String text;
 
 		if (sg.moves <= 1000) {
-			text = "To survive in this hostile land thou must first know thyself! Seek ye to master thy weapons and thy magical ability!\n" + "\nTake great care in these thy first travels in Britannia.\n"
+			text = "To survive in this hostile land thou must first know thyself! Seek ye to master thy weapons and thy magical ability!\n" + 
+		"\nTake great care in these thy first travels in Britannia.\n"
 					+ "\nUntil thou dost well know thyself, travel not far from the safety of the townes!\n";
 		}
 
 		else if (sg.members == 1) {
-			text = "Travel not the open lands alone. There are many worthy people in the diverse townes whom it would be wise to ask to Join thee!\n" + "\nBuild thy party unto eight travellers, for only a true leader can win the Quest!\n";
+			text = "Travel not the open lands alone. There are many worthy people in the diverse townes whom it would be wise to ask to Join thee!\n" + 
+		"\nBuild thy party unto eight travellers, for only a true leader can win the Quest!\n";
 		}
 
 		else if (sg.runes == 0) {
-			text = "Learn ye the paths of virtue. Seek to gain entry unto the eight shrines!\n" + "\nFind ye the Runes, needed for entry into each shrine, and learn each chant or \"Mantra\" used to focus thy meditations.\n"
-					+ "\nWithin the Shrines thou shalt learn of the deeds which show thy inner virtue or vice!\n" + "\nChoose thy path wisely for all thy deeds of good and evil are remembered and can return to hinder thee!\n";
+			text = "Learn ye the paths of virtue. Seek to gain entry unto the eight shrines!\n" + 
+		"\nFind ye the Runes, needed for entry into each shrine, and learn each chant or \"Mantra\" used to focus thy meditations.\n"
+					+ "\nWithin the Shrines thou shalt learn of the deeds which show thy inner virtue or vice!\n" + 
+		"\nChoose thy path wisely for all thy deeds of good and evil are remembered and can return to hinder thee!\n";
 		}
 
 		else if (!partialAvatar) {
-			text = "Visit the Seer Hawkwind often and use his wisdom to help thee prove thy virtue.\n" + "\nWhen thou art ready, Hawkwind will advise thee to seek the Elevation unto partial Avatarhood in a virtue.\n"
+			text = "Visit the Seer Hawkwind often and use his wisdom to help thee prove thy virtue.\n" + 
+		"\nWhen thou art ready, Hawkwind will advise thee to seek the Elevation unto partial Avatarhood in a virtue.\n"
 					+ "\nSeek ye to become a partial Avatar in all eight virtues, for only then shalt thou be ready to seek the codex!\n";
 		}
 
 		else if (sg.stones == 0) {
-			text = "Go ye now into the depths of the dungeons. Therein recover the 8 colored stones from the altar pedestals in the halls of the dungeons.\n" + "\nFind the uses of these stones for they can help thee in the Abyss!\n";
+			text = "Go ye now into the depths of the dungeons. Therein recover the 8 colored stones from the altar pedestals in the halls of the dungeons.\n" + 
+		"\nFind the uses of these stones for they can help thee in the Abyss!\n";
 		}
 
 		else if (!fullAvatar) {
@@ -140,11 +144,13 @@ public class LordBritishConversation extends Conversation implements Constants {
 		}
 
 		else if ((sg.items & Item.KEY_C.ordinal()) == 0 || (sg.items & Item.KEY_L.ordinal()) == 0 || (sg.items & Item.KEY_T.ordinal()) == 0) {
-			text = "Before thou dost enter the Abyss thou shalt need the Key of Three Parts, and the Word of Passage.\n" + "\nThen might thou enter the Chamber of the Codex of Ultimate Wisdom!\n";
+			text = "Before thou dost enter the Abyss thou shalt need the Key of Three Parts, and the Word of Passage.\n" + 
+		"\nThen might thou enter the Chamber of the Codex of Ultimate Wisdom!\n";
 		}
 
 		else {
-			text = "Thou dost now seem ready to make the final journey into the dark Abyss! Go only with a party of eight!\n" + "\nGood Luck, and may the powers of good watch over thee on this thy most perilous endeavor!\n"
+			text = "Thou dost now seem ready to make the final journey into the dark Abyss! Go only with a party of eight!\n" + 
+		"\nGood Luck, and may the powers of good watch over thee on this thy most perilous endeavor!\n"
 					+ "\nThe hearts and souls of all Britannia go with thee now. Take care, my friend.\n";
 		}
 

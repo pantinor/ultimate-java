@@ -36,7 +36,7 @@ import ultima.Constants.KarmaAction;
 import ultima.Constants.Maps;
 import ultima.Constants.TileAttrib;
 import ultima.Constants.TileRule;
-import ultima.Constants.Vector;
+import ultima.Constants.AttackVector;
 import ultima.Constants.Virtue;
 import util.ShadowFOV;
 import util.Utils;

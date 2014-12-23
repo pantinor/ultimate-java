@@ -5,14 +5,13 @@ import java.util.List;
 
 public class Conversation {
 	
-	int index;
-	String name;
-	String pronoun;
-	int turnAwayProb;
-	String description;
-	int respAffectsHumility;
-	
-	List<Topic> topics = new ArrayList<Topic>();
+	protected int index;
+	protected String name;
+	protected String pronoun;
+	protected int turnAwayProb;
+	protected String description;
+	protected int respAffectsHumility;
+	protected List<Topic> topics = new ArrayList<Topic>();
 	
 	public Conversation() {
 		
@@ -49,10 +48,8 @@ public class Conversation {
 			topics.add(new Topic(query1, strings[5], null, null, null));
 			topics.add(new Topic(query2, strings[6], null, null, null));
 		}
-		
-
-
-		
+	
+				
 	}
 	
 	public Topic matchTopic(String query) {
@@ -64,76 +61,72 @@ public class Conversation {
 		return null;
 	}
 	
-	
-
 	public int getIndex() {
 		return index;
 	}
-
-
 
 	public String getName() {
 		return name;
 	}
 
-
-
 	public String getPronoun() {
 		return pronoun;
 	}
-
-
 
 	public int getTurnAwayProb() {
 		return turnAwayProb;
 	}
 
-
-
 	public String getDescription() {
 		return description;
 	}
-
-
 
 	public int getRespAffectsHumility() {
 		return respAffectsHumility;
 	}
 
+	public List<Topic> getTopics() {
+		return topics;
+	}
 
 	public void setIndex(int index) {
 		this.index = index;
 	}
 
-
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
-
 
 	public void setPronoun(String pronoun) {
 		this.pronoun = pronoun;
 	}
 
-
-
 	public void setTurnAwayProb(int turnAwayProb) {
 		this.turnAwayProb = turnAwayProb;
 	}
-
-
 
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
-
-
 	public void setRespAffectsHumility(int respAffectsHumility) {
 		this.respAffectsHumility = respAffectsHumility;
 	}
+
+	public void setTopics(List<Topic> topics) {
+		this.topics = topics;
+	}
+
+
+
+
+
+	@Override
+	public String toString() {
+		return String.format("Conversation [index=%s, name=%s, pronoun=%s, turnAwayProb=%s, description=%s, respAffectsHumility=%s, topics=%s]", index, name, pronoun, turnAwayProb, description, respAffectsHumility, topics);
+	}
+
+
 
 
 
@@ -143,8 +136,9 @@ public class Conversation {
 		private String question;
 		private String yesResponse;
 		private String noResponse;
-		private boolean lbHeal;
 		
+		private boolean lbHeal;
+
 		public Topic(String query, String phrase, String question, String yesResponse, String noResponse) {
 			super();
 			this.query = query;
@@ -161,6 +155,10 @@ public class Conversation {
 			this.yesResponse = yesResponse;
 			this.noResponse = noResponse;
 			this.lbHeal = heal;
+		}
+		public Topic(String phrase) {
+			super();
+			this.phrase = phrase;
 		}
 		public String getQuery() {
 			return query;
@@ -198,6 +196,12 @@ public class Conversation {
 		public void setLbHeal(boolean lbHeal) {
 			this.lbHeal = lbHeal;
 		}
+		
+		@Override
+		public String toString() {
+			return String.format("Topic [query=%s, phrase=%s, question=%s, yesResponse=%s, noResponse=%s]", query, phrase, question, yesResponse, noResponse, lbHeal);
+		}	
+		
 		
 
 	}

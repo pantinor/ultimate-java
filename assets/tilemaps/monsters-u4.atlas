@@ -1523,7 +1523,7 @@ dragon
   index: 0
 bull
   rotate: false
-  xy: 0, 1024
+  xy: 576, 32
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -1531,6 +1531,13 @@ bull
 insect_swarm
   rotate: false
   xy: 160, 1024
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 0
+corpse
+  rotate: false
+  xy: 256, 1024
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

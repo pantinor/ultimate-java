@@ -1430,11 +1430,13 @@ public interface Constants {
 		"Lord British says: I have pulled thy spirit and some possessions from the void.  Be more careful in the future!" 
      };
 	
-	public class Vector {
+	public class AttackVector {
 		int x;
 		int y;
 		AttackResult res;
-		Vector(int x, int y) {
+		String leaveTileName;
+		
+		AttackVector(int x, int y) {
 			this.x=x;
 			this.y=y;
 		}

@@ -190,6 +190,13 @@ public class CombatScreen extends BaseScreen {
 		party.deleteObserver(this);
 	}
 	
+	@Override
+	public void dispose() {
+		stage.dispose();
+		renderer.dispose();
+		batch.dispose();
+	}
+	
 	private void fillCreatureTable(CreatureType ct) {
 		   
 		if (ct == null) return;
@@ -392,7 +399,6 @@ public class CombatScreen extends BaseScreen {
 					
 					Sounds.play(Sound.TRIGGER);
 					
-					TiledMapTileLayer layer = (TiledMapTileLayer)tmap.getLayers().get("Map Layer");
 					TileRule rule = tr.tile.getRule();
 					
 					boolean nullplace1 = tr.t1X == 0 && tr.t1Y == 0;
@@ -402,20 +408,10 @@ public class CombatScreen extends BaseScreen {
 	
 					} else {
 						if (!nullplace1) {
-							TextureRegion texture = GameScreen.standardAtlas.findRegion(tr.tile.getName());
-							Cell cell = layer.getCell(tr.t1X, 11 - 1 - tr.t1Y);
-							TiledMapTile tmt = new StaticTiledMapTile(texture);
-							tmt.setId(tr.t1Y * 11 + tr.t1X);
-							cell.setTile(tmt);
-							combatMap.setTile(tr.tile, tr.t1X, tr.t1Y);
+							replaceTile(tr.tile.getName(), tr.t1X, tr.t1Y);
 						}
 						if (!nullplace2) {
-							TextureRegion texture = GameScreen.standardAtlas.findRegion(tr.tile.getName());
-							Cell cell = layer.getCell(tr.t2X, 11 - 1 - tr.t2Y);
-							TiledMapTile tmt = new StaticTiledMapTile(texture);
-							tmt.setId(tr.t2Y * 11 + tr.t2X);
-							cell.setTile(tmt);
-							combatMap.setTile(tr.tile, tr.t2X, tr.t2Y);
+							replaceTile(tr.tile.getName(), tr.t2X, tr.t2Y);
 						}
 					}
 				}
@@ -423,16 +419,29 @@ public class CombatScreen extends BaseScreen {
 		}
 	}
 	
+	public void replaceTile(String name, int x, int y) {
+		if (name == null) {
+			return;
+		}
+		TextureRegion texture = GameScreen.standardAtlas.findRegion(name);
+		TiledMapTileLayer layer = (TiledMapTileLayer)tmap.getLayers().get("Map Layer");
+		Cell cell = layer.getCell(x, 11 - 1 - y);
+		TiledMapTile tmt = new StaticTiledMapTile(texture);
+		tmt.setId(y * 11 + x);
+		cell.setTile(tmt);
+		combatMap.setTile(GameScreen.baseTileSet.getTileByName(name), x, y);
+	}
+	
 	private boolean preMove(Creature active, Direction dir) {
 		
 		int x = active.currentX;
 		int y = active.currentY;
 		
-		Vector next = null;
-		if (dir == Direction.NORTH) next = new Vector(x,y-1);
-		if (dir == Direction.SOUTH) next = new Vector(x,y+1);
-		if (dir == Direction.EAST) next = new Vector(x+1,y);
-		if (dir == Direction.WEST) next = new Vector(x-1,y);
+		AttackVector next = null;
+		if (dir == Direction.NORTH) next = new AttackVector(x,y-1);
+		if (dir == Direction.SOUTH) next = new AttackVector(x,y+1);
+		if (dir == Direction.EAST) next = new AttackVector(x+1,y);
+		if (dir == Direction.WEST) next = new AttackVector(x-1,y);
 				
 		if (next.x > combatMap.getWidth()-1 || next.x < 0 || next.y > combatMap.getHeight()-1 || next.y < 0) {
 		    
@@ -549,25 +558,37 @@ public class CombatScreen extends BaseScreen {
 	}
 	
 
-	public Vector attack(PartyMember attacker, Direction dir, int x, int y, int range) {
+	public AttackVector attack(PartyMember attacker, Direction dir, int x, int y, int range) {
 	    
 		Sounds.play(Sound.PC_ATTACK);
 		
 	    WeaponType wt = attacker.getPlayer().weapon;
 		boolean weaponCanAttackThroughObjects = wt.getWeapon().getAttackthroughobjects();
 	    
-	    List<Vector> path = getDirectionalActionPath(Direction.getMask(dir), x, y, 1, range, weaponCanAttackThroughObjects, true);
+	    List<AttackVector> path = getDirectionalActionPath(Direction.getMask(dir), x, y, 1, range, weaponCanAttackThroughObjects, true);
 	    
-	    Vector target = null;
+	    AttackVector target = null;
+	    boolean foundTarget = false;
 	    int distance = 1;
-	    for (Vector v : path) {
+	    for (AttackVector v : path) {
             AttackResult res = attackAt(v, attacker, dir, range, distance);
             target = v;
             target.setResult(res);
 	        if (res != AttackResult.NONE) {
+	        	foundTarget = true;
 	            break;
 	        }
 	        distance++;
+	    }
+	    
+	    if (wt.getWeapon().getLose() || (wt.getWeapon().getLosewhenranged() && (!foundTarget || distance > 1))) {
+            if (attacker.loseWeapon() == WeaponType.HANDS) {
+                log("Last One!");
+            }
+        }
+	    
+	    if (wt.getWeapon().getLeavetile() != null && combatMap.getTile(target.x, target.y).walkable()) {
+			target.leaveTileName = wt.getWeapon().getLeavetile();
 	    }
     	
     	return target;
@@ -581,10 +602,10 @@ public class CombatScreen extends BaseScreen {
 	 * fails.  If a tile is blocked, that tile is included in the path
 	 * only if includeBlocked is true.
 	 */
-	private List<Vector> getDirectionalActionPath(int dirmask, int x, int y, int minDistance, int maxDistance, 
+	private List<AttackVector> getDirectionalActionPath(int dirmask, int x, int y, int minDistance, int maxDistance, 
 			boolean weaponCanAttackThroughObjects, boolean checkForCreatures) {
 		
-	    List<Vector> path = new ArrayList<Vector>();
+	    List<AttackVector> path = new ArrayList<AttackVector>();
 
 	    /*
 	     * try every tile in the given direction, up to the given range.
@@ -606,9 +627,9 @@ public class CombatScreen extends BaseScreen {
 					&& tile.getRule() == TileRule.solid_attackover && weaponCanAttackThroughObjects);
 
 			if (!blocked || canAttackOverSolid) {
-				path.add(new Vector(nx, ny));
+				path.add(new AttackVector(nx, ny));
 			} else {
-				path.add(new Vector(nx, ny));
+				path.add(new AttackVector(nx, ny));
 				break;
 			}
 			
@@ -623,7 +644,7 @@ public class CombatScreen extends BaseScreen {
 	    return path;
 	}
 	
-	private AttackResult attackAt(Vector target, PartyMember attacker, Direction dir, int range, int distance) {
+	private AttackResult attackAt(AttackVector target, PartyMember attacker, Direction dir, int range, int distance) {
 		AttackResult res = AttackResult.NONE;
 	    Creature creature = null;
 	    for (Creature c : combatMap.getCreatures()) {
@@ -654,7 +675,7 @@ public class CombatScreen extends BaseScreen {
         return res;
 	}
 	
-	private boolean rangedAttackAt(Vector target, Creature attacker) {
+	private boolean rangedAttackAt(AttackVector target, Creature attacker) {
 
 	    PartyMember defender = null;
 	    for (PartyMember p : party.getMembers()) {
@@ -934,8 +955,8 @@ public class CombatScreen extends BaseScreen {
 
 	        Sounds.play(Sound.NPC_ATTACK);
 	        
-		    List<Vector> path = getDirectionalActionPath(dirmask, creature.currentX, creature.currentY, 1, 11, false, false);
-		    for (Vector v : path) {
+		    List<AttackVector> path = getDirectionalActionPath(dirmask, creature.currentX, creature.currentY, 1, 11, false, false);
+		    for (AttackVector v : path) {
 		        if (rangedAttackAt(v, creature)) {
 		            break;
 		        }

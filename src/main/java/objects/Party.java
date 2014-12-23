@@ -627,7 +627,7 @@ public class Party extends Observable implements Constants {
 		}
 
 		/*
-		 * return to u4dos compatibility and handle losing of eighths
+		 * handle losing of eighths
 		 */
 		for (int v = 0; v < 8; v++) {
 			if (maxVal[v] == 100) { // already an avatar
@@ -635,10 +635,17 @@ public class Party extends Observable implements Constants {
 					saveGame.karma[v] = newKarma[v];
 					setChanged();
 					notifyObservers(PartyEvent.LOST_EIGHTH);
-				} else { // return to u4dos compatibility
+				} else {
 					saveGame.karma[v] = 0;
 				}
 			} else {
+				if (saveGame.karma[v] > newKarma[v]) { 
+					setChanged();
+					notifyObservers(PartyEvent.NEGATIVE_KARMA);
+				} else if (saveGame.karma[v] < newKarma[v]) {
+					setChanged();
+					notifyObservers(PartyEvent.POSITIVE_KARMA);
+				}
 				saveGame.karma[v] = newKarma[v];
 			}
 		}
@@ -648,17 +655,11 @@ public class Party extends Observable implements Constants {
 	private void adjustKarmaMax(int[] karma, Virtue v, int value, int[] max) {
 		int n = Utils.adjustValueMax(karma[v.ordinal()], value, max[v.ordinal()]);
 		karma[v.ordinal()] = n;
-		
-		setChanged();
-		notifyObservers(PartyEvent.POSITIVE_KARMA);
 	}
 
 	private void adjustKarmaMin(int[] karma, Virtue v, int value, int min) {
 		int n = Utils.adjustValueMin(karma[v.ordinal()], value, min);
 		karma[v.ordinal()] = n;
-		
-		setChanged();
-		notifyObservers(PartyEvent.NEGATIVE_KARMA);
 	}
 	
 	public void endTurn(MapType mapType) {
@@ -693,13 +694,11 @@ public class Party extends Observable implements Constants {
 				}
 			}
 
-			/* regenerate magic points */
 			if (!member.isDisabled() && member.player.mp < member.player.getMaxMp()) {
 				member.player.mp++;
 			}
 		}
 
-		/* The party is starving! */
 		if ((saveGame.food == 0)) {
 			setChanged();
 			notifyObservers(PartyEvent.STARVING);

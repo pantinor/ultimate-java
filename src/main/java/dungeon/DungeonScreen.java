@@ -38,6 +38,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -59,6 +60,7 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.UBJsonReader;
 
@@ -110,6 +112,12 @@ public class DungeonScreen extends BaseScreen {
 	public Direction currentDir = Direction.EAST;
 		
 	public SecondaryInputProcessor sip;
+	private Texture miniMap;
+	private MiniMapIcon miniMapIcon;
+	
+	public static final int xalignMM = Ultima4.SCREEN_WIDTH - 165 - 16;
+	public static final int yalignMM = 10;
+
 
 	public DungeonScreen(Ultima4 mainGame, Stage stage, GameScreen gameScreen, Maps map) {
 		
@@ -162,6 +170,7 @@ public class DungeonScreen extends BaseScreen {
 		altarModel = gloader.loadModel(Gdx.files.internal("assets/graphics/altar.g3db"));
 				
 		MINI_MAP_TEXTURE = assets.get("assets/graphics/map.png", Texture.class);
+		
 		font = new BitmapFont();
 		font.setColor(Color.WHITE);
 		
@@ -256,6 +265,12 @@ public class DungeonScreen extends BaseScreen {
 				}
 			}
 			
+			miniMapIcon = new MiniMapIcon();
+			miniMapIcon.setOrigin(5,5);
+			
+			stage = new Stage();
+			stage.addActor(miniMapIcon);
+			
 			setStartPosition();
 			
 			cam.position.set(currentPos);
@@ -303,7 +318,7 @@ public class DungeonScreen extends BaseScreen {
 				}
 			}
 			
-
+			createMiniMap();
 		
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -312,7 +327,7 @@ public class DungeonScreen extends BaseScreen {
 		
 	}
 	
-	public void setStartPosition() {
+	private void setStartPosition() {
 		for (int y = 0; y < DUNGEON_MAP; y++) {
 			for (int x = 0; x < DUNGEON_MAP; x++) {
 				DungeonTile tile = dungeonTiles[currentLevel][x][y];
@@ -324,6 +339,10 @@ public class DungeonScreen extends BaseScreen {
 				}
 			}
 		}
+		
+		createMiniMap();
+		moveMiniMapIcon();
+
 	}
 	
 	public void restoreSaveGameLocation(int x, int y, int z, Direction orientation) {
@@ -342,6 +361,9 @@ public class DungeonScreen extends BaseScreen {
 		} else if (currentDir == Direction.SOUTH) {
 			cam.lookAt(currentPos.x, currentPos.y, currentPos.z+1);
 		}
+		
+		createMiniMap();
+		moveMiniMapIcon();
 	}
 	
 	@Override
@@ -388,10 +410,8 @@ public class DungeonScreen extends BaseScreen {
 
 		drawMiniMap();
 		
-		if (stage != null) {
-			stage.act();
-			stage.draw();
-		}
+		stage.act();
+		stage.draw();
 
 							
 	}
@@ -519,7 +539,11 @@ public class DungeonScreen extends BaseScreen {
 		
 	}
 	
-	public void drawMiniMap() {
+	private void createMiniMap() {
+		
+		if (miniMap != null) {
+			miniMap.dispose();
+		}
 		
 		Pixmap pixmap = new Pixmap(MINI_MAP_TEXTURE.getWidth(), MINI_MAP_TEXTURE.getHeight(), Format.RGBA8888);
 		for (int y = 0; y < DUNGEON_MAP; y++) {
@@ -545,31 +569,69 @@ public class DungeonScreen extends BaseScreen {
 			}
 		}
 		
-		pixmap.setColor(1f, 0f, 0f, 0.7f);
-		int x = (int)(32 + currentPos.x * 12);
-		int y = (int)(32 + currentPos.z * 12);
-		pixmap.fillRectangle(x, y, 7, 7);
-		if (currentDir == Direction.EAST) {
-			pixmap.fillRectangle(x+7, y+2, 3, 3);
-		}
-		if (currentDir == Direction.WEST) {
-			pixmap.fillRectangle(x-3, y+2, 3, 3);
-		}
-		if (currentDir == Direction.NORTH) {
-			pixmap.fillRectangle(x+2, y-2, 3, 3);
-		}
-		if (currentDir == Direction.SOUTH) {
-			pixmap.fillRectangle(x+2, y+7, 3, 3);
-		}
-		
-		Texture texture = new Texture(pixmap);
+		miniMap = new Texture(pixmap);
 		pixmap.dispose();
 		
+	}
+	
+	public Texture createMiniMapIcon(Direction dir) {
+		Pixmap pixmap = new Pixmap(9, 9, Format.RGBA8888);
+		pixmap.setColor(1f, 0f, 0f, 0.7f);
+		if (dir == Direction.EAST) {
+			pixmap.fillRectangle(0,0, 6, 9);
+			pixmap.fillRectangle(6, 3, 3, 3);
+		} else if (dir == Direction.NORTH) {
+			pixmap.fillRectangle(0,3, 9, 6);
+			pixmap.fillRectangle(3, 0, 3, 3);
+		} else if (dir == Direction.WEST) {
+			pixmap.fillRectangle(3,0, 6, 9);
+			pixmap.fillRectangle(0, 3, 3, 3);
+		} else if (dir == Direction.SOUTH) {
+			pixmap.fillRectangle(0,0, 9, 6);
+			pixmap.fillRectangle(3, 6, 3, 3);
+		}
+		Texture texture = new Texture(pixmap);
+		pixmap.dispose();
+		return texture;
+	}
+	
+	public class MiniMapIcon extends Actor {
+		private Texture north;
+		private Texture south;
+		private Texture east;
+		private Texture west;
+
+		public MiniMapIcon() {
+			super();
+			//could not get rotateBy to work so needed to do it this way
+			this.north = createMiniMapIcon(Direction.NORTH);
+			this.east = createMiniMapIcon(Direction.EAST);
+			this.west = createMiniMapIcon(Direction.WEST);
+			this.south = createMiniMapIcon(Direction.SOUTH);
+		}
+		@Override
+		public void draw(Batch batch, float parentAlpha) {
+			Color color = getColor();
+			batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
+			Texture t = north;
+			if (currentDir == Direction.EAST) t = east;
+			if (currentDir == Direction.WEST) t = west;
+			if (currentDir == Direction.SOUTH) t = south;
+			batch.draw(t, getX(), getY());
+		}
+	}
+	
+	private void moveMiniMapIcon() {
+		miniMapIcon.setX(xalignMM + 37 + (Math.round(currentPos.x)-1) * 12);
+		miniMapIcon.setY(yalignMM + 165 - (33 + Math.round(currentPos.z) * 12));
+	}
+	
+	public void drawMiniMap() {
+				
 		batch.begin();
 		
-		int xalign = Ultima4.SCREEN_WIDTH - MINI_MAP_TEXTURE.getWidth() - 16;
-		batch.draw(MINI_MAP_TEXTURE, xalign, 10);
-		batch.draw(texture, xalign, 10);
+		batch.draw(MINI_MAP_TEXTURE, xalignMM, yalignMM);
+		batch.draw(miniMap, xalignMM, yalignMM);
 		
 		font.draw(batch, (Math.round(currentPos.x)-1) + ", " + (Math.round(currentPos.z)-1) + ", " + (currentLevel+1), 5, Ultima4.SCREEN_HEIGHT - 5);
 
@@ -633,8 +695,7 @@ public class DungeonScreen extends BaseScreen {
             GameScreen.context.getParty().adjustKarma(KarmaAction.KILLED_EVIL);
 		} else {
 			if (GameScreen.context.getParty().didAnyoneFlee()) {
-                log("Battle is lost!");
-                GameScreen.context.getParty().adjustKarma(KarmaAction.FLED_EVIL);
+				//no flee penalty in dungeons
             } else if (!GameScreen.context.getParty().isAnyoneAlive()) {
             	mainGame.setScreen(new DeathScreen(mainGame, gameScreen, GameScreen.context.getParty()));
             	gameScreen.loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
@@ -715,7 +776,7 @@ public class DungeonScreen extends BaseScreen {
 				cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
 				currentDir = Direction.EAST;
 			}
-			
+						
 		} else if (keycode == Keys.RIGHT) {
 			
 			if (currentDir == Direction.EAST) {
@@ -731,7 +792,7 @@ public class DungeonScreen extends BaseScreen {
 				cam.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
 				currentDir = Direction.WEST;
 			}
-			
+						
 		} else if (keycode == Keys.UP) {
 			
 			//forward
@@ -758,6 +819,7 @@ public class DungeonScreen extends BaseScreen {
 				} else if (currentDir == Direction.SOUTH) {
 					cam.lookAt(currentPos.x, currentPos.y, currentPos.z+1);
 				}
+				moveMiniMapIcon();
 				checkTrap(tile, x, y);
 			}
 			
@@ -797,6 +859,7 @@ public class DungeonScreen extends BaseScreen {
 				} else if (currentDir == Direction.SOUTH) {
 					cam.lookAt(currentPos.x, currentPos.y, currentPos.z+1);
 				}
+				moveMiniMapIcon();
 				checkTrap(tile, x, y);
 			}
 			
@@ -820,6 +883,8 @@ public class DungeonScreen extends BaseScreen {
 					if (mainGame != null) {
 						mainGame.setScreen(gameScreen);
 					}
+				} else {
+					createMiniMap();
 				}
 			}
 
@@ -828,6 +893,8 @@ public class DungeonScreen extends BaseScreen {
 				currentLevel ++;
 				if (currentLevel > DUNGEON_MAP) {
 					currentLevel = DUNGEON_MAP;
+				} else {
+					createMiniMap();
 				}
 			}
 			

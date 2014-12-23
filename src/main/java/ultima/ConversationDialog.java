@@ -2,7 +2,9 @@ package ultima;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
+import objects.Conversation;
 import objects.Conversation.Topic;
+import objects.CustomInputConversation;
 import objects.LordBritishConversation;
 import objects.Party;
 import objects.Party.PartyMember;
@@ -19,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -35,6 +38,7 @@ public class ConversationDialog extends Window implements Constants {
 	BaseScreen screen;
 	Person person;
 	BaseVendor vendor;
+	Stage stage;
 	
 	public static int width = 300;
 	public static int height = 400;
@@ -45,10 +49,11 @@ public class ConversationDialog extends Window implements Constants {
 	LogScrollPane scrollPane;
 	Topic previousTopic;
 
-	public ConversationDialog(Person p, BaseScreen screen, Skin skin) {
+	public ConversationDialog(Person p, BaseScreen screen, Stage stage, Skin skin) {
 		super("", skin.get("dialog", WindowStyle.class));
 		setSkin(skin);
 		this.skin = skin;
+		this.stage = stage;
 		this.screen = screen;
 		this.person = p;
 		initialize();
@@ -79,14 +84,20 @@ public class ConversationDialog extends Window implements Constants {
 						cancelHide = false;
 					}
 					
-					if (person.getConversation() != null) {
+					Conversation conversation = person.getConversation();
+					
+					if (conversation != null) {
+						
+						if (conversation instanceof CustomInputConversation) {
+							((CustomInputConversation)conversation).setParty(GameScreen.context.getParty());
+						}
 						
 						String query = tf.getText();
-						Topic t = person.getConversation().matchTopic(query);
+						Topic t = conversation.matchTopic(query);
 						if (t != null) {
-							
-							if (t.getQuery().equals("join")) {
-								String name = person.getConversation().getName();
+														
+							if (t.getQuery() != null && t.getQuery().equals("join")) {
+								String name = conversation.getName();
 								Virtue virtue = GameScreen.context.getParty().getVirtueForJoinable(name);
 								if (virtue != null) {
 									CannotJoinError join = GameScreen.context.getParty().join(name);
@@ -96,6 +107,7 @@ public class ConversationDialog extends Window implements Constants {
 										scrollPane.add("Thou art not " + (join == CannotJoinError.JOIN_NOT_VIRTUOUS ? virtue.getDescription() : "experienced") + " enough for me to join thee.");
 									}
 								}
+																
 							} else {
 							
 								scrollPane.add(t.getPhrase());
@@ -110,6 +122,10 @@ public class ConversationDialog extends Window implements Constants {
 							if (previousTopic != null && previousTopic.getQuestion() != null) {
 								if (query.toLowerCase().contains("y")) {
 									scrollPane.add(previousTopic.getYesResponse());
+									
+									if (conversation.getRespAffectsHumility() > 0) {
+										GameScreen.context.getParty().adjustKarma(KarmaAction.BRAGGED);
+									}
 								} else {
 									scrollPane.add(previousTopic.getNoResponse());
 									if (previousTopic.isLbHeal()) {
@@ -117,9 +133,13 @@ public class ConversationDialog extends Window implements Constants {
 											pm.heal(HealType.CURE);
 											pm.heal(HealType.FULLHEAL);
 										}
-										Sounds.play(Sound.MOONGATE);
+										Sounds.play(Sound.HEALING);
+									}
+									if (conversation.getRespAffectsHumility() > 0) {
+										GameScreen.context.getParty().adjustKarma(KarmaAction.HUMBLE);
 									}
 								}
+
 							} else {
 								scrollPane.add("That I cannot help thee with.");
 							}
@@ -176,23 +196,24 @@ public class ConversationDialog extends Window implements Constants {
 				LordBritishConversation conv = (LordBritishConversation)person.getConversation();
 				scrollPane.add(conv.intro());
 				
-				boolean playSound = false;
+				SequenceAction seq = Actions.action(SequenceAction.class);
 				Party party = GameScreen.context.getParty();
 				if (party.getMember(0).getPlayer().status == StatusType.DEAD) {
 					party.getMember(0).heal(HealType.RESURRECT);
 					party.getMember(0).heal(HealType.FULLHEAL);
-					playSound = true;
+					seq.addAction(Actions.run(new LBAction(Sound.HEALING, "I resurrect thee.")));
+					seq.addAction(Actions.delay(3f));
 				}
 				
 				for (int i = 0; i < party.getMembers().size(); i++) {
 					PartyMember pm = party.getMember(i);
 					if (pm.getPlayer().advanceLevel()) {
-						playSound = true;
-						scrollPane.add(pm.getPlayer().name + " thou art now level "+pm.getPlayer().getLevel());
+						seq.addAction(Actions.run(new LBAction(Sound.MAGIC, pm.getPlayer().name + " thou art now level "+pm.getPlayer().getLevel())));
+						seq.addAction(Actions.delay(3f));
 					}
 				}
 				
-				if (playSound) Sounds.play(Sound.MAGIC);
+				stage.addAction(seq);
 								
 			} else {
 				scrollPane.add("You meet " + person.getConversation().getDescription().toLowerCase() + ".");
@@ -207,6 +228,20 @@ public class ConversationDialog extends Window implements Constants {
 			vendor.nextDialog();
 		}
 
+	}
+	
+	class LBAction implements Runnable {
+		private Sound sound;
+		private String message;
+		public LBAction(Sound sound, String message) {
+			this.sound = sound;
+			this.message = message;
+		}
+		@Override
+		public void run() {
+			Sounds.play(sound);
+			scrollPane.add(message);
+		}
 	}
 
 	protected void workspace(Stage stage) {

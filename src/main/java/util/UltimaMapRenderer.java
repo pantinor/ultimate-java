@@ -186,7 +186,8 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 				if (lightMap != null && lightMap[px][py] <= 0) {
 					continue;
 				}
-				batch.draw(p.getAnim().getKeyFrame(stateTime, true), p.getCurrentPos().x, p.getCurrentPos().y, tilePixelWidth, tilePixelHeight);
+				batch.draw(p.getTextureRegion(), p.getCurrentPos().x, p.getCurrentPos().y, tilePixelWidth, tilePixelHeight);
+				//batch.draw(p.getAnim().getKeyFrame(stateTime, true), p.getCurrentPos().x, p.getCurrentPos().y, tilePixelWidth, tilePixelHeight);
 			}
 			
 		}
@@ -204,6 +205,7 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 					continue;
 				}
 				batch.draw(cr.getAnim().getKeyFrame(stateTime, true), cr.currentPos.x, cr.currentPos.y, tilePixelWidth, tilePixelHeight);
+
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package objects;
 import ultima.Constants;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 
 public class Person implements Constants {
@@ -18,6 +19,7 @@ public class Person implements Constants {
 	private int dialogId;
 	private int tileIndex;
 	
+	private TextureRegion textureRegion;
 	private Animation anim;
 	private Vector3 currentPos;
 	private Conversation conversation;
@@ -145,6 +147,12 @@ public class Person implements Constants {
 	}
 	public void setEmulatingCreature(Creature emulatingCreature) {
 		this.emulatingCreature = emulatingCreature;
+	}
+	public TextureRegion getTextureRegion() {
+		return textureRegion;
+	}
+	public void setTextureRegion(TextureRegion textureRegion) {
+		this.textureRegion = textureRegion;
 	}
 	
 	

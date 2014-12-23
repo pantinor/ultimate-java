@@ -18,7 +18,7 @@ import ultima.Constants.ScreenType;
 import ultima.Constants.Stone;
 import ultima.Constants.TileAttrib;
 import ultima.Constants.TileRule;
-import ultima.Constants.Vector;
+import ultima.Constants.AttackVector;
 import ultima.Constants.WeaponType;
 
 import com.badlogic.gdx.Gdx;
@@ -113,7 +113,7 @@ public class SecondaryInputProcessor extends InputAdapter {
 					Person p = city.getPersonAt(x, y);
 					if (p != null && (p.getConversation() != null || p.getRole() != null)) {
 						Gdx.input.setInputProcessor(stage);
-						dialog = new ConversationDialog(p, this.screen, this.screen.skin).show(stage);
+						dialog = new ConversationDialog(p, screen, stage, screen.skin).show(stage);
 					} else {
 						screen.log("Funny, no response! ");
 					}
@@ -199,7 +199,7 @@ public class SecondaryInputProcessor extends InputAdapter {
 					case WEST: x = x - 1; break;
 					}	
 					if (keycode >= Keys.NUM_0 && keycode <= Keys.NUM_9) {
-					    animateAttack(combatScreen, attacker, dir, x, y, keycode - 7);
+					    animateAttack(combatScreen, attacker, rangeInputModeDirection, x, y, keycode - 7);
 
 					} else {
 						screen.log("Invalid range!");
@@ -289,7 +289,7 @@ public class SecondaryInputProcessor extends InputAdapter {
 	
 	public void animateAttack(final CombatScreen scr, PartyMember attacker, Direction dir, int x, int y, int range) {
 	    
-		final Vector target = scr.attack(attacker, dir, x, y, range);
+		final AttackVector target = scr.attack(attacker, dir, x, y, range);
 
 		final ProjectileActor p = scr.new ProjectileActor(Color.RED, x, y, target.res);
 		
@@ -307,7 +307,10 @@ public class SecondaryInputProcessor extends InputAdapter {
 					break;
 				}
 				
+				scr.replaceTile(target.leaveTileName, target.x, target.y);
+				
 				scr.finishPlayerTurn();
+				
 				return true;
 			}
 		}, fadeOut(.2f), removeActor(p)));
@@ -327,7 +330,6 @@ public class SecondaryInputProcessor extends InputAdapter {
 		public StoneColorsInputAdapter(CombatScreen combatScreen) {
 			this.combatScreen = combatScreen;
 		}
-
 
 		@Override
 		public boolean keyUp(int keycode) {
@@ -379,7 +381,4 @@ public class SecondaryInputProcessor extends InputAdapter {
 		}
 	}
 	
-
-	
-
 }

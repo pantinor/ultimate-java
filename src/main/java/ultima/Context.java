@@ -7,7 +7,6 @@ import objects.BaseMap;
 import objects.Party;
 import objects.Portal;
 import objects.Tile;
-import ultima.Constants.Direction;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 
@@ -20,7 +19,6 @@ public class Context implements Constants {
     private int locationMask;
     
     private int line, col;
-    //private StatsArea stats;
     private int moonPhase = 0;
     private Direction windDirection = Direction.NORTH;
     private int windCounter;
