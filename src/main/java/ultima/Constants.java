@@ -1164,7 +1164,7 @@ public interface Constants {
         STARVING,
         POISON_DAMAGE,
         TRANSPORT_CHANGED,
-        PLAYER_KILLED,
+        PARTY_DEATH,
         ACTIVE_PLAYER_CHANGED,
         MEMBER_JOINED,
         PARTY_REVIVED,

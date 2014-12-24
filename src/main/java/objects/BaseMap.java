@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import objects.Party.PartyMember;
 import ultima.BaseScreen;
 import ultima.Constants;
+import ultima.GameScreen;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -740,7 +741,7 @@ public class BaseMap implements Constants {
 	/**
 	 * Add item to inventory and add experience etc for a found item
 	 */
-	public ItemMapLabels searchLocation(Party p, int x, int y, int z) {
+	public ItemMapLabels searchLocation(BaseScreen screen, Party p, int x, int y, int z) {
 		SaveGame sg = p.getSaveGame();
 		
 		if (labels == null)	return null;
@@ -972,6 +973,10 @@ public class BaseMap implements Constants {
 			break;
 
 		case telescope:
+			if (screen instanceof GameScreen) {
+				GameScreen gameScreen = (GameScreen)screen;
+				gameScreen.peerTelescope();
+			}
 			break;
 		case balloon:
 			break;

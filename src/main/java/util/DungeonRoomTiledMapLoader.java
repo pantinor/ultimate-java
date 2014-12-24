@@ -2,6 +2,7 @@ package util;
 
 import objects.Tile;
 import ultima.Constants;
+import ultima.DungeonScreen.DungeonRoom;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -13,8 +14,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-
-import dungeon.DungeonScreen.DungeonRoom;
 
 public class DungeonRoomTiledMapLoader implements Constants {
 	

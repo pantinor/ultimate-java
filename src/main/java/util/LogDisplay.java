@@ -23,6 +23,7 @@ public class LogDisplay {
 		pixmap.setColor(0.2f,0.2f,0.2f,0.7f);
 		pixmap.fillRectangle(0, 0, 175, 20*5);
 		background = new Texture(pixmap);
+		pixmap.dispose();
 	}
 	
 	public void append(String s) {

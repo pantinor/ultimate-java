@@ -6,16 +6,12 @@ import objects.Party;
 import objects.SaveGame;
 import objects.TileSet;
 import objects.WeaponSet;
-import ultima.CombatScreen;
 import ultima.Constants;
-import ultima.Constants.CreatureType;
 import ultima.Constants.Maps;
 import ultima.Constants.NpcDefaults;
 import ultima.Constants.WeaponType;
 import ultima.Context;
 import ultima.StartScreen;
-import util.LogDisplay;
-import util.UltimaTiledMapLoader;
 import util.Utils;
 
 import com.badlogic.gdx.Game;
@@ -23,13 +19,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.utils.Array;
 
 public class TestMain extends Game {
@@ -37,7 +32,8 @@ public class TestMain extends Game {
 	TextureAtlas atlas;
 	Animation beast1;
 	Animation beast2;
-
+	Texture tr;
+	
 	float time = 0;
 	Batch batch2;
 	
@@ -87,12 +83,19 @@ public class TestMain extends Game {
 			TextureAtlas a1 = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-vga-atlas.txt"));
 			TextureAtlas a2 = new TextureAtlas(Gdx.files.internal("assets/tilemaps/monsters-u4.atlas"));
 			
-			TiledMap tmap = new UltimaTiledMapLoader(Maps.GRASS_CON, a1, Maps.GRASS_CON.getMap().getWidth(), Maps.GRASS_CON.getMap().getHeight(), 16, 16).load();
-			CombatScreen sc = new CombatScreen(null, null, context, Maps.WORLD, Maps.GRASS_CON.getMap(), tmap, CreatureType.skeleton, cs, a2, a1);
+			//TiledMap tmap = new UltimaTiledMapLoader(Maps.GRASS_CON, a1, Maps.GRASS_CON.getMap().getWidth(), Maps.GRASS_CON.getMap().getHeight(), 16, 16).load();
+			//CombatScreen sc = new CombatScreen(null, null, context, Maps.WORLD, Maps.GRASS_CON.getMap(), tmap, CreatureType.skeleton, cs, a2, a1);
 			
-			sc.logs = new LogDisplay(new BitmapFont());
+			//sc.logs = new LogDisplay(new BitmapFont());
 			
-			setScreen(sc);
+			//setScreen(sc);
+			
+			atlas = a1;
+			tr = Utils.peerGem(Maps.LYCAEUM, a1);
+
+			
+			batch2 = new SpriteBatch();
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -116,20 +119,24 @@ public class TestMain extends Game {
 		
 		beast1 = new Animation(0.25f, tmp1);
 		beast2 = new Animation(0.25f, tmp2);
+		
+
 				
 		batch2 = new SpriteBatch();
 
 	}
 
-	public void renderX () {
+	public void render () {
 		time += Gdx.graphics.getDeltaTime();
 
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 				
 		
 		batch2.begin();
-		batch2.draw(beast1.getKeyFrame(time, true), 100, 100, 48*2, 31*2);
-		batch2.draw(beast2.getKeyFrame(time, true), 200, 200, 48*2, 31*2);
+		//batch2.draw(beast1.getKeyFrame(time, true), 100, 100, 48*2, 31*2);
+		//batch2.draw(beast2.getKeyFrame(time, true), 200, 200, 48*2, 31*2);
+				
+		batch2.draw(tr, 5, 5);
 
 		batch2.end();
 		

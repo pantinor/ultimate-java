@@ -83,6 +83,11 @@ public class DeathScreen extends BaseScreen implements Constants {
 				
 
 	}
+	
+	public void partyDeath() {
+		
+	}
+
 
 	@Override
 	public void finishTurn(int currentX, int currentY) {

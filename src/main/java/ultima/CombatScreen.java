@@ -18,6 +18,8 @@ import objects.CreatureSet;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.Tile;
+import ultima.DungeonScreen.DungeonRoom;
+import ultima.DungeonScreen.Trigger;
 import util.Utils;
 
 import com.badlogic.gdx.Gdx;
@@ -50,9 +52,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-import dungeon.DungeonScreen.DungeonRoom;
-import dungeon.DungeonScreen.Trigger;
 
 public class CombatScreen extends BaseScreen {
 	
@@ -697,16 +696,16 @@ public class CombatScreen extends BaseScreen {
     		col = Color.GREEN;
     	} else if (attacker.rangedAttackIs("magic_flash")) {
     		effect = TileEffect.NONE;
-    		col = Color.BLUE;
+    		col = Color.TEAL;
     	} else if (attacker.rangedAttackIs("fire_field")) {
     		effect = TileEffect.FIRE;
     		col = Color.RED;
     	} else if (attacker.rangedAttackIs("sleep_field")) {
     		effect = TileEffect.SLEEP;
-    		col = Color.YELLOW;
+    		col = Color.PURPLE;
     	} else if (attacker.rangedAttackIs("energy_field")) {
     		effect = TileEffect.ELECTRICITY;
-    		col = Color.TEAL;
+    		col = Color.BLUE;
     	}
     	
 		final ProjectileActor p = new ProjectileActor(col, attacker.currentX, attacker.currentY, res);
@@ -793,6 +792,10 @@ public class CombatScreen extends BaseScreen {
 	private boolean dealDamage(Creature attacker, PartyMember defender) {
 		int damage = attacker.getDamage();
 	    return defender.applyDamage(damage, true);
+	}
+	
+	public void partyDeath() {
+		//not used here
 	}
 	
 	private boolean damageCreature(Creature cr, int damage, boolean byplayer) {

@@ -124,7 +124,8 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 				break;
 			case PARTY_REVIVED:
 				break;
-			case PLAYER_KILLED:
+			case PARTY_DEATH:
+				partyDeath();
 				break;
 			case POISON_DAMAGE:
 				Sounds.play(Sound.POISON_DAMAGE);
@@ -141,6 +142,8 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 			}
 		}
 	}
+	
+	public abstract void partyDeath();
 	
 	@Override
 	public void hide() {

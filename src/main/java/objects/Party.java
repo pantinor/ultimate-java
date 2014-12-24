@@ -435,13 +435,9 @@ public class Party extends Observable implements Constants {
 		    
 		    player.hp = newHp;
 
-		    if (combatRelatedDamage && isDead()) {
-		        //Coords p = getCoords();                    
-		        //Map *map = getMap();
-		        //map->annotations->add(p, Tileset::findTileByName("corpse")->getId())->setTTL(party->size() * 2);
-
-		        /* remove yourself from the map */
-		        //remove();        
+		    if (!combatRelatedDamage && isDead() && !this.party.isAnyoneAlive()) {
+				this.party.setChanged();
+				this.party.notifyObservers(PartyEvent.PARTY_DEATH);        
 		        return false;
 		    }
 

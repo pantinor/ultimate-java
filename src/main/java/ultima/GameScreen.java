@@ -1,5 +1,7 @@
 package ultima;
 
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
+
 import java.util.Iterator;
 import java.util.Random;
 
@@ -25,10 +27,12 @@ import vendor.VendorClassSet;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -38,14 +42,15 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-import dungeon.DungeonScreen;
 
 public class GameScreen extends BaseScreen {
 	
@@ -165,15 +170,16 @@ public class GameScreen extends BaseScreen {
 			//party.getMember(1).getPlayer().xp = 600;
 			//party.getMember(0).getPlayer().weapon = WeaponType.OIL;
 			//party.getSaveGame().weapons[9] = 99;
-
+			//sg.gems = 5;
+			
 			//load the surface world first
 			loadNextMap(Maps.WORLD, sg.x, sg.y);
-			//loadNextMap(Maps.WORLD, 86, 107);
+			//loadNextMap(Maps.WORLD, 218, 107);
 
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
 				loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation+1), true);
-				//loadNextMap(Maps.HYTHLOTH, 0, 0, 5, 2, 5, Direction.EAST, true);
+				//loadNextMap(Maps.WRONG, 0, 0, 1, 1, 5, Direction.EAST, true);
 			}
 		}
 		
@@ -300,9 +306,7 @@ public class GameScreen extends BaseScreen {
 	                    context.getParty().adjustKarma(KarmaAction.FLED_GOOD);
 	                }
 	            } else if (!context.getParty().isAnyoneAlive()) {
-	            	//death scene
-	            	mainGame.setScreen(new DeathScreen(mainGame, this, context.getParty()));
-	            	loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
+	            	partyDeath();
 	            }
 			}
 			
@@ -310,6 +314,12 @@ public class GameScreen extends BaseScreen {
 			currentEncounter = null;
 
 		}
+	}
+	
+	public void partyDeath() {
+    	//death scene
+    	mainGame.setScreen(new DeathScreen(mainGame, this, context.getParty()));
+    	loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
 	}
 
 	@Override
@@ -458,7 +468,7 @@ public class GameScreen extends BaseScreen {
 		} else if (keycode == Keys.S) {
 
 			BaseMap bm = context.getCurrentMap();
-			ItemMapLabels l = bm.searchLocation(context.getParty(), (int)v.x, (int)v.y, 0);
+			ItemMapLabels l = bm.searchLocation(this, context.getParty(), (int)v.x, (int)v.y, 0);
 			if (l != null) {
 				log("You found " + l.getDesc() + ".");
 			}
@@ -467,7 +477,8 @@ public class GameScreen extends BaseScreen {
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);
 			return false;
-			
+		} else if (keycode == Keys.P) {
+			peerGem();
 		} else if (keycode == Keys.T || keycode == Keys.O || keycode == Keys.L || keycode == Keys.A) {
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);
@@ -865,8 +876,78 @@ public class GameScreen extends BaseScreen {
 
 		return false;
 	}
+	
+	public void peerGem() {
+		if (context.getParty().getSaveGame().gems > 0) {
+	        context.getParty().getSaveGame().gems--;
+	        log("Peer at a Gem!");
+			Gdx.input.setInputProcessor(new PeerGemInputAdapter());
+		} else {
+			log("Thou dost have no gems!");
+		}
+	}
 
-
+	public void peerTelescope() {
+		log("You see a knob on the");
+		log("telescope marked A-P.");
+		log("You select:");
+		Gdx.input.setInputProcessor(new PeerTelescopeInputAdapter());
+	}
+	
+	class PeerGemInputAdapter extends InputAdapter {
+		Image img;
+		PeerGemInputAdapter() {
+			try {
+				Vector3 v = getCurrentMapCoords();
+				Texture t = Utils.peerGem(context.getCurrentMap(), (int)v.x, (int)v.y, standardAtlas);
+				img = new Image(t);
+				img.setX(0);
+				img.setY(0);
+				img.addAction(sequence(Actions.alpha(0), Actions.fadeIn(3f, Interpolation.fade)));
+		        stage.addActor(img);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		@Override
+		public boolean keyUp(int keycode) {
+			if (keycode == Keys.ENTER || keycode == Keys.SPACE) {
+				if (img != null) {
+					img.remove();
+				}
+				Gdx.input.setInputProcessor(new InputMultiplexer(GameScreen.this, stage));
+			}
+			return false;
+		}
+	}
+	
+	class PeerTelescopeInputAdapter extends InputAdapter {
+		Image img;
+		@Override
+		public boolean keyUp(int keycode) {
+			if (keycode >= Keys.A && keycode <= Keys.P) {
+				if (img != null) return false;
+				Maps map = Maps.get(keycode - Keys.A + 1);
+				log(Keys.toString(keycode).toUpperCase() + " - " + map.getLabel());
+				try {
+					Texture t = Utils.peerGem(map, standardAtlas);
+					img = new Image(t);
+					img.setX(0);
+					img.setY(0);
+					img.addAction(sequence(Actions.alpha(0), Actions.fadeIn(3f, Interpolation.fade)));
+			        stage.addActor(img);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else if (keycode == Keys.ENTER || keycode == Keys.SPACE) {
+				if (img != null) {
+					img.remove();
+				}
+				Gdx.input.setInputProcessor(new InputMultiplexer(GameScreen.this, stage));
+			}
+			return false;
+		}
+	}
 
 
 }

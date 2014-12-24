@@ -1,4 +1,4 @@
-package dungeon;
+package ultima;
 
 
 import java.io.FileInputStream;
@@ -15,14 +15,6 @@ import objects.TileSet;
 
 import org.apache.commons.io.IOUtils;
 
-import ultima.BaseScreen;
-import ultima.CombatScreen;
-import ultima.DeathScreen;
-import ultima.GameScreen;
-import ultima.SecondaryInputProcessor;
-import ultima.Sound;
-import ultima.Sounds;
-import ultima.Ultima4;
 import util.DungeonRoomTiledMapLoader;
 import util.Utils;
 
@@ -80,11 +72,11 @@ public class DungeonScreen extends BaseScreen {
 	BitmapFont font;
 	
 	//3d models
-	public static Model fountainModel;
-	public static Model ladderModel;
-	public static Model chestModel;
-	public static Model orbModel;
-	public static Model altarModel;
+	public Model fountainModel;
+	public Model ladderModel;
+	public Model chestModel;
+	public Model orbModel;
+	public Model altarModel;
 	
 	boolean isTorchOn = true;
 	private Vector3 vdll = new Vector3(.04f, .04f, .04f);
@@ -107,6 +99,12 @@ public class DungeonScreen extends BaseScreen {
 	public List<ModelInstance> ceiling = new ArrayList<ModelInstance>();
 
 	public static Texture MINI_MAP_TEXTURE;
+	public static final int DIM = 11;
+	public static final int OFST = DIM;
+	public static final int MM_BKGRND_DIM = DIM*8 + OFST*2;
+	public static final int xalignMM = Ultima4.SCREEN_WIDTH - MM_BKGRND_DIM - 10;
+	public static final int yalignMM = 10;
+	
 	public int currentLevel = 0;
 	public Vector3 currentPos;
 	public Direction currentDir = Direction.EAST;
@@ -115,9 +113,6 @@ public class DungeonScreen extends BaseScreen {
 	private Texture miniMap;
 	private MiniMapIcon miniMapIcon;
 	
-	public static final int xalignMM = Ultima4.SCREEN_WIDTH - 165 - 16;
-	public static final int yalignMM = 10;
-
 
 	public DungeonScreen(Ultima4 mainGame, Stage stage, GameScreen gameScreen, Maps map) {
 		
@@ -168,9 +163,13 @@ public class DungeonScreen extends BaseScreen {
 		chestModel = gloader.loadModel(Gdx.files.internal("assets/graphics/chest.g3db"));
 		orbModel = gloader.loadModel(Gdx.files.internal("assets/graphics/orb.g3db"));
 		altarModel = gloader.loadModel(Gdx.files.internal("assets/graphics/altar.g3db"));
-				
-		MINI_MAP_TEXTURE = assets.get("assets/graphics/map.png", Texture.class);
 		
+		Pixmap pixmap = new Pixmap(MM_BKGRND_DIM, MM_BKGRND_DIM, Format.RGBA8888);
+		pixmap.setColor(0.8f,0.7f,0.5f,.8f);
+		pixmap.fillRectangle(0, 0, MM_BKGRND_DIM, MM_BKGRND_DIM);
+		MINI_MAP_TEXTURE = new Texture(pixmap);
+		pixmap.dispose();
+				
 		font = new BitmapFont();
 		font.setColor(Color.WHITE);
 		
@@ -370,6 +369,17 @@ public class DungeonScreen extends BaseScreen {
 	public void dispose() {
 		modelBatch.dispose();
 		batch.dispose();
+		MINI_MAP_TEXTURE.dispose();
+		miniMapIcon.dispose();
+		stage.dispose();
+		for (DungeonTileModelInstance mi : modelInstances) mi.getInstance().model.dispose();
+		for (ModelInstance mi : floor) mi.model.dispose();
+		for (ModelInstance mi : ceiling) mi.model.dispose();
+		fountainModel.dispose();
+		ladderModel.dispose();
+		chestModel.dispose();
+		orbModel.dispose();
+		altarModel.dispose();
 	}
 	
 	@Override
@@ -408,7 +418,7 @@ public class DungeonScreen extends BaseScreen {
 		
 		modelBatch.end();
 
-		drawMiniMap();
+		drawHUD();
 		
 		stage.act();
 		stage.draw();
@@ -473,9 +483,9 @@ public class DungeonScreen extends BaseScreen {
 			modelInstances.add(in);
 		} else if (tile.getValue() >= 160 && tile.getValue() <= 163) {
 			Color c = Color.GREEN;
-			if (tile == DungeonTile.FIELD_ENERGY) c = Color.ORANGE;
+			if (tile == DungeonTile.FIELD_ENERGY) c = Color.BLUE;
 			if (tile == DungeonTile.FIELD_FIRE) c = Color.RED;
-			if (tile == DungeonTile.FIELD_SLEEP) c = Color.YELLOW;
+			if (tile == DungeonTile.FIELD_SLEEP) c = Color.PURPLE;
 			Model model = builder.createBox(1, 1, 1, new Material(ColorAttribute.createDiffuse(c), ColorAttribute.createSpecular(c), new BlendingAttribute(0.7f)), Usage.Position | Usage.Normal);		
 			ModelInstance instance = new ModelInstance(model, tx, .5f, tz);
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
@@ -539,56 +549,69 @@ public class DungeonScreen extends BaseScreen {
 		
 	}
 	
+
+	
 	private void createMiniMap() {
 		
 		if (miniMap != null) {
 			miniMap.dispose();
 		}
-		
-		Pixmap pixmap = new Pixmap(MINI_MAP_TEXTURE.getWidth(), MINI_MAP_TEXTURE.getHeight(), Format.RGBA8888);
+				
+		Pixmap pixmap = new Pixmap(MM_BKGRND_DIM, MM_BKGRND_DIM, Format.RGBA8888);
 		for (int y = 0; y < DUNGEON_MAP; y++) {
 			for (int x = 0; x < DUNGEON_MAP; x++) {
 				DungeonTile tile = dungeonTiles[currentLevel][x][y];
 				if (tile == DungeonTile.WALL || tile == DungeonTile.SECRET_DOOR  ) {
 					pixmap.setColor(0.3f, 0.3f, 0.3f, 0.7f);
-					pixmap.fillRectangle(35 + (x * 12), 35 + (y * 12), 12, 12);
+					pixmap.fillRectangle(OFST + (x * DIM), OFST + (y * DIM), DIM, DIM);
 				} else if (tile == DungeonTile.DOOR) {
 					pixmap.setColor(0.6f, 0.6f, 0.6f, 0.7f);
-					pixmap.fillRectangle(35 + (x * 12), 35 + (y * 12), 12, 12);
+					pixmap.fillRectangle(OFST + (x * DIM), OFST + (y * DIM), DIM, DIM);
 				} else if (tile.getValue() >= 208 && tile.getValue() <= 223) { //room indicator
 					pixmap.setColor(0.36f, 0.04f, 0.04f, 0.7f);
-					pixmap.fillRectangle(35 + (x * 12), 35 + (y * 12), 12, 12);
+					pixmap.fillRectangle(OFST + (x * DIM), OFST + (y * DIM), DIM, DIM);
 				} else if (tile.getValue() >= 160 && tile.getValue() <= 163) { //fields
 					Color c = Color.GREEN;
-					if (tile == DungeonTile.FIELD_ENERGY) c = Color.ORANGE;
+					if (tile == DungeonTile.FIELD_ENERGY) c = Color.BLUE;
 					if (tile == DungeonTile.FIELD_FIRE) c = Color.RED;
-					if (tile == DungeonTile.FIELD_SLEEP) c = Color.YELLOW;
+					if (tile == DungeonTile.FIELD_SLEEP) c = Color.PURPLE;
 					pixmap.setColor(c);
-					pixmap.fillRectangle(35 + (x * 12), 35 + (y * 12), 12, 12);
+					pixmap.fillRectangle(OFST + (x * DIM), OFST + (y * DIM), DIM, DIM);
+				} else if (tile.getValue() >= 10 && tile.getValue() <= 48) {
+					drawLadderTriangle(tile, pixmap, x, y); //ladders
 				}
 			}
 		}
 		
 		miniMap = new Texture(pixmap);
 		pixmap.dispose();
-		
 	}
 	
-	public Texture createMiniMapIcon(Direction dir) {
-		Pixmap pixmap = new Pixmap(9, 9, Format.RGBA8888);
-		pixmap.setColor(1f, 0f, 0f, 0.7f);
+	private void drawLadderTriangle(DungeonTile tile, Pixmap pixmap, int x, int y) {
+		int cx = OFST + (x * DIM);
+		int cy = OFST + (y * DIM);
+		pixmap.setColor(Color.YELLOW);
+		if (tile == DungeonTile.LADDER_DOWN) {
+			pixmap.fillTriangle(cx+2,cy+2,cx+6,cy+9,cx+9,cy+2);
+		} else if (tile == DungeonTile.LADDER_UP) {
+			pixmap.fillTriangle(cx+2,cy+9,cx+6,cy+2,cx+9,cy+9);
+		} else if (tile == DungeonTile.LADDER_UP_DOWN) {
+			pixmap.fillTriangle(cx+2,cy+6,cx+6,cy+2,cx+9,cy+6);
+			pixmap.fillTriangle(cx+2,cy+6,cx+6,cy+9,cx+9,cy+9);
+		}
+	}
+	
+	private Texture createMiniMapIcon(Direction dir) {
+		Pixmap pixmap = new Pixmap(DIM, DIM, Format.RGBA8888);
+		pixmap.setColor(1f, 0f, 0f, 1f);
 		if (dir == Direction.EAST) {
-			pixmap.fillRectangle(0,0, 6, 9);
-			pixmap.fillRectangle(6, 3, 3, 3);
+			pixmap.fillTriangle(2,2,2,9,9,6);
 		} else if (dir == Direction.NORTH) {
-			pixmap.fillRectangle(0,3, 9, 6);
-			pixmap.fillRectangle(3, 0, 3, 3);
+			pixmap.fillTriangle(2,9,6,2,9,9);
 		} else if (dir == Direction.WEST) {
-			pixmap.fillRectangle(3,0, 6, 9);
-			pixmap.fillRectangle(0, 3, 3, 3);
+			pixmap.fillTriangle(9,2,2,6,9,9);
 		} else if (dir == Direction.SOUTH) {
-			pixmap.fillRectangle(0,0, 9, 6);
-			pixmap.fillRectangle(3, 6, 3, 3);
+			pixmap.fillTriangle(2,2,6,9,9,2);
 		}
 		Texture texture = new Texture(pixmap);
 		pixmap.dispose();
@@ -596,10 +619,10 @@ public class DungeonScreen extends BaseScreen {
 	}
 	
 	public class MiniMapIcon extends Actor {
-		private Texture north;
-		private Texture south;
-		private Texture east;
-		private Texture west;
+		Texture north;
+		Texture south;
+		Texture east;
+		Texture west;
 
 		public MiniMapIcon() {
 			super();
@@ -619,14 +642,21 @@ public class DungeonScreen extends BaseScreen {
 			if (currentDir == Direction.SOUTH) t = south;
 			batch.draw(t, getX(), getY());
 		}
+		
+		public void dispose() {
+			north.dispose();
+			east.dispose();
+			west.dispose();
+			south.dispose();
+		}
 	}
 	
 	private void moveMiniMapIcon() {
-		miniMapIcon.setX(xalignMM + 37 + (Math.round(currentPos.x)-1) * 12);
-		miniMapIcon.setY(yalignMM + 165 - (33 + Math.round(currentPos.z) * 12));
+		miniMapIcon.setX(xalignMM + OFST + (Math.round(currentPos.x)-1) * DIM);
+		miniMapIcon.setY(yalignMM + MM_BKGRND_DIM - OFST - (Math.round(currentPos.z)) * DIM);
 	}
 	
-	public void drawMiniMap() {
+	private void drawHUD() {
 				
 		batch.begin();
 		
@@ -686,6 +716,12 @@ public class DungeonScreen extends BaseScreen {
 		
 	}
 	
+	public void partyDeath() {
+    	//death scene
+    	mainGame.setScreen(new DeathScreen(mainGame, gameScreen, GameScreen.context.getParty()));
+    	gameScreen.loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
+	}
+	
 	@Override
 	public void endCombat(boolean isWon, BaseMap combatMap) {
 		
@@ -697,8 +733,7 @@ public class DungeonScreen extends BaseScreen {
 			if (GameScreen.context.getParty().didAnyoneFlee()) {
 				//no flee penalty in dungeons
             } else if (!GameScreen.context.getParty().isAnyoneAlive()) {
-            	mainGame.setScreen(new DeathScreen(mainGame, gameScreen, GameScreen.context.getParty()));
-            	gameScreen.loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
+            	partyDeath();
             }
 		}
 		
@@ -735,6 +770,7 @@ public class DungeonScreen extends BaseScreen {
 						cam.lookAt(currentPos.x, currentPos.y, currentPos.z+1);
 					}
 					checkTrap(tile, x, y);
+					moveMiniMapIcon();
 				}
 				
 				if (tile.getValue() >= 208 && tile.getValue() <= 223) {
@@ -909,7 +945,7 @@ public class DungeonScreen extends BaseScreen {
 		} else if (keycode == Keys.S) {
 			if (tile == DungeonTile.ALTAR) {
 				log("Search Altar");
-				ItemMapLabels l = dngMap.getMap().searchLocation(GameScreen.context.getParty(), x, y, currentLevel);
+				ItemMapLabels l = dngMap.getMap().searchLocation(this, GameScreen.context.getParty(), x, y, currentLevel);
 				if (l != null) {
 					log("You found " + l.getDesc() + ".");
 				} else {
@@ -959,7 +995,7 @@ public class DungeonScreen extends BaseScreen {
 	}
 	
 	public void dungeonTouchOrb(int index) {
-		
+		if (index >= GameScreen.context.getParty().getMembers().size()) return;
 	    PartyMember pm = GameScreen.context.getParty().getMember(index);
 		int x = (Math.round(currentPos.x)-1);
 		int y = (Math.round(currentPos.z)-1);
@@ -1019,6 +1055,7 @@ public class DungeonScreen extends BaseScreen {
 
 	@SuppressWarnings("incomplete-switch")
 	public void dungeonDrinkFountain(DungeonTile type, int index) {
+		if (index >= GameScreen.context.getParty().getMembers().size()) return;
 	    PartyMember pm = GameScreen.context.getParty().getMember(index);
 	    switch(type) {
 	    case FOUNTAIN_PLAIN: 

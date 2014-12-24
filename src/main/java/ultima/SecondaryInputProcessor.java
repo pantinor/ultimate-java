@@ -30,8 +30,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
-import dungeon.DungeonScreen;
-
 public class SecondaryInputProcessor extends InputAdapter {
 	
 	private BaseScreen screen;
@@ -264,13 +262,13 @@ public class SecondaryInputProcessor extends InputAdapter {
 				case FOUNTAIN_ACID:
 				case FOUNTAIN_CURE:
 				case FOUNTAIN_POISON:
-					if (keycode >= Keys.NUM_0 && keycode <= Keys.NUM_9) {
-						dngScreen.dungeonDrinkFountain(dngTile, keycode - 7);
+					if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+						dngScreen.dungeonDrinkFountain(dngTile, keycode - 7 - 1);
 					}
 					break;
 				case ORB:
-					if (keycode >= Keys.NUM_0 && keycode <= Keys.NUM_9) {
-						dngScreen.dungeonTouchOrb(keycode - 7);
+					if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+						dngScreen.dungeonTouchOrb(keycode - 7 - 1);
 					}
 					break;
 				default:

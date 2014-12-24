@@ -167,6 +167,10 @@ public class ShrineScreen extends BaseScreen {
 
 		
 	}
+	
+	public void partyDeath() {
+		//not used here
+	}
 
 	@Override
 	public void finishTurn(int currentX, int currentY) {
