@@ -159,7 +159,7 @@ public class ShrineScreen extends BaseScreen {
 		font.draw(batch, "karma: " + party.getSaveGame().karma[virtue.ordinal()], 5, 300);
 
 
-		logs.render(batch);
+		Ultima4.hud.render(batch, party);
 		batch.end();
 		
 		stage.act();

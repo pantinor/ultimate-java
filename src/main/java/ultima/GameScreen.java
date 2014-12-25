@@ -5,8 +5,6 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import java.util.Iterator;
 import java.util.Random;
 
-import org.apache.commons.lang.StringUtils;
-
 import objects.ArmorSet;
 import objects.BaseMap;
 import objects.Creature;
@@ -21,7 +19,9 @@ import objects.SaveGame;
 import objects.Tile;
 import objects.TileSet;
 import objects.WeaponSet;
-import util.LogDisplay;
+
+import org.apache.commons.lang.StringUtils;
+
 import util.UltimaMapRenderer;
 import util.UltimaTiledMapLoader;
 import util.Utils;
@@ -130,9 +130,7 @@ public class GameScreen extends BaseScreen {
 			font.setColor(Color.WHITE);		
 			batch = new SpriteBatch();
 			batch.enableBlending();
-			
-			if (logs == null) logs = new LogDisplay(font);
-			
+						
 			mapCamera = new OrthographicCamera();
 			mapCamera.setToOrtho(false);
 			
@@ -196,10 +194,18 @@ public class GameScreen extends BaseScreen {
 			context.setParty(party);
 			party.setTransport(baseTileSet.getTileByIndex(sg.transport));
 			
-			//party.join(NpcDefaults.Geoffrey.name());
-			//party.join(NpcDefaults.Shamino.name());
-			//party.join(NpcDefaults.Katrina.name());
-			//sg.food = 30000;
+//			party.getMember(0).getPlayer().hpMax = 9999;
+//			for (Virtue v : Virtue.values()) sg.karma[v.ordinal()] = 99;
+//
+//			party.join(NpcDefaults.Geoffrey.name());
+//			party.join(NpcDefaults.Shamino.name());
+//			party.join(NpcDefaults.Katrina.name());
+//			party.join(NpcDefaults.Mariah.name());
+//			party.join(NpcDefaults.Dupre.name());
+//			party.join(NpcDefaults.Iolo.name());
+//			party.join(NpcDefaults.Julia.name());
+
+			sg.food = 30000;
 			//sg.runes |= Virtue.VALOR.getLoc();
 			//sg.moves = 2800;
 			//sg.karma[Virtue.VALOR.ordinal()] = 99;
@@ -399,28 +405,12 @@ public class GameScreen extends BaseScreen {
 
 		//Vector3 v = getCurrentMapCoords();
 		//font.draw(batch, "map coords: " + v, 10, 500);
-		// font.draw(batch2, "fps: " + Gdx.graphics.getFramesPerSecond(), 0, 20);
+		//font.draw(batch2, "fps: " + Gdx.graphics.getFramesPerSecond(), 0, 20);
 		//font.draw(batch, "mouse: " + currentMousePos, 10, 70);
-
-		font.draw(batch, "Food: " + context.getParty().getSaveGame().food / 100 + "    Gold: " + context.getParty().getSaveGame().gold, 5, Ultima4.SCREEN_HEIGHT - 5);
-
-		int y = 5;
-		for (int i = context.getParty().getMembers().size() - 1; i >= 0; i--) {
-			PartyMember pm = context.getParty().getMember(i);
-			String s = (i + 1) + " - " + pm.getPlayer().name + "   " + pm.getPlayer().hp + "" + pm.getPlayer().status.getValue();
-			y = y + 18;
-			
-			font.setColor(i == context.getParty().getActivePlayer()? new Color(.35f, .93f, 0.91f, 1) : Color.WHITE);
-			if (pm.getPlayer().status == StatusType.POISONED) font.setColor(Color.GREEN);
-			if (pm.getPlayer().status == StatusType.SLEEPING) font.setColor(Color.YELLOW);
-			if (pm.getPlayer().status == StatusType.DEAD) font.setColor(Color.GRAY);
-			
-			font.draw(batch, s, Ultima4.SCREEN_WIDTH - 125, y);
-		}
 		
-		font.setColor(Color.WHITE);
-		logs.render(batch);
+		Ultima4.hud.render(batch, context.getParty());
 
+		font.setColor(Color.WHITE);
 		if (showZstats > 0) {
 			context.getParty().getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);
 		}
@@ -927,10 +917,11 @@ public class GameScreen extends BaseScreen {
 		}
 
 		Drawable chest = null;
-		for (Actor a : mapObjectsStage.getActors()) {
+		Array<Actor> as = mapObjectsStage.getActors();
+		for (Actor a : as) {
 			if (a instanceof Drawable) {
 				Drawable d = (Drawable)a;
-				if (StringUtils.equals("chest", d.getName()) && d.getCx() == x && d.getCy() == y) {
+				if (StringUtils.equals("chest", d.getTile().getName()) && d.getCx() == x && d.getCy() == y) {
 					chest = (Drawable)a;
 				}
 			}
@@ -1030,12 +1021,17 @@ public class GameScreen extends BaseScreen {
 		Image img;
 		PeerGemInputAdapter() {
 			try {
-				Vector3 v = getCurrentMapCoords();
-				Texture t = Utils.peerGem(context.getCurrentMap(), (int)v.x, (int)v.y, standardAtlas);
+				Texture t = null;
+				if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
+					Vector3 v = getCurrentMapCoords();
+					t = Utils.peerGem(context.getCurrentMap(), (int)v.x, (int)v.y, standardAtlas);
+				} else {
+					t = Utils.peerGem(Maps.get(context.getCurrentMap().getId()), standardAtlas);
+				}
 				img = new Image(t);
 				img.setX(0);
 				img.setY(0);
-				img.addAction(sequence(Actions.alpha(0), Actions.fadeIn(3f, Interpolation.fade)));
+				img.addAction(sequence(Actions.alpha(0), Actions.fadeIn(2f, Interpolation.fade)));
 		        stage.addActor(img);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1066,7 +1062,7 @@ public class GameScreen extends BaseScreen {
 					img = new Image(t);
 					img.setX(0);
 					img.setY(0);
-					img.addAction(sequence(Actions.alpha(0), Actions.fadeIn(3f, Interpolation.fade)));
+					img.addAction(sequence(Actions.alpha(0), Actions.fadeIn(2f, Interpolation.fade)));
 			        stage.addActor(img);
 				} catch (Exception e) {
 					e.printStackTrace();

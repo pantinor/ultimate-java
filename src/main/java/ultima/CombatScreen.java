@@ -307,19 +307,7 @@ public class CombatScreen extends BaseScreen {
 
 		batch.begin();
 
-		int y = 5;
-		for (int i = party.getMembers().size() - 1; i >= 0; i--) {
-			PartyMember pm = party.getMember(i);
-			String s = (i + 1) + " - " + pm.getPlayer().name + " " + pm.getPlayer().hp + " " + pm.getPlayer().status.getValue();
-			y = y + 18;
-			font.setColor(i == party.getActivePlayer()? new Color(.35f, .93f, 0.91f, 1) : Color.WHITE);
-			if (pm.getPlayer().status == StatusType.POISONED) font.setColor(Color.GREEN);
-			if (pm.getPlayer().status == StatusType.SLEEPING) font.setColor(Color.YELLOW);
-			if (pm.getPlayer().status == StatusType.DEAD) font.setColor(Color.GRAY);
-			font.draw(batch, s, Ultima4.SCREEN_WIDTH - 125, y);
-		}
-
-		logs.render(batch);
+		Ultima4.hud.render(batch, party);
 
 		if (showZstats > 0) {
 			party.getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);

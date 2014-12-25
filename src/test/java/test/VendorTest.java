@@ -214,7 +214,7 @@ public class VendorTest {
 	}
 
 
-	@Test
+	//@Test
 	public void testHorseVendor() throws Exception {
 		
 		File file = new File("assets/xml/vendor.xml");

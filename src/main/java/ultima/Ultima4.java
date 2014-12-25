@@ -1,14 +1,21 @@
 package ultima;
 
+import util.LogDisplay;
+
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 public class Ultima4 extends Game {
 	
 	public static int SCREEN_WIDTH = 800;
 	public static int SCREEN_HEIGHT = 600;
+	
+	public static LogDisplay hud;
+	public static BitmapFont logFont;
 	
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
@@ -22,6 +29,10 @@ public class Ultima4 extends Game {
 
 	@Override
 	public void create() {
+		
+		logFont = new BitmapFont();
+		logFont.setColor(Color.WHITE);	
+		hud = new LogDisplay(logFont);
 
 		setScreen(new StartScreen(this));
 		

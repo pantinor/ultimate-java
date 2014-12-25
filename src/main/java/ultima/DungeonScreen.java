@@ -665,8 +665,7 @@ public class DungeonScreen extends BaseScreen {
 		
 		font.draw(batch, (Math.round(currentPos.x)-1) + ", " + (Math.round(currentPos.z)-1) + ", " + (currentLevel+1), 5, Ultima4.SCREEN_HEIGHT - 5);
 
-		font.setColor(Color.WHITE);
-		logs.render(batch);
+		Ultima4.hud.render(batch, GameScreen.context.getParty());
 		
 		batch.end();
 	}

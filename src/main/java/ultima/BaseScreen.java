@@ -37,9 +37,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 	
 	protected OrthographicCamera mapCamera;
 	protected int showZstats = 0;
-	
-	public static LogDisplay logs;
-	
+		
 	protected BitmapFont font;
 
 	protected Vector2 currentMousePos;
@@ -82,13 +80,13 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 	}
 	
 	public void log(String s) {
-		logs.add(s);
+		Ultima4.hud.add(s);
 	}
 	public void logAppend(String s) {
-		logs.append(s);
+		Ultima4.hud.append(s);
 	}
 	public void logDeleteLastChar() {
-		logs.logDeleteLastChar();
+		Ultima4.hud.logDeleteLastChar();
 	}
 	
 	public abstract void finishTurn(int currentX, int currentY) ;
