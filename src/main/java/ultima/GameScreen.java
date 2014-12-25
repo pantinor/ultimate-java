@@ -205,7 +205,7 @@ public class GameScreen extends BaseScreen {
 //			party.join(NpcDefaults.Iolo.name());
 //			party.join(NpcDefaults.Julia.name());
 
-			sg.food = 30000;
+			//sg.food = 30000;
 			//sg.runes |= Virtue.VALOR.getLoc();
 			//sg.moves = 2800;
 			//sg.karma[Virtue.VALOR.ordinal()] = 99;
@@ -214,11 +214,11 @@ public class GameScreen extends BaseScreen {
 			//party.getMember(1).getPlayer().xp = 600;
 			//party.getMember(0).getPlayer().weapon = WeaponType.OIL;
 			//party.getSaveGame().weapons[9] = 99;
-			sg.gems = 15;
+			//sg.gems = 15;
 			
 			//load the surface world first
-			//loadNextMap(Maps.WORLD, sg.x, sg.y);
-			loadNextMap(Maps.WORLD, 98, 145);
+			loadNextMap(Maps.WORLD, sg.x, sg.y);
+			//loadNextMap(Maps.WORLD, 98, 145);
 
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
