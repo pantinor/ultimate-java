@@ -189,7 +189,7 @@ public interface Constants {
 		door(0x200),
 		horse(0x400),
 		ship(0x800),
-		ballon(0x1000),
+		balloon(0x1000),
 		replacement(0x2000),
 		onWaterOnlyReplacement(0x4000),
 		livingthing(0x8000),
@@ -217,7 +217,7 @@ public interface Constants {
 	    ship(TileAttrib.ship.getVal() | TileAttrib.creatureunwalkable.getVal()),
 	    horse(TileAttrib.horse.getVal() | TileAttrib.creatureunwalkable.getVal()),
 	    floors(TileAttrib.replacement.getVal()),
-	    balloon(TileAttrib.ballon.getVal() | TileAttrib.creatureunwalkable.getVal()),
+	    balloon(TileAttrib.balloon.getVal() | TileAttrib.creatureunwalkable.getVal()),
 	    person(TileAttrib.livingthing.getVal() | TileAttrib.unwalkable.getVal()),
 	    solid(TileAttrib.unwalkable.getVal()),
 	    solid_attackover(TileAttrib.canattackover.getVal() | TileAttrib.unwalkable.getVal()),
@@ -930,7 +930,7 @@ public interface Constants {
 	
 	public enum Item {
 		SKULL("Skull of Mondain", true, 0x01),
-		SKULL_DESTROYED("",false, 0x02),
+		SKULL_DESTROYED("Skull Destroyed",false, 0x02),
 		CANDLE("Candle of Love", true, 0x04),
 		BOOK("Book of Truth",true, 0x08),
 		BELL("Bell of Courage",true, 0x10),
@@ -939,9 +939,9 @@ public interface Constants {
 		KEY_T("Key of Truth",true, 0x80),
 		HORN("Silver Horn",true, 0x100),
 		WHEEL("Wheel of HMS Cape",true, 0x200),
-		CANDLE_USED("",false, 0x400),
-		BOOK_USED("",false, 0x800),
-		BELL_USED("",false, 0x1000);
+		CANDLE_USED("Candle Used",false, 0x400),
+		BOOK_USED("Book Used",false, 0x800),
+		BELL_USED("Bell Used",false, 0x1000);
 		
 		private boolean visible;
 		private String desc;
@@ -1212,7 +1212,7 @@ public interface Constants {
 	}
 	
 	public enum CreatureType {
-		horse1(0),
+		horse(0),
 		horse2(1),
 
 		mage(2),

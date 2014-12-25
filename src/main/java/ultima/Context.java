@@ -4,6 +4,7 @@ import java.util.Random;
 
 import objects.Aura;
 import objects.BaseMap;
+import objects.Drawable;
 import objects.Party;
 import objects.Portal;
 import objects.Tile;
@@ -27,8 +28,10 @@ public class Context implements Constants {
     private int horseSpeed;
     private int opacity;
     private TransportContext transportContext;
+    private Drawable lastShip;
+    private Drawable currentShip;
+
     private long lastCommandTime = System.currentTimeMillis();
-    private Object lastShip;
     private Random rand = new Random();
     
 	public int getLine() {
@@ -61,9 +64,6 @@ public class Context implements Constants {
 	public long getLastCommandTime() {
 		return lastCommandTime;
 	}
-	public Object getLastShip() {
-		return lastShip;
-	}
 	public void setLine(int line) {
 		this.line = line;
 	}
@@ -94,9 +94,6 @@ public class Context implements Constants {
 	public void setLastCommandTime(long lastCommandTime) {
 		this.lastCommandTime = lastCommandTime;
 	}
-	public void setLastShip(Object lastShip) {
-		this.lastShip = lastShip;
-	}
 	public TiledMap getCurrentTiledMap() {
 		return currentTiledMap;
 	}
@@ -114,6 +111,7 @@ public class Context implements Constants {
 	}
 	public void setParty(Party party) {
 		this.party = party;
+		party.setContext(this);
 	}
 
     public void saveGame(float x, float y, float z, Direction orientation, Maps map) {
@@ -237,6 +235,20 @@ public class Context implements Constants {
         else
             return false;
     }
+    
+    
+	public Drawable getCurrentShip() {
+		return currentShip;
+	}
+	public void setCurrentShip(Drawable currentShip) {
+		this.currentShip = currentShip;
+	}
+	public Drawable getLastShip() {
+		return lastShip;
+	}
+	public void setLastShip(Drawable lastShip) {
+		this.lastShip = lastShip;
+	}
     
 
 }

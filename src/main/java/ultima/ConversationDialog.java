@@ -223,7 +223,7 @@ public class ConversationDialog extends Window implements Constants {
 			
 			vendor = GameScreen.vendorClassSet.getVendorImpl(person.getRole().getInventoryType(), 
 					Maps.get(GameScreen.context.getCurrentMap().getId()), GameScreen.context.getParty());
-			
+			vendor.setScreen(screen);
 			vendor.setScrollPane(scrollPane);
 			vendor.nextDialog();
 		}

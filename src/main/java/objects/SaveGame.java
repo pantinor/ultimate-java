@@ -47,7 +47,7 @@ public class SaveGame implements Constants {
 	public int stones = 0;
 	public int runes = 0;
 	public int members = 1;
-	public int transport = 0x1f;
+	public int transport = 0x1f; //avatar tile id
 
 	public int balloonstate = 0;
 	public int torchduration = 0;
@@ -592,7 +592,7 @@ public class SaveGame implements Constants {
         }
         
         for (Item item : Constants.Item.values()) {
-        	if (!item.isVisible()) continue;
+        	//if (!item.isVisible()) continue;
         	sb4.append((this.items & (1 << item.ordinal())) > 0 ? item.getDesc() + "|" : "") ;
         }
 

@@ -60,6 +60,7 @@ public class VendorClassSet {
 			v = new HealerService(getVendor(type, map), party);
 			break;
 		case HORSE:
+			v = new HorseService(getVendor(type, map), party);
 			break;
 		case INN:
 			break;

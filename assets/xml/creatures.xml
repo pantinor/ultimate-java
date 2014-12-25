@@ -1,5 +1,5 @@
 <creatures>
-	<creature id="0" name="Horse" tile="horse1" basehp="255" exp="10" good="true" wontattack="true" />
+	<creature id="0" name="Horse" tile="horse" basehp="255" exp="10" good="true" wontattack="true" />
 	<creature id="1" name="Horse" tile="horse2" basehp="255" exp="10" good="true" wontattack="true" />
 
 	<!-- Classes -->

@@ -30,11 +30,11 @@ import objects.Creature;
 import objects.Person;
 import ultima.Constants;
 import ultima.GameScreen;
-import util.ShadowFOV;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
@@ -44,7 +44,6 @@ import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
 public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constants {
 	
 	private BaseMap bm;
-	private GameScreen mainGame;
 	private ShadowFOV fov = new ShadowFOV();
 	float stateTime = 0;
 	
@@ -52,16 +51,15 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 	TextureRegion brick_floor;
 	TextureRegion locked_door;
 
-	public UltimaMapRenderer(GameScreen mainGame, BaseMap bm, TiledMap map, float unitScale) {
+	public UltimaMapRenderer(TextureAtlas atlas, BaseMap bm, TiledMap map, float unitScale) {
 		super(map, unitScale);
 		this.bm = bm;
-		this.mainGame = mainGame;
 		
-		if (mainGame != null) {
+		if (atlas != null) {
 		
-			door = mainGame.standardAtlas.findRegion("door");
-			brick_floor = mainGame.standardAtlas.findRegion("brick_floor");
-			locked_door = mainGame.standardAtlas.findRegion("locked_door");
+			door = atlas.findRegion("door");
+			brick_floor = atlas.findRegion("brick_floor");
+			locked_door = atlas.findRegion("locked_door");
 			
 			door.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 			brick_floor.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
@@ -72,43 +70,70 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 
 	@Override
 	public void renderTileLayer(TiledMapTileLayer layer) {
-		
+				
 		stateTime += Gdx.graphics.getDeltaTime();
 
-		final Color batchColor = batch.getColor();
-		final float color = Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, batchColor.a * layer.getOpacity());
+		Color batchColor = batch.getColor();
+		float color = Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, batchColor.a * layer.getOpacity());
 
-		final int layerWidth = layer.getWidth();
-		final int layerHeight = layer.getHeight();
+		int layerWidth = layer.getWidth();
+		int layerHeight = layer.getHeight();
 
-		final float layerTileWidth = layer.getTileWidth() * unitScale;
-		final float layerTileHeight = layer.getTileHeight() * unitScale;
+		int layerTileWidth = (int) (layer.getTileWidth() * unitScale);
+		int layerTileHeight = (int) (layer.getTileHeight() * unitScale);
+		
+		float[] vertices = this.vertices;
 
-		final int col1 = Math.max(0, (int) (viewBounds.x / layerTileWidth));
-		final int col2 = Math.min(layerWidth, (int) ((viewBounds.x + viewBounds.width + layerTileWidth) / layerTileWidth));
-
-		final int row1 = Math.max(0, (int) (viewBounds.y / layerTileHeight));
-		final int row2 = Math.min(layerHeight, (int) ((viewBounds.y + viewBounds.height + layerTileHeight) / layerTileHeight));
+		int col1 = Math.max(0, (int) (viewBounds.x / layerTileWidth));
+		int col2 = Math.min(layerWidth, (int) ((viewBounds.x + viewBounds.width + layerTileWidth) / layerTileWidth));
+		int row1 = Math.max(0, (int) (viewBounds.y / layerTileHeight));
+		int row2 = Math.min(layerHeight, (int) ((viewBounds.y + viewBounds.height + layerTileHeight) / layerTileHeight));
+	
+		if (bm.getBorderbehavior() == MapBorderBehavior.wrap) {
+			col1 = (int) (viewBounds.x / layerTileWidth);
+			col2 = (int) ((viewBounds.x + viewBounds.width + layerTileWidth) / layerTileWidth);
+			row1 = (int) (viewBounds.y / layerTileHeight);
+			row2 = (int) ((viewBounds.y + viewBounds.height + layerTileHeight) / layerTileHeight);
+		}
 
 		float y = row2 * layerTileHeight;
-		float xStart = col1 * layerTileWidth;
-		final float[] vertices = this.vertices;
+		float startX = col1 * layerTileWidth;
 		
-		int startx = (col2-col1)/2 + col1 ;
-		int starty = (row2-row1)/2 + row1 ;
-		float[][] lightMap = null;
-		if (bm.getShadownMap() != null) {
-			//lightMap = fov.calculateFOV(bm.getShadownMap(), startx, starty, 15);	
-		}
+		//float[][] lightMap = null;
+		//if (bm.getShadownMap() != null) {
+		//	lightMap = fov.calculateFOV(bm.getShadownMap(), startx, starty, 15);	
+		//}
 
 		for (int row = row2; row >= row1; row--) {
 			
-			float x = xStart;
+			float x = startX;
 			for (int col = col1; col < col2; col++) {
 				
-				TiledMapTileLayer.Cell cell = layer.getCell(col, row);
+				TiledMapTileLayer.Cell cell = null;
 				
-				if (cell == null || (lightMap != null && lightMap[col][row] <= 0)) {
+				if (bm.getBorderbehavior() == MapBorderBehavior.wrap) {
+
+					int cx = col;
+					if (col < 0) {
+						cx = layerWidth + col;
+					} else if(col>=layerWidth) {
+						cx = col - layerWidth;
+					}
+					int cy = row;
+					if (row < 0) {
+						cy = layerHeight + row;
+					} else if(row>=layerHeight) {
+						cy = row - layerHeight;
+					}
+					
+					cell = layer.getCell(cx, cy);
+
+				} else {
+					cell = layer.getCell(col, row);
+				}
+				
+								
+				if (cell == null) { // || (lightMap != null && lightMap[col][row] <= 0)) {
 					x += layerTileWidth;
 					continue;
 				}
@@ -183,9 +208,9 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 				//see if person is in shadow
 				int px = Math.round(p.getCurrentPos().x / tilePixelWidth);
 				int py = Math.round(p.getCurrentPos().y / tilePixelHeight);
-				if (lightMap != null && lightMap[px][py] <= 0) {
-					continue;
-				}
+//				if (lightMap != null && lightMap[px][py] <= 0) {
+//					continue;
+//				}
 				batch.draw(p.getTextureRegion(), p.getCurrentPos().x, p.getCurrentPos().y, tilePixelWidth, tilePixelHeight);
 				//batch.draw(p.getAnim().getKeyFrame(stateTime, true), p.getCurrentPos().x, p.getCurrentPos().y, tilePixelWidth, tilePixelHeight);
 			}
@@ -201,9 +226,9 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 				//see if in shadow
 				int px = Math.round(cr.currentX / tilePixelWidth);
 				int py = Math.round(cr.currentY / tilePixelHeight);
-				if (lightMap != null && lightMap[px][py] <= 0) {
-					continue;
-				}
+//				if (lightMap != null && lightMap[px][py] <= 0) {
+//					continue;
+//				}
 				batch.draw(cr.getAnim().getKeyFrame(stateTime, true), cr.currentPos.x, cr.currentPos.y, tilePixelWidth, tilePixelHeight);
 
 			}

@@ -5,6 +5,8 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import java.util.Iterator;
 import java.util.Random;
 
+import org.apache.commons.lang.StringUtils;
+
 import objects.ArmorSet;
 import objects.BaseMap;
 import objects.Creature;
@@ -65,7 +67,14 @@ public class GameScreen extends BaseScreen {
 	
 	MapSet maps;
 	TextureAtlas moonAtlas;
-	Animation avatar;
+	
+	public static Animation mainAvatar;
+	public static Animation avatarAnim;
+	public static Animation horseAnim;
+	public static Animation shipAnim;
+	public static Animation balloonAnim;
+	public static int avatarDirection = Direction.WEST.getVal();
+
 	
 	TiledMap map;
 	UltimaMapRenderer renderer;
@@ -107,7 +116,8 @@ public class GameScreen extends BaseScreen {
 			creatures = (CreatureSet) Utils.loadXml("creatures.xml", CreatureSet.class);
 			creatures.init();
 
-			avatar = new Animation(0.25f, enhancedAtlas.findRegions("avatar"));
+			initTransportAnimations();
+			mainAvatar = avatarAnim;;
 					
 			//textures for the moongates
 			moongateTextures = standardAtlas.findRegions("moongate");
@@ -128,7 +138,8 @@ public class GameScreen extends BaseScreen {
 			
 			stage = new Stage(new ScreenViewport());
 			mapObjectsStage = new Stage(new ScreenViewport(mapCamera));
-				        
+			Maps.WORLD.getMap().setSurfaceMapStage(mapObjectsStage);	      
+			
 			sip = new SecondaryInputProcessor(this, stage);
 
 			gameTimer = new GameTimer();
@@ -137,6 +148,32 @@ public class GameScreen extends BaseScreen {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	private void initTransportAnimations() {
+		Array<AtlasRegion> avatar = enhancedAtlas.findRegions("avatar");
+		Array<AtlasRegion> horse = enhancedAtlas.findRegions("horse");
+		Array<AtlasRegion> ship = standardAtlas.findRegions("ship");
+		Array<AtlasRegion> balloon = standardAtlas.findRegions("balloon");
+
+		Array<AtlasRegion> tmp = new Array<AtlasRegion>(4);
+		for (int i=0;i<4;i++) tmp.add(avatar.get(0));
+		avatarAnim = new Animation(0.25f, tmp);
+		
+		tmp = new Array<AtlasRegion>(4);
+		AtlasRegion ar = new AtlasRegion(horse.get(2));
+		ar.flip(true, false);
+		tmp.add(ar);
+		tmp.add(horse.get(2));
+		tmp.add(horse.get(2));
+		tmp.add(horse.get(2));
+		horseAnim = new Animation(0.25f, tmp);
+		
+		shipAnim = new Animation(0.25f, ship);
+		
+		tmp = new Array<AtlasRegion>(4);
+		for (int i=0;i<4;i++) tmp.add(balloon.get(0));
+		balloonAnim = new Animation(0.25f, tmp);
 	}
 	
 	@Override
@@ -157,6 +194,7 @@ public class GameScreen extends BaseScreen {
 			
 			Party party = new Party(sg);
 			context.setParty(party);
+			party.setTransport(baseTileSet.getTileByIndex(sg.transport));
 			
 			//party.join(NpcDefaults.Geoffrey.name());
 			//party.join(NpcDefaults.Shamino.name());
@@ -170,11 +208,11 @@ public class GameScreen extends BaseScreen {
 			//party.getMember(1).getPlayer().xp = 600;
 			//party.getMember(0).getPlayer().weapon = WeaponType.OIL;
 			//party.getSaveGame().weapons[9] = 99;
-			//sg.gems = 5;
+			sg.gems = 15;
 			
 			//load the surface world first
-			loadNextMap(Maps.WORLD, sg.x, sg.y);
-			//loadNextMap(Maps.WORLD, 218, 107);
+			//loadNextMap(Maps.WORLD, sg.x, sg.y);
+			loadNextMap(Maps.WORLD, 98, 145);
 
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
@@ -228,7 +266,7 @@ public class GameScreen extends BaseScreen {
 			context.setCurrentTiledMap(map);
 
 			if (renderer != null) renderer.dispose();
-			renderer = new UltimaMapRenderer(this, bm, map, 2f);
+			renderer = new UltimaMapRenderer(standardAtlas, bm, map, 2f);
 
 			mapBatch = renderer.getBatch();
 	
@@ -280,14 +318,16 @@ public class GameScreen extends BaseScreen {
 				
 			    /* add a chest, if the creature leaves one */
 			    if (!currentEncounter.getNochest() && (r == null || !r.has(TileAttrib.unwalkable))) {
-			    	Drawable chest = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "chest", standardAtlas);
+			    	Tile ct = baseTileSet.getTileByName("chest");
+			    	Drawable chest = new Drawable(currentEncounter.currentX, currentEncounter.currentY, ct, standardAtlas);
 			    	chest.setX(currentEncounter.currentPos.x);
 			    	chest.setY(currentEncounter.currentPos.y);
 			    	mapObjectsStage.addActor(chest);
 			    }
 			    /* add a ship if you just defeated a pirate ship */
 			    else if (currentEncounter.getTile() == CreatureType.pirate_ship) {
-			    	Drawable ship = new Drawable(currentEncounter.currentX, currentEncounter.currentY, "ship", standardAtlas);
+			    	Tile st = baseTileSet.getTileByName("ship");
+			    	Drawable ship = new Drawable(currentEncounter.currentX, currentEncounter.currentY, st, standardAtlas);
 			    	ship.setX(currentEncounter.currentPos.x);
 			    	ship.setY(currentEncounter.currentPos.y);
 			    	mapObjectsStage.addActor(ship);
@@ -357,8 +397,8 @@ public class GameScreen extends BaseScreen {
 
 		batch.begin();
 
-		// Vector3 v = getCurrentMapCoords();
-		// font.draw(batch2, "map coords: " + v, 10, 40);
+		//Vector3 v = getCurrentMapCoords();
+		//font.draw(batch, "map coords: " + v, 10, 500);
 		// font.draw(batch2, "fps: " + Gdx.graphics.getFramesPerSecond(), 0, 20);
 		//font.draw(batch, "mouse: " + currentMousePos, 10, 70);
 
@@ -396,7 +436,7 @@ public class GameScreen extends BaseScreen {
 		mapObjectsStage.draw();
 		
 		mapBatch.begin();
-		mapBatch.draw(avatar.getKeyFrame(time, true), mapCamera.position.x, mapCamera.position.y, tilePixelWidth, tilePixelHeight);
+		mapBatch.draw(mainAvatar.getKeyFrames()[avatarDirection], mapCamera.position.x, mapCamera.position.y, tilePixelWidth, tilePixelHeight);
 		mapBatch.end();
 		
 		stage.act();
@@ -414,29 +454,45 @@ public class GameScreen extends BaseScreen {
 		Tile ct = context.getCurrentMap().getTile(v);
 		
 		if (keycode == Keys.UP) {
-			
 			if (!preMove(v, Direction.NORTH)) return false;
-			mapCamera.position.y = mapCamera.position.y + tilePixelHeight;
-			postMove(Direction.NORTH, (int)v.x,(int)v.y-1);
-			
+			if (mapCamera.position.y + tilePixelHeight > context.getCurrentMap().getHeight() * tilePixelHeight) {
+				mapCamera.position.y = 0;
+				postMove(Direction.NORTH, (int)v.x, context.getCurrentMap().getHeight());
+			} else {
+				mapCamera.position.y = mapCamera.position.y + tilePixelHeight;
+				postMove(Direction.NORTH, (int)v.x,(int)v.y-1);
+			}
+			avatarDirection = Direction.NORTH.getVal()-1;
 		} else if (keycode == Keys.RIGHT) {
-			
 			if (!preMove(v, Direction.EAST)) return false;
-			mapCamera.position.x = mapCamera.position.x + tilePixelWidth;
-			postMove(Direction.EAST, (int)v.x+1,(int)v.y);
-			
+			if (mapCamera.position.x + tilePixelWidth > context.getCurrentMap().getWidth() * tilePixelWidth) {
+				mapCamera.position.x = 0;
+				postMove(Direction.EAST, 0, (int)v.y);
+			} else {
+				mapCamera.position.x = mapCamera.position.x + tilePixelWidth;
+				postMove(Direction.EAST, (int)v.x+1,(int)v.y);
+			}
+			avatarDirection = Direction.EAST.getVal()-1;
 		} else if (keycode == Keys.LEFT) {
-			
 			if (!preMove(v, Direction.WEST)) return false;
-			mapCamera.position.x = mapCamera.position.x - tilePixelWidth;
-			postMove(Direction.WEST, (int)v.x-1,(int)v.y);
-			
+			if (mapCamera.position.x - tilePixelWidth < 0) {
+				mapCamera.position.x = context.getCurrentMap().getWidth() * tilePixelWidth;
+				postMove(Direction.WEST, context.getCurrentMap().getWidth(),(int)v.y);
+			} else {
+				mapCamera.position.x = mapCamera.position.x - tilePixelWidth;
+				postMove(Direction.WEST, (int)v.x-1,(int)v.y);
+			}
+			avatarDirection = Direction.WEST.getVal()-1;
 		} else if (keycode == Keys.DOWN) {
-			
 			if (!preMove(v, Direction.SOUTH)) return false;
-			mapCamera.position.y = mapCamera.position.y - tilePixelHeight;
-			postMove(Direction.SOUTH, (int)v.x,(int)v.y+1);
-			
+			if (mapCamera.position.y - tilePixelHeight < 0) {
+				mapCamera.position.y = context.getCurrentMap().getHeight() * tilePixelHeight;
+				postMove(Direction.SOUTH, (int)v.x, 0);
+			} else {
+				mapCamera.position.y = mapCamera.position.y - tilePixelHeight;
+				postMove(Direction.SOUTH, (int)v.x,(int)v.y+1);
+			}
+			avatarDirection = Direction.SOUTH.getVal()-1;
 		} else if (keycode == Keys.K || keycode == Keys.D) {
 			if (ct.climbable()) {
 				Portal p = context.getCurrentMap().getPortal(v.x, v.y);
@@ -477,6 +533,8 @@ public class GameScreen extends BaseScreen {
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);
 			return false;
+		} else if (keycode == Keys.B) {
+			board((int)v.x,(int)v.y);
 		} else if (keycode == Keys.P) {
 			peerGem();
 		} else if (keycode == Keys.T || keycode == Keys.O || keycode == Keys.L || keycode == Keys.A) {
@@ -501,16 +559,17 @@ public class GameScreen extends BaseScreen {
 	
 	private boolean preMove(Vector3 currentTile, Direction dir) {
 		
-		BaseMap bm = context.getCurrentMap();
 		
-		Vector3 nextTile = null;
-		if (dir == Direction.NORTH) nextTile = new Vector3(currentTile.x,currentTile.y-1,0);
-		if (dir == Direction.SOUTH) nextTile = new Vector3(currentTile.x,currentTile.y+1,0);
-		if (dir == Direction.WEST) nextTile = new Vector3(currentTile.x-1,currentTile.y,0);
-		if (dir == Direction.EAST) nextTile = new Vector3(currentTile.x+1,currentTile.y,0);
-				
+		int nx = (int)currentTile.x;
+		int ny = (int)currentTile.y;
+		if (dir == Direction.NORTH) ny = (int)currentTile.y-1;
+		if (dir == Direction.SOUTH) ny = (int)currentTile.y+1;
+		if (dir == Direction.WEST) nx = (int)currentTile.x-1;
+		if (dir == Direction.EAST) nx = (int)currentTile.x+1;
+		
+		BaseMap bm = context.getCurrentMap();
 		if (bm.getBorderbehavior() == MapBorderBehavior.exit) {
-			if (nextTile.x > bm.getWidth()-1 || nextTile.x < 0 || nextTile.y > bm.getHeight()-1 || nextTile.y < 0) {
+			if (nx > bm.getWidth()-1 || nx < 0 || ny > bm.getHeight()-1 || ny < 0) {
 				Portal p = Maps.WORLD.getMap().getPortal(bm.getId());
 				loadNextMap(Maps.WORLD, p.getX(), p.getY());
 				return false;
@@ -785,6 +844,79 @@ public class GameScreen extends BaseScreen {
 		
 	}
 	
+	public void board(int x, int y) {
+		
+	    if (context.getTransportContext() != TransportContext.FOOT) {
+	        log("Board: Can't!");
+	        return;
+	    }
+	    
+	    Tile tile = null;
+	    
+	    //check for ship
+		Drawable ship = null;
+		for (Actor a : mapObjectsStage.getActors()) {
+			if (a instanceof Drawable) {
+				Drawable d = (Drawable)a;
+				if (d.getTile().getName().equals("ship") && d.getCx() == x && d.getCy() == y) {
+					ship = d;
+					tile = d.getTile();
+				}
+			}
+		}
+		
+		//check for horse
+		Creature horse = context.getCurrentMap().getCreatureAt(x, y);
+	    if (horse != null && (horse.getTile() == CreatureType.horse)) {
+	    	tile = baseTileSet.getTileByName("horse");
+	    }
+		
+		
+	    //check for balloon
+		Drawable balloon = null;
+		for (Actor a : mapObjectsStage.getActors()) {
+			if (a instanceof Drawable) {
+				Drawable d = (Drawable)a;
+				if (d.getTile().getName().equals("balloon") && d.getCx() == x && d.getCy() == y) {
+					balloon = d;
+					tile = d.getTile();
+				}
+			}
+		}
+	    
+	    if (tile == null) {
+	    	log("Board What?");
+	        return;
+	    }
+
+	    if (tile.getRule().has(TileAttrib.ship)) {
+	    	log("Board Frigate!");
+	        if (context.getLastShip() != ship) {
+	            context.getParty().setShipHull(50);
+	        }
+	        context.setCurrentShip(ship);
+	    	ship.remove();
+	    	mainAvatar = shipAnim;
+	    	
+	    } else if (tile.getRule().has(TileAttrib.horse)) {
+	    	log("Mount Horse!");
+	    	context.getCurrentMap().removeCreature(horse);
+	    	mainAvatar = horseAnim;
+
+	    } else if (tile.getRule().has(TileAttrib.balloon)) {
+	    	log("Board Balloon!");
+	    	balloon.remove();
+	    	mainAvatar = balloonAnim;
+
+	    } else {
+	    	log("Board What?");
+	        return;
+	    }
+
+	    context.getParty().setTransport(tile);
+
+	}
+	
 	
 	
 	public void getChest(int index, int x, int y) {
@@ -798,7 +930,7 @@ public class GameScreen extends BaseScreen {
 		for (Actor a : mapObjectsStage.getActors()) {
 			if (a instanceof Drawable) {
 				Drawable d = (Drawable)a;
-				if (d.getCx() == x && d.getCy() == y) {
+				if (StringUtils.equals("chest", d.getName()) && d.getCx() == x && d.getCy() == y) {
 					chest = (Drawable)a;
 				}
 			}

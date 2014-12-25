@@ -20,6 +20,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
 @XmlRootElement(name = "map")
@@ -39,7 +41,7 @@ public class BaseMap implements Constants {
 	private boolean showavatar;
 	private boolean nolineofsight;
 	private boolean firstperson;
-	private boolean contextual;
+	private boolean contextual; //??
 	private String music;
 	private MapBorderBehavior borderbehavior;
 	private String tileset;
@@ -53,6 +55,7 @@ public class BaseMap implements Constants {
 	
 	private List<Creature> creatures = new ArrayList<Creature>();
 	private List<PartyMember> combatPlayers;
+	private Stage surfaceMapStage;
 	
 	private List<Moongate> moongates;
 	private Tile[] tiles;
@@ -284,6 +287,14 @@ public class BaseMap implements Constants {
 	public void clearCreatures() {
 		creatures.clear();
 	}
+	public Creature getCreatureAt(int x, int y) {
+		for(Creature cre : creatures) {
+			if (cre.currentX == x && cre.currentY == y) {
+				return cre;
+			}
+		}
+		return null;
+	}
 	
 	public void setMoongates(List<Moongate> moongate) {
 		this.moongates = moongate;
@@ -322,17 +333,24 @@ public class BaseMap implements Constants {
 		if (x + (y * width) >= tiles.length) {
 			return null;
 		}
+		
+		//allows walking on chests frigates horses and balloons
+		if (surfaceMapStage != null) {
+			for (Actor a : surfaceMapStage.getActors()) {
+				if (a instanceof Drawable) {
+					Drawable d = (Drawable)a;
+					if (d.getCx() == x && d.getCy() == y) {
+						return d.getTile();
+					}
+				}
+			}
+		}
+		
 		return tiles[x + (y * width)];
 	}
 	
 	public synchronized Tile getTile(Vector3 v) {
-		if (v.x < 0 || v.y < 0) { 
-			return null;
-		}
-		if ((int)v.x + ((int)v.y * width) >= tiles.length) {
-			return null;
-		}
-		return tiles[(int)v.x + ((int)v.y * width)];
+		return getTile((int)v.x, (int)v.y);
 	}
 	
 	public float[][] getShadownMap() {
@@ -505,16 +523,31 @@ public class BaseMap implements Constants {
 		
 		int mask = 0;
 		
-		Tile north = getTile(x,y-1);
-		Tile south = getTile(x,y+1);
-		Tile east = getTile(x+1,y);
-		Tile west = getTile(x-1,y);
+		if (this.getBorderbehavior() == MapBorderBehavior.wrap) {
+						
+			Tile north = getTile(x,y-1<0?height-1:y-1);
+			Tile south = getTile(x,y+1>=height?0:y+1);
+			Tile east = getTile(x+1>=width-1?0:x+1,y);
+			Tile west = getTile(x-1<0?width-1:x-1,y);
+			
+			mask = addToMask(Direction.NORTH, mask, north, x, y-1<0?height-1:y-1, cr, avatarX, avatarY);
+			mask = addToMask(Direction.SOUTH, mask, south, x, y+1>=height?0:y+1, cr, avatarX, avatarY);
+			mask = addToMask(Direction.EAST, mask, east, x+1>=width-1?0:x+1, y, cr, avatarX, avatarY);
+			mask = addToMask(Direction.WEST, mask, west, x-1<0?width-1:x-1, y, cr, avatarX, avatarY);
+			
+		} else {
+			
+			Tile north = getTile(x,y-1);
+			Tile south = getTile(x,y+1);
+			Tile east = getTile(x+1,y);
+			Tile west = getTile(x-1,y);
+			
+			mask = addToMask(Direction.NORTH, mask, north, x, y-1, cr, avatarX, avatarY);
+			mask = addToMask(Direction.SOUTH, mask, south, x, y+1, cr, avatarX, avatarY);
+			mask = addToMask(Direction.EAST, mask, east, x+1, y, cr, avatarX, avatarY);
+			mask = addToMask(Direction.WEST, mask, west, x-1, y, cr, avatarX, avatarY);
+		}
 		
-		mask = addToMask(Direction.NORTH, mask, north, x, y-1, cr, avatarX, avatarY);
-		mask = addToMask(Direction.SOUTH, mask, south, x, y+1, cr, avatarX, avatarY);
-		mask = addToMask(Direction.EAST, mask, east, x+1, y, cr, avatarX, avatarY);
-		mask = addToMask(Direction.WEST, mask, west, x-1, y, cr, avatarX, avatarY);
-
 		return mask;
 		
 	}
@@ -525,14 +558,47 @@ public class BaseMap implements Constants {
 			TileRule rule = tile.getRule();
 			boolean canmove = false;
 			if (rule != null) {
-				canmove = !rule.has(TileAttrib.unwalkable);
 				if (cr != null) {
-	                if (cr.getSails() && rule.has(TileAttrib.sailable)) canmove = true;
-	                else if (cr.getSails() && !rule.has(TileAttrib.unwalkable)) canmove = false;
-	                else if (cr.getSwims() && rule.has(TileAttrib.swimmable)) canmove = true;
-	                else if (cr.getSwims() && !rule.has(TileAttrib.unwalkable)) canmove = false;
-	                else if (cr.getFlies() && !rule.has(TileAttrib.unflyable)) canmove = true;		
-	                else if (rule.has(TileAttrib.creatureunwalkable)) canmove = false;					                	
+					if (cr.getSails() && rule.has(TileAttrib.sailable)) {
+						canmove = true;
+					} else if (cr.getSails() && !rule.has(TileAttrib.unwalkable)) {
+						canmove = false;
+					} else if (cr.getSwims() && rule.has(TileAttrib.swimmable)) {
+						canmove = true;
+					} else if (cr.getSwims() && !rule.has(TileAttrib.unwalkable)) {
+						canmove = false;
+					} else if (cr.getFlies() && !rule.has(TileAttrib.unflyable)) {
+						canmove = true;
+					} else if (rule.has(TileAttrib.creatureunwalkable)) {
+						canmove = false;
+					} else if (!rule.has(TileAttrib.unwalkable)) {
+						canmove = true;
+					}
+				} else {
+					TransportContext tc = GameScreen.context.getTransportContext();
+					if (tc == null || tc == TransportContext.FOOT) {
+		                if (!rule.has(TileAttrib.unwalkable) || rule == TileRule.ship || rule.has(TileAttrib.chest) || rule == TileRule.horse || rule == TileRule.balloon) {
+		                	canmove = true;
+		                }
+					} else if (tc == TransportContext.HORSE) {
+		                if (!rule.has(TileAttrib.creatureunwalkable) && !rule.has(TileAttrib.unwalkable)) {
+		                	canmove = true;
+		                } else {
+		                	canmove = false;
+		                }
+					} else if (tc == TransportContext.SHIP) {
+		                if (rule.has(TileAttrib.sailable)) {
+		                	canmove = true;
+		                } else {
+		                	canmove = false;
+		                }
+					} else if (tc == TransportContext.BALLOON) {
+		                if (!rule.has(TileAttrib.unflyable)) {
+		                	canmove = true;
+		                } else {
+		                	canmove = false;
+		                }
+					}
 				}
 			} else {
 				canmove = false; 
@@ -1006,6 +1072,14 @@ public class BaseMap implements Constants {
 
 	public void setCombatPlayers(List<PartyMember> combatPlayers) {
 		this.combatPlayers = combatPlayers;
+	}
+
+	public Stage getSurfaceMapStage() {
+		return surfaceMapStage;
+	}
+
+	public void setSurfaceMapStage(Stage surfaceMapStage) {
+		this.surfaceMapStage = surfaceMapStage;
 	}
 	
 }

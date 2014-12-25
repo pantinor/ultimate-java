@@ -16,6 +16,7 @@ import javax.xml.bind.Unmarshaller;
 
 import objects.BaseMap;
 import objects.Conversation;
+import objects.Creature;
 import objects.Person;
 import objects.Tile;
 import objects.TileSet;
@@ -28,13 +29,9 @@ import ultima.Ultima4;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
-import com.badlogic.gdx.math.MathUtils;
 
 public class Utils implements Constants {
 
@@ -179,11 +176,21 @@ public class Utils implements Constants {
 				BufferedImage sub = sheet.getSubimage(ar.getRegionX(), ar.getRegionY(), 16, 16);
 				canvas.getGraphics().drawImage(sub,indexX*16,indexY*16,16,16,null);
 				
+				Creature cr = worldMap.getCreatureAt(cx, cy);
+				if (cr != null) {
+					//canvas.getGraphics().setColor(java.awt.Color.RED);
+					canvas.getGraphics().fillRect(indexX*16, indexY*16, 16, 16);
+				}
+				
 				indexX++;
 			}
 			indexX = 0;
 			indexY++;
 		}
+		
+		//add avatar in the middle
+		//canvas.getGraphics().setColor(java.awt.Color.WHITE);
+		canvas.getGraphics().fillRect((16*64)/2, (16*64)/2, 16, 16);
 		
 		java.awt.Image tmp = canvas.getScaledInstance(16*32, 16*32, Image.SCALE_AREA_AVERAGING);
 		BufferedImage scaledCanvas = new BufferedImage(16*32, 16*32, BufferedImage.TYPE_INT_ARGB);
@@ -195,8 +202,7 @@ public class Utils implements Constants {
 				scaledCanvas, 
 				(Ultima4.SCREEN_WIDTH - scaledCanvas.getWidth()) / 2,
 				(Ultima4.SCREEN_HEIGHT - scaledCanvas.getHeight()) / 2);
-		
-		
+				
 		Texture t = new Texture(p);
 		p.dispose();
 		return t;

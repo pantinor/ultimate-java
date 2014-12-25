@@ -1,6 +1,7 @@
 package vendor;
 
 import objects.Party;
+import ultima.BaseScreen;
 import ultima.Constants.InventoryType;
 import ultima.LogScrollPane;
 
@@ -29,6 +30,7 @@ public abstract class BaseVendor {
 		WAIT_PERFORM_SERVICE,
 		PERFORM_SERVICE,
 
+		DECLINE_BUY,
 		ANYTHING_ELSE,
 		FAREWELL;
 	}
@@ -42,6 +44,8 @@ public abstract class BaseVendor {
 	Item currentSelectedItem;
 	int currentCount;
 	
+	BaseScreen screen;
+	
 	private LogScrollPane scrollPane;
 	
 	public BaseVendor(Vendor vendor, Party party) {
@@ -49,6 +53,10 @@ public abstract class BaseVendor {
 		this.party = party;
 		this.type = vendor.getVendorType();
 		init();
+	}
+	
+	public void setScreen(BaseScreen screen) {
+		this.screen = screen;
 	}
 	
 	public abstract void init() ;

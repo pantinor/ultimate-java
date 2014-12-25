@@ -19,6 +19,7 @@ import ultima.Constants.Stone;
 import ultima.Constants.TileAttrib;
 import ultima.Constants.TileRule;
 import ultima.Constants.AttackVector;
+import ultima.Constants.TransportContext;
 import ultima.Constants.WeaponType;
 
 import com.badlogic.gdx.Gdx;
@@ -153,6 +154,16 @@ public class SecondaryInputProcessor extends InputAdapter {
 							cm = Maps.SHORE_CON;
 						} else if (c.getSails() && !ptr.has(TileAttrib.unwalkable)) {
 							cm = Maps.SHORSHIP_CON;
+						}
+						
+						if (gameScreen.context.getTransportContext() == TransportContext.SHIP) {
+							if (c.getSwims()) {
+								cm = Maps.SHIPSEA_CON;
+							} else if (c.getSails()) {
+								cm = Maps.SHIPSHIP_CON;
+							} else {
+								cm = Maps.SHIPSHOR_CON;
+							}
 						}
 						
 						gameScreen.attackAt(cm, c);

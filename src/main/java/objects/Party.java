@@ -10,6 +10,7 @@ import objects.SaveGame.SaveGamePlayerRecord;
 import org.apache.commons.lang.StringUtils;
 
 import ultima.Constants;
+import ultima.Context;
 import util.Utils;
 
 
@@ -21,6 +22,7 @@ public class Party extends Observable implements Constants {
 	private Tile transport;
 	private int torchduration;
 	private Random rand = new Random();
+	private Context context;
 	
 	public Party(SaveGame sg) {
 		this.saveGame = sg;
@@ -28,8 +30,7 @@ public class Party extends Observable implements Constants {
 		for (int i = 0;i<saveGame.members;i++) {
 			members.add(new PartyMember(this, saveGame.players[i]));
 		}
-			
-		
+					
 	}
 	
 	public void addMember(SaveGame.SaveGamePlayerRecord rec) throws Exception {
@@ -59,6 +60,26 @@ public class Party extends Observable implements Constants {
 
 	public Tile getTransport() {
 		return transport;
+	}
+	
+	public void setTransport(Tile transport) {
+		this.transport = transport;
+		saveGame.transport = transport.getIndex();
+		
+		if (transport.getRule().has(TileAttrib.horse)) {
+			context.setTransportContext(TransportContext.HORSE);
+		} else if (transport.getRule().has(TileAttrib.ship)) {
+			context.setTransportContext(TransportContext.SHIP);
+		} else if (transport.getRule().has(TileAttrib.balloon)) {
+			context.setTransportContext(TransportContext.BALLOON);
+		} else {
+			context.setTransportContext(TransportContext.FOOT);
+		}
+	}
+	
+	public void setShipHull(int str) {
+	    int newStr = Utils.adjustValue(str, 0, 99, 0);
+	    saveGame.shiphull = newStr;
 	}
 
 	public int getTorchduration() {
@@ -203,10 +224,6 @@ public class Party extends Observable implements Constants {
 	    } else {
 	        return false;
 	    }
-	}
-
-	public void setTransport(Tile transport) {
-		this.transport = transport;
 	}
 
 	public void setTorchduration(int torchduration) {
@@ -705,6 +722,14 @@ public class Party extends Observable implements Constants {
 		// 50) && xu4_random(4) == 0) {
 		// healShip(1);
 		// }
+	}
+
+	public Context getContext() {
+		return context;
+	}
+
+	public void setContext(Context context) {
+		this.context = context;
 	}
 
 }

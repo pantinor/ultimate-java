@@ -11,14 +11,14 @@ public class Drawable extends Actor {
 	private int cx;
 	private int cy;
 	private TextureRegion texture;
-	private String tname;
+	private Tile tile;
 
-	public Drawable(int cx, int cy, String name, TextureAtlas atlas) {
+	public Drawable(int cx, int cy, Tile tile, TextureAtlas atlas) {
 		super();
 		this.cx = cx;
 		this.cy = cy;
-		this.tname = name;
-		texture = atlas.findRegion(name);
+		this.tile = tile;
+		texture = atlas.findRegion(tile.getName());
 
 	}
 	public int getCx() {
@@ -28,8 +28,8 @@ public class Drawable extends Actor {
 		return cy;
 	}
 
-	public String getTileName() {
-		return tname;
+	public Tile getTile() {
+		return tile;
 	}
 		
 	@Override
