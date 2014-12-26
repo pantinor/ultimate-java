@@ -8,6 +8,8 @@ import objects.Drawable;
 import objects.Party;
 import objects.Portal;
 import objects.Tile;
+import objects.Party.PartyMember;
+import ultima.Constants.TileEffect;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 
@@ -235,6 +237,66 @@ public class Context implements Constants {
         else
             return false;
     }
+    
+	public boolean getChestTrapHandler(PartyMember pm) {
+
+		TileEffect trapType;
+		int randNum = rand.nextInt(4);
+		boolean passTest = (rand.nextInt(2) == 0);
+
+		/* Chest is trapped! 50/50 chance */
+		if (passTest) {
+			/* Figure out which trap the chest has */
+			switch (randNum) {
+			case 0:
+				trapType = TileEffect.FIRE;
+				break; /* acid trap (56% chance - 9/16) */
+			case 1:
+				trapType = TileEffect.SLEEP;
+				break; /* sleep trap (19% chance - 3/16) */
+			case 2:
+				trapType = TileEffect.POISON;
+				break; /* poison trap (19% chance - 3/16) */
+			case 3:
+				trapType = TileEffect.LAVA;
+				break; /* bomb trap (6% chance - 1/16) */
+			default:
+				trapType = TileEffect.FIRE;
+				break;
+			}
+
+			if (trapType == TileEffect.FIRE) {
+				Ultima4.hud.add("Acid Trap!");
+				Sounds.play(Sound.ACID);
+			} else if (trapType == TileEffect.POISON) {
+				Ultima4.hud.add("Poison Trap!");
+				Sounds.play(Sound.POISON_EFFECT);
+			} else if (trapType == TileEffect.SLEEP) {
+				Ultima4.hud.add("Sleep Trap!");
+				Sounds.play(Sound.SLEEP);
+			} else if (trapType == TileEffect.LAVA) {
+				Ultima4.hud.add("Bomb Trap!");
+				Sounds.play(Sound.BOOM);
+			}
+			
+			// player is null when using the Open spell (immune to traps)
+			// if the chest was opened by a PC, see if the trap was
+			// evaded by testing the PC's dex
+			if (pm.getPlayer().dex + 25 < rand.nextInt(100)) {
+				if (trapType == TileEffect.LAVA) {/* bomb trap */
+					party.applyEffect(trapType);
+				} else {
+					pm.applyEffect(trapType);
+				}
+			} else {
+				Ultima4.hud.add("Evaded!");
+			}
+
+			return true;
+		}
+
+		return false;
+	}
     
     
 	public Drawable getCurrentShip() {

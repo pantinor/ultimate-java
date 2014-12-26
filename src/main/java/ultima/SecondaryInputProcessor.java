@@ -260,6 +260,11 @@ public class SecondaryInputProcessor extends InputAdapter {
 				
 				return false;
 				
+			} else if (initialKeyCode == Keys.G) {
+				
+				if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+					combatScreen.getChest(keycode - 7 - 1, x, y);
+				}
 			}
 			
 		} else if (screen.scType == ScreenType.DUNGEON) {
@@ -286,6 +291,11 @@ public class SecondaryInputProcessor extends InputAdapter {
 					break;
 				}
 				
+			} else if (initialKeyCode == Keys.G) {
+				
+				if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+					dngScreen.getChest(keycode - 7 - 1, x, y);
+				}
 			}
 			
 			Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));

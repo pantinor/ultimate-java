@@ -12,12 +12,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.lang.StringUtils;
+
 import objects.BaseMap;
 import objects.Creature;
 import objects.CreatureSet;
+import objects.Drawable;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.Tile;
+import ultima.Constants.KarmaAction;
+import ultima.Constants.MapType;
 import ultima.DungeonScreen.DungeonRoom;
 import ultima.DungeonScreen.Trigger;
 import util.Utils;
@@ -51,6 +56,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class CombatScreen extends BaseScreen {
@@ -194,6 +200,7 @@ public class CombatScreen extends BaseScreen {
 		stage.dispose();
 		renderer.dispose();
 		batch.dispose();
+		font.dispose();
 	}
 	
 	private void fillCreatureTable(CreatureType ct) {
@@ -308,7 +315,8 @@ public class CombatScreen extends BaseScreen {
 		batch.begin();
 
 		Ultima4.hud.render(batch, party);
-
+		
+		font.setColor(Color.WHITE);
 		if (showZstats > 0) {
 			party.getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);
 		}
@@ -363,6 +371,11 @@ public class CombatScreen extends BaseScreen {
 				sip.setinitialKeyCode(keycode, combatMap, active.currentX, active.currentY);
 				return false;
 			}
+		} else if (keycode == Keys.G) {
+			log("Which party member?");
+			Gdx.input.setInputProcessor(sip);
+			sip.setinitialKeyCode(keycode, combatMap, active.currentX, active.currentY);
+			return false;
 		} else if (keycode == Keys.Z) {
 			showZstats = showZstats + 1;
 			if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
@@ -1221,5 +1234,19 @@ public class CombatScreen extends BaseScreen {
 		finishPlayerTurn();
 	}
 		
+	//for dungeon room chests only
+	public void getChest(int index, int x, int y) {
 
+		Tile chest = combatMap.getTile(x, y);
+
+		if (chest != null) {
+			PartyMember pm = context.getParty().getMember(index);
+			context.getChestTrapHandler(pm);
+			log(String.format("The Chest Holds: %d Gold", context.getParty().getChestGold()));
+			replaceTile("dungeon_floor", x, y);
+		} else {
+			log("Not Here!");
+		}
+	}
+	
 }

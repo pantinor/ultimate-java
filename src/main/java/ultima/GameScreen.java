@@ -194,7 +194,8 @@ public class GameScreen extends BaseScreen {
 			context.setParty(party);
 			party.setTransport(baseTileSet.getTileByIndex(sg.transport));
 			
-//			party.getMember(0).getPlayer().hpMax = 9999;
+//			party.getMember(0).getPlayer().hp = 999;
+//			party.getMember(0).getPlayer().hpMax = 999;
 //			for (Virtue v : Virtue.values()) sg.karma[v.ordinal()] = 99;
 //
 //			party.join(NpcDefaults.Geoffrey.name());
@@ -212,7 +213,7 @@ public class GameScreen extends BaseScreen {
 			//sg.stones |= Stone.YELLOW.getLoc();
 			//party.getMember(0).getPlayer().status = StatusType.POISONED;
 			//party.getMember(1).getPlayer().xp = 600;
-			//party.getMember(0).getPlayer().weapon = WeaponType.OIL;
+			//party.getMember(0).getPlayer().weapon = WeaponType.MAGICWAND;
 			//party.getSaveGame().weapons[9] = 99;
 			//sg.gems = 15;
 			
@@ -256,7 +257,6 @@ public class GameScreen extends BaseScreen {
 			mainGame.setScreen(sc);
 			
 		} else if (m.getMap().getType() == MapType.shrine) {
-			Maps contextMap = Maps.WORLD;
 			BaseMap sm = m.getMap();
 			map = new UltimaTiledMapLoader(m, standardAtlas, sm.getWidth(), sm.getHeight(), 16, 16).load();
 			context.setCurrentTiledMap(map);
@@ -932,7 +932,7 @@ public class GameScreen extends BaseScreen {
 		if (chest != null) {
 			PartyMember pm = context.getParty().getMember(index);
 			chest.remove();
-			getChestTrapHandler(pm);
+			context.getChestTrapHandler(pm);
 			log(String.format("The Chest Holds: %d Gold", context.getParty().getChestGold()));
 			if (context.getCurrentMap().getType() == MapType.city) {
 				context.getParty().adjustKarma(KarmaAction.STOLE_CHEST);
@@ -940,66 +940,6 @@ public class GameScreen extends BaseScreen {
 		} else {
 			log("Not Here!");
 		}
-	}
-
-	private boolean getChestTrapHandler(PartyMember pm) {
-
-		TileEffect trapType;
-		int randNum = rand.nextInt(4);
-		boolean passTest = (rand.nextInt(2) == 0);
-
-		/* Chest is trapped! 50/50 chance */
-		if (passTest) {
-			/* Figure out which trap the chest has */
-			switch (randNum) {
-			case 0:
-				trapType = TileEffect.FIRE;
-				break; /* acid trap (56% chance - 9/16) */
-			case 1:
-				trapType = TileEffect.SLEEP;
-				break; /* sleep trap (19% chance - 3/16) */
-			case 2:
-				trapType = TileEffect.POISON;
-				break; /* poison trap (19% chance - 3/16) */
-			case 3:
-				trapType = TileEffect.LAVA;
-				break; /* bomb trap (6% chance - 1/16) */
-			default:
-				trapType = TileEffect.FIRE;
-				break;
-			}
-
-			if (trapType == TileEffect.FIRE) {
-				log("Acid Trap!");
-				Sounds.play(Sound.ACID);
-			} else if (trapType == TileEffect.POISON) {
-				log("Poison Trap!");
-				Sounds.play(Sound.POISON_EFFECT);
-			} else if (trapType == TileEffect.SLEEP) {
-				log("Sleep Trap!");
-				Sounds.play(Sound.SLEEP);
-			} else if (trapType == TileEffect.LAVA) {
-				log("Bomb Trap!");
-				Sounds.play(Sound.BOOM);
-			}
-			
-			// player is null when using the Open spell (immune to traps)
-			// if the chest was opened by a PC, see if the trap was
-			// evaded by testing the PC's dex
-			if (pm.getPlayer().dex + 25 < rand.nextInt(100)) {
-				if (trapType == TileEffect.LAVA) {/* bomb trap */
-					context.getParty().applyEffect(trapType);
-				} else {
-					pm.applyEffect(trapType);
-				}
-			} else {
-				log("Evaded!");
-			}
-
-			return true;
-		}
-
-		return false;
 	}
 	
 	public void peerGem() {

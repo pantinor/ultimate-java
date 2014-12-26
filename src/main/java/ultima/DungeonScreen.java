@@ -942,6 +942,11 @@ public class DungeonScreen extends BaseScreen {
 		} else if (keycode == Keys.I) {
 			
 			isTorchOn = !isTorchOn;
+		} else if (keycode == Keys.G) {
+			log("Which party member?");
+			Gdx.input.setInputProcessor(sip);
+			sip.setinitialKeyCode(keycode, tile, x, y);
+			return false;
 			
 		} else if (keycode == Keys.S) {
 			if (tile == DungeonTile.ALTAR) {
@@ -1100,11 +1105,36 @@ public class DungeonScreen extends BaseScreen {
 		return 	dungeonTiles[z][x][y] == DungeonTile.NOTHING;
 	}
 	
+	public void getChest(int index, int x, int y) {
+
+	    DungeonTileModelInstance chest = null;
+	    for (DungeonTileModelInstance dmi : modelInstances) {
+	    	if (dmi.tile == DungeonTile.CHEST) {
+	    		if (dmi.x == x && dmi.y == y) {
+	    			chest = dmi;
+		    		break;
+	    		}
+	    	}
+	    }
+
+		if (chest != null) {
+			PartyMember pm = GameScreen.context.getParty().getMember(index);
+			GameScreen.context.getChestTrapHandler(pm);
+			log(String.format("The Chest Holds: %d Gold", GameScreen.context.getParty().getChestGold()));
+			
+		    //remove chest model instance
+		    modelInstances.remove(chest);
+			dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
+			
+		} else {
+			log("Not Here!");
+		}
+	}
+	
 
 	@Override
 	public void finishTurn(int currentX, int currentY) {
-		// TODO Auto-generated method stub
-		
+		//no op
 	}
 	
 	public class RoomLocater {
