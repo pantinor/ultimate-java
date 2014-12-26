@@ -194,16 +194,16 @@ public class GameScreen extends BaseScreen {
 			context.setParty(party);
 			party.setTransport(baseTileSet.getTileByIndex(sg.transport));
 			
-//			party.getMember(0).getPlayer().hpMax = 9999;
-//			for (Virtue v : Virtue.values()) sg.karma[v.ordinal()] = 99;
-//
-//			party.join(NpcDefaults.Geoffrey.name());
-//			party.join(NpcDefaults.Shamino.name());
-//			party.join(NpcDefaults.Katrina.name());
-//			party.join(NpcDefaults.Mariah.name());
-//			party.join(NpcDefaults.Dupre.name());
-//			party.join(NpcDefaults.Iolo.name());
-//			party.join(NpcDefaults.Julia.name());
+			party.getMember(0).getPlayer().hpMax = 9999;
+			for (Virtue v : Virtue.values()) sg.karma[v.ordinal()] = 99;
+
+			party.join(NpcDefaults.Geoffrey.name());
+			party.join(NpcDefaults.Shamino.name());
+			party.join(NpcDefaults.Katrina.name());
+			party.join(NpcDefaults.Mariah.name());
+			party.join(NpcDefaults.Dupre.name());
+			party.join(NpcDefaults.Iolo.name());
+			party.join(NpcDefaults.Julia.name());
 
 			//sg.food = 30000;
 			//sg.runes |= Virtue.VALOR.getLoc();
@@ -214,7 +214,7 @@ public class GameScreen extends BaseScreen {
 			//party.getMember(1).getPlayer().xp = 600;
 			//party.getMember(0).getPlayer().weapon = WeaponType.OIL;
 			//party.getSaveGame().weapons[9] = 99;
-			//sg.gems = 15;
+			sg.gems = 15;
 			
 			//load the surface world first
 			loadNextMap(Maps.WORLD, sg.x, sg.y);
@@ -267,6 +267,8 @@ public class GameScreen extends BaseScreen {
 			
 			BaseMap bm = m.getMap();
 			context.setCurrentMap(bm);
+			
+			bm.removeJoinedPartyMemberFromPeopleList(context.getParty());
 					
 			map = new UltimaTiledMapLoader(m, standardAtlas, m.getMap().getWidth(), m.getMap().getHeight(), 16, 16).load();
 			context.setCurrentTiledMap(map);
@@ -1039,12 +1041,12 @@ public class GameScreen extends BaseScreen {
 		}
 		@Override
 		public boolean keyUp(int keycode) {
-			if (keycode == Keys.ENTER || keycode == Keys.SPACE) {
+			//if (keycode == Keys.ENTER || keycode == Keys.SPACE) {
 				if (img != null) {
 					img.remove();
 				}
 				Gdx.input.setInputProcessor(new InputMultiplexer(GameScreen.this, stage));
-			}
+			//}
 			return false;
 		}
 	}
@@ -1067,7 +1069,7 @@ public class GameScreen extends BaseScreen {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			} else if (keycode == Keys.ENTER || keycode == Keys.SPACE) {
+			} else { //if (keycode == Keys.ENTER || keycode == Keys.SPACE) {
 				if (img != null) {
 					img.remove();
 				}

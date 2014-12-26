@@ -652,6 +652,24 @@ public class BaseMap implements Constants {
 		return mask;
 	}
 	
+	public void removeJoinedPartyMemberFromPeopleList(Party party) {
+		if (city == null) return;
+		for (PartyMember pm : party.getMembers()) {
+			String name = pm.getPlayer().name;
+			for (int i=0;i<city.getPeople().length;i++) {
+				Person p = city.getPeople()[i];
+				if (p != null &&
+					p.getRole() != null && 
+					p.getRole().getRole().equals("companion") && 
+					p.getConversation() != null && 
+					p.getConversation().getName().equals(name)) {
+					
+					city.getPeople()[i] = null;
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Returns a mask of directions that indicate where one point is relative
 	 * to another.  For instance, if the object at (x, y) is

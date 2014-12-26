@@ -202,9 +202,11 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 				if (p == null) {
 					continue;
 				}
-				if (p.getConversation() != null && GameScreen.context.getParty().isJoinedInParty(p.getConversation().getName())) {
-					continue;
-				}
+				
+//				if (p.getConversation() != null && GameScreen.context.getParty().isJoinedInParty(p.getConversation().getName())) {
+//					continue;
+//				}
+				
 				//see if person is in shadow
 				int px = Math.round(p.getCurrentPos().x / tilePixelWidth);
 				int py = Math.round(p.getCurrentPos().y / tilePixelHeight);

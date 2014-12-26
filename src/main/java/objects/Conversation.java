@@ -199,7 +199,7 @@ public class Conversation {
 		
 		@Override
 		public String toString() {
-			return String.format("Topic [query=%s, phrase=%s, question=%s, yesResponse=%s, noResponse=%s]", query, phrase, question, yesResponse, noResponse, lbHeal);
+			return String.format("Topic %s [query=%s, phrase=%s, question=%s, yesResponse=%s, noResponse=%s]", name, query, phrase, question, yesResponse, noResponse, lbHeal);
 		}	
 		
 		

@@ -81,6 +81,22 @@ textfield
   orig: 14, 14
   offset: 0, 0
   index: -1
+bluefield
+  rotate: false
+  xy: 31, 5
+  size: 14, 14
+  split: 3, 3, 3, 3
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+bluefield2
+  rotate: false
+  xy: 46, 5
+  size: 14, 14
+  split: 3, 3, 3, 3
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
 check-on
   rotate: false
   xy: 125, 35

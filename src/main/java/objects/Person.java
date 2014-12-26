@@ -90,7 +90,7 @@ public class Person implements Constants {
 	
 	@Override
 	public String toString() {
-		return String.format("Person [id=%s, start_x=%s, start_y=%s, dialogId=%s, role=%s]", id, start_x, start_y, dialogId, role);
+		return String.format("Person [id=%s, start_x=%s, start_y=%s, dialogId=%s, role=%s conv: %s]", id, start_x, start_y, dialogId, role, conversation);
 	}
 	
 	public int getTileIndex() {

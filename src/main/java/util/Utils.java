@@ -215,7 +215,7 @@ public class Utils implements Constants {
 		int imgHeight = image.getHeight();
 		
 		Pixmap pix = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-		pix.setColor(.2f, .2f, .2f, .7f);
+		pix.setColor(0f, 0f, 0f, .45f);
 		pix.fillRectangle(0, 0, width, height);
 		
 		int[] pixels = image.getRGB(0, 0, imgWidth, imgHeight, null, 0, width);

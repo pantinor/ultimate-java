@@ -626,9 +626,10 @@ public class SaveGame implements Constants {
 		
 		if (zstatsBox == null) {
 			Pixmap pixmap = new Pixmap(175,300, Format.RGBA8888);
-			pixmap.setColor(0.2f,0.2f,0.2f,0.7f);
+			pixmap.setColor(0f,0f,0f,0.65f);
 			pixmap.fillRectangle(0, 0, 175, 300);
 			zstatsBox =  new Texture(pixmap);
+			pixmap.dispose();
 		}
 
 		batch.draw(zstatsBox, 5, SCREEN_HEIGHT - 40 - 300);

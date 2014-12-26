@@ -9,6 +9,7 @@ import objects.LordBritishConversation;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.Person;
+import util.LogScrollPane;
 import vendor.BaseVendor;
 
 import com.badlogic.gdx.Gdx;
@@ -103,6 +104,7 @@ public class ConversationDialog extends Window implements Constants {
 									CannotJoinError join = GameScreen.context.getParty().join(name);
 									if (join == CannotJoinError.JOIN_SUCCEEDED) {
 										scrollPane.add("I am honored to join thee!");
+										GameScreen.context.getCurrentMap().removeJoinedPartyMemberFromPeopleList(GameScreen.context.getParty());
 									} else {
 										scrollPane.add("Thou art not " + (join == CannotJoinError.JOIN_NOT_VIRTUOUS ? virtue.getDescription() : "experienced") + " enough for me to join thee.");
 									}

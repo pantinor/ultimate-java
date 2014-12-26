@@ -112,6 +112,7 @@ public class DungeonScreen extends BaseScreen {
 	public SecondaryInputProcessor sip;
 	private Texture miniMap;
 	private MiniMapIcon miniMapIcon;
+	BitmapFont smallFont;
 	
 
 	public DungeonScreen(Ultima4 mainGame, Stage stage, GameScreen gameScreen, Maps map) {
@@ -122,7 +123,7 @@ public class DungeonScreen extends BaseScreen {
 		this.mainGame = mainGame;
 		this.gameScreen = gameScreen;
 		this.stage = stage;
-		
+		this.smallFont = new BitmapFont(Gdx.files.internal("assets/fonts/BellMT_16.fnt"));
 		sip = new SecondaryInputProcessor(this, stage);
 
 		init();
@@ -380,6 +381,7 @@ public class DungeonScreen extends BaseScreen {
 		chestModel.dispose();
 		orbModel.dispose();
 		altarModel.dispose();
+		smallFont.dispose();
 	}
 	
 	@Override
@@ -663,7 +665,7 @@ public class DungeonScreen extends BaseScreen {
 		batch.draw(MINI_MAP_TEXTURE, xalignMM, yalignMM);
 		batch.draw(miniMap, xalignMM, yalignMM);
 		
-		font.draw(batch, (Math.round(currentPos.x)-1) + ", " + (Math.round(currentPos.z)-1) + ", " + (currentLevel+1), 5, Ultima4.SCREEN_HEIGHT - 5);
+		smallFont.draw(batch, (Math.round(currentPos.x)-1) + ", " + (Math.round(currentPos.z)-1) + ", Level " + (currentLevel+1), xalignMM, yalignMM+5);
 
 		Ultima4.hud.render(batch, GameScreen.context.getParty());
 		

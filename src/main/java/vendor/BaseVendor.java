@@ -3,7 +3,7 @@ package vendor;
 import objects.Party;
 import ultima.BaseScreen;
 import ultima.Constants.InventoryType;
-import ultima.LogScrollPane;
+import util.LogScrollPane;
 
 public abstract class BaseVendor {
 	
