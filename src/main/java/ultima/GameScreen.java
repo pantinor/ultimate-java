@@ -194,8 +194,8 @@ public class GameScreen extends BaseScreen {
 			context.setParty(party);
 			party.setTransport(baseTileSet.getTileByIndex(sg.transport));
 			
-//			party.getMember(0).getPlayer().hp = 999;
-//			party.getMember(0).getPlayer().hpMax = 999;
+			//party.getMember(0).getPlayer().hp = 999;
+			//party.getMember(0).getPlayer().hpMax = 999;
 //			for (Virtue v : Virtue.values()) sg.karma[v.ordinal()] = 99;
 //
 //			party.join(NpcDefaults.Geoffrey.name());
@@ -213,7 +213,7 @@ public class GameScreen extends BaseScreen {
 			//sg.stones |= Stone.YELLOW.getLoc();
 			//party.getMember(0).getPlayer().status = StatusType.POISONED;
 			//party.getMember(1).getPlayer().xp = 600;
-			//party.getMember(0).getPlayer().weapon = WeaponType.MAGICWAND;
+			//party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
 			//party.getSaveGame().weapons[9] = 99;
 			//sg.gems = 15;
 			
@@ -224,7 +224,7 @@ public class GameScreen extends BaseScreen {
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
 				loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation+1), true);
-				//loadNextMap(Maps.WRONG, 0, 0, 1, 1, 5, Direction.EAST, true);
+				//loadNextMap(Maps.DESPISE, 0, 0, 1, 1, 0, Direction.EAST, true);
 			}
 		}
 		

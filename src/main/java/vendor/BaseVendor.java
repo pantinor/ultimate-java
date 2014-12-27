@@ -8,11 +8,13 @@ import util.LogScrollPane;
 public abstract class BaseVendor {
 	
 	public enum ConvState {
+		ASK_BUY,
 		ASK_BUY_SELL,
 		
 		WAIT_BUY_INPUT,
 		WAIT_BUY_ONE,
 		WAIT_BUY_HOW_MANY,
+		WAIT_YOU_PAY,
 		BUY_ITEM,
 		
 		WAIT_SELL_INPUT,

@@ -65,6 +65,7 @@ public class VendorClassSet {
 		case INN:
 			break;
 		case REAGENT:
+			v = new ReagentService(getVendor(type, map), party);
 			break;
 		case TAVERN:
 			break;

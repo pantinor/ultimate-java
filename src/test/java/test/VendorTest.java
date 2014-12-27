@@ -25,6 +25,7 @@ import ultima.Constants.WeaponType;
 import vendor.BaseVendor;
 import vendor.HealerService;
 import vendor.HorseService;
+import vendor.ReagentService;
 import vendor.VendorClassSet;
 import vendor.WeaponVendor;
 
@@ -236,6 +237,50 @@ public class VendorTest {
 		
 		
 		BaseVendor v = new HorseService(vcs.getVendor(InventoryType.HORSE, Maps.PAWS), party);
+
+		while (true) {
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			
+			if (!v.nextDialog()) {
+				break;
+			}
+			
+			String input = br.readLine();
+			
+			if (input != null && input.equals("bye")) {
+				break;
+			}
+			
+			v.setResponse(input);
+			
+		}
+		
+		System.err.println("sg gold = " + sg.gold);
+
+	}
+	
+	@Test
+	public void testReagentVendor() throws Exception {
+		
+		File file = new File("assets/xml/vendor.xml");
+		JAXBContext jaxbContext = JAXBContext.newInstance(VendorClassSet.class);
+		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		VendorClassSet vcs = (VendorClassSet) jaxbUnmarshaller.unmarshal(file);
+		vcs.init();
+		
+		SaveGame sg = new SaveGame();
+		
+		SaveGame.SaveGamePlayerRecord rec = sg.new SaveGamePlayerRecord();
+		rec.name = "avatar";
+		rec.hp=200;
+		
+		Party party = new Party(sg);
+		party.addMember(rec);
+
+		sg.gold = 500;
+		
+		
+		BaseVendor v = new ReagentService(vcs.getVendor(InventoryType.REAGENT, Maps.PAWS), party);
 
 		while (true) {
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));

@@ -98,7 +98,7 @@ public class LogDisplay {
 		
 		font.setColor(Color.WHITE);
 		int h = 18;
-		y = 0;
+		y = 5;
 
 		ReverseListIterator iter = new ReverseListIterator(logs);
 		while (iter.hasNext()) {
@@ -111,11 +111,22 @@ public class LogDisplay {
 				break;
 			}
 			
-			font.drawWrapped(batch, next, 5, y, width - 8);
+			font.drawWrapped(batch, next, 6, y, width - 8);
 		}
 	}
 	
 	public Pixmap getPixmapRoundedRectangle(int width, int height, int radius, Color color) {
+		int os = 2;
+		Pixmap base = new Pixmap(width+os*2, height+os*2, Format.RGBA8888);
+		base.setColor(Color.WHITE);
+
+		base.fillRectangle(0, radius, base.getWidth(), base.getHeight() - 2 * radius);
+		base.fillRectangle(radius, 0, base.getWidth() - 2 * radius, base.getHeight());
+
+		base.fillCircle(radius, radius, radius);
+		base.fillCircle(radius, base.getHeight() - radius, radius);
+		base.fillCircle(base.getWidth() - radius, radius, radius);
+		base.fillCircle(base.getWidth() - radius, base.getHeight() - radius, radius);
 
 		Pixmap pixmap = new Pixmap(width, height, Format.RGBA8888);
 		pixmap.setColor(color);
@@ -123,19 +134,16 @@ public class LogDisplay {
 		pixmap.fillRectangle(0, radius, pixmap.getWidth(), pixmap.getHeight() - 2 * radius);
 		pixmap.fillRectangle(radius, 0, pixmap.getWidth() - 2 * radius, pixmap.getHeight());
 
-		// Bottom-left circle
 		pixmap.fillCircle(radius, radius, radius);
-
-		// Top-left circle
 		pixmap.fillCircle(radius, pixmap.getHeight() - radius, radius);
-
-		// Bottom-right circle
 		pixmap.fillCircle(pixmap.getWidth() - radius, radius, radius);
-
-		// Top-right circle
 		pixmap.fillCircle(pixmap.getWidth() - radius, pixmap.getHeight() - radius, radius);
+		
+		base.drawPixmap(pixmap, os, os);
+		
+		pixmap.dispose();
 
-		return pixmap;
+		return base;
 	}
 
 }
