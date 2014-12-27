@@ -520,6 +520,10 @@ public class GameScreen extends BaseScreen {
 			if (l != null) {
 				log("You found " + l.getDesc() + ".");
 			}
+		} else if (keycode == Keys.M) {
+			
+			MixtureDialog md = new MixtureDialog(context.getParty(), this, stage, skin).show();
+			
 		} else if (keycode == Keys.G) {
 			log("Which party member?");
 			Gdx.input.setInputProcessor(sip);

@@ -607,7 +607,7 @@ public class SaveGame implements Constants {
 		for (int i=0;i<SPELL_MAX;i++) {
 			int count = mixtures[i];
 			if (count == 0) continue;
-			sb6.append(count + " - " + pc(SpellNames.get(i).toString()) + "|");
+			sb6.append(count + " - " + pc(Spell.get(i).toString()) + "|");
 		}
 		
 		String[] ret = new String[6];
