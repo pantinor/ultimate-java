@@ -10,6 +10,8 @@ import objects.Weapon;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 
 public interface Constants {
@@ -1364,6 +1366,37 @@ public interface Constants {
 			this.creature = creature;
 		}
 	}
+	
+	public enum PirateCoveInfo {
+        P1(224, 220, Direction.EAST), /* N'M" O'A" */
+        P2(224, 228, Direction.EAST ), /* O'E" O'A" */
+        P3(226, 220, Direction.EAST ), /* O'E" O'C" */
+        P4(227, 228, Direction.EAST ), /* O'E" O'D" */
+        P5(228, 227, Direction.SOUTH ), /* O'D" O'E" */
+        P6(229, 225, Direction.SOUTH ), /* O'B" O'F" */
+        P7(229, 223, Direction.NORTH ), /* N'P" O'F" */
+        P8(228, 222, Direction.NORTH ); /* N'O" O'E" */
+        
+        private int x;
+        private int y;
+        private Direction facing;
+		private PirateCoveInfo(int x, int y, Direction facing) {
+			this.x = x;
+			this.y = y;
+			this.facing = facing;
+		}
+		
+		public int getX() {
+			return x;
+		}
+		public int getY() {
+			return y;
+		}
+		public Direction getFacing() {
+			return facing;
+		}		
+	    
+	}
 
 	public static final int MAX_CREATURES_ON_MAP = 4;
 	public static final int MAX_CREATURE_DISTANCE = 24;
@@ -1513,6 +1546,30 @@ public interface Constants {
 			return String.format("[res=%s x=%s, y=%s]", res, x, y);
 		}
 		
+	}
+	
+	public class AddActorAction implements Runnable {
+		private Actor actor;
+		private Stage stage;
+		public AddActorAction(Stage stage, Actor actor) {
+			this.actor = actor;
+			this.stage = stage;
+		}
+		@Override
+		public void run() {
+			stage.addActor(actor);
+		}
+	}
+	
+	public class PlaySoundAction implements Runnable {
+		private Sound s;
+		public PlaySoundAction(Sound s) {
+			this.s = s;
+		}
+		@Override
+		public void run() {
+			Sounds.play(s);
+		}
 	}
 
 }

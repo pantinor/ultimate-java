@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Music.OnCompletionListener;
 
 public class Sounds {
 	
@@ -55,6 +56,22 @@ public class Sounds {
 			sounds.put(sound, m);
 		}
 		m.play();
+		return m;
+	}
+	
+	public static Music play(Sound sound, OnCompletionListener ocl) {
+		Music m = sounds.get(sound);
+		if (m == null) {
+			m = Gdx.audio.newMusic(Gdx.files.internal("assets/sound/" + sound.getFile()));
+			m.setVolume(sound.getVolume());
+			m.setLooping(sound.getLooping());
+
+			sounds.put(sound, m);
+		}
+		
+		m.setOnCompletionListener(ocl);
+		m.play();
+		
 		return m;
 	}
 	

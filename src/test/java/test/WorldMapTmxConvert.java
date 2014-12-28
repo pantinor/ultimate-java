@@ -43,13 +43,13 @@ public class WorldMapTmxConvert {
 
 	public static void main(String[] args) throws Exception {
 
-		File file2 = new File("target/classes/xml/tileset-base.xml");
+		File file2 = new File("assets/xml/tileset-base.xml");
 		JAXBContext jaxbContext = JAXBContext.newInstance(TileSet.class);
 		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 		TileSet ts = (TileSet) jaxbUnmarshaller.unmarshal(file2);
 		ts.setMaps();
 
-		File file3 = new File("target/classes/xml/maps.xml");
+		File file3 = new File("assets/xml/maps.xml");
 		jaxbContext = JAXBContext.newInstance(MapSet.class);
 		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 		MapSet ms = (MapSet) jaxbUnmarshaller.unmarshal(file3);
@@ -63,7 +63,7 @@ public class WorldMapTmxConvert {
 
 
 		// load the atlas and determine the tile indexes per tilemap position
-		FileHandle f = new FileHandle("target/classes/tilemaps/tile-atlas.txt");
+		FileHandle f = new FileHandle("assets/tilemaps/tiles-vga-atlas.txt");
 		TextureAtlasData atlas = new TextureAtlasData(f, f.parent(), false);
 		Tile[] mapTileIds = new Tile[atlas.getRegions().size + 1];
 		for (Region r : atlas.getRegions()) {
@@ -152,13 +152,13 @@ public class WorldMapTmxConvert {
 		
 		
 
-		WorldMapTmxConvert c = new WorldMapTmxConvert(map.getFname(), "tiles.png", 
+		WorldMapTmxConvert c = new WorldMapTmxConvert(map.getFname(), "tiles-vga.png", 
 				map.getWidth(), map.getHeight(), 
 				TILE_SIZE, TILE_SIZE, 
 				dl, pl, ml, 
 				portals, moongates, map.getLabels());
 		
-		FileUtils.writeStringToFile(new File("src/main/resources/tilemaps/map_" + map.getId() + ".tmx"), c.toString());
+		FileUtils.writeStringToFile(new File("assets/tilemaps/map_" + map.getId() + ".tmx"), c.toString());
 	}
 
 	private static int findTileId(Tile[] tiles, String name) {

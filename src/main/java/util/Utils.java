@@ -373,7 +373,7 @@ public class Utils implements Constants {
 	    return attackValue > defenseValue;
 	}
 	
-	private static boolean dealDamage(PartyMember attacker, Creature defender, int damage) {
+	public static boolean dealDamage(PartyMember attacker, Creature defender, int damage) {
 	    int xp = defender.getExp();
 	    if (!damageCreature(defender, damage, true)) {
 	    	attacker.awardXP(xp);

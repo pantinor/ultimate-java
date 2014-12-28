@@ -30,6 +30,7 @@ import objects.Creature;
 import objects.Person;
 import ultima.Constants;
 import ultima.GameScreen;
+import ultima.Constants.CreatureType;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -222,7 +223,7 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 		List<Creature> crs = bm.getCreatures();
 		if (crs.size() > 0) {
 			for (Creature cr : crs) {
-				if (cr.currentPos == null  ) {
+				if (cr.currentPos == null  || cr.getVisible() == false) {
 					continue;
 				}
 				//see if in shadow
@@ -231,7 +232,12 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 //				if (lightMap != null && lightMap[px][py] <= 0) {
 //					continue;
 //				}
-				batch.draw(cr.getAnim().getKeyFrame(stateTime, true), cr.currentPos.x, cr.currentPos.y, tilePixelWidth, tilePixelHeight);
+				if (cr.getTile() == CreatureType.pirate_ship) {
+					TextureRegion tr = cr.getAnim().getKeyFrames()[cr.sailDir.ordinal()-1];
+					batch.draw(tr, cr.currentPos.x, cr.currentPos.y, tilePixelWidth, tilePixelHeight);
+				} else {
+					batch.draw(cr.getAnim().getKeyFrame(stateTime, true), cr.currentPos.x, cr.currentPos.y, tilePixelWidth, tilePixelHeight);
+				}
 
 			}
 		}

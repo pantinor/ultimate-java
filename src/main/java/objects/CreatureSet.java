@@ -54,6 +54,10 @@ public class CreatureSet {
 				
 				newCr.setAnim(new Animation(frameRate, reg));
 				
+				if (type == CreatureType.pirate_ship) {
+					newCr.setAnim(new Animation(frameRate, tr));
+				}
+				
 				return newCr;
 			}
 		}

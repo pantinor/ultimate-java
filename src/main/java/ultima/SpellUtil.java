@@ -1,16 +1,25 @@
 package ultima;
 
+import objects.Creature;
+import objects.Drawable;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.Tile;
+import ultima.ConversationDialog.LBAction;
 import ultima.DungeonScreen.DungeonTileModelInstance;
 import util.Utils;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Music.OnCompletionListener;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 public class SpellUtil implements Constants {
 
-	public static boolean spellCast(BaseScreen screen, Context context, Spell spell, PartyMember caster, PartyMember subject, Direction dir, int phase) {
+	public static boolean spellCast(final BaseScreen screen, final Context context, final Spell spell, 
+			final PartyMember caster, final PartyMember subject, final Direction dir, final int phase) {
 	    
 		if (caster == null || spell == null || screen == null) {
 			return false;
@@ -46,7 +55,7 @@ public class SpellUtil implements Constants {
 			
 		}
 		
-		if (caster.getPlayer().mp < spell.getMask()) {
+		if (caster.getPlayer().mp < spell.getMp()) {
 			Ultima4.hud.add("Thou dost not have enough magic points!");
 			return false;
 		}
@@ -61,105 +70,115 @@ public class SpellUtil implements Constants {
 	    // subtract the mixture for even trying to cast the spell
 		party.getSaveGame().mixtures[spell.ordinal()]--;
 
-	    if (context.getAura() != null && context.getAura().getType() == AuraType.NEGATE) {
+	    if (context.getAura().getType() == AuraType.NEGATE) {
 			Ultima4.hud.add("Spell is negated!");
 	        return false;
 	    }
 
 	    caster.adjustMagic(spell.getMp());
-
-	    Sounds.play(Sound.MAGIC);
 	    
-		switch(spell) {
-		
-		case AWAKEN:
-			spellAwaken(subject);
-			break;
-		case CURE:
-			spellCure(subject);
-			break;
-		case HEAL:
-			spellHeal(subject);
-			break;
-		case RESURRECT:
-			spellRez(subject);
-			break;
-			
-		case DISPEL:
-			spellDispel(screen, context, caster, dir);
-			break;
-		case ICEBALL:
-			spellIceball(screen, caster, dir);
-			break;
-		case KILL:
-			spellKill(screen, caster, dir);
-			break;
-		case MAGICMISSILE:
-			spellMMissle(screen, caster, dir);
-			break;
-		case FIREBALL:
-			spellFireball(screen, caster, dir);
-			break;
-		case ENERGY:
-			spellEnergyField(dir);
-			break;
-		case WINDS:
-			spellWinds(dir);
-			break;
-		case BLINK:
-			spellBlink(dir);
-			break;
-			
-		case GATE:
-			spellGate(phase);
-			break;
-		case JINX:
-			spellJinx();
-			break;
-		case LIGHT:
-			spellLight();
-			break;
-		case NEGATE:
-			spellNegate();
-			break;
-		case OPEN:
-			spellOpen();
-			break;
-		case PROTECTION:
-			spellProtect();
-			break;
-		case QUICKNESS:
-			spellQuick();
-			break;
-		case SLEEP:
-			spellSleep();
-			break;
-		case TREMOR:
-			spellTremor();
-			break;
-		case UNDEAD:
-			spellUndead();
-			break;
-		case VIEW:
-			spellView();
-			break;
-		case XIT:
-			spellXit();
-			break;
-		case YUP:
-			spellYup();
-			break;
-		case ZDOWN:
-			spellZdown();
-			break;
-		default:
-			break;
-			
-		}
+	    OnCompletionListener ocl = new OnCompletionListener() {
+			@Override
+			public void onCompletion(Music music) {
+				switch(spell) {
+				
+				case AWAKEN:
+					spellAwaken(subject);
+					break;
+				case CURE:
+					spellCure(subject);
+					break;
+				case HEAL:
+					spellHeal(subject);
+					break;
+				case RESURRECT:
+					spellRez(subject);
+					break;
+					
+				case DISPEL:
+					spellDispel(screen, context, caster, dir);
+					break;
+				case ICEBALL:
+					spellIceball(screen, caster, dir);
+					break;
+				case KILL:
+					spellKill(screen, caster, dir);
+					break;
+				case MAGICMISSILE:
+					spellMMissle(screen, caster, dir);
+					break;
+				case FIREBALL:
+					spellFireball(screen, caster, dir);
+					break;
+				case ENERGY:
+					spellEnergyField(dir);
+					break;
+				case WINDS:
+					spellWinds(dir);
+					break;
+				case BLINK:
+					spellBlink(dir);
+					break;
+					
+				case GATE:
+					spellGate(phase);
+					break;
+				case JINX:
+					spellJinx(context);
+					break;
+				case LIGHT:
+					spellLight();
+					break;
+				case NEGATE:
+					spellNegate(context);
+					break;
+				case OPEN:
+					spellOpen();
+					break;
+				case PROTECTION:
+					spellProtect(context);
+					break;
+				case QUICKNESS:
+					spellQuick(context);
+					break;
+				case SLEEP:
+					spellSleep(screen, caster);
+					break;
+				case TREMOR:
+					spellTremor(screen, caster);
+					break;
+				case UNDEAD:
+					spellUndead(screen, caster);
+					break;
+				case VIEW:
+					spellView(screen, caster);
+					break;
+				case XIT:
+					spellXit(screen, caster);
+					break;
+				case YUP:
+					spellYup(screen, caster);
+					break;
+				case ZDOWN:
+					spellZdown(screen, caster);
+					break;
+				default:
+					break;
+					
+				}
+				
+			    music.setOnCompletionListener(null);
+
+			}
+	    };
+	
+
+	    Sounds.play(Sound.MAGIC, ocl);
 
 
 	    return true;
 	}
+
 	
 	private static void spellMagicAttack(CombatScreen screen, PartyMember caster, Spell spell, Direction dir, int minDamage, int maxDamage) {
 		
@@ -212,7 +231,7 @@ public class SpellUtil implements Constants {
 			if (dir == Direction.WEST) x--;
 			Tile dispellable = combatScreen.combatMap.getTile(x,y);
 			if (dispellable.getRule() == null || !dispellable.getRule().has(TileAttrib.dispelable)) return;
-			combatScreen.replaceTile("brick_floor", x, y);
+			combatScreen.replaceTile("dungeon_floor", x, y);
 			
 		} else if (screen.scType == ScreenType.DUNGEON) {
 			DungeonScreen dngScreen = (DungeonScreen)screen;
@@ -255,7 +274,8 @@ public class SpellUtil implements Constants {
 		}
 	}
 
-	public static void spellJinx() {
+	public static void spellJinx(Context context) {
+		context.getAura().set(AuraType.JINX, 10);
 	}
 
 	public static void spellKill(BaseScreen screen, PartyMember caster, Direction dir) {
@@ -273,44 +293,141 @@ public class SpellUtil implements Constants {
 		}
 	}
 
-	public static void spellNegate() {
+	public static void spellNegate(Context context) {
+		context.getAura().set(AuraType.NEGATE, 10);
 	}
 
 	public static void spellOpen() {
 	}
 
-	public static void spellProtect() {
+	public static void spellProtect(Context context) {
+		context.getAura().set(AuraType.PROTECTION, 10);
 	}
 
 	public static void spellRez(PartyMember subject) {
 		subject.heal(HealType.RESURRECT);
 	}
 
-	public static void spellQuick() {
+	public static void spellQuick(Context context) {
+		context.getAura().set(AuraType.QUICKNESS, 10);
 	}
 
-	public static void spellSleep() {
+	public static void spellSleep(BaseScreen screen, PartyMember caster) {
 	}
 
-	public static void spellTremor() {
+	public static void spellTremor(BaseScreen screen, PartyMember caster) {
+		
+		if (screen.scType == ScreenType.COMBAT) {
+			
+			CombatScreen combatScreen = (CombatScreen)screen;
+			
+			SequenceAction seq = Actions.action(SequenceAction.class);
+
+		    for (Creature cr : combatScreen.combatMap.getCreatures()) {
+		    	
+		        /* creatures with over 192 hp are unaffected */
+				if (cr.getHP() > 192) {
+					seq.addAction(Actions.run(new PlaySoundAction(Sound.EVADE)));
+					continue;
+				} else {
+					
+					if (Utils.rand.nextInt(2) == 0) {
+						/* Deal maximum damage to creature */
+						Utils.dealDamage(caster, cr, 0xFF);
+						
+						Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
+						Drawable d = new Drawable(cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+				    	d.setX(cr.currentPos.x);
+				    	d.setY(cr.currentPos.y);
+				    	d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));
+						
+						seq.addAction(Actions.run(new AddActorAction(combatScreen.getStage(),d)));
+						seq.addAction(Actions.run(new PlaySoundAction(Sound.NPC_STRUCK)));
+						
+					} else if (Utils.rand.nextInt(2) == 0) {
+						/* Deal enough damage to creature to make it flee */
+						if (cr.getHP() > 23) {
+							Utils.dealDamage(caster, cr, cr.getHP() - 23);
+							
+							Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
+							Drawable d = new Drawable(cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+					    	d.setX(cr.currentPos.x);
+					    	d.setY(cr.currentPos.y);
+					    	d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));
+							
+							seq.addAction(Actions.run(new AddActorAction(combatScreen.getStage(),d)));
+							seq.addAction(Actions.run(new PlaySoundAction(Sound.NPC_STRUCK)));
+							
+						}
+					} else {
+						seq.addAction(Actions.run(new PlaySoundAction(Sound.EVADE)));
+					}
+				}
+				
+				if (cr.getDamageStatus() == CreatureStatus.DEAD) {
+					seq.addAction(Actions.run(combatScreen.new RemoveCreatureAction(cr)));
+				}
+		    	
+		    }
+		    
+		    combatScreen.getStage().addAction(seq);
+
+		    
+		}
+		
 	}
 
-	public static void spellUndead() {
+	public static void spellUndead(BaseScreen screen, PartyMember caster) {
+		
+		if (screen.scType == ScreenType.COMBAT) {
+			
+			SequenceAction seq = Actions.action(SequenceAction.class);
+			
+			CombatScreen combatScreen = (CombatScreen)screen;
+		    for (Creature cr : combatScreen.combatMap.getCreatures()) {
+		    	if (cr.getUndead() && Utils.rand.nextInt(2) == 0) {
+		    		
+					Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
+					Drawable d = new Drawable(cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+			    	d.setX(cr.currentPos.x);
+			    	d.setY(cr.currentPos.y);
+			    	
+			    	d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));
+			    	
+					seq.addAction(Actions.run(new AddActorAction(combatScreen.getStage(),d)));
+					seq.addAction(Actions.run(new PlaySoundAction(Sound.NPC_STRUCK)));
+		    		
+		    		Utils.dealDamage(caster, cr, 23);
+		    	}
+		    	
+				if (cr.getDamageStatus() == CreatureStatus.DEAD) {
+					seq.addAction(Actions.run(combatScreen.new RemoveCreatureAction(cr)));
+				}
+		    }
+		    combatScreen.getStage().addAction(seq);
+
+		}
 	}
 
-	public static void spellView() {
+	public static void spellView(BaseScreen screen, PartyMember caster) {
+		if (screen.scType == ScreenType.MAIN) {
+			GameScreen gameScreen = (GameScreen)screen;
+			Gdx.input.setInputProcessor(gameScreen.new PeerGemInputAdapter());
+		}
 	}
 
 	public static void spellWinds(Direction fromdir) {
+		GameScreen.context.setWindDirection(fromdir);
 	}
 
-	public static void spellXit() {
+	public static void spellXit(BaseScreen screen, PartyMember caster) {
 	}
 
-	public static void spellYup() {
+	public static void spellYup(BaseScreen screen, PartyMember caster) {
 	}
 
-	public static void spellZdown() {
+	public static void spellZdown(BaseScreen screen, PartyMember caster) {
 	}
+
 
 }

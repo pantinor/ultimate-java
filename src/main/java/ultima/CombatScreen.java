@@ -18,6 +18,7 @@ import objects.Party;
 import objects.Party.PartyMember;
 import objects.ProjectileActor;
 import objects.Tile;
+import ultima.Constants.AuraType;
 import ultima.DungeonScreen.DungeonRoom;
 import ultima.DungeonScreen.Trigger;
 import util.Utils;
@@ -313,6 +314,11 @@ public class CombatScreen extends BaseScreen {
 		if (showZstats > 0) {
 			party.getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);
 		}
+		
+		if (context.getAura().getType() != AuraType.NONE) {
+			font.draw(batch, context.getAura().getType().toString(), 430, Ultima4.SCREEN_HEIGHT - 7);
+		}
+		
 		batch.end();
 		
 		stage.act();
@@ -506,20 +512,28 @@ public class CombatScreen extends BaseScreen {
 		
 		party.endTurn(MapType.combat);
 		
-		//accept no input starting now
-		Gdx.input.setInputProcessor(null);
+		context.getAura().passTurn();
 		
-		SequenceAction seq = Actions.action(SequenceAction.class);
-		for (Creature cr : combatMap.getCreatures()) {
-			seq.addAction(Actions.run(new CreatureActionsAction(cr)));
-			seq.addAction(Actions.delay(.04f));
+		boolean quick = context.getAura().getType() == AuraType.QUICKNESS && (rand.nextInt(2) == 0);
+		
+		if (!quick) {
+			
+			//accept no input starting now
+			Gdx.input.setInputProcessor(null);
+			
+			SequenceAction seq = Actions.action(SequenceAction.class);
+			for (Creature cr : combatMap.getCreatures()) {
+				seq.addAction(Actions.run(new CreatureActionsAction(cr)));
+				seq.addAction(Actions.delay(.04f));
+			}
+			seq.addAction(Actions.run(new FinishCreatureAction()));
+			stage.addAction(seq);
+			
 		}
-		seq.addAction(Actions.run(new FinishCreatureAction()));
-		stage.addAction(seq);
 				
 	}
 	
-	class CreatureActionsAction implements Runnable {
+	public class CreatureActionsAction implements Runnable {
 		private Creature cr;
 		public CreatureActionsAction(Creature cr) {
 			super();
@@ -534,7 +548,18 @@ public class CombatScreen extends BaseScreen {
 		}
 	}
 	
-	class FinishCreatureAction implements Runnable {
+	public class RemoveCreatureAction implements Runnable {
+		private Creature cr;
+		public RemoveCreatureAction(Creature cr) {
+			this.cr = cr;
+		}
+		@Override
+		public void run() {
+			combatMap.getCreatures().remove(cr);
+		}
+	}
+	
+	public class FinishCreatureAction implements Runnable {
 		@Override
 		public void run() {
 			//enable input again
@@ -811,7 +836,7 @@ public class CombatScreen extends BaseScreen {
 		PartyMember opponent = null;
 		int d = 0;
 		int leastDist = 0xFFFF;
-		boolean jinx = (context.getAura().getType() == AuraType.JINX);
+		boolean jinx = context.getAura().getType() == AuraType.JINX;
 
 		for (int i = 0; i < party.getMembers().size(); i++) {
 			

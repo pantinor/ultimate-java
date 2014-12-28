@@ -198,8 +198,10 @@ public class GameScreen extends BaseScreen {
 			context.setParty(party);
 			party.setTransport(baseTileSet.getTileByIndex(sg.transport));
 			
-			//party.getMember(0).getPlayer().hp = 999;
-			//party.getMember(0).getPlayer().hpMax = 999;
+			party.getMember(0).getPlayer().hp = 999;
+			party.getMember(0).getPlayer().hpMax = 999;
+			party.getMember(0).getPlayer().mp = 999;
+
 //			for (Virtue v : Virtue.values()) sg.karma[v.ordinal()] = 99;
 //
 //			party.join(NpcDefaults.Geoffrey.name());
@@ -211,13 +213,13 @@ public class GameScreen extends BaseScreen {
 //			party.join(NpcDefaults.Julia.name());
 
 			//sg.food = 30000;
-			//sg.runes |= Virtue.VALOR.getLoc();
-			//sg.moves = 2800;
-			//sg.karma[Virtue.VALOR.ordinal()] = 99;
+			sg.runes |= Virtue.SPIRITUALITY.getLoc();
+			sg.moves = 2800;
+			sg.karma[Virtue.SPIRITUALITY.ordinal()] = 99;
 			//sg.stones |= Stone.YELLOW.getLoc();
 			//party.getMember(0).getPlayer().status = StatusType.POISONED;
 			//party.getMember(1).getPlayer().xp = 600;
-			//party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
+			party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
 			//party.getSaveGame().weapons[9] = 99;
 			//sg.gems = 15;
 			
@@ -225,14 +227,14 @@ public class GameScreen extends BaseScreen {
 
 			
 			//load the surface world first
-			loadNextMap(Maps.WORLD, sg.x, sg.y);
-			//loadNextMap(Maps.WORLD, 98, 145);
+			//loadNextMap(Maps.WORLD, sg.x, sg.y);
+			loadNextMap(Maps.WORLD, 229, 210);
 
 			//load the dungeon if save game starts in dungeon
-			if (Maps.get(sg.location) != Maps.WORLD) {
-				loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation+1), true);
-				//loadNextMap(Maps.DESPISE, 0, 0, 1, 1, 0, Direction.EAST, true);
-			}
+			//if (Maps.get(sg.location) != Maps.WORLD) {
+				//loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation+1), true);
+				//loadNextMap(Maps.HYTHLOTH, 0, 0, 4, 4, 5, Direction.EAST, true);
+			//}
 		}
 		
 		context.getParty().addObserver(this);
@@ -366,6 +368,7 @@ public class GameScreen extends BaseScreen {
 			}
 			
 			context.getCurrentMap().removeCreature(currentEncounter);
+						
 			currentEncounter = null;
 
 		}
@@ -427,6 +430,10 @@ public class GameScreen extends BaseScreen {
 		if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
 			batch.draw(moonAtlas.findRegion("phase_" + trammelphase), 375, Ultima4.SCREEN_HEIGHT - 25, 25, 25);
 			batch.draw(moonAtlas.findRegion("phase_" + feluccaphase), 400, Ultima4.SCREEN_HEIGHT - 25, 25, 25);
+		}
+		
+		if (context.getAura().getType() != AuraType.NONE) {
+			font.draw(batch, context.getAura().getType().toString(), 430, Ultima4.SCREEN_HEIGHT - 7);
 		}
 
 		batch.end();
@@ -529,7 +536,7 @@ public class GameScreen extends BaseScreen {
 			}
 		} else if (keycode == Keys.M) {
 			
-			MixtureDialog md = new MixtureDialog(context.getParty(), this, stage, skin).show();
+			new MixtureDialog(context.getParty(), this, stage, skin).show();
 			
 		} else if (keycode == Keys.G) {
 			log("Which party member?");
@@ -602,11 +609,18 @@ public class GameScreen extends BaseScreen {
 				if (g.getCurrentTexture() != null && newx == g.getX() && newy == g.getY()) {
 					Sounds.play(Sound.MOONGATE);
 					Vector3 d = getDestinationForMoongate(g);
-					newMapPixelCoords = getMapPixelCoords((int)d.x,(int)d.y);
-					changeMapPosition = true;
+					if (d != null) {
+						newMapPixelCoords = getMapPixelCoords((int)d.x,(int)d.y);
+						changeMapPosition = true;
+					}
 				}
 			}
 		}
+		
+	    /* things that happen while not on board the balloon */
+	    if (context.getTransportContext() != TransportContext.BALLOON) {
+	        checkSpecialCreatures(dir, newx, newy);
+	    }
 		
 		log(dir.toString());
 	}
@@ -616,6 +630,8 @@ public class GameScreen extends BaseScreen {
 		if (true) {
 			
 			context.getParty().endTurn(context.getCurrentMap().getType());
+			
+			context.getAura().passTurn();
 			
 			creatureCleanup(currentX, currentY);
 			
@@ -836,6 +852,16 @@ public class GameScreen extends BaseScreen {
 		if (feluccaphase == m.getDm1()) destGate = m.getD1();
 		if (feluccaphase == m.getDm2()) destGate = m.getD2();
 		if (feluccaphase == m.getDm3()) destGate = m.getD3();
+		
+		 if (destGate.equals("shrine of spirituality")) {
+			if (context.getParty().canEnterShrine(Virtue.SPIRITUALITY)) {
+				loadNextMap(Maps.SHRINE_SPIRITUALITY, 0, 0);
+			} else {
+				log("Thou dost not bear the rune of entry!");
+				log("A strange force keeps you out!");
+			}
+			return null;
+		 }
 
 		for(Moongate dm : context.getCurrentMap().getMoongates()) {
 			if (dm.getName().equals(destGate)) {
@@ -863,6 +889,42 @@ public class GameScreen extends BaseScreen {
 			}
 		}
 		
+	}
+	
+	/**
+	 * Checks for valid conditions and handles
+	 * special creatures guarding the entrance to the
+	 * abyss and to the shrine of spirituality
+	 */
+	public void checkSpecialCreatures(Direction dir, int x, int y) {
+
+	    /*
+	     * if heading east into pirates cove (O'A" N'N"), generate pirate ships
+	     */
+	    if (dir == Direction.EAST && x == 0xdd && y == 0xe0) {
+	        for (PirateCoveInfo pci : PirateCoveInfo.values()) {        
+				Creature pirate = creatures.getInstance(CreatureType.pirate_ship, enhancedAtlas, standardAtlas);
+				pirate.currentX = pci.getX();
+				pirate.currentY = pci.getY();
+				pirate.currentPos = getMapPixelCoords(pci.getX(), pci.getY());
+				pirate.sailDir = pci.getFacing();
+		    	context.getCurrentMap().addCreature(pirate);
+	        }
+	    }
+
+	    /*
+	     * if heading south towards the shrine of humility, generate
+	     * daemons unless horn has been blown
+	     */    
+	    if (dir == Direction.SOUTH && x >= 229 && x < 234 && y >= 212 && y < 217 &&	context.getAura().getType() != AuraType.HORN) {
+	        for (int i = 0; i < 8; i++) {  
+				Creature daemon = creatures.getInstance(CreatureType.daemon, enhancedAtlas, standardAtlas);
+				daemon.currentX = 231;
+				daemon.currentY = y + 1;
+				daemon.currentPos = getMapPixelCoords(231, y + 1);
+		    	context.getCurrentMap().addCreature(daemon);
+	        }
+	    }
 	}
 	
 	public void board(int x, int y) {
@@ -988,9 +1050,9 @@ public class GameScreen extends BaseScreen {
 		Gdx.input.setInputProcessor(new PeerTelescopeInputAdapter());
 	}
 	
-	class PeerGemInputAdapter extends InputAdapter {
+	public class PeerGemInputAdapter extends InputAdapter {
 		Image img;
-		PeerGemInputAdapter() {
+		public PeerGemInputAdapter() {
 			try {
 				Texture t = null;
 				if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
@@ -1020,7 +1082,7 @@ public class GameScreen extends BaseScreen {
 		}
 	}
 	
-	class PeerTelescopeInputAdapter extends InputAdapter {
+	public class PeerTelescopeInputAdapter extends InputAdapter {
 		Image img;
 		@Override
 		public boolean keyUp(int keycode) {

@@ -71,7 +71,6 @@ public class SpellInputProcessor extends InputAdapter implements Constants {
 					break;
 					
 				default:
-					PartyMember caster = GameScreen.context.getParty().getMember(player);
 					SpellUtil.spellCast(screen, GameScreen.context, spell, caster, null, null, 0);
 					Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
 					break;

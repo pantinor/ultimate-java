@@ -2,6 +2,13 @@ monsters.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+bull
+  rotate: false
+  xy: 576, 32
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 0
 mimic
   rotate: false
   xy: 896, 32
@@ -58,72 +65,9 @@ cyclops
   orig: 32, 32
   offset: 0, 0
   index: 0
-daemon
+wisp
   rotate: false
-  xy: 0, 64
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-cyclops
-  rotate: false
-  xy: 64, 64
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-cyclops
-  rotate: false
-  xy: 96, 64
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-sea_horse
-  rotate: false
-  xy: 1184, 64
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-sea_horse
-  rotate: false
-  xy: 1216, 64
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-sea_horse
-  rotate: false
-  xy: 224, 96
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-sea_horse
-  rotate: false
-  xy: 256, 96
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-sea_horse
-  rotate: false
-  xy: 288, 96
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-sea_horse
-  rotate: false
-  xy: 320, 96
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-sea_horse
-  rotate: false
-  xy: 352, 96
+  xy: 1248, 128
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -173,48 +117,6 @@ guard
 rogue
   rotate: false
   xy: 192, 160
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-wisp
-  rotate: false
-  xy: 1280, 160
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-wisp
-  rotate: false
-  xy: 1312, 160
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-wisp
-  rotate: false
-  xy: 1344, 160
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-wisp
-  rotate: false
-  xy: 1376, 160
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-wisp
-  rotate: false
-  xy: 1408, 160
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-wisp
-  rotate: false
-  xy: 96, 192
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -396,21 +298,7 @@ orc
   index: 0
 slime
   rotate: false
-  xy: 256, 352
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-slime
-  rotate: false
   xy: 288, 352
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-slime
-  rotate: false
-  xy: 320, 352
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -432,34 +320,6 @@ slime
 slime
   rotate: false
   xy: 416, 352
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-slime
-  rotate: false
-  xy: 448, 352
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-slime
-  rotate: false
-  xy: 480, 352
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-slime
-  rotate: false
-  xy: 512, 352
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-slime
-  rotate: false
-  xy: 544, 352
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -702,41 +562,6 @@ python
   orig: 32, 32
   offset: 0, 0
   index: 0
-spider
-  rotate: false
-  xy: 352, 544
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-spider
-  rotate: false
-  xy: 384, 544
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-spider
-  rotate: false
-  xy: 512, 544
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-spider
-  rotate: false
-  xy: 544, 544
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-spider
-  rotate: false
-  xy: 608, 544
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
 reaper
   rotate: false
   xy: 640, 544
@@ -872,63 +697,7 @@ gremlin
   index: 0
 twister
   rotate: false
-  xy: 256, 608
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-twister
-  rotate: false
   xy: 288, 608
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-whirlpool
-  rotate: false
-  xy: 320, 608
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-twister
-  rotate: false
-  xy: 352, 608
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-twister
-  rotate: false
-  xy: 384, 608
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-twister
-  rotate: false
-  xy: 416, 608
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-twister
-  rotate: false
-  xy: 480, 608
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-twister
-  rotate: false
-  xy: 512, 608
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-twister
-  rotate: false
-  xy: 544, 608
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -1045,16 +814,16 @@ headless
   orig: 32, 32
   offset: 0, 0
   index: 0
-balron
+whirlpool
   rotate: false
-  xy: 224, 672
+  xy: 1216, 640
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 0
-python
+balron
   rotate: false
-  xy: 416, 672
+  xy: 224, 672
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -1136,16 +905,23 @@ troll
   orig: 32, 32
   offset: 0, 0
   index: 0
-dragon
+phantom
   rotate: false
-  xy: 160, 736
+  xy: 0, 736
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 0
-headless
+phantom
   rotate: false
-  xy: 256, 736
+  xy: 32, 736
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 0
+dragon
+  rotate: false
+  xy: 160, 736
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -1174,20 +950,6 @@ daemon
 lava_lizard
   rotate: false
   xy: 928, 736
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-lava_lizard
-  rotate: false
-  xy: 960, 736
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-headless
-  rotate: false
-  xy: 992, 736
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -1223,34 +985,6 @@ insect_swarm
 insect_swarm
   rotate: false
   xy: 544, 768
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-balron
-  rotate: false
-  xy: 448, 800
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-daemon
-  rotate: false
-  xy: 480, 800
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-liche
-  rotate: false
-  xy: 512, 800
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-headless
-  rotate: false
-  xy: 544, 800
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -1304,20 +1038,6 @@ spider
   orig: 32, 32
   offset: 0, 0
   index: 0
-lava_lizard
-  rotate: false
-  xy: 896, 832
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-lava_lizard
-  rotate: false
-  xy: 928, 832
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
 hydra
   rotate: false
   xy: 992, 832
@@ -1346,13 +1066,6 @@ daemon
   orig: 32, 32
   offset: 0, 0
   index: 0
-balron
-  rotate: false
-  xy: 608, 896
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
 insect_swarm
   rotate: false
   xy: 928, 896
@@ -1374,6 +1087,20 @@ rat
   orig: 32, 32
   offset: 0, 0
   index: 0
+daemon
+  rotate: false
+  xy: 1152, 896
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 0
+insect_swarm
+  rotate: false
+  xy: 1184, 896
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 0
 troll
   rotate: false
   xy: 1248, 896
@@ -1384,6 +1111,13 @@ troll
 troll
   rotate: false
   xy: 1280, 896
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 0
+insect_swarm
+  rotate: false
+  xy: 128, 928
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -1402,30 +1136,16 @@ dragon
   orig: 32, 32
   offset: 0, 0
   index: 0
-phantom
+sea_horse
   rotate: false
-  xy: 384, 928
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-bat
-  rotate: false
-  xy: 192, 960
+  xy: 448, 928
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 0
 python
   rotate: false
-  xy: 608, 960
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-spider
-  rotate: false
-  xy: 640, 960
+  xy: 1376, 928
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -1510,20 +1230,6 @@ spider
 dragon
   rotate: false
   xy: 1376, 992
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-dragon
-  rotate: false
-  xy: 1408, 992
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 0
-bull
-  rotate: false
-  xy: 576, 32
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

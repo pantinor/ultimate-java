@@ -33,7 +33,7 @@ public class Creature implements Constants {
 	
 	private int hp;
 	private StatusType status;
-	private boolean isVisible;
+	private boolean isVisible = true;
 	private int basehp;
 	private int id;
 	private String name;
@@ -64,7 +64,8 @@ public class Creature implements Constants {
 	public int currentX;
 	public int currentY;
 	public Vector3 currentPos; //in pixels
-
+	public Direction sailDir = Direction.EAST; // for pirate ships only
+	
 	public Creature() {
 		
 	}
@@ -485,6 +486,7 @@ public class Creature implements Constants {
 	public void setVisible(boolean isVisible) {
 		this.isVisible = isVisible;
 	}
+
 
 
 }
