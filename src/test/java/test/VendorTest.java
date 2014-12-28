@@ -259,7 +259,7 @@ public class VendorTest {
 
 	}
 	
-	@Test
+	//@Test
 	public void testReagentVendor() throws Exception {
 		
 		File file = new File("assets/xml/vendor.xml");
