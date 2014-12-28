@@ -1494,12 +1494,12 @@ public interface Constants {
      };
 	
 	public class AttackVector {
-		int x;
-		int y;
-		AttackResult res;
-		String leaveTileName;
+		public int x;
+		public int y;
+		public AttackResult res;
+		public String leaveTileName;
 		
-		AttackVector(int x, int y) {
+		public AttackVector(int x, int y) {
 			this.x=x;
 			this.y=y;
 		}

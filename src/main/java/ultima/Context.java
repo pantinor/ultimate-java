@@ -6,10 +6,9 @@ import objects.Aura;
 import objects.BaseMap;
 import objects.Drawable;
 import objects.Party;
+import objects.Party.PartyMember;
 import objects.Portal;
 import objects.Tile;
-import objects.Party.PartyMember;
-import ultima.Constants.TileEffect;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 

@@ -625,17 +625,17 @@ public class SaveGame implements Constants {
 	public void renderZstats(int showZstats, BitmapFont font, Batch batch, int SCREEN_HEIGHT) {
 		
 		if (zstatsBox == null) {
-			Pixmap pixmap = new Pixmap(175,300, Format.RGBA8888);
+			Pixmap pixmap = new Pixmap(175,490, Format.RGBA8888);
 			pixmap.setColor(0f,0f,0f,0.65f);
-			pixmap.fillRectangle(0, 0, 175, 300);
+			pixmap.fillRectangle(0, 0, 175, 490);
 			zstatsBox =  new Texture(pixmap);
 			pixmap.dispose();
 		}
 
-		batch.draw(zstatsBox, 5, SCREEN_HEIGHT - 40 - 300);
+		batch.draw(zstatsBox, 5, SCREEN_HEIGHT - 5 - 490);
 		
 		int rx = 10;
-		int ry = SCREEN_HEIGHT - 50;
+		int ry = SCREEN_HEIGHT - 10;
 		
 		String[] pages = getZstats();
 		if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
@@ -645,7 +645,7 @@ public class SaveGame implements Constants {
 				String[] lines = players[i].split("\\|");
 				if (i != showZstats - 1) continue;
 				rx = 10;
-				ry = SCREEN_HEIGHT - 50;
+				ry = SCREEN_HEIGHT - 10;
 				font.draw(batch, "Player " + (i + 1), rx, ry);
 				ry = ry - 18;
 				for (int j = 0; j < lines.length; j++) {

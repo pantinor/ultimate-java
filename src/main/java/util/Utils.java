@@ -1,6 +1,11 @@
 package util;
 
 
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
+
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -9,6 +14,7 @@ import java.io.InputStream;
 import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.xml.bind.JAXBContext;
@@ -17,14 +23,19 @@ import javax.xml.bind.Unmarshaller;
 import objects.BaseMap;
 import objects.Conversation;
 import objects.Creature;
+import objects.Party.PartyMember;
 import objects.Person;
+import objects.ProjectileActor;
 import objects.Tile;
 import objects.TileSet;
 
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.BufferUtils;
 
+import ultima.CombatScreen;
 import ultima.Constants;
+import ultima.Sound;
+import ultima.Sounds;
 import ultima.Ultima4;
 
 import com.badlogic.gdx.graphics.Color;
@@ -32,9 +43,14 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class Utils implements Constants {
-
+	
+	public static Random rand = new Random();
+	
 	public static String properCase(String s) {
 		return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
 	}
@@ -106,6 +122,312 @@ public class Utils implements Constants {
 		
 	
 	    map.setTiles(tiles);
+	}
+	
+	/**
+	 * Gets the path of coordinates for an action.  Each tile in the
+	 * direction specified by dirmask, between the minimum and maximum
+	 * distances given, is included in the path, until blockedPredicate
+	 * fails.  If a tile is blocked, that tile is included in the path
+	 * only if includeBlocked is true.
+	 */
+	public static List<AttackVector> getDirectionalActionPath(BaseMap combatMap, int dirmask, int x, int y, int minDistance, int maxDistance, 
+			boolean weaponCanAttackThroughObjects, boolean checkForCreatures) {
+		
+	    List<AttackVector> path = new ArrayList<AttackVector>();
+
+	    /*
+	     * try every tile in the given direction, up to the given range.
+	     * Stop when the the range is exceeded, or the action is blocked.
+	     */
+	    int nx = x;
+	    int ny = y;
+
+		for (int distance = minDistance; distance <= maxDistance; distance++) {
+			
+			/* make sure our action isn't taking us off the map */
+			if (nx > combatMap.getWidth() - 1 || nx < 0 || ny > combatMap.getHeight() - 1 || ny < 0) {
+				break;
+			}
+
+			boolean blocked = combatMap.isTileBlockedForRangedAttack(nx, ny, checkForCreatures);
+			Tile tile = combatMap.getTile(nx, ny);
+			boolean canAttackOverSolid = (tile != null && tile.getRule() != null 
+					&& tile.getRule() == TileRule.solid_attackover && weaponCanAttackThroughObjects);
+
+			if (!blocked || canAttackOverSolid) {
+				path.add(new AttackVector(nx, ny));
+			} else {
+				path.add(new AttackVector(nx, ny));
+				break;
+			}
+			
+			if (Direction.isDirInMask(Direction.NORTH, dirmask)) ny--;
+			if (Direction.isDirInMask(Direction.SOUTH, dirmask)) ny++;
+			if (Direction.isDirInMask(Direction.EAST, dirmask)) nx++;
+			if (Direction.isDirInMask(Direction.WEST, dirmask)) nx--;
+			
+
+		}
+
+	    return path;
+	}
+	
+	public static void animateAttack(Stage stage, final CombatScreen scr, PartyMember attacker, Direction dir, int x, int y, int range) {
+	    
+		final AttackVector target = Utils.attack(scr.combatMap, attacker, dir, x, y, range);
+
+		final ProjectileActor p = new ProjectileActor(scr, Color.RED, x, y, target.res);
+		
+		Vector3 v = scr.getMapPixelCoords(target.x, target.y);
+		
+		p.addAction(sequence(moveTo(v.x, v.y, .3f), new Action() {
+			public boolean act(float delta) {
+				switch(p.res) {
+				case HIT:
+					p.resultTexture = CombatScreen.hitTile;
+					break;
+				case MISS:
+					p.resultTexture = CombatScreen.missTile;
+					break;
+				}
+				
+				scr.replaceTile(target.leaveTileName, target.x, target.y);
+				
+				scr.finishPlayerTurn();
+				
+				return true;
+			}
+		}, fadeOut(.2f), removeActor(p)));
+		
+    	stage.addActor(p);
+	}
+	
+	private static AttackVector attack(BaseMap combatMap, PartyMember attacker, Direction dir, int x, int y, int range) {
+		
+	    WeaponType wt = attacker.getPlayer().weapon;
+		boolean weaponCanAttackThroughObjects = wt.getWeapon().getAttackthroughobjects();
+	    
+	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, Direction.getMask(dir), x, y, 1, range, weaponCanAttackThroughObjects, true);
+	    
+	    AttackVector target = null;
+	    boolean foundTarget = false;
+	    int distance = 1;
+	    for (AttackVector v : path) {
+            AttackResult res = attackAt(combatMap, v, attacker, dir, range, distance);
+            target = v;
+            target.setResult(res);
+	        if (res != AttackResult.NONE) {
+	        	foundTarget = true;
+	            break;
+	        }
+	        distance++;
+	    }
+	    
+	    if (wt.getWeapon().getLose() || (wt.getWeapon().getLosewhenranged() && (!foundTarget || distance > 1))) {
+            if (attacker.loseWeapon() == WeaponType.HANDS) {
+                Ultima4.hud.add("Last One!");
+            }
+        }
+	    
+	    if (wt.getWeapon().getLeavetile() != null && combatMap.getTile(target.x, target.y).walkable()) {
+			target.leaveTileName = wt.getWeapon().getLeavetile();
+	    }
+    	
+    	return target;
+	}
+	
+	@SuppressWarnings("incomplete-switch")
+	public static void animateMagicAttack(Stage stage, final CombatScreen scr, PartyMember attacker, Direction dir, int x, int y, Spell spell, int minDamage, int maxDamage) {
+	    
+		final AttackVector target = Utils.castSpellAttack(scr.combatMap, attacker, dir, x, y, minDamage, maxDamage);
+		
+		Color color = Color.WHITE;
+		switch(spell) {
+		case FIREBALL:color = Color.RED;break;
+		case ICEBALL:color = Color.BLUE;break;
+		case KILL:color = Color.WHITE;break;
+		case MAGICMISSILE:color = Color.BLUE;break;
+		}
+
+		final ProjectileActor p = new ProjectileActor(scr, color, x, y, target.res);
+		
+		Vector3 v = scr.getMapPixelCoords(target.x, target.y);
+		
+		p.addAction(sequence(moveTo(v.x, v.y, .3f), new Action() {
+			public boolean act(float delta) {
+				
+				switch(p.res) {
+				case HIT:
+					p.resultTexture = CombatScreen.hitTile;
+					break;
+				case MISS:
+					p.resultTexture = CombatScreen.missTile;
+					break;
+				}
+				
+				scr.replaceTile(target.leaveTileName, target.x, target.y);
+				
+				scr.finishPlayerTurn();
+				
+				return true;
+			}
+		}, fadeOut(.2f), removeActor(p)));
+		
+    	stage.addActor(p);
+	}
+	
+	
+	private static AttackVector castSpellAttack(BaseMap combatMap, PartyMember attacker, Direction dir, int x, int y, int minDamage, int maxDamage) {
+	    
+	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, Direction.getMask(dir), x, y, 1, 11, true, true);
+	    
+	    AttackVector target = null;
+	    boolean foundTarget = false;
+	    for (AttackVector v : path) {
+            AttackResult res = castAt(combatMap, v, attacker, dir, minDamage, maxDamage);
+            target = v;
+            target.setResult(res);
+	        if (res != AttackResult.NONE) {
+	        	foundTarget = true;
+	            break;
+	        }
+	    }
+    	
+    	return target;
+	}
+	
+	
+	private static AttackResult attackAt(BaseMap combatMap, AttackVector target, PartyMember attacker, Direction dir, int range, int distance) {
+		AttackResult res = AttackResult.NONE;
+	    Creature creature = null;
+	    for (Creature c : combatMap.getCreatures()) {
+	    	if (c.currentX == target.x && c.currentY == target.y) {
+	    		creature = c;
+	    		break;
+	    	}
+	    }
+	    
+	    WeaponType wt = attacker.getPlayer().weapon;
+	    boolean wrongRange = (wt.getWeapon().getAbsolute_range() > 0 && (distance != range));
+
+	    if (creature == null || wrongRange) {
+	        if (!wt.getWeapon().getDontshowtravel()) {
+	        }
+	        return res;
+	    }
+	    
+	    if ((combatMap.getId() == Maps.ABYSS.getId() && !wt.getWeapon().getMagic()) || !attackHit(attacker, creature)) {
+	    	Ultima4.hud.add("Missed!\n");
+	        res = AttackResult.MISS;
+	    } else {
+	        Sounds.play(Sound.NPC_STRUCK);
+	        dealDamage(attacker, creature, attacker.getDamage());
+	        res = AttackResult.HIT;
+	    }
+
+        return res;
+	}
+	
+	private static AttackResult castAt(BaseMap combatMap, AttackVector target, PartyMember attacker, Direction dir, int minDamage, int maxDamage) {
+		
+		AttackResult res = AttackResult.NONE;
+	    Creature creature = null;
+	    for (Creature c : combatMap.getCreatures()) {
+	    	if (c.currentX == target.x && c.currentY == target.y) {
+	    		creature = c;
+	    		break;
+	    	}
+	    }
+	    
+	    if (creature == null) {
+	        return res;
+	    }
+	    
+	    if (!attackHit(attacker, creature)) {
+	    	Ultima4.hud.add("Missed!\n");
+	        res = AttackResult.MISS;
+	    } else {
+	        Sounds.play(Sound.NPC_STRUCK);
+	        
+	        int attackDamage = ((minDamage >= 0) && (minDamage < maxDamage)) ?
+	                rand.nextInt((maxDamage + 1) - minDamage) + minDamage :
+	                maxDamage;
+	        
+	        dealDamage(attacker, creature, attackDamage);
+	        res = AttackResult.HIT;
+	    }
+
+        return res;
+	}
+	
+	public static AttackResult attackHit(Creature attacker, PartyMember defender) {
+	    int attackValue = rand.nextInt(0x100) + attacker.getAttackBonus();
+	    int defenseValue = defender.getDefense();
+	    return attackValue > defenseValue ? AttackResult.HIT : AttackResult.MISS;
+	}
+	
+	private static boolean attackHit(PartyMember attacker, Creature defender) {
+	    int attackValue = rand.nextInt(0x100) + attacker.getAttackBonus();
+	    int defenseValue = defender.getDefense();
+	    return attackValue > defenseValue;
+	}
+	
+	private static boolean dealDamage(PartyMember attacker, Creature defender, int damage) {
+	    int xp = defender.getExp();
+	    if (!damageCreature(defender, damage, true)) {
+	    	attacker.awardXP(xp);
+	        return false;
+	    }
+	    return true;
+	}
+	
+	public static boolean dealDamage(Creature attacker, PartyMember defender) {
+		int damage = attacker.getDamage();
+	    return defender.applyDamage(damage, true);
+	}
+	
+	public static boolean damageCreature(Creature cr, int damage, boolean byplayer) {
+	    
+		if (cr.getTile() != CreatureType.lord_british) {
+	        cr.setHP(Utils.adjustValueMin(cr.getHP(), -damage, 0));
+	    }
+
+	    switch (cr.getDamageStatus()) {
+
+	    case DEAD:        
+			if (byplayer) {
+				Ultima4.hud.add(String.format("%s Killed! Exp. %d", cr.getName(), cr.getExp()));
+			} else {
+				Ultima4.hud.add(String.format("%s Killed!", cr.getName()));
+			}
+	        return false;        
+	    case FLEEING:
+	    	Ultima4.hud.add(String.format("%s Fleeing!", cr.getName()));
+	        break;
+
+	    case CRITICAL:
+	    	Ultima4.hud.add(String.format("%s Critical!", cr.getName()));
+	        break;
+
+	    case HEAVILYWOUNDED:
+	    	Ultima4.hud.add(String.format("%s Heavily Wounded!", cr.getName()));
+	        break;
+
+	    case LIGHTLYWOUNDED:
+	    	Ultima4.hud.add(String.format("%s Lightly Wounded!", cr.getName()));
+	        break;
+
+	    case BARELYWOUNDED:
+	    	Ultima4.hud.add(String.format("%s Barely Wounded!", cr.getName()));
+	        break;
+		case FINE:
+			break;
+		default:
+			break;
+	    }
+
+	    return true;
 	}
 	
 	//used for telescope viewing

@@ -7,22 +7,17 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.commons.lang.StringUtils;
-
 import objects.BaseMap;
 import objects.Creature;
 import objects.CreatureSet;
-import objects.Drawable;
 import objects.Party;
 import objects.Party.PartyMember;
+import objects.ProjectileActor;
 import objects.Tile;
-import ultima.Constants.KarmaAction;
-import ultima.Constants.MapType;
 import ultima.DungeonScreen.DungeonRoom;
 import ultima.DungeonScreen.Trigger;
 import util.Utils;
@@ -56,7 +51,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class CombatScreen extends BaseScreen {
@@ -69,13 +63,12 @@ public class CombatScreen extends BaseScreen {
 	private CursorActor cursor;
 
 	private Maps contextMap;
-	private BaseMap combatMap;
+	public BaseMap combatMap;
 	private CreatureType crType;
 	private CreatureSet creatureSet;
 	
 	public Context context;
 	public Party party;
-	private Stage stage;
 	
 	private TiledMap tmap;
 	private OrthogonalTiledMapRenderer renderer;
@@ -362,6 +355,10 @@ public class CombatScreen extends BaseScreen {
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, combatMap, active.currentX, active.currentY);
 			return false;		
+		} else if (keycode == Keys.C) {
+			log("Cast Spell (A-Z): ");
+			Gdx.input.setInputProcessor(new SpellInputProcessor(this, stage, active.currentX, active.currentY, ap));
+			return false;	
 		} else if (keycode == Keys.U) {
 			Tile tile = combatMap.getTile(active.currentX,active.currentY);
 			if (tile.getIndex() == 74) { //altar
@@ -558,122 +555,6 @@ public class CombatScreen extends BaseScreen {
 	}
 	
 
-	public AttackVector attack(PartyMember attacker, Direction dir, int x, int y, int range) {
-	    
-		Sounds.play(Sound.PC_ATTACK);
-		
-	    WeaponType wt = attacker.getPlayer().weapon;
-		boolean weaponCanAttackThroughObjects = wt.getWeapon().getAttackthroughobjects();
-	    
-	    List<AttackVector> path = getDirectionalActionPath(Direction.getMask(dir), x, y, 1, range, weaponCanAttackThroughObjects, true);
-	    
-	    AttackVector target = null;
-	    boolean foundTarget = false;
-	    int distance = 1;
-	    for (AttackVector v : path) {
-            AttackResult res = attackAt(v, attacker, dir, range, distance);
-            target = v;
-            target.setResult(res);
-	        if (res != AttackResult.NONE) {
-	        	foundTarget = true;
-	            break;
-	        }
-	        distance++;
-	    }
-	    
-	    if (wt.getWeapon().getLose() || (wt.getWeapon().getLosewhenranged() && (!foundTarget || distance > 1))) {
-            if (attacker.loseWeapon() == WeaponType.HANDS) {
-                log("Last One!");
-            }
-        }
-	    
-	    if (wt.getWeapon().getLeavetile() != null && combatMap.getTile(target.x, target.y).walkable()) {
-			target.leaveTileName = wt.getWeapon().getLeavetile();
-	    }
-    	
-    	return target;
-	}
-	
-	
-	/**
-	 * Gets the path of coordinates for an action.  Each tile in the
-	 * direction specified by dirmask, between the minimum and maximum
-	 * distances given, is included in the path, until blockedPredicate
-	 * fails.  If a tile is blocked, that tile is included in the path
-	 * only if includeBlocked is true.
-	 */
-	private List<AttackVector> getDirectionalActionPath(int dirmask, int x, int y, int minDistance, int maxDistance, 
-			boolean weaponCanAttackThroughObjects, boolean checkForCreatures) {
-		
-	    List<AttackVector> path = new ArrayList<AttackVector>();
-
-	    /*
-	     * try every tile in the given direction, up to the given range.
-	     * Stop when the the range is exceeded, or the action is blocked.
-	     */
-	    int nx = x;
-	    int ny = y;
-
-		for (int distance = minDistance; distance <= maxDistance; distance++) {
-			
-			/* make sure our action isn't taking us off the map */
-			if (nx > combatMap.getWidth() - 1 || nx < 0 || ny > combatMap.getHeight() - 1 || ny < 0) {
-				break;
-			}
-
-			boolean blocked = combatMap.isTileBlockedForRangedAttack(nx, ny, checkForCreatures);
-			Tile tile = combatMap.getTile(nx, ny);
-			boolean canAttackOverSolid = (tile != null && tile.getRule() != null 
-					&& tile.getRule() == TileRule.solid_attackover && weaponCanAttackThroughObjects);
-
-			if (!blocked || canAttackOverSolid) {
-				path.add(new AttackVector(nx, ny));
-			} else {
-				path.add(new AttackVector(nx, ny));
-				break;
-			}
-			
-			if (Direction.isDirInMask(Direction.NORTH, dirmask)) ny--;
-			if (Direction.isDirInMask(Direction.SOUTH, dirmask)) ny++;
-			if (Direction.isDirInMask(Direction.EAST, dirmask)) nx++;
-			if (Direction.isDirInMask(Direction.WEST, dirmask)) nx--;
-			
-
-		}
-
-	    return path;
-	}
-	
-	private AttackResult attackAt(AttackVector target, PartyMember attacker, Direction dir, int range, int distance) {
-		AttackResult res = AttackResult.NONE;
-	    Creature creature = null;
-	    for (Creature c : combatMap.getCreatures()) {
-	    	if (c.currentX == target.x && c.currentY == target.y) {
-	    		creature = c;
-	    		break;
-	    	}
-	    }
-	    
-	    WeaponType wt = attacker.getPlayer().weapon;
-	    boolean wrongRange = (wt.getWeapon().getAbsolute_range() > 0 && (distance != range));
-
-	    if (creature == null || wrongRange) {
-	        if (!wt.getWeapon().getDontshowtravel()) {
-	        }
-	        return res;
-	    }
-	    
-	    if ((combatMap.getId() == Maps.ABYSS.getId() && !wt.getWeapon().getMagic()) || !attackHit(attacker, creature)) {
-	        log("Missed!\n");
-	        res = AttackResult.MISS;
-	    } else {
-	        Sounds.play(Sound.NPC_STRUCK);
-	        dealDamage(attacker, creature);
-	        res = AttackResult.HIT;
-	    }
-
-        return res;
-	}
 	
 	private boolean rangedAttackAt(AttackVector target, Creature attacker) {
 
@@ -687,7 +568,7 @@ public class CombatScreen extends BaseScreen {
 	    
 	    if (defender == null) return false;
 	    
-	    AttackResult res = attackHit(attacker, defender);	
+	    AttackResult res = Utils.attackHit(attacker, defender);	
 	    
 	    TileEffect effect = TileEffect.NONE;
     	Color col = Color.WHITE;
@@ -709,7 +590,7 @@ public class CombatScreen extends BaseScreen {
     		col = Color.BLUE;
     	}
     	
-		final ProjectileActor p = new ProjectileActor(col, attacker.currentX, attacker.currentY, res);
+		final ProjectileActor p = new ProjectileActor(this, col, attacker.currentX, attacker.currentY, res);
 		Vector3 v = getMapPixelCoords(defender.combatCr.currentX, defender.combatCr.currentY);
 		p.addAction(sequence(moveTo(v.x, v.y, .3f), new Action() {
 			public boolean act(float delta) {
@@ -732,13 +613,13 @@ public class CombatScreen extends BaseScreen {
 		case ELECTRICITY:
 	        Sounds.play(Sound.LIGHTNING);
 	        log("Electrified!");
-	        dealDamage(attacker, defender);
+	        Utils.dealDamage(attacker, defender);
 			break;
 		case FIRE:
 		case LAVA:
 	        Sounds.play(Sound.FIREBALL);
 	        log("Fiery Hit!");
-	        dealDamage(attacker, defender);
+	        Utils.dealDamage(attacker, defender);
 			break;
 		case NONE:
 			break;
@@ -763,84 +644,19 @@ public class CombatScreen extends BaseScreen {
     	}
 	    	
 	    if (res == AttackResult.HIT) {
-	        dealDamage(attacker, defender);
+	        Utils.dealDamage(attacker, defender);
 	    }
 
 	    return res == AttackResult.HIT;
 	}
 	
-	private AttackResult attackHit(Creature attacker, PartyMember defender) {
-	    int attackValue = rand.nextInt(0x100) + attacker.getAttackBonus();
-	    int defenseValue = defender.getDefense();
-	    return attackValue > defenseValue ? AttackResult.HIT : AttackResult.MISS;
-	}
-	
-	private boolean attackHit(PartyMember attacker, Creature defender) {
-	    int attackValue = rand.nextInt(0x100) + attacker.getAttackBonus();
-	    int defenseValue = defender.getDefense();
-	    return attackValue > defenseValue;
-	}
-	
-	private boolean dealDamage(PartyMember attacker, Creature defender) {
-	    int xp = defender.getExp();
-	    if (!damageCreature(defender, attacker.getDamage(), true)) {
-	    	attacker.awardXP(xp);
-	        return false;
-	    }
-	    return true;
-	}
-	
-	private boolean dealDamage(Creature attacker, PartyMember defender) {
-		int damage = attacker.getDamage();
-	    return defender.applyDamage(damage, true);
-	}
+
 	
 	public void partyDeath() {
 		//not used here
 	}
 	
-	private boolean damageCreature(Creature cr, int damage, boolean byplayer) {
-	    
-		if (cr.getTile() != CreatureType.lord_british) {
-	        cr.setHP(Utils.adjustValueMin(cr.getHP(), -damage, 0));
-	    }
 
-	    switch (cr.getDamageStatus()) {
-
-	    case DEAD:        
-			if (byplayer) {
-				log(String.format("%s Killed! Exp. %d", cr.getName(), cr.getExp()));
-			} else {
-				log(String.format("%s Killed!", cr.getName()));
-			}
-	        return false;        
-	    case FLEEING:
-			log(String.format("%s Fleeing!", cr.getName()));
-	        break;
-
-	    case CRITICAL:
-			log(String.format("%s Critical!", cr.getName()));
-	        break;
-
-	    case HEAVILYWOUNDED:
-			log(String.format("%s Heavily Wounded!", cr.getName()));
-	        break;
-
-	    case LIGHTLYWOUNDED:
-			log(String.format("%s Lightly Wounded!", cr.getName()));
-	        break;
-
-	    case BARELYWOUNDED:
-			log(String.format("%s Barely Wounded!", cr.getName()));
-	        break;
-		case FINE:
-			break;
-		default:
-			break;
-	    }
-
-	    return true;
-	}
 	
 	/**
 	 * Return false if to remove from map.
@@ -894,10 +710,10 @@ public class CombatScreen extends BaseScreen {
 	    case ATTACK: {
 	        Sounds.play(Sound.NPC_ATTACK);
 
-	        if (attackHit(creature, target) == AttackResult.HIT) {
+	        if (Utils.attackHit(creature, target) == AttackResult.HIT) {
 	            Sounds.play(Sound.PC_STRUCK);
 
-	            if (!dealDamage(creature, target)) {
+	            if (!Utils.dealDamage(creature, target)) {
 	                target = null;
 	            }
 
@@ -959,7 +775,7 @@ public class CombatScreen extends BaseScreen {
 
 	        Sounds.play(Sound.NPC_ATTACK);
 	        
-		    List<AttackVector> path = getDirectionalActionPath(dirmask, creature.currentX, creature.currentY, 1, 11, false, false);
+		    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dirmask, creature.currentX, creature.currentY, 1, 11, false, false);
 		    for (AttackVector v : path) {
 		        if (rangedAttackAt(v, creature)) {
 		            break;
@@ -1160,36 +976,6 @@ public class CombatScreen extends BaseScreen {
 		
 	}
 	
-	class ProjectileActor extends Actor {
-		Texture texture;
-		TextureRegion resultTexture;
-		AttackResult res;
-		ProjectileActor(Color color, int x, int y, AttackResult res) {
-			this.res = res;
-			Pixmap pixmap = new Pixmap(tilePixelHeight,tilePixelHeight, Format.RGBA8888);
-			pixmap.setColor(color);
-			pixmap.fillCircle(16,16,3);
-			texture = new Texture(pixmap);
-			
-			Vector3 v = getMapPixelCoords(x, y);
-			this.setX(v.x);
-			this.setY(v.y);
-		}
-		
-		@Override
-		public void draw(Batch batch, float parentAlpha) {
-			
-			Color color = getColor();
-			batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
-			
-			if (resultTexture == null) {
-				batch.draw(texture, getX(), getY());
-			} else {
-				batch.draw(resultTexture, getX(), getY(), tilePixelWidth, tilePixelHeight);
-			}
-		}
-		
-	}
 	
 	@SuppressWarnings("incomplete-switch")
 	public void useStones(Stone c1, Stone c2, Stone c3, Stone c4) {

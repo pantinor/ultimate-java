@@ -1,16 +1,11 @@
 package ultima;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import objects.BaseMap;
 import objects.City;
 import objects.Creature;
 import objects.Party.PartyMember;
 import objects.Person;
 import objects.Tile;
-import ultima.CombatScreen.ProjectileActor;
 import ultima.Constants.Direction;
 import ultima.Constants.DungeonTile;
 import ultima.Constants.Maps;
@@ -18,17 +13,14 @@ import ultima.Constants.ScreenType;
 import ultima.Constants.Stone;
 import ultima.Constants.TileAttrib;
 import ultima.Constants.TileRule;
-import ultima.Constants.AttackVector;
 import ultima.Constants.TransportContext;
 import ultima.Constants.WeaponType;
+import util.Utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class SecondaryInputProcessor extends InputAdapter {
@@ -208,7 +200,8 @@ public class SecondaryInputProcessor extends InputAdapter {
 					case WEST: x = x - 1; break;
 					}	
 					if (keycode >= Keys.NUM_0 && keycode <= Keys.NUM_9) {
-					    animateAttack(combatScreen, attacker, rangeInputModeDirection, x, y, keycode - 7);
+						Sounds.play(Sound.PC_ATTACK);
+					    Utils.animateAttack(stage, combatScreen, attacker, rangeInputModeDirection, x, y, keycode - 7);
 
 					} else {
 						screen.log("Invalid range!");
@@ -223,8 +216,9 @@ public class SecondaryInputProcessor extends InputAdapter {
 				    	return false;
 				    }
 				    
+					Sounds.play(Sound.PC_ATTACK);
 				    int range = wt.getWeapon().getRange();
-				    animateAttack(combatScreen, attacker, dir, x, y, range);
+				    Utils.animateAttack(stage, combatScreen, attacker, dir, x, y, range);
 				}
 				
 				Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
@@ -304,37 +298,6 @@ public class SecondaryInputProcessor extends InputAdapter {
 		
 		screen.finishTurn(currentX, currentY);
 		return false;
-	}
-	
-	public void animateAttack(final CombatScreen scr, PartyMember attacker, Direction dir, int x, int y, int range) {
-	    
-		final AttackVector target = scr.attack(attacker, dir, x, y, range);
-
-		final ProjectileActor p = scr.new ProjectileActor(Color.RED, x, y, target.res);
-		
-		Vector3 v = scr.getMapPixelCoords(target.x, target.y);
-		
-		p.addAction(sequence(moveTo(v.x, v.y, .3f), new Action() {
-			public boolean act(float delta) {
-				
-				switch(p.res) {
-				case HIT:
-					p.resultTexture = CombatScreen.hitTile;
-					break;
-				case MISS:
-					p.resultTexture = CombatScreen.missTile;
-					break;
-				}
-				
-				scr.replaceTile(target.leaveTileName, target.x, target.y);
-				
-				scr.finishPlayerTurn();
-				
-				return true;
-			}
-		}, fadeOut(.2f), removeActor(p)));
-		
-    	stage.addActor(p);
 	}
 	
 	class StoneColorsInputAdapter extends InputAdapter {

@@ -6,7 +6,6 @@ import java.util.Random;
 
 import objects.BaseMap;
 import objects.Creature;
-import util.LogDisplay;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -20,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public abstract class BaseScreen implements Screen, InputProcessor, Constants, Observer {
 	
-	protected ScreenType scType;
+	public ScreenType scType;
 	
 	protected Ultima4 mainGame;
 	protected BaseScreen returnScreen;
@@ -87,6 +86,10 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 	}
 	public void logDeleteLastChar() {
 		Ultima4.hud.logDeleteLastChar();
+	}
+	
+	public Stage getStage() {
+		return stage;
 	}
 	
 	public abstract void finishTurn(int currentX, int currentY) ;

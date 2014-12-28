@@ -44,6 +44,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -216,6 +220,9 @@ public class GameScreen extends BaseScreen {
 			//party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
 			//party.getSaveGame().weapons[9] = 99;
 			//sg.gems = 15;
+			
+			for (Spell sp : Spell.values()) party.getSaveGame().mixtures[sp.ordinal()] = 99;
+
 			
 			//load the surface world first
 			loadNextMap(Maps.WORLD, sg.x, sg.y);
@@ -537,6 +544,11 @@ public class GameScreen extends BaseScreen {
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);
 			return false;
+		} else if (keycode == Keys.C) {
+			log("Cast Spell: ");
+			log("Who casts (1-8): ");
+			Gdx.input.setInputProcessor(new SpellInputProcessor(this, stage, (int)v.x, (int)v.y, null));
+			return false;	
 		} else if (keycode == Keys.Z) {
 			showZstats = showZstats + 1;
 			if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
@@ -629,6 +641,19 @@ public class GameScreen extends BaseScreen {
 	        	i.remove();           
 	        }
 	    }
+	}
+	
+	public void replaceTile(String name, int x, int y) {
+		if (name == null) {
+			return;
+		}
+		TextureRegion texture = GameScreen.standardAtlas.findRegion(name);
+		TiledMapTileLayer layer = (TiledMapTileLayer)context.getCurrentTiledMap().getLayers().get("Map Layer");
+		Cell cell = layer.getCell(x, 11 - 1 - y);
+		TiledMapTile tmt = new StaticTiledMapTile(texture);
+		tmt.setId(y * 11 + x);
+		cell.setTile(tmt);
+		context.getCurrentMap().setTile(GameScreen.baseTileSet.getTileByName(name), x, y);
 	}
 	
 	public boolean checkRandomCreatures() {

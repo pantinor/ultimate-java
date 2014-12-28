@@ -43,6 +43,7 @@ public class Party extends Observable implements Constants {
 	}
 	
 	public PartyMember getMember(int index) { 
+		if (index >= members.size()) return null;
 		return members.get(index);
 	}
 	
@@ -330,6 +331,10 @@ public class Party extends Observable implements Constants {
 			int exp = Utils.adjustValueMax(player.xp, value, 9999);
 			player.xp = exp;
 		}
+		
+		public void adjustMagic(int value) {
+			player.mp = Utils.adjustValueMin(player.mp, -value, 0);
+		}
 				
 		public boolean heal(HealType type) {
 			switch (type) {
@@ -434,7 +439,9 @@ public class Party extends Observable implements Constants {
 		}
 
 		public void wakeUp() {
-			player.status = StatusType.GOOD;    
+			if (player.status == StatusType.SLEEPING) {
+				player.status = StatusType.GOOD;    
+			}
 		}
 		
 		public boolean applyDamage(int damage, boolean combatRelatedDamage) {

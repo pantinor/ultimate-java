@@ -16,7 +16,7 @@ public class Ultima4 extends Game {
 	
 	public static LogDisplay hud;
 	public static BitmapFont logFont;
-	
+		
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "Ultima 4 - Quest of the Avatar";
