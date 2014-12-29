@@ -1,11 +1,13 @@
 package ultima;
 
+import objects.BaseMap;
 import objects.Creature;
 import objects.Drawable;
+import objects.Moongate;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.Tile;
-import ultima.ConversationDialog.LBAction;
+import ultima.Constants.Direction;
 import ultima.DungeonScreen.DungeonTileModelInstance;
 import util.Utils;
 
@@ -117,11 +119,11 @@ public class SpellUtil implements Constants {
 					spellWinds(dir);
 					break;
 				case BLINK:
-					spellBlink(dir);
+					spellBlink(screen, dir);
 					break;
 					
 				case GATE:
-					spellGate(phase);
+					spellGate(screen, phase);
 					break;
 				case JINX:
 					spellJinx(context);
@@ -197,7 +199,77 @@ public class SpellUtil implements Constants {
 		subject.wakeUp();
 	}
 
-	public static void spellBlink(Direction dir) {
+	public static void spellBlink(BaseScreen screen, Direction dir) {
+		
+		if (screen.scType == ScreenType.MAIN) {
+			
+			GameScreen gameScreen = (GameScreen)screen;
+			Vector3 v = gameScreen.getCurrentMapCoords();
+			int x = (int)v.x;
+			int y = (int)v.y;
+    
+		    /* Blink doesn't work near the mouth of the abyss */
+		    /* Note: This means you can teleport to Hythloth from the top of the map,
+		       and that you can teleport to the abyss from the left edge of the map,
+		       Unfortunately, this matches the bugs in the game. :(  Consider fixing. */
+		    if (x >= 192 && y >= 192) {
+		    	return;
+			}
+		    
+		    int distance = 0;
+		    int diff = 0;
+		    Direction reverseDir = Direction.reverse(dir);
+	
+		    /* figure out what numbers we're working with */
+		    int var = (dir.getVal() & (Direction.WEST.getVal() | Direction.EAST.getVal())) > 0 ? x : y;
+	        
+		    /* find the distance we are going to move */
+		    distance = (var) % 0x10;
+		    if (dir == Direction.EAST || dir == Direction.SOUTH) {
+		    	distance = 0x10 - distance;
+		    }
+	    
+		    /* see if we move another 16 spaces over */
+		    diff = 0x10 - distance;
+		    if ((diff > 0) && (Utils.rand.nextInt(diff * diff) > distance)) {
+		        distance += 0x10;
+		    }
+	
+		    /* test our distance, and see if it works */
+		    for (int i = 0; i < distance; i++) {
+				if (dir == Direction.NORTH) y--;
+				if (dir == Direction.SOUTH) y++;
+				if (dir == Direction.WEST) x--;
+				if (dir == Direction.EAST) x++;
+		    }
+		    
+		    BaseMap bm = GameScreen.context.getCurrentMap();
+		    int i = distance;   
+		    /* begin walking backward until you find a valid spot */
+		    while ((i-- > 0) && bm.getTile(x, y) != null && bm.getTile(x, y).getRule().has(TileAttrib.unwalkable)) {
+				if (reverseDir == Direction.NORTH) y--;
+				if (reverseDir == Direction.SOUTH) y++;
+				if (reverseDir == Direction.WEST) x--;
+				if (reverseDir == Direction.EAST) x++;
+		    }
+    
+		    if (bm.getTile(x, y) != null && !bm.getTile(x, y).getRule().has(TileAttrib.unwalkable)) {
+		        
+		    	/* we didn't move! */
+		        if (x == (int)v.x && y == (int)v.y) {
+		            screen.log("Failed to blink!");
+		        }
+		        
+				gameScreen.newMapPixelCoords = gameScreen.getMapPixelCoords(x, y);
+				gameScreen.changeMapPosition = true;
+				
+		    } else {
+	            screen.log("Failed to blink!");
+		    }
+    }    
+
+		
+		
 	}
 
 	public static void spellCure(PartyMember subject) {
@@ -261,7 +333,20 @@ public class SpellUtil implements Constants {
 		}
 	}
 
-	public static void spellGate(int phase) {
+	public static void spellGate(BaseScreen screen, int phase) {
+		
+		if (screen.scType == ScreenType.MAIN) {
+			GameScreen gameScreen = (GameScreen)screen;
+			for (Moongate g : GameScreen.context.getCurrentMap().getMoongates()) {
+				if (g.getPhase() == phase) {
+					Vector3 dest = new Vector3(g.getX(), g.getY(), 0);
+					gameScreen.newMapPixelCoords = gameScreen.getMapPixelCoords((int)dest.x,(int)dest.y);
+					gameScreen.changeMapPosition = true;
+					break;
+				}
+			}
+		}
+		
 	}
 
 	public static void spellHeal(PartyMember subject) {
@@ -319,7 +404,7 @@ public class SpellUtil implements Constants {
 		
 		if (screen.scType == ScreenType.COMBAT) {
 			
-			CombatScreen combatScreen = (CombatScreen)screen;
+			final CombatScreen combatScreen = (CombatScreen)screen;
 			
 			SequenceAction seq = Actions.action(SequenceAction.class);
 
@@ -370,6 +455,14 @@ public class SpellUtil implements Constants {
 		    	
 		    }
 		    
+			seq.addAction(Actions.run(new Runnable() {
+				@Override
+				public void run() {
+					combatScreen.finishPlayerTurn();
+				}
+			}));
+
+		    
 		    combatScreen.getStage().addAction(seq);
 
 		    
@@ -383,7 +476,7 @@ public class SpellUtil implements Constants {
 			
 			SequenceAction seq = Actions.action(SequenceAction.class);
 			
-			CombatScreen combatScreen = (CombatScreen)screen;
+			final CombatScreen combatScreen = (CombatScreen)screen;
 		    for (Creature cr : combatScreen.combatMap.getCreatures()) {
 		    	if (cr.getUndead() && Utils.rand.nextInt(2) == 0) {
 		    		
@@ -404,6 +497,14 @@ public class SpellUtil implements Constants {
 					seq.addAction(Actions.run(combatScreen.new RemoveCreatureAction(cr)));
 				}
 		    }
+		    
+			seq.addAction(Actions.run(new Runnable() {
+				@Override
+				public void run() {
+					combatScreen.finishPlayerTurn();
+				}
+			}));
+		    
 		    combatScreen.getStage().addAction(seq);
 
 		}
@@ -421,12 +522,94 @@ public class SpellUtil implements Constants {
 	}
 
 	public static void spellXit(BaseScreen screen, PartyMember caster) {
+		if (screen.scType == ScreenType.DUNGEON) {
+			screen.log("Leaving..");
+			DungeonScreen dngScreen = (DungeonScreen)screen;
+			if (dngScreen.mainGame != null) {
+				dngScreen.mainGame.setScreen(dngScreen.gameScreen);
+			}
+		}
 	}
 
 	public static void spellYup(BaseScreen screen, PartyMember caster) {
+		if (screen.scType == ScreenType.DUNGEON) {
+			DungeonScreen dngScreen = (DungeonScreen)screen;
+
+			if (dngScreen.dngMap == Maps.ABYSS) return;
+			
+			dngScreen.currentLevel --;
+			
+			if (dngScreen.currentLevel < 0) {
+				dngScreen.currentLevel = 0;
+				if (dngScreen.mainGame != null) {
+					dngScreen.mainGame.setScreen(dngScreen.gameScreen);
+				}
+			} else {
+				
+		        for (int i = 0; i < 0x20; i++) {
+		        	int x = Utils.rand.nextInt(8);
+		        	int y = Utils.rand.nextInt(8);
+		            if (dngScreen.validTeleportLocation(x, y, dngScreen.currentLevel)) {
+						dngScreen.currentPos = new Vector3(x+.5f,.5f,y+.5f);
+						dngScreen.cam.position.set(dngScreen.currentPos);
+						if (dngScreen.currentDir == Direction.EAST) {
+							dngScreen.cam.lookAt(dngScreen.currentPos.x+1, dngScreen.currentPos.y, dngScreen.currentPos.z);
+						} else if (dngScreen.currentDir == Direction.WEST) {
+							dngScreen.cam.lookAt(dngScreen.currentPos.x-1, dngScreen.currentPos.y, dngScreen.currentPos.z);
+						} else if (dngScreen.currentDir == Direction.NORTH) {
+							dngScreen.cam.lookAt(dngScreen.currentPos.x, dngScreen.currentPos.y, dngScreen.currentPos.z-1);
+						} else if (dngScreen.currentDir == Direction.SOUTH) {
+							dngScreen.cam.lookAt(dngScreen.currentPos.x, dngScreen.currentPos.y, dngScreen.currentPos.z+1);
+						}
+						dngScreen.moveMiniMapIcon();
+		            	break;
+		            }
+		        }
+		        
+				dngScreen.createMiniMap();
+			}
+
+		}
 	}
 
 	public static void spellZdown(BaseScreen screen, PartyMember caster) {
+		if (screen.scType == ScreenType.DUNGEON) {
+			DungeonScreen dngScreen = (DungeonScreen)screen;
+
+			if (dngScreen.dngMap == Maps.ABYSS) return;
+			
+			dngScreen.currentLevel ++;
+			
+			if (dngScreen.currentLevel > DungeonScreen.DUNGEON_MAP) {
+				
+				dngScreen.currentLevel = DungeonScreen.DUNGEON_MAP;
+
+			} else {
+				
+		        for (int i = 0; i < 0x20; i++) {
+		        	int x = Utils.rand.nextInt(8);
+		        	int y = Utils.rand.nextInt(8);
+		            if (dngScreen.validTeleportLocation(x, y, dngScreen.currentLevel)) {
+						dngScreen.currentPos = new Vector3(x+.5f,.5f,y+.5f);
+						dngScreen.cam.position.set(dngScreen.currentPos);
+						if (dngScreen.currentDir == Direction.EAST) {
+							dngScreen.cam.lookAt(dngScreen.currentPos.x+1, dngScreen.currentPos.y, dngScreen.currentPos.z);
+						} else if (dngScreen.currentDir == Direction.WEST) {
+							dngScreen.cam.lookAt(dngScreen.currentPos.x-1, dngScreen.currentPos.y, dngScreen.currentPos.z);
+						} else if (dngScreen.currentDir == Direction.NORTH) {
+							dngScreen.cam.lookAt(dngScreen.currentPos.x, dngScreen.currentPos.y, dngScreen.currentPos.z-1);
+						} else if (dngScreen.currentDir == Direction.SOUTH) {
+							dngScreen.cam.lookAt(dngScreen.currentPos.x, dngScreen.currentPos.y, dngScreen.currentPos.z+1);
+						}
+						dngScreen.moveMiniMapIcon();
+		            	break;
+		            }
+		        }
+		        
+				dngScreen.createMiniMap();
+			}
+
+		}
 	}
 
 

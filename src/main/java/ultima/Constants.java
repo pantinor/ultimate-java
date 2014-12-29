@@ -207,6 +207,7 @@ public interface Constants {
 	}
 	
 	public enum TileRule {
+		none(0),
 	    water(TileAttrib.unwalkable.getVal() | TileAttrib.swimmable.getVal() | TileAttrib.sailable.getVal() | TileAttrib.onWaterOnlyReplacement.getVal()),
 	    shallows(TileAttrib.unwalkable.getVal() | TileAttrib.swimmable.getVal() | TileAttrib.onWaterOnlyReplacement.getVal()),
 	    swamp(0, TileSpeed.SLOW, TileEffect.POISON, TileAnimationStyle.NONE),

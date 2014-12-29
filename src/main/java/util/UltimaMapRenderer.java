@@ -223,7 +223,7 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 		List<Creature> crs = bm.getCreatures();
 		if (crs.size() > 0) {
 			for (Creature cr : crs) {
-				if (cr.currentPos == null  || cr.getVisible() == false) {
+				if (cr.currentPos == null  || !cr.getVisible()) {
 					continue;
 				}
 				//see if in shadow

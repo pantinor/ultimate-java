@@ -61,7 +61,7 @@ public class DungeonScreen extends BaseScreen {
 	
 	public Maps dngMap;
 	private String dungeonFileName;
-	private GameScreen gameScreen;
+	public GameScreen gameScreen;
 	private Stage stage;
 	
 	public Environment environment;
@@ -266,7 +266,7 @@ public class DungeonScreen extends BaseScreen {
 							}
 							
 							//System.out.println(dngMap.name() + " " + tile.toString() + " " + x + "," + y + ", " + i);
-							for (int j=0;j<4;j++) if (room.triggers[j].tile.getIndex() != 0) System.out.println(room.triggers[j].toString());
+							//for (int j=0;j<4;j++) if (room.triggers[j].tile.getIndex() != 0) System.out.println(room.triggers[j].toString());
 							
 							if (room.hasAltar) {
 					            if (x == 3) room.altarRoomVirtue = BaseVirtue.LOVE;
@@ -579,7 +579,7 @@ public class DungeonScreen extends BaseScreen {
 	
 
 	
-	private void createMiniMap() {
+	public void createMiniMap() {
 		
 		if (miniMap != null) {
 			miniMap.dispose();
@@ -679,12 +679,12 @@ public class DungeonScreen extends BaseScreen {
 		}
 	}
 	
-	private void moveMiniMapIcon() {
+	public void moveMiniMapIcon() {
 		miniMapIcon.setX(xalignMM + OFST + (Math.round(currentPos.x)-1) * DIM);
 		miniMapIcon.setY(yalignMM + MM_BKGRND_DIM - OFST - (Math.round(currentPos.z)) * DIM);
 	}
 	
-	private void drawHUD() {
+	public void drawHUD() {
 				
 		batch.begin();
 		
@@ -964,6 +964,12 @@ public class DungeonScreen extends BaseScreen {
 		} else if (keycode == Keys.Q) {
 			GameScreen.context.saveGame(x, y, currentLevel, currentDir, dngMap);
 			log("Saved Game.");
+			
+		} else if (keycode == Keys.C) {
+			log("Cast Spell: ");
+			log("Who casts (1-8): ");
+			Gdx.input.setInputProcessor(new SpellInputProcessor(this, stage, x, y, null));
+			return false;	
 			
 		} else if (keycode == Keys.I) {
 			

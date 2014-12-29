@@ -21,7 +21,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 	
 	public ScreenType scType;
 	
-	protected Ultima4 mainGame;
+	public Ultima4 mainGame;
 	protected BaseScreen returnScreen;
 	
 	protected Stage stage;

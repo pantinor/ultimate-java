@@ -3,6 +3,7 @@ package util;
 import objects.Tile;
 import ultima.Constants;
 import ultima.DungeonScreen.DungeonRoom;
+import ultima.GameScreen;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;

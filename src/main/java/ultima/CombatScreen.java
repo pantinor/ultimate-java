@@ -18,7 +18,9 @@ import objects.Party;
 import objects.Party.PartyMember;
 import objects.ProjectileActor;
 import objects.Tile;
-import ultima.Constants.AuraType;
+
+import org.apache.commons.lang.StringUtils;
+
 import ultima.DungeonScreen.DungeonRoom;
 import ultima.DungeonScreen.Trigger;
 import util.Utils;
@@ -286,7 +288,7 @@ public class CombatScreen extends BaseScreen {
 				
 		renderer.getBatch().begin();
 		for (Creature cr : combatMap.getCreatures()) {
-			if (cr.currentPos == null  ) {
+			if (cr.currentPos == null || !cr.getVisible() ) {
 				continue;
 			}
 			renderer.getBatch().draw(cr.getAnim().getKeyFrame(time, true), cr.currentPos.x, cr.currentPos.y, tilePixelWidth, tilePixelHeight);
@@ -491,7 +493,7 @@ public class CombatScreen extends BaseScreen {
 			}
 		}
 		
-		boolean roundIsDone = party.isRoundDone();
+		boolean roundIsDone = party.isRoundDone() || combatMap.getCreatures().size() == 0;
 		
 		PartyMember next = party.getAndSetNextActivePlayer();
 		if (next != null) {
@@ -513,6 +515,11 @@ public class CombatScreen extends BaseScreen {
 		party.endTurn(MapType.combat);
 		
 		context.getAura().passTurn();
+		
+		if (combatMap.getCreatures().size() == 0) {
+			end();
+			return;
+		}
 		
 		boolean quick = context.getAura().getType() == AuraType.QUICKNESS && (rand.nextInt(2) == 0);
 		
@@ -812,6 +819,11 @@ public class CombatScreen extends BaseScreen {
 
 	    case FLEE:
 	    case ADVANCE: {
+	    	
+	    	if (StringUtils.equals("none", creature.getMovement())) {
+	    		return true; //reapers do not move
+	    	}
+	    	
 	    	moveCreature(action, creature, target.combatCr.currentX, target.combatCr.currentY);
 	    	
     		//is map OOB

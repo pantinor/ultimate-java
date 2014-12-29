@@ -9,10 +9,10 @@
 	<tile name="forest" rule="brush" opaque="true" index="6" />
 	<tile name="hills" rule="hills" index="7" />
 	<tile name="mountains" rule="mountains" opaque="true" index="8" />
-	<tile name="dungeon" index="9" />
-	<tile name="city" animation="cityflag" usesReplacementTileAsBackground="true" index="10" />
-	<tile name="castle" animation="castleflag" usesReplacementTileAsBackground="true" index="11" />
-	<tile name="town" usesReplacementTileAsBackground="true" index="12" />
+	<tile name="dungeon" rule="none" index="9" />
+	<tile name="city" rule="none" animation="cityflag" usesReplacementTileAsBackground="true" index="10" />
+	<tile name="castle" rule="none" animation="castleflag" usesReplacementTileAsBackground="true" index="11" />
+	<tile name="town" rule="none" usesReplacementTileAsBackground="true" index="12" />
 	<tile name="lcb_west" rule="lcb" usesReplacementTileAsBackground="true" index="13" />
 	<tile name="lcb_entrance" rule="lcb_entrance" animation="lcbflag" usesReplacementTileAsBackground="true" index="14" />
 	<tile name="lcb_east" rule="lcb" usesReplacementTileAsBackground="true" index="15" />
@@ -23,14 +23,14 @@
 	<tile name="horse" rule="horse" directions="we" index="20" />
 	<tile name="horse" rule="horse" directions="we" index="21" />
 	<tile name="dungeon_floor" rule="floors" index="22" />
-	<tile name="bridge" usesWaterReplacementTileAsBackground="true" usesReplacementTileAsBackground="true" index="23" />
+	<tile name="bridge" rule="none" usesWaterReplacementTileAsBackground="true" usesReplacementTileAsBackground="true" index="23" />
 	<tile name="balloon" rule="balloon" index="24" />
-	<tile name="bridge_piece1" usesWaterReplacementTileAsBackground="true" usesReplacementTileAsBackground="true" index="25" />
-	<tile name="bridge_piece2" usesWaterReplacementTileAsBackground="true" usesReplacementTileAsBackground="true" index="26" />
-	<tile name="up_ladder" usesReplacementTileAsBackground="true" index="27" />
-	<tile name="down_ladder" usesReplacementTileAsBackground="true" index="28" />
-	<tile name="ruins" usesReplacementTileAsBackground="true" index="29" />
-	<tile name="shrine" usesReplacementTileAsBackground="true" index="30" />
+	<tile name="bridge_piece1" rule="none" usesWaterReplacementTileAsBackground="true" usesReplacementTileAsBackground="true" index="25" />
+	<tile name="bridge_piece2" rule="none" usesWaterReplacementTileAsBackground="true" usesReplacementTileAsBackground="true" index="26" />
+	<tile name="up_ladder" rule="none" usesReplacementTileAsBackground="true" index="27" />
+	<tile name="down_ladder" rule="none" usesReplacementTileAsBackground="true" index="28" />
+	<tile name="ruins" rule="none" usesReplacementTileAsBackground="true" index="29" />
+	<tile name="shrine" rule="none" usesReplacementTileAsBackground="true" index="30" />
 	<tile name="avatar" rule="person" index="31" />
 	<tile name="mage" rule="person" animation="frame" index="32" />
 	<tile name="mage" rule="person" animation="frame" index="33" />
@@ -77,9 +77,9 @@
 	<tile name="altar" usesReplacementTileAsBackground="true" index="74" />
 	<tile name="campfire" rule="solid" animation="campfire" usesReplacementTileAsBackground="true" index="75" />
 	<tile name="lava" rule="lava" animation="scroll" index="76" />
-	<tile name="miss_flash" usesReplacementTileAsBackground="true" index="77" />
-	<tile name="magic_flash" usesReplacementTileAsBackground="true" index="78" />
-	<tile name="hit_flash" usesReplacementTileAsBackground="true" index="79" />
+	<tile name="miss_flash" rule="none" usesReplacementTileAsBackground="true" index="77" />
+	<tile name="magic_flash" rule="none" usesReplacementTileAsBackground="true" index="78" />
+	<tile name="hit_flash" rule="none" usesReplacementTileAsBackground="true" index="79" />
 
 	<tile name="guard" rule="person" animation="slow_frame" index="80" />
 	<tile name="guard" rule="person" animation="slow_frame" index="81" />

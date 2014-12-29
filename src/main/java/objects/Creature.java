@@ -73,6 +73,9 @@ public class Creature implements Constants {
 	public Creature(Creature clone) {
 		this.ambushes = clone.ambushes;
 		this.camouflage = clone.camouflage;
+		
+		this.isVisible = !this.camouflage;
+		
 		this.camouflageTile = clone.camouflageTile;
 		this.canMoveOntoAvatar = clone.canMoveOntoAvatar;
 		this.canMoveOntoCreatures = clone.canMoveOntoCreatures;

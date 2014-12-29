@@ -138,7 +138,7 @@ public class SpellInputProcessor extends InputAdapter implements Constants {
 		@Override
 		public boolean keyUp(int keycode) {
 			if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
-				SpellUtil.spellCast(screen, GameScreen.context, spell, caster, null, null, keycode - 7);
+				SpellUtil.spellCast(screen, GameScreen.context, spell, caster, null, null, keycode - 7 - 1);
 			} else {
 				screen.log("what?");
 			}

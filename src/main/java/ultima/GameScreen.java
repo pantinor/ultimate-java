@@ -200,25 +200,26 @@ public class GameScreen extends BaseScreen {
 			
 			party.getMember(0).getPlayer().hp = 999;
 			party.getMember(0).getPlayer().hpMax = 999;
+			party.getMember(0).getPlayer().intel = 99;
 			party.getMember(0).getPlayer().mp = 999;
 
-//			for (Virtue v : Virtue.values()) sg.karma[v.ordinal()] = 99;
-//
-//			party.join(NpcDefaults.Geoffrey.name());
-//			party.join(NpcDefaults.Shamino.name());
-//			party.join(NpcDefaults.Katrina.name());
-//			party.join(NpcDefaults.Mariah.name());
-//			party.join(NpcDefaults.Dupre.name());
-//			party.join(NpcDefaults.Iolo.name());
-//			party.join(NpcDefaults.Julia.name());
+			for (Virtue v : Virtue.values()) sg.karma[v.ordinal()] = 99;
 
-			//sg.food = 30000;
+			party.join(NpcDefaults.Geoffrey.name());
+			party.join(NpcDefaults.Shamino.name());
+			party.join(NpcDefaults.Katrina.name());
+			party.join(NpcDefaults.Mariah.name());
+			party.join(NpcDefaults.Dupre.name());
+			party.join(NpcDefaults.Iolo.name());
+			party.join(NpcDefaults.Julia.name());
+
+			sg.food = 30000;
 			sg.runes |= Virtue.SPIRITUALITY.getLoc();
 			sg.moves = 2800;
 			sg.karma[Virtue.SPIRITUALITY.ordinal()] = 99;
 			//sg.stones |= Stone.YELLOW.getLoc();
 			//party.getMember(0).getPlayer().status = StatusType.POISONED;
-			//party.getMember(1).getPlayer().xp = 600;
+			party.getMember(0).getPlayer().xp = 999;
 			party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
 			//party.getSaveGame().weapons[9] = 99;
 			//sg.gems = 15;
@@ -228,12 +229,12 @@ public class GameScreen extends BaseScreen {
 			
 			//load the surface world first
 			//loadNextMap(Maps.WORLD, sg.x, sg.y);
-			loadNextMap(Maps.WORLD, 229, 210);
+			loadNextMap(Maps.WORLD, 91, 67);
 
 			//load the dungeon if save game starts in dungeon
 			//if (Maps.get(sg.location) != Maps.WORLD) {
 				//loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation+1), true);
-				//loadNextMap(Maps.HYTHLOTH, 0, 0, 4, 4, 5, Direction.EAST, true);
+				//loadNextMap(Maps.DESPISE, 0, 0, 7, 1, 7, Direction.NORTH, true);
 			//}
 		}
 		
