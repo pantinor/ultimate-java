@@ -38,20 +38,18 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
-import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
-import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader.Config;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -88,11 +86,10 @@ public class DungeonScreen extends BaseScreen {
 	private Vector3 nll2 = new Vector3(1f, 0.8f, 0.6f);
 	private Vector3 nll = new Vector3(.96f, .58f, 0.08f);
 
-	private PointLight circlingLight;
-	private DirectionalLight fixedLight;
-	private float lightPosition = 0;
-	private Vector3 lightPathCenter = new Vector3(4, 4, 4);
-	private float lightPathRadius = 3f;
+	Model lightModel;
+	Renderable pLight;
+	PointLight fixedLight;
+	float lightFactor;
 	
 	public static final int DUNGEON_MAP = 8;
 	public DungeonTile[][][] dungeonTiles = new DungeonTile[DUNGEON_MAP][DUNGEON_MAP][DUNGEON_MAP];
@@ -184,18 +181,10 @@ public class DungeonScreen extends BaseScreen {
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.05f, 0.05f, 0.05f, 1f));
 		
-		DefaultShader.Config config = new Config();
-		config.numDirectionalLights = 1;
-		config.numPointLights = 1;
-		config.numSpotLights = 0;
-		
-		circlingLight = new PointLight().set(1, .8f, .6f, 0f, 4f, 0f, 10);
-		environment.add(circlingLight);
-		
-		fixedLight = new DirectionalLight().set(1f, 0.8f, 0.6f, 4f, 4f, 4f);
+		fixedLight = new PointLight().set(1f, 0.8f, 0.6f, 4f, 4f, 4f, 5f);
 		environment.add(fixedLight);
 		
-		modelBatch = new ModelBatch(new DefaultShaderProvider(config));
+		modelBatch = new ModelBatch();
 		batch = new SpriteBatch();
 		
 		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -209,6 +198,9 @@ public class DungeonScreen extends BaseScreen {
 				
 
 		ModelBuilder builder = new ModelBuilder();
+		lightModel = builder.createSphere(.1f, .1f, .1f, 10, 10, new Material(ColorAttribute.createDiffuse(1, 1, 1, 1)), Usage.Position);
+		lightModel.nodes.get(0).parts.get(0).setRenderable(pLight = new Renderable());
+		
 		for (int x=0;x<12;x++) {
 			for (int y=0;y<12;y++) {
 				Model sf = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("assets/graphics/rock.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);
@@ -291,8 +283,7 @@ public class DungeonScreen extends BaseScreen {
 			
 			cam.position.set(currentPos);
 			cam.lookAt(currentPos.x+1, currentPos.y, currentPos.z);
-			//cam.position.set(4,10,4);
-			//cam.lookAt(4,0,4);
+
 			
 			//duplicate some of the outer edge tiles around the outside 
 			//so that the wrapping is not so naked on the sides
@@ -409,17 +400,18 @@ public class DungeonScreen extends BaseScreen {
 		Gdx.gl.glClearColor(0,0,0,0);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
 		
-		lightPosition += Gdx.graphics.getDeltaTime() * 1.0f;
-		float lx = (float) (lightPathRadius * Math.cos(lightPosition));
-		float ly = (float) (lightPathRadius * Math.sin(lightPosition));
-		Vector3 lightVector = new Vector3(lx, 0, ly).add(lightPathCenter);
+		lightFactor += Gdx.graphics.getDeltaTime();
+		float lightSize = 4.75f + 0.25f * (float)Math.sin(lightFactor) + .2f * MathUtils.random();
 		
 		Vector3 ll = isTorchOn ? nll : vdll;
-		circlingLight.set(ll.x, ll.y,  ll.z, lightVector, 10);
 		ll = isTorchOn ? nll2 : vdll;
-		fixedLight.set(ll.x, ll.y,  ll.z, 4f, 4f, 4f);
-				
+		fixedLight.set(ll.x, ll.y,  ll.z, currentPos.x, currentPos.y + .35f, currentPos.z, lightSize);
+		((ColorAttribute)pLight.material.get(ColorAttribute.Diffuse)).color.set(fixedLight.color);
+		pLight.worldTransform.setTranslation(fixedLight.position);
+		
 		modelBatch.begin(cam);
+		
+		modelBatch.render(pLight);
 		
 		for (ModelInstance i : floor) {
 			modelBatch.render(i, environment);
