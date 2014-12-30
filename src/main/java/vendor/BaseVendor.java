@@ -17,6 +17,12 @@ public abstract class BaseVendor {
 		WAIT_YOU_PAY,
 		BUY_ITEM,
 		
+		ASK_LODGING,
+		WAIT_RENT_ROOM,
+		RENT_ROOM,
+		DECLINE_LODGING,
+		DECLINE_RENT,
+		
 		WAIT_SELL_INPUT,
 		WAIT_SELL_ONE,
 		WAIT_SELL_HOW_MANY,
@@ -31,6 +37,7 @@ public abstract class BaseVendor {
 		WAIT_WHO_SERVICE,
 		WAIT_PERFORM_SERVICE,
 		PERFORM_SERVICE,
+
 
 		DECLINE_BUY,
 		ANYTHING_ELSE,

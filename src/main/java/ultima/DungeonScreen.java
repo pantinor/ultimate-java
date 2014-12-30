@@ -60,7 +60,6 @@ public class DungeonScreen extends BaseScreen {
 	public Maps dngMap;
 	private String dungeonFileName;
 	public GameScreen gameScreen;
-	private Stage stage;
 	
 	public Environment environment;
 	public ModelBatch modelBatch;
@@ -952,6 +951,13 @@ public class DungeonScreen extends BaseScreen {
 					createMiniMap();
 				}
 			}
+			
+		} else if (keycode == Keys.N) {
+			log("New Order:");
+			log("exhange #:");
+			NewOrderInputAdapter noia = new NewOrderInputAdapter(this);
+			Gdx.input.setInputProcessor(noia);
+			return false;
 			
 		} else if (keycode == Keys.Q) {
 			GameScreen.context.saveGame(x, y, currentLevel, currentDir, dngMap);

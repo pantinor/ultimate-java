@@ -527,7 +527,7 @@ public class CombatScreen extends BaseScreen {
 		
 		context.getAura().passTurn();
 		
-		if (combatMap.getCreatures().size() == 0) {
+		if (combatMap.getCreatures().size() == 0 && combatMap.getType() == MapType.combat) {
 			end();
 			return;
 		}

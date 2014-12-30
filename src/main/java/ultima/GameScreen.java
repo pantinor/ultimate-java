@@ -204,7 +204,7 @@ public class GameScreen extends BaseScreen {
 //			party.getMember(0).getPlayer().mp = 999;
 //
 //			for (Virtue v : Virtue.values()) sg.karma[v.ordinal()] = 99;
-//
+
 //			party.join(NpcDefaults.Geoffrey.name());
 //			party.join(NpcDefaults.Shamino.name());
 //			party.join(NpcDefaults.Katrina.name());
@@ -534,16 +534,20 @@ public class GameScreen extends BaseScreen {
 			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
                 if (context.getParty().getSaveGame().sextants >= 1) {
                 	log("Locate position with sextant");
-                    log(String.format("Latitude: %s'%s Longitude: %s'%s",
-                    		(int)v.y / 16 + 'A', (int)v.y % 16 + 'A',
-                    		(int)v.x / 16 + 'A', (int)v.x % 16 + 'A'));
+                    log(String.format("Latitude: %s'%s", (int)v.y / 16 + 'A', (int)v.y % 16 + 'A'));
+                    log(String.format("Longitude: %s'%s", (int)v.x / 16 + 'A', (int)v.x % 16 + 'A'));
 				} else {
                     log("Locate position with what?");
 				}
 			} else {
             	log("Not here!");
             }
-			
+		} else if (keycode == Keys.N) {
+			log("New Order:");
+			log("exhange #:");
+			NewOrderInputAdapter noia = new NewOrderInputAdapter(this);
+			Gdx.input.setInputProcessor(noia);
+			return false;
 		} else if (keycode == Keys.S) {
 
 			BaseMap bm = context.getCurrentMap();

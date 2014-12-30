@@ -63,6 +63,7 @@ public class VendorClassSet {
 			v = new HorseService(getVendor(type, map), party);
 			break;
 		case INN:
+			v = new InnService(getVendor(type, map), party);
 			break;
 		case REAGENT:
 			v = new ReagentService(getVendor(type, map), party);

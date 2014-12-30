@@ -90,6 +90,26 @@ public class Party extends Observable implements Constants {
 	public void setMembers(List<PartyMember> members) {
 		this.members = members;
 	}
+	
+	public void swapPlayers(int p1, int p2) {
+		
+		int size = members.size();
+	    if(p1 >= size || p2 >= size) return;
+
+	    SaveGamePlayerRecord tmp = saveGame.players[p1];
+	    saveGame.players[p1] = saveGame.players[p2];
+	    saveGame.players[p2] = tmp;
+	    
+	    PartyMember tmp1 = members.get(p1);
+	    members.set(p1, members.get(p2));
+	    members.set(p2, tmp1);
+
+	    if (p1 == activePlayer)
+	        activePlayer = p2;
+	    else if (p2 == activePlayer)
+	        activePlayer = p1;
+
+	}
 		
 	public PartyMember getActivePartyMember() {
 		return members.get(activePlayer);

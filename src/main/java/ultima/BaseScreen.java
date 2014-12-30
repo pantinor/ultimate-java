@@ -8,8 +8,11 @@ import objects.BaseMap;
 import objects.Creature;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
@@ -31,8 +34,8 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 	protected Random rand = new Random();
 
 	protected int mapPixelHeight;
-	protected Vector3 newMapPixelCoords;
-	protected boolean changeMapPosition = false;
+	public Vector3 newMapPixelCoords;
+	public boolean changeMapPosition = false;
 	
 	protected OrthographicCamera mapCamera;
 	protected int showZstats = 0;
@@ -228,6 +231,46 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 	public void resume() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public class NewOrderInputAdapter extends InputAdapter {
+		int p1 = -1;
+		int p2 = -1;
+		BaseScreen screen;
+		
+		public NewOrderInputAdapter(BaseScreen screen) {
+			this.screen = screen;
+		}
+
+		@Override
+		public boolean keyUp(int keycode) {
+			if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+				if (p1 == -1) {
+					p1 = keycode - 7 - 1;
+					logAppend(" "+(p1+1));
+					log("with #:");
+					return false;
+				} else if (p2 == -1) {
+					p2 = keycode - 7 - 1;
+					logAppend(" "+(p2+1));
+					if (p1 == 0 || p2 == 0) {
+						log("You must lead!");
+					} else {
+						GameScreen.context.getParty().swapPlayers(p1, p2);;
+					}
+				}
+			} else {
+				log("What?");
+			}
+			
+			if (this.screen instanceof GameScreen) {
+				Vector3 v = getCurrentMapCoords();
+				finishTurn((int)v.x, (int)v.y);
+			}
+			
+			Gdx.input.setInputProcessor(new InputMultiplexer(this.screen, stage));
+			return false;
+		}
 	}
 
 }
