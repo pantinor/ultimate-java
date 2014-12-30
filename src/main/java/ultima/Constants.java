@@ -1038,52 +1038,62 @@ public interface Constants {
 
 	}
 	
+	public static final int SC_NONE = 0x00;
+	public static final int SC_NEWMOONS = 0x01;
+	public static final int SC_FULLAVATAR = 0x02;
+	public static final int SC_REAGENTDELAY = 0x04;
+	
 	public enum ItemMapLabels {
 		
-		balloon("the Ballon"),
-		lockelake("Locke Lake"),
-		telescope("a telescope"),
+		balloon("the Ballon", 0),
+		lockelake("Locke Lake", 0),
+		telescope("a telescope", 0),
 		
-		mandrake1("Mandrake Root"),
-		mandrake2("Mandrake Root"),
-		nightshade1("Nightshade"),
-		nightshade2("Nightshade"),
+		mandrake1("Mandrake Root", SC_NEWMOONS | SC_REAGENTDELAY ),
+		mandrake2("Mandrake Root", SC_NEWMOONS | SC_REAGENTDELAY ),
+		nightshade1("Nightshade", SC_NEWMOONS | SC_REAGENTDELAY ),
+		nightshade2("Nightshade", SC_NEWMOONS | SC_REAGENTDELAY ),
 		
-		bell("the Bell of Courage"),
-		horn("the Silver Horn"),
-		wheel("the Wheel from the H.M.S. Cape"),
-		skull("the Skull of Modain the Wizard"),
-		candle("the Candle of Love"),
-		book("the Book of Truth"),
+		bell("the Bell of Courage", 0),
+		horn("the Silver Horn", 0),
+		wheel("the Wheel from the H.M.S. Cape", 0),
+		skull("the Skull of Modain the Wizard", SC_NEWMOONS),
+		candle("the Candle of Love", 0),
+		book("the Book of Truth", 0),
 				
-		mysticarmor("Mystic Robes"),
-		mysticswords("Mystic Swords"),
+		mysticarmor("Mystic Robes", SC_FULLAVATAR),
+		mysticswords("Mystic Swords", SC_FULLAVATAR),
 		
-		honestyrune("the rune of Honesty"),
-		compassionrune("the rune of Compassion"),
-		valorrune("the rune of Valor"),
-		justicerune("the rune of Justice"),
-		sacrificerune("the rune of Sacrifice"),
-		honorrune("the rune of Honor"),
-		humilityrune("the rune of Humility"),
-		spiritualityrune("the rune of Spirituality"),
+		honestyrune("the rune of Honesty", 0),
+		compassionrune("the rune of Compassion", 0),
+		valorrune("the rune of Valor", 0),
+		justicerune("the rune of Justice", 0),
+		sacrificerune("the rune of Sacrifice", 0),
+		honorrune("the rune of Honor", 0),
+		humilityrune("the rune of Humility", 0),
+		spiritualityrune("the rune of Spirituality", 0),
 
-		blackstone("the Black Stone"),
-		whitestone("the White Stone"),
-		bluestone("the Blue Stone"),
-		yellowstone("the Yellow Stone"),
-		redstone("the Red Stone"),
-		greenstone("the Green Stone"),
-		orangestone("the Orange Stone"),
-		purplestone("the Purple Stone");
+		blackstone("the Black Stone", SC_NEWMOONS),
+		whitestone("the White Stone", 0),
+		bluestone("the Blue Stone", 0),
+		yellowstone("the Yellow Stone", 0),
+		redstone("the Red Stone", 0),
+		greenstone("the Green Stone", 0),
+		orangestone("the Orange Stone", 0),
+		purplestone("the Purple Stone", 0);
 		
 		private String desc;
-
-		private ItemMapLabels(String desc) {
+		private int conditions;
+		
+		private ItemMapLabels(String desc, int cond) {
 			this.desc = desc;
+			this.conditions = cond;
 		}
 		public String getDesc() {
 			return this.desc;
+		}
+		public int getConditions() {
+			return this.conditions;
 		}
 	}
 	

@@ -27,6 +27,8 @@ import util.Utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -376,6 +378,15 @@ public class CombatScreen extends BaseScreen {
 				sip.setinitialKeyCode(keycode, combatMap, active.currentX, active.currentY);
 				return false;
 			}
+			
+		} else if (keycode == Keys.R) {
+			Gdx.input.setInputProcessor(new ReadyWearInputAdapter(ap, true));
+			return false;
+			
+		} else if (keycode == Keys.W) {
+			Gdx.input.setInputProcessor(new ReadyWearInputAdapter(ap, false));
+			return false;
+			
 		} else if (keycode == Keys.G) {
 			log("Which party member?");
 			Gdx.input.setInputProcessor(sip);
@@ -1069,6 +1080,30 @@ public class CombatScreen extends BaseScreen {
 			replaceTile("dungeon_floor", x, y);
 		} else {
 			log("Not Here!");
+		}
+	}
+	
+	
+	public class ReadyWearInputAdapter extends InputAdapter {
+		boolean ready;
+		PartyMember pm;
+		public ReadyWearInputAdapter(PartyMember pm, boolean ready) {
+			this.ready = ready;
+			this.pm = pm;
+		}
+
+		@Override
+		public boolean keyUp(int keycode) {
+			if (keycode >= Keys.A && keycode <= Keys.P) {
+				if (ready) {
+					pm.readyWeapon(keycode - 29);
+				} else {
+					pm.wearArmor(keycode - 29);
+				}
+			}
+			Gdx.input.setInputProcessor(new InputMultiplexer(CombatScreen.this, stage));
+			finishPlayerTurn();
+			return false;
 		}
 	}
 	

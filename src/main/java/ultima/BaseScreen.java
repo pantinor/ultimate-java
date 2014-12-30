@@ -230,6 +230,4 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 		
 	}
 
-
-
 }

@@ -431,6 +431,16 @@ public class Party extends Observable implements Constants {
 		        return WeaponType.HANDS;
 		    }
 		}
+		
+		public void readyWeapon(int i) {
+			if (i >= 16) return;
+	        player.weapon = WeaponType.get(i);
+		}
+		
+		public void wearArmor(int i) {
+			if (i >= 8) return;
+	        player.armor = ArmorType.get(i);
+		}
 
 		public void putToSleep() {    
 		    if (!isDead()) {

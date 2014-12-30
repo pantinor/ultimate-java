@@ -85,7 +85,7 @@ public class GameScreen extends BaseScreen {
 	Batch mapBatch, batch;
 	
 	Array<AtlasRegion> moongateTextures = new Array<AtlasRegion>();
-	int phase = 0, trammelphase = 0, trammelSubphase = 0, feluccaphase = 0;
+	public static int phase = 0, trammelphase = 0, trammelSubphase = 0, feluccaphase = 0;
 
 	Stage mapObjectsStage;
 	
@@ -223,7 +223,8 @@ public class GameScreen extends BaseScreen {
 //			party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
 //			party.getSaveGame().weapons[9] = 99;
 //			sg.gems = 15;
-//			
+//			party.getSaveGame().sextants = 1;
+
 //			for (Spell sp : Spell.values()) party.getSaveGame().mixtures[sp.ordinal()] = 99;
 
 			
@@ -528,6 +529,21 @@ public class GameScreen extends BaseScreen {
 			} else {
 				log("Cannot save inside!");
 			}
+		} else if (keycode == Keys.L) {
+			
+			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
+                if (context.getParty().getSaveGame().sextants >= 1) {
+                	log("Locate position with sextant");
+                    log(String.format("Latitude: %s'%s Longitude: %s'%s",
+                    		(int)v.y / 16 + 'A', (int)v.y % 16 + 'A',
+                    		(int)v.x / 16 + 'A', (int)v.x % 16 + 'A'));
+				} else {
+                    log("Locate position with what?");
+				}
+			} else {
+            	log("Not here!");
+            }
+			
 		} else if (keycode == Keys.S) {
 
 			BaseMap bm = context.getCurrentMap();
@@ -548,15 +564,27 @@ public class GameScreen extends BaseScreen {
 			board((int)v.x,(int)v.y);
 		} else if (keycode == Keys.P) {
 			peerGem();
+		} else if (keycode == Keys.U) {
+			
+			log("Use Item:");
+			log("");
+			ItemInputAdapter iia = new ItemInputAdapter(this);
+			Gdx.input.setInputProcessor(iia);
+			return false;
+			
 		} else if (keycode == Keys.T || keycode == Keys.O || keycode == Keys.L || keycode == Keys.A) {
+			
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);
 			return false;
+			
 		} else if (keycode == Keys.C) {
+			
 			log("Cast Spell: ");
 			log("Who casts (1-8): ");
 			Gdx.input.setInputProcessor(new SpellInputProcessor(this, stage, (int)v.x, (int)v.y, null));
 			return false;	
+			
 		} else if (keycode == Keys.Z) {
 			showZstats = showZstats + 1;
 			if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
@@ -1109,6 +1137,175 @@ public class GameScreen extends BaseScreen {
 			}
 			return false;
 		}
+	}
+	
+	class ItemInputAdapter extends InputAdapter {
+		GameScreen screen;
+		StringBuilder buffer = new StringBuilder();
+		public ItemInputAdapter(GameScreen screen) {
+			this.screen = screen;
+		}
+
+		@Override
+		public boolean keyUp(int keycode) {
+			if (keycode == Keys.ENTER) {
+				if (buffer.length() < 1) return false;
+				String text = buffer.toString().toUpperCase();	
+				try {
+					Item item = Item.valueOf(Item.class, text);
+
+					switch (item) {
+					case BOOK:
+					case BELL:
+					case CANDLE:
+						screen.useBBC(item);
+						break;
+					case WHEEL:
+						screen.useWheel();
+						break;
+					case SKULL:
+						screen.useSkull();
+						break;
+					case HORN:
+						screen.useHorn();
+						break;
+					default:
+						screen.log("What?");
+						break;
+					}
+					
+					Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
+					
+					Vector3 v = getCurrentMapCoords();
+					screen.finishTurn((int)v.x, (int)v.y);
+					
+				} catch (IllegalArgumentException e) {
+					screen.log("What?");
+					Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
+				}
+				
+			} else if (keycode == Keys.BACKSPACE) {
+				if (buffer.length() > 0) {
+					buffer.deleteCharAt(buffer.length() - 1);
+					screen.logDeleteLastChar();
+				}
+			} else if (keycode >= 29 && keycode <= 54) {
+				buffer.append(Keys.toString(keycode).toUpperCase());
+				screen.logAppend(Keys.toString(keycode).toUpperCase());
+			}
+			return false;
+		}
+	}
+	
+	
+
+	public void useHorn() {
+		
+	    if ((context.getParty().getSaveGame().items & Item.HORN.getLoc()) == 0) {
+	        log("None owned!");
+	        return;
+	    }
+		
+	    log("The Horn sounds an eerie tone!");
+	    context.getAura().set(AuraType.HORN, 10);    
+	}
+
+
+	public void useWheel() {
+		
+	    if ((context.getParty().getSaveGame().items & Item.WHEEL.getLoc()) == 0) {
+	        log("None owned!");
+	        return;
+	    }
+	    
+		if (context.getTransportContext() == TransportContext.SHIP && context.getParty().getSaveGame().shiphull == 50) {
+	        log("Once mounted, the Wheel glows with a blue light!");
+	        context.getParty().getSaveGame().shiphull = 99;
+	    } else {
+	    	log("Hmm...No effect!");    
+	    }
+	}
+
+	/**
+	 * Use skull on the entrance to the Abyss
+	 */
+	public void useSkull() {
+
+	    if ((context.getParty().getSaveGame().items & Item.SKULL.getLoc()) == 0) {
+	        log("None owned!");
+	        return;
+	    }
+	    
+	    if ((context.getParty().getSaveGame().items & Item.SKULL_DESTROYED.getLoc()) > 0) {
+	        log("None owned!");
+	        return;
+	    }
+	    
+	    if (context.getCurrentMap().getId() != Maps.WORLD.getId()) {
+	    	log("Hmm...No effect!");
+	        return;
+	    }
+	    
+		Vector3 v = getCurrentMapCoords();
+		int x = (int)v.x;
+		int y = (int)v.y;
+
+	    if (x == 0xe9 && y == 0xe9) {
+	        log("You cast the Skull of Mondain into the Abyss!");
+	        context.getParty().getSaveGame().items = (context.getParty().getSaveGame().items & ~Item.SKULL.getLoc()) | Item.SKULL_DESTROYED.getLoc();
+	        context.getParty().adjustKarma(KarmaAction.DESTROYED_SKULL);
+	    } else {
+	        log("You hold the evil Skull of Mondain the Wizard aloft...");
+	        
+	        PartyMember user = context.getParty().getMember(0);
+	        SpellUtil.destoryAllCreatures(this, user);
+	        
+	        context.getParty().adjustKarma(KarmaAction.USED_SKULL);
+	    }
+	}
+	
+	/**
+	 * Use bell, book, or candle on the entrance to the Abyss
+	 */
+	public void useBBC(Item item) {
+		
+	    if ((context.getParty().getSaveGame().items & item.getLoc()) == 0) {
+	        log("None owned!");
+	        return;
+	    }
+		
+		Vector3 v = getCurrentMapCoords();
+		int x = (int)v.x;
+		int y = (int)v.y;
+
+		
+	    /* on top of the Abyss entrance */
+	    if (context.getCurrentMap().getId() == Maps.WORLD.getId()  && x == 0xe9 && y == 0xe9) {
+	        /* must use bell first */
+	        if (item == Item.BELL) {
+	            log("The Bell rings on and on!");
+	            context.getParty().getSaveGame().items |= Item.BELL_USED.getLoc();
+	        }
+	        
+	        /* then the book */
+	        else if (item == Item.BOOK && (context.getParty().getSaveGame().items & Item.BELL_USED.getLoc()) > 0) {
+	            log("The words resonate with the ringing!");
+	            context.getParty().getSaveGame().items |= Item.BOOK_USED.getLoc();
+	        }
+	        
+	        /* then the candle */
+	        else if (item == Item.CANDLE && (context.getParty().getSaveGame().items & Item.BOOK_USED.getLoc()) > 0) {
+	            log("As you light the Candle the Earth Trembles!\n");    
+	            context.getParty().getSaveGame().items |= Item.CANDLE_USED.getLoc();
+	        }
+	        
+	        else {
+	        	log("Hmm...No effect!");
+	        }
+	        
+	    } else {
+	    	log("Hmm...No effect!");
+	    }
 	}
 
 

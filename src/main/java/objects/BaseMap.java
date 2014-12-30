@@ -840,6 +840,23 @@ public class BaseMap implements Constants {
 		int expPoints = 0;
 		ItemMapLabels label = ItemMapLabels.valueOf(ItemMapLabels.class, tmp.getName());
 		boolean added = false;
+		
+		int conditions = label.getConditions();
+		
+		if ((conditions & SC_NEWMOONS) > 0 && !(GameScreen.trammelphase == 0 && GameScreen.feluccaphase == 0)) {
+			return null;
+		}
+
+		if ((conditions & SC_FULLAVATAR) > 0) {
+			for (int i = 0; i < 8; i++) {
+				if (sg.karma[i] != 0)
+					return null;
+			}
+		}
+
+		if ((conditions & SC_REAGENTDELAY) > 0 && (sg.moves & 0xF0) == sg.lastreagent) {
+			return null;
+		}
 
 		switch (label) {
 
@@ -1023,17 +1040,19 @@ public class BaseMap implements Constants {
 		case mysticarmor:
 			if (sg.armor[ArmorType.MYSTICROBE.ordinal()] > 0)
 				break;
-			sg.armor[ArmorType.MYSTICROBE.ordinal()] = 8;
+			sg.armor[ArmorType.MYSTICROBE.ordinal()] += 8; //all party members would have it
 			p.adjustKarma(KarmaAction.FOUND_ITEM);
 			expPoints = 400;
+			sg.lastreagent = sg.moves & 0xF0;
 			added = true;
 			break;
 		case mysticswords:
 			if (sg.weapons[WeaponType.MYSTICSWORD.ordinal()] > 0)
 				break;
-			sg.weapons[WeaponType.MYSTICSWORD.ordinal()] = 8;
+			sg.weapons[WeaponType.MYSTICSWORD.ordinal()] += 8;
 			p.adjustKarma(KarmaAction.FOUND_ITEM);
 			expPoints = 400;
+			sg.lastreagent = sg.moves & 0xF0;
 			added = true;
 			break;
 

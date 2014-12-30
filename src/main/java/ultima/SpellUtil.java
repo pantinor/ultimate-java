@@ -611,6 +611,45 @@ public class SpellUtil implements Constants {
 
 		}
 	}
+	
+	/**
+	 * Used with skull of mondain on world map
+	 */
+	public static void destoryAllCreatures(BaseScreen screen, PartyMember caster) {
+		
+		if (screen.scType == ScreenType.MAIN) {
+			
+			final GameScreen gameScreen = (GameScreen)screen;
+			
+			SequenceAction seq = Actions.action(SequenceAction.class);
+
+		    for (final Creature cr : GameScreen.context.getCurrentMap().getCreatures()) {
+		    	
+				/* Deal maximum damage to creature */
+				Utils.dealDamage(caster, cr, 0xFF);
+				
+				Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
+				Drawable d = new Drawable(cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+		    	d.setX(cr.currentPos.x);
+		    	d.setY(cr.currentPos.y);
+		    	d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));
+				
+				seq.addAction(Actions.run(new AddActorAction(gameScreen.getStage(),d)));
+				seq.addAction(Actions.run(new PlaySoundAction(Sound.NPC_STRUCK)));
+				seq.addAction(Actions.run(new Runnable() {
+					@Override
+					public void run() {
+						GameScreen.context.getCurrentMap().getCreatures().remove(cr);
+					}
+				}));
+				
+		    }
+		    
+			gameScreen.getStage().addAction(seq);
+
+		}
+		
+	}
 
 
 }

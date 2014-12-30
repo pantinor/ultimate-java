@@ -1,5 +1,6 @@
 package ultima;
 
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import objects.BaseMap;
 import objects.City;
 import objects.Creature;
@@ -8,12 +9,14 @@ import objects.Person;
 import objects.Tile;
 import ultima.Constants.Direction;
 import ultima.Constants.DungeonTile;
+import ultima.Constants.Item;
 import ultima.Constants.Maps;
 import ultima.Constants.ScreenType;
 import ultima.Constants.Stone;
 import ultima.Constants.TileAttrib;
 import ultima.Constants.TileRule;
 import ultima.Constants.TransportContext;
+import ultima.Constants.Virtue;
 import ultima.Constants.WeaponType;
 import util.Utils;
 
@@ -21,7 +24,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class SecondaryInputProcessor extends InputAdapter {
 	
@@ -118,6 +125,20 @@ public class SecondaryInputProcessor extends InputAdapter {
 				} else {
 					screen.log("Can't!");
 				}
+				
+			} else if (initialKeyCode == Keys.R) {
+				
+				if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+					Gdx.input.setInputProcessor(new ReadyWearInputAdapter(GameScreen.context.getParty().getMember(keycode -7 - 1), true));
+					return false;
+				}
+				
+			} else if (initialKeyCode == Keys.W) {
+				
+				if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+					Gdx.input.setInputProcessor(new ReadyWearInputAdapter(GameScreen.context.getParty().getMember(keycode -7 - 1), false));
+					return false;
+				}
 	
 			} else if (initialKeyCode == Keys.L) {
 				
@@ -171,6 +192,8 @@ public class SecondaryInputProcessor extends InputAdapter {
 			}
 
 		} else if (screen.scType == ScreenType.SHRINE) {
+			
+			
 			ShrineScreen shrineScreen = (ShrineScreen)screen;
 			if (keycode >= Keys.NUM_0 && keycode <= Keys.NUM_3) {
 				shrineScreen.meditate(keycode - 7);
@@ -180,6 +203,7 @@ public class SecondaryInputProcessor extends InputAdapter {
 			}
 			Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
 			return false;
+			
 
 		} else if (screen.scType == ScreenType.COMBAT) {
 			
@@ -362,5 +386,31 @@ public class SecondaryInputProcessor extends InputAdapter {
 			return false;
 		}
 	}
+	
+	
+	public class ReadyWearInputAdapter extends InputAdapter {
+		boolean ready;
+		PartyMember pm;
+		public ReadyWearInputAdapter(PartyMember pm, boolean ready) {
+			this.ready = ready;
+			this.pm = pm;
+		}
+
+		@Override
+		public boolean keyUp(int keycode) {
+			if (keycode >= Keys.A && keycode <= Keys.P) {
+				if (ready) {
+					pm.readyWeapon(keycode - 29);
+				} else {
+					pm.wearArmor(keycode - 29);
+				}
+			}
+			Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
+			screen.finishTurn(currentX, currentY);
+			return false;
+		}
+	}
+	
+
 	
 }
