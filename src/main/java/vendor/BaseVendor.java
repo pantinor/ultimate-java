@@ -29,7 +29,6 @@ public abstract class BaseVendor {
 		WAIT_SELL_DONT_HAVE_THAT_MANY,
 		SELL_ITEM,
 		
-		//healer
 		WAIT_NEED_HELP,
 		WAIT_GIVE_BLOOD,
 		GIVE_BLOOD,
@@ -37,7 +36,14 @@ public abstract class BaseVendor {
 		WAIT_WHO_SERVICE,
 		WAIT_PERFORM_SERVICE,
 		PERFORM_SERVICE,
-
+		
+		ASK_FOOD_ALE,
+		BUY_FOOD,
+		BUY_ALE,
+		BUY_ALE_WITH_TIP,
+		FOGGY_MEMORY,
+		SORRY,
+		TAVERN_INFO,
 
 		DECLINE_BUY,
 		ANYTHING_ELSE,

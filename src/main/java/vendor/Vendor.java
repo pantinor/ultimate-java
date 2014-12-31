@@ -93,6 +93,13 @@ public class Vendor {
 		}
 		return null;
 	}
+	
+	public Item getTavernInfo(String choice) {
+		for (Item i : inventoryItems) {
+			if (i.getType() == InventoryType.TAVERNINFO && i.getChoice().equals(choice)) return i;
+		}
+		return null;
+	}
 
 
 }
