@@ -1095,11 +1095,13 @@ public class CombatScreen extends BaseScreen {
 		@Override
 		public boolean keyUp(int keycode) {
 			if (keycode >= Keys.A && keycode <= Keys.P) {
+				boolean ret = false;
 				if (ready) {
-					pm.readyWeapon(keycode - 29);
+					ret = pm.readyWeapon(keycode - 29);
 				} else {
-					pm.wearArmor(keycode - 29);
+					ret = pm.wearArmor(keycode - 29);
 				}
+				if (!ret) log("Failed!");
 			}
 			Gdx.input.setInputProcessor(new InputMultiplexer(CombatScreen.this, stage));
 			finishPlayerTurn();

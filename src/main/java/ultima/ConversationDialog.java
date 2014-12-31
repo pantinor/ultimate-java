@@ -5,6 +5,7 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import objects.Conversation;
 import objects.Conversation.Topic;
 import objects.CustomInputConversation;
+import objects.HawkwindConversation;
 import objects.LordBritishConversation;
 import objects.Party;
 import objects.Party.PartyMember;
@@ -216,7 +217,13 @@ public class ConversationDialog extends Window implements Constants {
 				}
 				
 				stage.addAction(seq);
-								
+				
+			} else if (person.getRole() != null && person.getRole().getRole().equals("hawkwind")) {
+				
+				HawkwindConversation conv = (HawkwindConversation)person.getConversation();
+				conv.setParty(GameScreen.context.getParty());
+				scrollPane.add(conv.intro());
+
 			} else {
 				scrollPane.add("You meet " + person.getConversation().getDescription().toLowerCase() + ".");
 			}

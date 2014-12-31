@@ -23,11 +23,11 @@ import ultima.Constants.Maps;
 import ultima.Constants.StatusType;
 import ultima.Constants.WeaponType;
 import vendor.BaseVendor;
+import vendor.GuildVendor;
 import vendor.HealerService;
 import vendor.HorseService;
 import vendor.InnService;
 import vendor.ReagentService;
-import vendor.TavernService;
 import vendor.VendorClassSet;
 import vendor.WeaponVendor;
 
@@ -350,7 +350,7 @@ public class VendorTest {
 	}
 	
 	//@Test
-	public void testTavernVendor() throws Exception {
+	public void testFoodVendor() throws Exception {
 		
 		File file = new File("assets/xml/vendor.xml");
 		JAXBContext jaxbContext = JAXBContext.newInstance(VendorClassSet.class);
@@ -367,10 +367,10 @@ public class VendorTest {
 		Party party = new Party(sg);
 		party.addMember(rec);
 
-		sg.gold = 500;
+		sg.gold = 20;
 		
 		
-		BaseVendor v = new TavernService(vcs.getVendor(InventoryType.TAVERN, Maps.TRINSIC), party);
+		BaseVendor v = new GuildVendor(vcs.getVendor(InventoryType.GUILDITEM, Maps.BUCCANEERS_DEN), party);
 
 		while (true) {
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));

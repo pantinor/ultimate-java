@@ -213,7 +213,8 @@ public class GameScreen extends BaseScreen {
 //			party.join(NpcDefaults.Iolo.name());
 //			party.join(NpcDefaults.Julia.name());
 //
-//			sg.food = 30000;
+			sg.food = 30000;
+			sg.gold = 9999;
 //			sg.runes |= Virtue.SPIRITUALITY.getLoc();
 //			sg.moves = 2800;
 //			sg.karma[Virtue.SPIRITUALITY.ordinal()] = 99;
@@ -229,8 +230,8 @@ public class GameScreen extends BaseScreen {
 
 			
 			//load the surface world first
-			loadNextMap(Maps.WORLD, sg.x, sg.y);
-			//loadNextMap(Maps.WORLD, 91, 67);
+			//loadNextMap(Maps.WORLD, sg.x, sg.y);
+			loadNextMap(Maps.WORLD, 86, 107);
 
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
@@ -559,7 +560,7 @@ public class GameScreen extends BaseScreen {
 			
 			new MixtureDialog(context.getParty(), this, stage, skin).show();
 			
-		} else if (keycode == Keys.G) {
+		} else if (keycode == Keys.G || keycode == Keys.R  || keycode == Keys.W) {
 			log("Which party member?");
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);

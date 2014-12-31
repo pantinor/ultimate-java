@@ -53,8 +53,10 @@ public class VendorClassSet {
 			v = new ArmorVendor(getVendor(type, map), party);
 			break;
 		case FOOD:
+			v = new FoodVendor(getVendor(type, map), party);
 			break;
 		case GUILDITEM:
+			v = new GuildVendor(getVendor(type, map), party);
 			break;
 		case HEALER:
 			v = new HealerService(getVendor(type, map), party);
@@ -68,10 +70,9 @@ public class VendorClassSet {
 		case REAGENT:
 			v = new ReagentService(getVendor(type, map), party);
 			break;
+		case TAVERNINFO:
 		case TAVERN:
 			v = new TavernService(getVendor(type, map), party);
-			break;
-		case TAVERNINFO:
 			break;
 		case WEAPON:
 			v = new WeaponVendor(getVendor(type, map), party);

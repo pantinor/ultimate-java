@@ -35,6 +35,7 @@ public class WeaponVendor extends BaseVendor {
 			displayToScreen("How many would you like?");
 			break;
 		case WAIT_BUY_ONE:
+			displayToScreen(String.format(currentSelectedItem.getDescription(), currentSelectedItem.getPrice()));
 			displayToScreen("Take it?");
 			break;
 
@@ -95,8 +96,6 @@ public class WeaponVendor extends BaseVendor {
 	
 	@Override
 	public void setResponse(String input) {
-		
-
 		
 		if (state == ConvState.ASK_BUY_SELL) {
 			if (input.startsWith("b")) {

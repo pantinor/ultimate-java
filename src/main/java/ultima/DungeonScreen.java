@@ -972,7 +972,7 @@ public class DungeonScreen extends BaseScreen {
 		} else if (keycode == Keys.I) {
 			
 			isTorchOn = !isTorchOn;
-		} else if (keycode == Keys.G) {
+		} else if (keycode == Keys.G || keycode == Keys.R  || keycode == Keys.W) {
 			log("Which party member?");
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, tile, x, y);

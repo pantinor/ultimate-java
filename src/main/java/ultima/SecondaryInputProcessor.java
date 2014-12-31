@@ -4,6 +4,7 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import objects.BaseMap;
 import objects.City;
 import objects.Creature;
+import objects.Party;
 import objects.Party.PartyMember;
 import objects.Person;
 import objects.Tile;
@@ -314,6 +315,20 @@ public class SecondaryInputProcessor extends InputAdapter {
 				if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
 					dngScreen.getChest(keycode - 7 - 1, x, y);
 				}
+				
+			} else if (initialKeyCode == Keys.R) {
+				
+				if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+					Gdx.input.setInputProcessor(new ReadyWearInputAdapter(GameScreen.context.getParty().getMember(keycode -7 - 1), true));
+					return false;
+				}
+				
+			} else if (initialKeyCode == Keys.W) {
+				
+				if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+					Gdx.input.setInputProcessor(new ReadyWearInputAdapter(GameScreen.context.getParty().getMember(keycode -7 - 1), false));
+					return false;
+				}
 			}
 			
 			Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
@@ -399,11 +414,13 @@ public class SecondaryInputProcessor extends InputAdapter {
 		@Override
 		public boolean keyUp(int keycode) {
 			if (keycode >= Keys.A && keycode <= Keys.P) {
+				boolean ret = false;
 				if (ready) {
-					pm.readyWeapon(keycode - 29);
+					ret = pm.readyWeapon(keycode - 29);
 				} else {
-					pm.wearArmor(keycode - 29);
+					ret = pm.wearArmor(keycode - 29);
 				}
+				if (!ret) screen.log("Failed!");
 			}
 			Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
 			screen.finishTurn(currentX, currentY);

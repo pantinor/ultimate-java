@@ -66,6 +66,9 @@ public class MapSet {
 			if (m.getId() == Maps.CASTLE_OF_LORD_BRITISH_2.getId()) {
 				m.getCity().getPeople()[31].setConversation(new LordBritishConversation());
 			}
+			if (m.getId() == Maps.CASTLE_OF_LORD_BRITISH_1.getId()) {
+				m.getCity().getPeople()[29].setConversation(new HawkwindConversation());
+			}
 
 			try {
 				Utils.setMapTiles(m, ts);
