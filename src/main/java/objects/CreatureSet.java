@@ -1,6 +1,7 @@
 package objects;
 
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -67,6 +68,33 @@ public class CreatureSet {
 	}
 	
 	
+	public CreatureType getRandomAmbushing() {
+		
+	    int numAmbushingCreatures = 0, randCreature = 0;
+	    for (Creature cr : creatures) {
+	        if (cr.getAmbushes())
+	            numAmbushingCreatures++;
+	    }
+	    
+	    if (numAmbushingCreatures > 0) {
+	    	
+	        randCreature = new Random().nextInt(numAmbushingCreatures);
+	        numAmbushingCreatures = 0;
+	        
+		    for (Creature cr : creatures) {
+		    	
+		        if (cr.getAmbushes()) {
+		        	
+	                if (numAmbushingCreatures == randCreature) {
+	                	return cr.getTile();
+	                } else {
+	                	numAmbushingCreatures++;
+	                }
+	            }
+	        }
+	    }
 
+	    return null;
+	}
 
 }

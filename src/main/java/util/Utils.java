@@ -23,6 +23,7 @@ import javax.xml.bind.Unmarshaller;
 import objects.BaseMap;
 import objects.Conversation;
 import objects.Creature;
+import objects.CreatureSet;
 import objects.Party.PartyMember;
 import objects.Person;
 import objects.ProjectileActor;
@@ -561,9 +562,6 @@ public class Utils implements Constants {
 		return rest;
 	}
 		 
-
-		 
-	
 
 	
 	/**

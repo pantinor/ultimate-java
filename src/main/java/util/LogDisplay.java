@@ -65,16 +65,16 @@ public class LogDisplay {
 	
 	public void render(Batch batch, Party party) {
 		
-		batch.draw(playbkgrnd, Ultima4.SCREEN_WIDTH - pbw, Ultima4.SCREEN_HEIGHT - pbh);
+		batch.draw(playbkgrnd, Ultima4.SCREEN_WIDTH - pbw - 10, Ultima4.SCREEN_HEIGHT - pbh - 10);
 
 		
 		int food = party.getSaveGame().food / 100;
 		font.setColor(food < 5 ? Color.RED: Color.WHITE);
-		font.draw(batch, "Food: " + food, Ultima4.SCREEN_WIDTH - 135, Ultima4.SCREEN_HEIGHT - 4);
+		font.draw(batch, "Food " + food, Ultima4.SCREEN_WIDTH - 140, Ultima4.SCREEN_HEIGHT - 10);
 		font.setColor(Color.WHITE);
-		font.draw(batch, "Gold: " + party.getSaveGame().gold, Ultima4.SCREEN_WIDTH - 65, Ultima4.SCREEN_HEIGHT - 4);
+		font.draw(batch, "Gold " + party.getSaveGame().gold, Ultima4.SCREEN_WIDTH - 73, Ultima4.SCREEN_HEIGHT - 10);
 
-		float y = Ultima4.SCREEN_HEIGHT - 23;
+		float y = Ultima4.SCREEN_HEIGHT - 30;
 		for (int i = 0; i < party.getMembers().size(); i++) {
 			PartyMember pm = party.getMember(i);
 			
@@ -87,7 +87,7 @@ public class LogDisplay {
 			if (pm.getPlayer().status == StatusType.SLEEPING) font.setColor(Color.YELLOW);
 			if (pm.getPlayer().status == StatusType.DEAD) font.setColor(Color.GRAY);
 			
-			font.draw(batch, s, Ultima4.SCREEN_WIDTH - 135, y);
+			font.draw(batch, s, Ultima4.SCREEN_WIDTH - 140, y);
 			font.draw(batch, d, Ultima4.SCREEN_WIDTH - 45, y);
 			
 			y = y - 18;
@@ -111,14 +111,14 @@ public class LogDisplay {
 				break;
 			}
 			
-			font.drawWrapped(batch, next, 6, y, width - 8);
+			font.drawWrapped(batch, next, 10, y, width - 8);
 		}
 	}
 	
 	public Pixmap getPixmapRoundedRectangle(int width, int height, int radius, Color color) {
-		int os = 2;
+		int os = 5;
 		Pixmap base = new Pixmap(width+os*2, height+os*2, Format.RGBA8888);
-		base.setColor(Color.WHITE);
+		base.setColor(Color.GRAY);
 
 		base.fillRectangle(0, radius, base.getWidth(), base.getHeight() - 2 * radius);
 		base.fillRectangle(radius, 0, base.getWidth() - 2 * radius, base.getHeight());

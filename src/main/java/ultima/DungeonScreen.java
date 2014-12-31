@@ -285,25 +285,26 @@ public class DungeonScreen extends BaseScreen {
 
 			
 			//duplicate some of the outer edge tiles around the outside 
-			//so that the wrapping is not so naked on the sides
-			//i went 2 layers duplicated on each edge
+			//so that the wrapping is not so black hole on the sides
+			//i went 2 layers duplicated on each edges + the corners
 			for (int i = 0;i<DUNGEON_MAP;i++) {
 				{
 					int y = 0;
-					for (int x = 0; x < DUNGEON_MAP; x++) {
+					for (int x = 0; x < DUNGEON_MAP; x++) {//bottom across the top
 						DungeonTile tile = dungeonTiles[i][x][y + DUNGEON_MAP - 1];
 						addBlock(i, tile, x+.5f,.5f,y-.5f);
 						
 						tile = dungeonTiles[i][x][y + DUNGEON_MAP - 2];
 						addBlock(i, tile, x+.5f,.5f,y-1.5f);
 					}
-					for (int x = 0; x < DUNGEON_MAP; x++) {
+					for (int x = 0; x < DUNGEON_MAP; x++) {//top across the bottom
 						DungeonTile tile = dungeonTiles[i][x][y];
 						addBlock(i, tile, x+.5f,.5f,y+.5f+DUNGEON_MAP);
 						
 						tile = dungeonTiles[i][x][y+1];
 						addBlock(i, tile, x+.5f,.5f,y+.5f+DUNGEON_MAP+1);
 					}
+					
 				}
 				{
 					int x = 0;
@@ -322,6 +323,29 @@ public class DungeonScreen extends BaseScreen {
 						addBlock(i, tile, x-1.5f,.5f,y+.5f);
 					}
 				}
+				
+				
+				
+				{//copy bottom right corner to the top left corner
+					DungeonTile tile = dungeonTiles[i][DUNGEON_MAP - 1][DUNGEON_MAP - 1];
+					addBlock(i, tile, -.5f,.5f,-.5f);
+				}
+				
+				{//copy bottom left corner to the top right corner
+					DungeonTile tile = dungeonTiles[i][0][DUNGEON_MAP - 1];
+					addBlock(i, tile, DUNGEON_MAP + .5f,.5f,-.5f);
+				}
+				
+				{//copy top right corner to the bottom left corner
+					DungeonTile tile = dungeonTiles[i][DUNGEON_MAP - 1][0];
+					addBlock(i, tile, -.5f,.5f,DUNGEON_MAP + .5f);
+				}
+				
+				{//copy top left corner to the bottom right corner
+					DungeonTile tile = dungeonTiles[i][0][0];
+					addBlock(i, tile, DUNGEON_MAP + .5f,.5f,DUNGEON_MAP + .5f);
+				}
+				
 			}
 			
 			createMiniMap();
@@ -428,7 +452,7 @@ public class DungeonScreen extends BaseScreen {
 		modelBatch.end();
 
 		drawHUD();
-		
+				
 		stage.act();
 		stage.draw();
 		
@@ -685,6 +709,10 @@ public class DungeonScreen extends BaseScreen {
 		smallFont.draw(batch, (Math.round(currentPos.x)-1) + ", " + (Math.round(currentPos.z)-1) + ", Level " + (currentLevel+1), xalignMM, yalignMM+5);
 
 		Ultima4.hud.render(batch, GameScreen.context.getParty());
+		
+		if (showZstats > 0) {
+			GameScreen.context.getParty().getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);
+		}
 		
 		batch.end();
 	}
@@ -1001,6 +1029,13 @@ public class DungeonScreen extends BaseScreen {
 				sip.setinitialKeyCode(keycode, tile, x, y);
 				return false;
 			}
+			
+		} else if (keycode == Keys.Z) {
+			showZstats = showZstats + 1;
+			if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
+				if (showZstats > GameScreen.context.getParty().getMembers().size()) showZstats = STATS_WEAPONS;
+			}
+			if (showZstats > STATS_SPELLS) showZstats = STATS_NONE;
 		}
 			
 			

@@ -453,9 +453,14 @@ public class Party extends Observable implements Constants {
 		}
 		
 		public boolean readyWeapon(int i) {
+			
 			if (i >= 16) return false;
 			if (party.getSaveGame().weapons[i] <= 0) return false;
-	        player.weapon = WeaponType.get(i);
+			
+			WeaponType wt = WeaponType.get(i);
+			if (!wt.getWeapon().canUse(player.klass)) return false;
+			
+	        player.weapon = wt;
 	        party.getSaveGame().weapons[i] --;
 	        return true;
 		}
@@ -463,7 +468,11 @@ public class Party extends Observable implements Constants {
 		public boolean wearArmor(int i) {
 			if (i >= 8) return false;
 			if (party.getSaveGame().armor[i] <= 0) return false;
-	        player.armor = ArmorType.get(i);
+			
+			ArmorType at = ArmorType.get(i);
+			if (!at.getArmor().canUse(player.klass)) return false;
+			
+	        player.armor = at;
 	        party.getSaveGame().armor[i] --;
 	        return true;
 		}

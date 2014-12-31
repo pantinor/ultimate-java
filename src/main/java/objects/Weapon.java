@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import ultima.Constants.ClassType;
 import ultima.Constants.WeaponType;
 
 @XmlRootElement(name = "weapon")
@@ -153,6 +154,16 @@ public class Weapon {
 	}
 	public void setType(WeaponType type) {
 		this.type = type;
+	}
+	
+	public boolean canUse(ClassType klazz) {
+		if (constraints == null) return true;
+		for (Constraint c : constraints) {
+			if (c.getCanuse() && (c.getCharClass().equals(klazz.toString().toLowerCase()) || c.getCharClass().equals("all"))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

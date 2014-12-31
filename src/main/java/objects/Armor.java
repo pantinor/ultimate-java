@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ultima.Constants.ArmorType;
+import ultima.Constants.ClassType;
 
 @XmlRootElement(name = "armor")
 public class Armor {
@@ -50,7 +51,16 @@ public class Armor {
 	}
 
 	
-	
+	public boolean canUse(ClassType klazz) {
+		if (constraints == null) return true;
+
+		for (Constraint c : constraints) {
+			if (c.getCanuse() && (c.getCharClass().equals(klazz.toString().toLowerCase()) || c.getCharClass().equals("all"))) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 
 }

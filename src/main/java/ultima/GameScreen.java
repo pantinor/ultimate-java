@@ -53,6 +53,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
@@ -204,7 +205,7 @@ public class GameScreen extends BaseScreen {
 //			party.getMember(0).getPlayer().mp = 999;
 //
 //			for (Virtue v : Virtue.values()) sg.karma[v.ordinal()] = 99;
-
+//
 //			party.join(NpcDefaults.Geoffrey.name());
 //			party.join(NpcDefaults.Shamino.name());
 //			party.join(NpcDefaults.Katrina.name());
@@ -212,20 +213,22 @@ public class GameScreen extends BaseScreen {
 //			party.join(NpcDefaults.Dupre.name());
 //			party.join(NpcDefaults.Iolo.name());
 //			party.join(NpcDefaults.Julia.name());
-//
-			sg.food = 30000;
-			sg.gold = 9999;
+
+//			sg.food = 30000;
+//			sg.gold = 9999;
+//			sg.keys = 20;
+//			sg.gems = 15;
 //			sg.runes |= Virtue.SPIRITUALITY.getLoc();
 //			sg.moves = 2800;
 //			sg.karma[Virtue.SPIRITUALITY.ordinal()] = 99;
-//			sg.stones |= Stone.YELLOW.getLoc();
+//			sg.stones = 0xff;
 //			party.getMember(0).getPlayer().status = StatusType.POISONED;
 //			party.getMember(0).getPlayer().xp = 999;
 //			party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
 //			party.getSaveGame().weapons[9] = 99;
-//			sg.gems = 15;
+//			party.getSaveGame().armor[6] = 99;
 //			party.getSaveGame().sextants = 1;
-
+//
 //			for (Spell sp : Spell.values()) party.getSaveGame().mixtures[sp.ordinal()] = 99;
 
 			
@@ -236,7 +239,7 @@ public class GameScreen extends BaseScreen {
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
 				loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation+1), true);
-				//loadNextMap(Maps.DESPISE, 0, 0, 7, 1, 7, Direction.NORTH, true);
+				//loadNextMap(Maps.HYTHLOTH, 0, 0, 1, 1, 0, Direction.NORTH, true);
 			}
 		}
 		
@@ -508,6 +511,8 @@ public class GameScreen extends BaseScreen {
 				loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
 				log(p.getMessage());
 			}
+		} else if (keycode == Keys.H) {
+			holeUp();
 		} else if (keycode == Keys.E) {
 			Portal p = context.getCurrentMap().getPortal(v.x, v.y);
 			if (p != null) {
@@ -549,22 +554,20 @@ public class GameScreen extends BaseScreen {
 			NewOrderInputAdapter noia = new NewOrderInputAdapter(this);
 			Gdx.input.setInputProcessor(noia);
 			return false;
+			
 		} else if (keycode == Keys.S) {
 
 			BaseMap bm = context.getCurrentMap();
 			ItemMapLabels l = bm.searchLocation(this, context.getParty(), (int)v.x, (int)v.y, 0);
 			if (l != null) {
 				log("You found " + l.getDesc() + ".");
+			} else {
+            	log("Nothing here!");
 			}
 		} else if (keycode == Keys.M) {
 			
 			new MixtureDialog(context.getParty(), this, stage, skin).show();
-			
-		} else if (keycode == Keys.G || keycode == Keys.R  || keycode == Keys.W) {
-			log("Which party member?");
-			Gdx.input.setInputProcessor(sip);
-			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);
-			return false;
+						
 		} else if (keycode == Keys.B) {
 			board((int)v.x,(int)v.y);
 		} else if (keycode == Keys.P) {
@@ -577,8 +580,7 @@ public class GameScreen extends BaseScreen {
 			Gdx.input.setInputProcessor(iia);
 			return false;
 			
-		} else if (keycode == Keys.T || keycode == Keys.O || keycode == Keys.L || keycode == Keys.A) {
-			
+		} else if (keycode == Keys.T || keycode == Keys.O || keycode == Keys.J || keycode == Keys.L || keycode == Keys.A || keycode == Keys.G || keycode == Keys.R  || keycode == Keys.W) {
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, context.getCurrentMap(), (int)v.x, (int)v.y);
 			return false;
@@ -638,6 +640,7 @@ public class GameScreen extends BaseScreen {
 				
 		//check if entering moongate
 		if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
+			
 			//check for active moongate portal
 			for (Moongate g : context.getCurrentMap().getMoongates()) {
 				if (g.getCurrentTexture() != null && newx == g.getX() && newy == g.getY()) {
@@ -649,13 +652,18 @@ public class GameScreen extends BaseScreen {
 					}
 				}
 			}
+			
+
+		    /* things that happen while not on board the balloon */
+		    if (context.getTransportContext() != TransportContext.BALLOON) {
+		    	
+		        checkSpecialCreatures(dir, newx, newy);
+		        
+				//check bridge trolls
+				checkBridgeTrolls(newx, newy);
+		    }
 		}
-		
-	    /* things that happen while not on board the balloon */
-	    if (context.getTransportContext() != TransportContext.BALLOON) {
-	        checkSpecialCreatures(dir, newx, newy);
-	    }
-		
+				
 		log(dir.toString());
 	}
 	
@@ -697,13 +705,13 @@ public class GameScreen extends BaseScreen {
 		if (name == null) {
 			return;
 		}
-		TextureRegion texture = GameScreen.standardAtlas.findRegion(name);
+		TextureRegion texture = standardAtlas.findRegion(name);
 		TiledMapTileLayer layer = (TiledMapTileLayer)context.getCurrentTiledMap().getLayers().get("Map Layer");
-		Cell cell = layer.getCell(x, 11 - 1 - y);
+		Cell cell = layer.getCell(x, context.getCurrentMap().getWidth() - 1 - y);
 		TiledMapTile tmt = new StaticTiledMapTile(texture);
-		tmt.setId(y * 11 + x);
+		tmt.setId(y * context.getCurrentMap().getWidth() + x);
 		cell.setTile(tmt);
-		context.getCurrentMap().setTile(GameScreen.baseTileSet.getTileByName(name), x, y);
+		context.getCurrentMap().setTile(baseTileSet.getTileByName(name), x, y);
 	}
 	
 	public boolean checkRandomCreatures() {
@@ -906,6 +914,7 @@ public class GameScreen extends BaseScreen {
 		return dest;
 	}
 	
+	//TODO fix this
 	class GameTimer implements Runnable {
 		boolean run = true;
 		public void run() {
@@ -925,11 +934,86 @@ public class GameScreen extends BaseScreen {
 		
 	}
 	
-	/**
-	 * Checks for valid conditions and handles
-	 * special creatures guarding the entrance to the
-	 * abyss and to the shrine of spirituality
-	 */
+	public void holeUp() {
+		
+	    log("Hole up & Camp!");
+
+		if (context.getCurrentMap().getId() != Maps.WORLD.getId()) {
+		    log("Not here!");
+	        return;
+	    }
+
+	    if (context.getTransportContext() != TransportContext.FOOT) {
+		    log("Only on foot!");
+	        return;
+	    }
+	    
+	    // make sure everyone's asleep
+	    for (int i = 0; i < context.getParty().getMembers().size(); i++)
+	    	context.getParty().getMember(i).putToSleep();  
+	    
+	    log("Resting...");
+
+	    Maps contextMap = Maps.WORLD;
+		final BaseMap campMap = Maps.CAMP_CON.getMap();
+		map = new UltimaTiledMapLoader(Maps.CAMP_CON, standardAtlas, campMap.getWidth(), campMap.getHeight(), 16, 16).load();
+		context.setCurrentTiledMap(map);
+		
+		final CombatScreen sc = new CombatScreen(mainGame, this, GameScreen.context, contextMap, campMap, map, null, GameScreen.creatures, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+
+		mainGame.setScreen(sc);
+
+		final int CAMP_HEAL_INTERVAL = 5;
+		
+		SequenceAction seq = Actions.action(SequenceAction.class);
+		seq.addAction(Actions.delay(CAMP_HEAL_INTERVAL));
+		
+		if (rand.nextInt(8) == 0) {
+			
+			seq.addAction(Actions.run(new Runnable() {
+				public void run() {
+					log("Ambushed");
+					sc.setAmbushingMonsters(GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+				}
+			}));
+			
+		} else {
+			
+			seq.addAction(Actions.run(new Runnable() {
+				public void run() {
+				   
+					for (int i = 0; i < context.getParty().getMembers().size(); i++)
+				    	context.getParty().getMember(i).wakeUp(); 
+
+			        /* Make sure we've waited long enough for camping to be effective */
+			        boolean healed = false;
+			        if (((context.getParty().getSaveGame().moves / CAMP_HEAL_INTERVAL) >= 0x10000) || 
+			        		(((context.getParty().getSaveGame().moves / CAMP_HEAL_INTERVAL) & 0xffff) != context.getParty().getSaveGame().lastcamp)) {
+						for (int i = 0; i < context.getParty().getMembers().size(); i++) {
+			                PartyMember m = context.getParty().getMember(i);
+			                m.getPlayer().mp = m.getPlayer().getMaxMp();
+			                if ((m.getPlayer().hp < m.getPlayer().hpMax) && m.heal(HealType.CAMPHEAL)) {
+			                    healed = true;
+			                }
+			            }
+			        }
+
+			        log(healed ? "Party Healed!" : "No effect.");
+			        
+			        context.getParty().getSaveGame().lastcamp = (context.getParty().getSaveGame().moves / 5) & 0xffff;
+			        
+			        sc.end();
+			        
+				}
+			}));
+			
+		}
+		
+		sc.getStage().addAction(seq);
+		
+	}
+	
+	
 	public void checkSpecialCreatures(Direction dir, int x, int y) {
 
 	    /*
@@ -959,6 +1043,26 @@ public class GameScreen extends BaseScreen {
 		    	context.getCurrentMap().addCreature(daemon);
 	        }
 	    }
+	}
+	
+	public void checkBridgeTrolls(int x, int y) {
+	    Tile bridge = context.getCurrentMap().getTile(x, y);
+	    
+	    if (!bridge.getName().equals("bridge")) {
+	        return;
+	    }
+
+	    if (rand.nextInt(8) != 0) {
+	        return;
+	    }
+
+	    log("Bridge Trolls!");
+	    
+		Creature troll = creatures.getInstance(CreatureType.troll, enhancedAtlas, standardAtlas);
+		troll.currentX = x;
+		troll.currentY = y;
+		troll.currentPos = getMapPixelCoords(x, y);
+		attackAt(bridge.getCombatMap(), troll);
 	}
 	
 	public void board(int x, int y) {

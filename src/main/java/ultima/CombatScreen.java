@@ -21,6 +21,7 @@ import objects.Tile;
 
 import org.apache.commons.lang.StringUtils;
 
+import ultima.Constants.CreatureType;
 import ultima.DungeonScreen.DungeonRoom;
 import ultima.DungeonScreen.Trigger;
 import util.Utils;
@@ -270,6 +271,32 @@ public class CombatScreen extends BaseScreen {
 		return ncreatures;
 	}
 	
+	public void setAmbushingMonsters(TextureAtlas a1, TextureAtlas a2) {
+		
+		CreatureType ct = GameScreen.creatures.getRandomAmbushing();
+		fillCreatureTable(ct);
+		
+		MapLayer mLayer = tmap.getLayers().get("Monster Positions");
+		Iterator<MapObject> iter = mLayer.getObjects().iterator();
+		while(iter.hasNext()) {
+			MapObject obj = iter.next();
+			int index = (Integer)obj.getProperties().get("index");
+			int startX = (Integer)obj.getProperties().get("startX");
+			int startY = (Integer)obj.getProperties().get("startY");
+			
+			if (crSlots[index] == null) continue;
+			
+			Creature c = creatureSet.getInstance(crSlots[index], a1, a2);
+			
+			c.currentX = startX;
+			c.currentY = startY;
+			c.currentPos = getMapPixelCoords(startX, startY);
+
+			combatMap.addCreature(c);
+		}
+		
+	}
+	
 
 	
 	@Override
@@ -388,9 +415,8 @@ public class CombatScreen extends BaseScreen {
 			return false;
 			
 		} else if (keycode == Keys.G) {
-			log("Which party member?");
-			Gdx.input.setInputProcessor(sip);
-			sip.setinitialKeyCode(keycode, combatMap, active.currentX, active.currentY);
+			getChest(party.getActivePlayer(), active.currentX, active.currentY);
+
 			return false;
 		} else if (keycode == Keys.Z) {
 			showZstats = showZstats + 1;
@@ -1090,6 +1116,18 @@ public class CombatScreen extends BaseScreen {
 		public ReadyWearInputAdapter(PartyMember pm, boolean ready) {
 			this.ready = ready;
 			this.pm = pm;
+			
+			StringBuffer sb = new StringBuffer();
+			if (ready) {
+				for (char ch='a';ch<='p';ch++) {
+					if (pm.getParty().getSaveGame().weapons[ch - 'a'] > 0 ) sb.append(Character.toUpperCase(ch) + " - " + WeaponType.get(ch - 'a'));
+				}
+			} else {
+				for (char ch='a';ch<='h';ch++) {
+					if (pm.getParty().getSaveGame().armor[ch - 'a'] > 0 ) sb.append(Character.toUpperCase(ch) + " - " + ArmorType.get(ch - 'a'));
+				}
+			}
+			log(sb.length()>0?sb.toString():"Nothing owned.");
 		}
 
 		@Override
@@ -1101,7 +1139,11 @@ public class CombatScreen extends BaseScreen {
 				} else {
 					ret = pm.wearArmor(keycode - 29);
 				}
-				if (!ret) log("Failed!");
+				if (!ret) {
+					log("Failed!");
+				} else {
+					log("Success!");
+				}
 			}
 			Gdx.input.setInputProcessor(new InputMultiplexer(CombatScreen.this, stage));
 			finishPlayerTurn();

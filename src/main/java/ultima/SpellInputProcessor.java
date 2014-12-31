@@ -125,7 +125,7 @@ public class SpellInputProcessor extends InputAdapter implements Constants {
 				return false;
 			}
 			
-			screen.logAppend(dir.toString());
+			if (!(screen instanceof DungeonScreen)) screen.logAppend(dir.toString());
 			
 			SpellUtil.spellCast(screen, GameScreen.context, spell, caster, null, dir, 0);
 			Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));

@@ -153,10 +153,10 @@ public class ShrineScreen extends BaseScreen {
 		renderer.render();
 				
 		batch.begin();
-		font.draw(batch, "moves: " + party.getSaveGame().moves, 5, 360);
-		font.draw(batch, "lastmeditation: " + party.getSaveGame().lastmeditation, 5, 340);
-		font.draw(batch, "divisor moves: " + party.getSaveGame().moves / SHRINE_MEDITATION_INTERVAL, 5, 320);
-		font.draw(batch, "karma: " + party.getSaveGame().karma[virtue.ordinal()], 5, 300);
+//		font.draw(batch, "moves: " + party.getSaveGame().moves, 5, 360);
+//		font.draw(batch, "lastmeditation: " + party.getSaveGame().lastmeditation, 5, 340);
+//		font.draw(batch, "divisor moves: " + party.getSaveGame().moves / SHRINE_MEDITATION_INTERVAL, 5, 320);
+//		font.draw(batch, "karma: " + party.getSaveGame().karma[virtue.ordinal()], 5, 300);
 
 
 		Ultima4.hud.render(batch, party);

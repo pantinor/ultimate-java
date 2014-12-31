@@ -7,7 +7,6 @@ import objects.Moongate;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.Tile;
-import ultima.Constants.Direction;
 import ultima.DungeonScreen.DungeonTileModelInstance;
 import util.Utils;
 
@@ -309,6 +308,12 @@ public class SpellUtil implements Constants {
 			DungeonScreen dngScreen = (DungeonScreen)screen;
 			int x = (Math.round(dngScreen.currentPos.x)-1);
 			int y = (Math.round(dngScreen.currentPos.z)-1);
+			
+			if (dngScreen.currentDir == Direction.NORTH) y--;
+			if (dngScreen.currentDir == Direction.SOUTH) y++;
+			if (dngScreen.currentDir == Direction.EAST) x++;
+			if (dngScreen.currentDir == Direction.WEST) x--;
+			
 		    DungeonTileModelInstance dispellable = null;
 		    for (DungeonTileModelInstance dmi : dngScreen.modelInstances) {
 		    	if (dmi.getTile().getValue() >= 160 && dmi.getTile().getValue() <= 163) {
@@ -318,8 +323,12 @@ public class SpellUtil implements Constants {
 		    		}
 		    	}
 		    }
-		    dngScreen.modelInstances.remove(dispellable);
-		    dngScreen.dungeonTiles[dngScreen.currentLevel][x][y] = DungeonTile.NOTHING;
+		    
+		    if (dispellable != null) {
+			    dngScreen.modelInstances.remove(dispellable);
+			    dngScreen.dungeonTiles[dngScreen.currentLevel][x][y] = DungeonTile.NOTHING;
+			    dngScreen.createMiniMap();
+		    }
 		}
 
 	}

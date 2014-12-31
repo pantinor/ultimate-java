@@ -36,6 +36,10 @@ public class HawkwindConversation extends Conversation implements Constants {
 	
 	public Topic matchTopic(String query) {
 		
+		if (query.equals("none") || query.equals("bye")) {
+			return new Topic("bye", "\n\n" + hawkwindText[HW_BYE], null, null, null);
+		}
+		
 	    int virtue = -1, virtueLevel = -1;
 
 	    for (Virtue v : Virtue.values()) {
