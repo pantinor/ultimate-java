@@ -53,7 +53,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
@@ -233,8 +232,8 @@ public class GameScreen extends BaseScreen {
 
 			
 			//load the surface world first
-			//loadNextMap(Maps.WORLD, sg.x, sg.y);
-			loadNextMap(Maps.WORLD, 86, 107);
+			loadNextMap(Maps.WORLD, sg.x, sg.y);
+			//loadNextMap(Maps.WORLD, 86, 107);
 
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
@@ -512,7 +511,10 @@ public class GameScreen extends BaseScreen {
 				log(p.getMessage());
 			}
 		} else if (keycode == Keys.H) {
-			holeUp();
+
+			CombatScreen.holeUp(Maps.WORLD, (int)v.x, (int)v.y, this, mainGame, context, creatures, standardAtlas, enhancedAtlas);
+			return false;
+
 		} else if (keycode == Keys.E) {
 			Portal p = context.getCurrentMap().getPortal(v.x, v.y);
 			if (p != null) {
@@ -932,87 +934,7 @@ public class GameScreen extends BaseScreen {
 			}
 		}
 		
-	}
-	
-	public void holeUp() {
-		
-	    log("Hole up & Camp!");
-
-		if (context.getCurrentMap().getId() != Maps.WORLD.getId()) {
-		    log("Not here!");
-	        return;
-	    }
-
-	    if (context.getTransportContext() != TransportContext.FOOT) {
-		    log("Only on foot!");
-	        return;
-	    }
-	    
-	    // make sure everyone's asleep
-	    for (int i = 0; i < context.getParty().getMembers().size(); i++)
-	    	context.getParty().getMember(i).putToSleep();  
-	    
-	    log("Resting...");
-
-	    Maps contextMap = Maps.WORLD;
-		final BaseMap campMap = Maps.CAMP_CON.getMap();
-		map = new UltimaTiledMapLoader(Maps.CAMP_CON, standardAtlas, campMap.getWidth(), campMap.getHeight(), 16, 16).load();
-		context.setCurrentTiledMap(map);
-		
-		final CombatScreen sc = new CombatScreen(mainGame, this, GameScreen.context, contextMap, campMap, map, null, GameScreen.creatures, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
-
-		mainGame.setScreen(sc);
-
-		final int CAMP_HEAL_INTERVAL = 5;
-		
-		SequenceAction seq = Actions.action(SequenceAction.class);
-		seq.addAction(Actions.delay(CAMP_HEAL_INTERVAL));
-		
-		if (rand.nextInt(8) == 0) {
-			
-			seq.addAction(Actions.run(new Runnable() {
-				public void run() {
-					log("Ambushed");
-					sc.setAmbushingMonsters(GameScreen.enhancedAtlas, GameScreen.standardAtlas);
-				}
-			}));
-			
-		} else {
-			
-			seq.addAction(Actions.run(new Runnable() {
-				public void run() {
-				   
-					for (int i = 0; i < context.getParty().getMembers().size(); i++)
-				    	context.getParty().getMember(i).wakeUp(); 
-
-			        /* Make sure we've waited long enough for camping to be effective */
-			        boolean healed = false;
-			        if (((context.getParty().getSaveGame().moves / CAMP_HEAL_INTERVAL) >= 0x10000) || 
-			        		(((context.getParty().getSaveGame().moves / CAMP_HEAL_INTERVAL) & 0xffff) != context.getParty().getSaveGame().lastcamp)) {
-						for (int i = 0; i < context.getParty().getMembers().size(); i++) {
-			                PartyMember m = context.getParty().getMember(i);
-			                m.getPlayer().mp = m.getPlayer().getMaxMp();
-			                if ((m.getPlayer().hp < m.getPlayer().hpMax) && m.heal(HealType.CAMPHEAL)) {
-			                    healed = true;
-			                }
-			            }
-			        }
-
-			        log(healed ? "Party Healed!" : "No effect.");
-			        
-			        context.getParty().getSaveGame().lastcamp = (context.getParty().getSaveGame().moves / 5) & 0xffff;
-			        
-			        sc.end();
-			        
-				}
-			}));
-			
-		}
-		
-		sc.getStage().addAction(seq);
-		
-	}
-	
+	}	
 	
 	public void checkSpecialCreatures(Direction dir, int x, int y) {
 

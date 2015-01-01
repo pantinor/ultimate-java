@@ -741,22 +741,16 @@ public class Party extends Observable implements Constants {
 					adjustFood(-1);
 				}
 				
-				switch (member.player.status) {
-				case SLEEPING:
-					if (rand.nextInt(5) == 0) {
-						member.wakeUp();
-					}
-					break;
-
-				case POISONED:
+				if (member.player.status == StatusType.POISONED) {
 					member.applyDamage(2, false);
 					setChanged();
 					notifyObservers(PartyEvent.POISON_DAMAGE);
-					break;
-
-				default:
-					break;
 				}
+				
+			}
+			
+			if (member.player.status == StatusType.SLEEPING && rand.nextInt(5) == 0) {
+				member.wakeUp();
 			}
 
 			if (!member.isDisabled() && member.player.mp < member.player.getMaxMp()) {

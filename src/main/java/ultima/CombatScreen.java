@@ -21,9 +21,9 @@ import objects.Tile;
 
 import org.apache.commons.lang.StringUtils;
 
-import ultima.Constants.CreatureType;
 import ultima.DungeonScreen.DungeonRoom;
 import ultima.DungeonScreen.Trigger;
+import util.UltimaTiledMapLoader;
 import util.Utils;
 
 import com.badlogic.gdx.Gdx;
@@ -129,7 +129,7 @@ public class CombatScreen extends BaseScreen {
 		
 		hitTile = a2.findRegion("hit_flash");
 		missTile = a2.findRegion("miss_flash");
-		corpse = a2.findRegion("corpse");
+		corpse = a1.findRegion("corpse");
 
 		
 	    if (crType != null) {
@@ -271,7 +271,7 @@ public class CombatScreen extends BaseScreen {
 		return ncreatures;
 	}
 	
-	public void setAmbushingMonsters(TextureAtlas a1, TextureAtlas a2) {
+	public void setAmbushingMonsters(BaseScreen returnScreen, int x, int y, TextureAtlas a1, TextureAtlas a2) {
 		
 		CreatureType ct = GameScreen.creatures.getRandomAmbushing();
 		fillCreatureTable(ct);
@@ -294,6 +294,12 @@ public class CombatScreen extends BaseScreen {
 
 			combatMap.addCreature(c);
 		}
+		
+		//for the chest when returning after combat
+		returnScreen.currentEncounter = creatureSet.getInstance(ct, a1, a2);
+		returnScreen.currentEncounter.currentX = x;
+		returnScreen.currentEncounter.currentY = y;
+		returnScreen.currentEncounter.currentPos = returnScreen.getMapPixelCoords(x, y);
 		
 	}
 	
@@ -549,7 +555,7 @@ public class CombatScreen extends BaseScreen {
 	@Override
 	public void finishTurn(int currentX, int currentY) {
 		
-		party.endTurn(MapType.combat);
+		party.endTurn(combatMap.getType());
 		
 		context.getAura().passTurn();
 		
@@ -1149,6 +1155,100 @@ public class CombatScreen extends BaseScreen {
 			finishPlayerTurn();
 			return false;
 		}
+	}
+	
+	public static void holeUp(Maps contextMap, final int x, final int y, final BaseScreen rs, Ultima4 mg, final Context context, CreatureSet cs, final TextureAtlas sa, final TextureAtlas ea) {
+		
+		Ultima4.hud.add("Hole up & Camp!");
+
+		if (context.getCurrentMap().getCity() != null) {
+			Ultima4.hud.add("Only outside or in the dungeon!");
+	        return;
+	    }
+
+	    if (context.getTransportContext() != TransportContext.FOOT) {
+	    	Ultima4.hud.add("Only on foot!");
+	        return;
+	    }
+	    
+	    // make sure everyone's asleep
+	    for (int i = 0; i < context.getParty().getMembers().size(); i++)
+	    	context.getParty().getMember(i).putToSleep();  
+	    
+	    Ultima4.hud.add("Resting");
+
+		final BaseMap campMap;
+		TiledMap tmap;
+		if (contextMap == Maps.WORLD) {
+			campMap = Maps.CAMP_CON.getMap();
+			tmap = new UltimaTiledMapLoader(Maps.CAMP_CON, sa, campMap.getWidth(), campMap.getHeight(), 16, 16).load();
+		} else {
+			campMap = Maps.CAMP_DNG.getMap();
+			tmap = new UltimaTiledMapLoader(Maps.CAMP_DNG, sa, campMap.getWidth(), campMap.getHeight(), 16, 16).load();
+		}
+		
+		context.setCurrentTiledMap(tmap);
+		
+		final CombatScreen sc = new CombatScreen(mg, rs, context, contextMap, campMap, tmap, null, cs, ea, sa);
+
+		mg.setScreen(sc);
+
+		final int CAMP_HEAL_INTERVAL = 5;
+		Random rand = new Random();
+		
+		SequenceAction seq = Actions.action(SequenceAction.class);
+		for (int i=0;i<CAMP_HEAL_INTERVAL;i++) {
+			seq.addAction(Actions.delay(1f));
+			seq.addAction(Actions.run(new Runnable() {
+				public void run() {
+				    Ultima4.hud.append(" .");
+				}
+			}));
+		}
+		
+		if (rand.nextInt(8) == 0) {
+			
+			seq.addAction(Actions.run(new Runnable() {
+				public void run() {
+					Ultima4.hud.add("Ambushed!");
+					sc.setAmbushingMonsters(rs, x, y, ea, sa);
+				}
+			}));
+			
+		} else {
+			
+			seq.addAction(Actions.run(new Runnable() {
+				public void run() {
+				   
+					for (int i = 0; i < context.getParty().getMembers().size(); i++)
+				    	context.getParty().getMember(i).wakeUp(); 
+
+			        /* Make sure we've waited long enough for camping to be effective */
+			        boolean healed = false;
+			        if (((context.getParty().getSaveGame().moves / CAMP_HEAL_INTERVAL) >= 0x10000) || 
+			        		(((context.getParty().getSaveGame().moves / CAMP_HEAL_INTERVAL) & 0xffff) != context.getParty().getSaveGame().lastcamp)) {
+						for (int i = 0; i < context.getParty().getMembers().size(); i++) {
+			                PartyMember m = context.getParty().getMember(i);
+			                m.getPlayer().mp = m.getPlayer().getMaxMp();
+			                if ((m.getPlayer().hp < m.getPlayer().hpMax) && m.heal(HealType.CAMPHEAL)) {
+			                    healed = true;
+			                }
+			            }
+			        }
+
+			        Ultima4.hud.add(healed ? "Party Healed!" : "No effect.");
+			        
+			        context.getParty().getSaveGame().lastcamp = (context.getParty().getSaveGame().moves / 5) & 0xffff;
+			        
+			        sc.end();
+			        
+				}
+			}));
+			
+		}
+		
+		sc.getStage().addAction(seq);
+		
 	}
 	
 }

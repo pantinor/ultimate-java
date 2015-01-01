@@ -44,23 +44,29 @@ public class LogDisplay {
 	}
 	
 	public void append(String s) {
-		if (logs.size() == 0) logs.add("");
-		String l = logs.get(logs.size()-1);
-		l = l + s;
-		logs.remove(logs.size()-1);
-		logs.add(l);
+		synchronized(logs) {
+			if (logs.size() == 0) logs.add("");
+			String l = logs.get(logs.size()-1);
+			l = l + s;
+			logs.remove(logs.size()-1);
+			logs.add(l);
+		}
 	}
 	
 	public void logDeleteLastChar() {
-		if (logs.size() == 0) return;
-		String l = logs.get(logs.size()-1);
-		l = l.substring(0, l.length() - 1);
-		logs.remove(logs.size()-1);
-		logs.add(l);
+		synchronized(logs) {
+			if (logs.size() == 0) return;
+			String l = logs.get(logs.size()-1);
+			l = l.substring(0, l.length() - 1);
+			logs.remove(logs.size()-1);
+			logs.add(l);
+		}
 	}
 	
 	public void add(String s) {
-		logs.add(s);
+		synchronized(logs) {
+			logs.add(s);
+		}
 	}
 	
 	public void render(Batch batch, Party party) {
@@ -100,18 +106,20 @@ public class LogDisplay {
 		int h = 18;
 		y = 5;
 
-		ReverseListIterator iter = new ReverseListIterator(logs);
-		while (iter.hasNext()) {
-			String next = (String)iter.next();
-			TextBounds bounds = font.getWrappedBounds(next, width - 8);
-			
-			y = y + bounds.height + 4;
-			h += bounds.height + 4;
-			if (h > height + 18) {
-				break;
+		synchronized(logs) {
+			ReverseListIterator iter = new ReverseListIterator(logs);
+			while (iter.hasNext()) {
+				String next = (String)iter.next();
+				TextBounds bounds = font.getWrappedBounds(next, width - 8);
+				
+				y = y + bounds.height + 4;
+				h += bounds.height + 4;
+				if (h > height + 18) {
+					break;
+				}
+				
+				font.drawWrapped(batch, next, 10, y, width - 8);
 			}
-			
-			font.drawWrapped(batch, next, 10, y, width - 8);
 		}
 	}
 	

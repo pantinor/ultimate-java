@@ -15,6 +15,7 @@ import objects.TileSet;
 
 import org.apache.commons.io.IOUtils;
 
+import ultima.Constants.Maps;
 import util.DungeonRoomTiledMapLoader;
 import util.Utils;
 
@@ -1000,10 +1001,16 @@ public class DungeonScreen extends BaseScreen {
 		} else if (keycode == Keys.I) {
 			
 			isTorchOn = !isTorchOn;
+			
 		} else if (keycode == Keys.G || keycode == Keys.R  || keycode == Keys.W) {
 			log("Which party member?");
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, tile, x, y);
+			return false;
+			
+		} else if (keycode == Keys.H) {
+
+			CombatScreen.holeUp(this.dngMap, x, y, this, this.mainGame, GameScreen.context, GameScreen.creatures, GameScreen.standardAtlas, GameScreen.enhancedAtlas);
 			return false;
 			
 		} else if (keycode == Keys.S) {
