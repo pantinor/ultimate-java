@@ -430,7 +430,7 @@ public class TestJaxb {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testMovement() throws Exception {
 							
 	    int dist = Utils.movementDistance(MapBorderBehavior.wrap, 8, 8, 2, 1, 2, 7);
