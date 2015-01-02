@@ -120,7 +120,7 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
 					Person p = city.getPersonAt(x, y);
 					if (p != null && (p.getConversation() != null || p.getRole() != null)) {
 						Gdx.input.setInputProcessor(stage);
-						dialog = new ConversationDialog(p, screen, stage, screen.skin).show(stage);
+						dialog = new ConversationDialog(p, screen, stage, BaseScreen.skin).show(stage);
 					} else {
 						screen.log("Funny, no response! ");
 					}

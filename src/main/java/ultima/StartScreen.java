@@ -35,7 +35,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
 	Sprite title;
 	BitmapFont font;
-	TextureAtlas ta;
+	static TextureAtlas ta;
 	TextureRegion storyTexture;
 
 	StringBuilder nameBuffer = new StringBuilder();
@@ -49,14 +49,14 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 	
 	int storyInd = 0;
 	
-	int questionRound = 0;
-    int answerInd = 0;
+	public static int questionRound = 0;
+	static int answerInd = 0;
     boolean pauseFlag = true;
     String currentQuestion = null;
-    int[] questionTree = new int[15];
+    public static int[] questionTree = new int[15];
     
-    List<Sprite> whiteBeads = new ArrayList<Sprite>();
-    List<Sprite> blackBeads = new ArrayList<Sprite>();
+    static List<Sprite> whiteBeads = new ArrayList<Sprite>();
+    static List<Sprite> blackBeads = new ArrayList<Sprite>();
     
     int GYP_PLACES_FIRST = 0;
     int GYP_PLACES_TWOMORE = 1;
@@ -399,11 +399,13 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 	 * Initializes the question tree.  The tree starts off with the first
 	 * eight entries set to the numbers 0-7 in a random order.
 	 */
-	public void initQuestionTree() {
+	public static void initQuestionTree() {
 
 		for (int i = 0; i < 8; i++) {
 			questionTree[i] = i;
 		}
+		
+		//shuffle the first 8 virtue slots, the last 8 slots are for the answers
 		Random rand = new Random();
 		for (int i = 0; i < 8; i++) {
 			int r = rand.nextInt(8);
@@ -421,7 +423,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
 	}
 	
-	public String getQuestion(int v1, int v2) {
+	public static String getQuestion(int v1, int v2) {
 		int i = 0;
 		int d = 7;
 		while (v1 > 0) {
@@ -437,11 +439,11 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 	 * Updates the question tree with the given answer, and advances to the next round.
 	 * @return true if all questions have been answered, false otherwise
 	 */
-	public boolean doQuestion(int answer) {
+	public static boolean doQuestion(int answer) {
+		
 		if (answer == 0) {
 			questionTree[answerInd] = questionTree[questionRound * 2];
-		}
-		else {
+		} else {
 			questionTree[answerInd] = questionTree[questionRound * 2 + 1];
 		}
     
@@ -450,28 +452,24 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 		answerInd++;
 		questionRound++;
     
-		if (questionRound > 6) {
+		if (answerInd > 14) {
 			return true;
 		}
-    
-		if (questionTree[questionRound * 2] > questionTree[questionRound * 2 + 1]) {
-			int tmp = questionTree[questionRound * 2];
-			questionTree[questionRound * 2] = questionTree[questionRound * 2 + 1];
-			questionTree[questionRound * 2 + 1] = tmp;
-		}
-    
+        
 		return false;
 	}
 	
-	public void setAbacusBeads(int row, int selectedVirtue, int rejectedVirtue) {
+	public static void setAbacusBeads(int row, int selectedVirtue, int rejectedVirtue) {
 	    
-	    Sprite wb = ta.createSprite("white-bead");
-	    wb.setBounds(360 + (selectedVirtue * 11), Ultima4.SCREEN_HEIGHT - 166 - (row * 29), 16, 24);
-	    whiteBeads.add(wb);
-	    
-	    Sprite bb = ta.createSprite("black-bead");
-	    bb.setBounds(360 + (rejectedVirtue * 11), Ultima4.SCREEN_HEIGHT - 166 - (row * 29), 16, 24);
-	    whiteBeads.add(bb);
+		if (ta != null) {
+		    Sprite wb = ta.createSprite("white-bead");
+		    wb.setBounds(360 + (selectedVirtue * 11), Ultima4.SCREEN_HEIGHT - 166 - (row * 29), 16, 24);
+		    whiteBeads.add(wb);
+		    
+		    Sprite bb = ta.createSprite("black-bead");
+		    bb.setBounds(360 + (rejectedVirtue * 11), Ultima4.SCREEN_HEIGHT - 166 - (row * 29), 16, 24);
+		    whiteBeads.add(bb);
+		}
 	    
 	}
 	

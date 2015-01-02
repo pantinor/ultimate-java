@@ -373,9 +373,6 @@ public class MixtureDialog extends Window implements Constants {
 		
 		Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
 		
-		if (GameScreen.context.getCurrentMap().getCity()!=null) 
-			GameScreen.context.getCurrentMap().getCity().resetTalkingFlags();
-
 	}
 
 	public void hide() {

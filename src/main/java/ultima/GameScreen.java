@@ -99,8 +99,7 @@ public class GameScreen extends BaseScreen {
 		scType = ScreenType.MAIN;
 		
 		this.mainGame = mainGame;
-			
-		skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
+		this.skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
 		
 		try {
 			standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-vga-atlas.txt"));
@@ -202,14 +201,14 @@ public class GameScreen extends BaseScreen {
 //			party.getMember(0).getPlayer().hpMax = 999;
 //			party.getMember(0).getPlayer().intel = 99;
 //			party.getMember(0).getPlayer().mp = 999;
-
+//			for (Spell sp : Spell.values()) party.getSaveGame().mixtures[sp.ordinal()] = 99;
 //			for (Virtue v : Virtue.values()) {
 //				sg.karma[v.ordinal()] = 99;
 //			}
 //			sg.stones = 0xff;
 //			sg.runes = 0xff;
-//
-//
+
+
 //			party.join(NpcDefaults.Geoffrey.name());
 //			party.join(NpcDefaults.Shamino.name());
 //			party.join(NpcDefaults.Katrina.name());
@@ -217,7 +216,7 @@ public class GameScreen extends BaseScreen {
 //			party.join(NpcDefaults.Dupre.name());
 //			party.join(NpcDefaults.Iolo.name());
 //			party.join(NpcDefaults.Julia.name());
-
+//
 //			sg.food = 30000;
 //			sg.gold = 9999;
 //			sg.keys = 20;
@@ -227,20 +226,20 @@ public class GameScreen extends BaseScreen {
 //			party.getMember(0).getPlayer().status = StatusType.POISONED;
 //			party.getMember(0).getPlayer().xp = 999;
 //			party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
+//			party.getMember(0).getPlayer().armor = ArmorType.MYSTICROBE;
 //			party.getSaveGame().weapons[9] = 99;
 //			party.getSaveGame().armor[6] = 99;
 //			party.getSaveGame().sextants = 1;
 //
-//			for (Spell sp : Spell.values()) party.getSaveGame().mixtures[sp.ordinal()] = 99;
 			
 			//load the surface world first
 			loadNextMap(Maps.WORLD, sg.x, sg.y);
-			//loadNextMap(Maps.WORLD, 86, 107);
+			//loadNextMap(Maps.WORLD, 156, 27);
 
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
 				loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation+1), true);
-				//loadNextMap(Maps.HYTHLOTH, 0, 0, 1, 1, 0, Direction.NORTH, true);
+				//loadNextMap(Maps.DESPISE, 0, 0, 3, 3, 7, Direction.NORTH, true);
 			}
 		}
 		
@@ -264,7 +263,7 @@ public class GameScreen extends BaseScreen {
 		
 		if (m.getMap().getType() == MapType.dungeon) {
 			
-			DungeonScreen sc = new DungeonScreen(mainGame, stage, this, m);
+			DungeonScreen sc = new DungeonScreen(stage, this, m);
 			
 			if (restoreSG) {
 				sc.restoreSaveGameLocation(dngx, dngy, dngLevel, orientation);
@@ -277,7 +276,7 @@ public class GameScreen extends BaseScreen {
 			map = new UltimaTiledMapLoader(m, standardAtlas, sm.getWidth(), sm.getHeight(), 16, 16).load();
 			context.setCurrentTiledMap(map);
 			Virtue virtue = Virtue.get(sm.getId() - 25);
-			ShrineScreen sc = new ShrineScreen(mainGame, this, virtue, map, enhancedAtlas, standardAtlas);
+			ShrineScreen sc = new ShrineScreen(this, virtue, map, enhancedAtlas, standardAtlas);
 			mainGame.setScreen(sc);
 		} else {
 			
@@ -314,7 +313,7 @@ public class GameScreen extends BaseScreen {
 		
 		context.setCurrentTiledMap(map);
 		
-		CombatScreen sc = new CombatScreen(mainGame, this, context, contextMap, combatMap, map, cr.getTile(), creatures, enhancedAtlas, standardAtlas);
+		CombatScreen sc = new CombatScreen(this, context, contextMap, combatMap, map, cr.getTile(), creatures, enhancedAtlas, standardAtlas);
 		mainGame.setScreen(sc);
 		
 		currentEncounter = cr;
@@ -383,7 +382,7 @@ public class GameScreen extends BaseScreen {
 	
 	public void partyDeath() {
     	//death scene
-    	mainGame.setScreen(new DeathScreen(mainGame, this, context.getParty()));
+    	mainGame.setScreen(new DeathScreen(this, context.getParty()));
     	loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
 	}
 
@@ -514,7 +513,7 @@ public class GameScreen extends BaseScreen {
 			}
 		} else if (keycode == Keys.H) {
 
-			CombatScreen.holeUp(Maps.WORLD, (int)v.x, (int)v.y, this, mainGame, context, creatures, standardAtlas, enhancedAtlas);
+			CombatScreen.holeUp(Maps.WORLD, (int)v.x, (int)v.y, this, context, creatures, standardAtlas, enhancedAtlas);
 			return false;
 
 		} else if (keycode == Keys.E) {
@@ -642,7 +641,6 @@ public class GameScreen extends BaseScreen {
 	
 	private void postMove(Direction dir, int newx, int newy) {
 				
-		//check if entering moongate
 		if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
 			
 			//check for active moongate portal
@@ -657,13 +655,9 @@ public class GameScreen extends BaseScreen {
 				}
 			}
 			
-
 		    /* things that happen while not on board the balloon */
 		    if (context.getTransportContext() != TransportContext.BALLOON) {
-		    	
 		        checkSpecialCreatures(dir, newx, newy);
-		        
-				//check bridge trolls
 				checkBridgeTrolls(newx, newy);
 		    }
 		}
@@ -672,7 +666,6 @@ public class GameScreen extends BaseScreen {
 	}
 	
 	public void finishTurn(int currentX, int currentY) {
-		
 			
 		context.getParty().endTurn(context.getCurrentMap().getType());
 		

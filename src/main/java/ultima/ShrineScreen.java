@@ -61,11 +61,10 @@ public class ShrineScreen extends BaseScreen {
 	private int completedCycles;
 	private int cycles;
 
-	public ShrineScreen(Ultima4 mainGame, BaseScreen returnScreen, Virtue virtue, TiledMap tmap, TextureAtlas a1, TextureAtlas a2) {
+	public ShrineScreen(BaseScreen returnScreen, Virtue virtue, TiledMap tmap, TextureAtlas a1, TextureAtlas a2) {
 		
 		scType = ScreenType.SHRINE;
 
-		this.mainGame = mainGame;
 		this.returnScreen = returnScreen;
 		this.party = GameScreen.context.getParty();
 		this.tmap = tmap;
@@ -80,7 +79,6 @@ public class ShrineScreen extends BaseScreen {
 		mapCamera.setToOrtho(false);
 		stage = new Stage();
 		stage.setViewport(new ScreenViewport(mapCamera));
-		skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
 
 		runeVisionAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/runes-visions.atlas"));
 
@@ -132,7 +130,6 @@ public class ShrineScreen extends BaseScreen {
 	
 	@Override
 	public void hide() {
-		Gdx.input.setInputProcessor(null);
 		party.deleteObserver(this);
 	}
 	

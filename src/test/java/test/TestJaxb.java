@@ -31,6 +31,7 @@ import org.apache.commons.io.IOUtils;
 import org.testng.annotations.Test;
 
 import ultima.Constants;
+import ultima.Constants.ClassType;
 import ultima.Constants.CreatureType;
 import ultima.Constants.Direction;
 import ultima.Constants.DungeonTile;
@@ -43,6 +44,7 @@ import ultima.Constants.TileAttrib;
 import ultima.Constants.TileRule;
 import ultima.Constants.AttackVector;
 import ultima.Constants.Virtue;
+import ultima.StartScreen;
 import util.ShadowFOV;
 import util.Utils;
 import vendor.VendorClass;
@@ -433,7 +435,10 @@ public class TestJaxb {
 	//@Test
 	public void testMovement() throws Exception {
 							
-	    int dist = Utils.movementDistance(MapBorderBehavior.wrap, 8, 8, 2, 1, 2, 7);
+	    int dist = Utils.movementDistance(MapBorderBehavior.wrap, 8, 8, 2, 1, 4, 7);
+		System.out.println(dist);
+		
+	    dist = Utils.distance(MapBorderBehavior.wrap, 8, 8, 2, 1, 4, 7);
 		System.out.println(dist);
 
 	}
@@ -451,19 +456,20 @@ public class TestJaxb {
 	//@Test
 	public void testRandDung() throws Exception {
 		Random rand = new Random();
+		int currentLevel = 7;
 		
 		for (int i=0;i<20;i++) {
 			
 			int total = 0;
 			for (CreatureType ct : CreatureType.values()) {
-			    total += ct.getSpawnWeight();
+			    total += ct.getSpawnLevel()<=currentLevel?ct.getSpawnWeight():0;
 			}
 
 			int thresh = rand.nextInt( total );
 			CreatureType monster = null;
 
 			for (CreatureType ct : CreatureType.values()) {
-			    thresh -= ct.getSpawnWeight();
+			    thresh -= ct.getSpawnLevel()<=currentLevel?ct.getSpawnWeight():0;
 			    if ( thresh < 0 ) {
 			    	monster = ct;
 			        break;
@@ -560,7 +566,42 @@ public class TestJaxb {
 	}
 		
 		
+	//@Test
+	public void testStartQuestions() throws Exception {
+		StartScreen.initQuestionTree();
 		
+		System.out.println("INIT\n");
+		for (int i = 0; i < 15; i++) {
+			System.out.println(i + ") " + Virtue.get(StartScreen.questionTree[i]));
+		}
+		
+		while (!StartScreen.doQuestion(1)) {
+			printQuestionDesc(StartScreen.questionRound);
+		}
+		
+		System.out.println("\nANSWERS\n");
+		for (int i = 0; i < 15; i++) {
+			System.out.println(i + ") " +Virtue.get(StartScreen.questionTree[i]));
+		}
+		
+		
+		SaveGame sg = new SaveGame();
+		SaveGame.SaveGamePlayerRecord avatar = sg.new SaveGamePlayerRecord();
+		avatar.adjuestAttribsPerKarma(StartScreen.questionTree);
+		
+		avatar.klass = ClassType.get(StartScreen.questionTree[14]);
+		
+	    int[] questionTree = StartScreen.questionTree;
+		
+		System.out.println(avatar.klass);
+
+	}
+	
+	public void printQuestionDesc(int round){
+		String v1 = Virtue.get(StartScreen.questionTree[round * 2]).toString().toLowerCase();
+		String v2 = Virtue.get(StartScreen.questionTree[round * 2 + 1]).toString().toLowerCase();
+		System.out.println(String.format("round: %d %s %d and %s %d", round, v1.toString(), (round * 2), v2.toString(), (round * 2 + 1)));
+	}
 	
 
 

@@ -15,9 +15,8 @@ public class DeathScreen extends BaseScreen implements Constants {
 	Batch batch;
 	long initTime;
 	
-	public DeathScreen(Ultima4 mainGame, BaseScreen retScreen, Party party) {
+	public DeathScreen(BaseScreen retScreen, Party party) {
 		
-		this.mainGame = mainGame;
 		this.returnScreen = retScreen;
 		
 		deathMsgs[5] = String.format(deathMsgs[5], party.getMember(0).getPlayer().name);

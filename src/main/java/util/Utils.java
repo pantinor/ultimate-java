@@ -284,6 +284,9 @@ public class Utils implements Constants {
 	}
 	
 
+	/**
+	 * using diagonals computes distance, used with finding nearest party member 
+	 */
 	public static int distance(MapBorderBehavior borderbehavior, int width, int height, int fromX, int fromY, int toX, int toY) {
 	    int dist = movementDistance(borderbehavior, width, height, fromX, fromY, toX, toY);
 	    

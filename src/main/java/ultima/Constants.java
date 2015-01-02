@@ -1370,52 +1370,57 @@ public interface Constants {
 		whirlpool(23),
 		//twister(24),
 		
-		rat(25,5),
-		bat(26,5),
-		spider(27,5),
-		ghost(28,5),
-		slime(29,5),
-		troll(30,5),
-		gremlin(31,5),
+		rat(25,5,0),
+		bat(26,5,0),
+		spider(27,5,0),
+		ghost(28,5,1),
+		slime(29,5,0),
+		troll(30,5,2),
+		gremlin(31,5,3),
 		mimic(32),
 		reaper(33),
 		insect_swarm(34),
-		gazer(35,3),
-		phantom(36,3),
-		orc(37,5),
-		skeleton(38,5),
+		gazer(35,3,4),
+		phantom(36,3,4),
+		orc(37,5,0),
+		skeleton(38,5,0),
 		rogue(39),
 		python(40),
-		ettin(41,5),
-		headless(42,5),
-		cyclops(43,5),
-		wisp(44,5),
-		evil_mage(45,3),
+		ettin(41,5,3),
+		headless(42,5,3),
+		cyclops(43,5,4),
+		wisp(44,5,5),
+		evil_mage(45,3,5),
 		liche(46),
 		lava_lizard(47),
 		zorn(48),
-		daemon(49,3),
+		daemon(49,3,4),
 		hydra(50),
 		dragon(51),
 		balron(52);
 		
 		private int intValue;
 		private int dungeonSpawnWeight;
+		private int dungeonSpawnLevel;
 		private Creature creature;
 		
 		private CreatureType(int value) {
 			intValue = value;
 			dungeonSpawnWeight = 0;
 		}
-		private CreatureType(int value, int dsw) {
+		private CreatureType(int value, int dsw, int dsl) {
 			intValue = value;
 			dungeonSpawnWeight = dsw;
+			dungeonSpawnLevel = dsl;
 		}
 		public int getValue() {
 			return intValue;
 		}
 		public int getSpawnWeight() {
 			return dungeonSpawnWeight;
+		}
+		public int getSpawnLevel() {
+			return dungeonSpawnLevel;
 		}
 		public static CreatureType get(int v) {
 			for (CreatureType x : values()) {

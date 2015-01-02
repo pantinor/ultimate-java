@@ -56,7 +56,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class CombatScreen extends BaseScreen {
@@ -88,12 +87,11 @@ public class CombatScreen extends BaseScreen {
 	public static TextureRegion corpse;
 
 
-	public CombatScreen(Ultima4 mainGame, BaseScreen returnScreen, Context context, Maps contextMap, 
+	public CombatScreen(BaseScreen returnScreen, Context context, Maps contextMap, 
 			BaseMap combatMap, TiledMap tmap, CreatureType cr, CreatureSet cs, TextureAtlas a1, TextureAtlas a2) {
 		
 		scType = ScreenType.COMBAT;
 
-		this.mainGame = mainGame;
 		this.returnScreen = returnScreen;
 		this.contextMap = contextMap;
 		this.combatMap = combatMap;
@@ -114,7 +112,6 @@ public class CombatScreen extends BaseScreen {
 		mapCamera.setToOrtho(false);
 		stage = new Stage();
 		stage.setViewport(new ScreenViewport(mapCamera));
-		skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
 
 		cursor = new CursorActor();
 		stage.addActor(cursor);
@@ -190,7 +187,6 @@ public class CombatScreen extends BaseScreen {
 	
 	@Override
 	public void hide() {
-		Gdx.input.setInputProcessor(null);
 		party.deleteObserver(this);
 	}
 	
@@ -374,25 +370,29 @@ public class CombatScreen extends BaseScreen {
 		if (keycode == Keys.SPACE || ap.isDisabled()) {
 			log("Pass");
 		} else if (keycode == Keys.UP) {
-			if (!preMove(active, Direction.NORTH)) return false;
-			active.currentY--;
-			active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
-			checkTrigger(active.currentX,active.currentY);
+			if (preMove(active, Direction.NORTH)) {
+				active.currentY--;
+				active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
+				checkTrigger(active.currentX,active.currentY);
+			}
 		} else if (keycode == Keys.DOWN) {
-			if (!preMove(active, Direction.SOUTH)) return false;
-			active.currentY++;
-			active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
-			checkTrigger(active.currentX,active.currentY);
+			if (preMove(active, Direction.SOUTH)) {
+				active.currentY++;
+				active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
+				checkTrigger(active.currentX,active.currentY);
+			}
 		} else if (keycode == Keys.RIGHT) {
-			if (!preMove(active, Direction.EAST)) return false;
-			active.currentX++;
-			active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
-			checkTrigger(active.currentX,active.currentY);
+			if (preMove(active, Direction.EAST)) {
+				active.currentX++;
+				active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
+				checkTrigger(active.currentX,active.currentY);
+			}
 		} else if (keycode == Keys.LEFT) {
-			if (!preMove(active, Direction.WEST)) return false;
-			active.currentX--;
-			active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
-			checkTrigger(active.currentX,active.currentY);
+			if (preMove(active, Direction.WEST)) {
+				active.currentX--;
+				active.currentPos = getMapPixelCoords(active.currentX,active.currentY);
+				checkTrigger(active.currentX,active.currentY);
+			}
 		} else if (keycode == Keys.A) {
 			log("Attack: ");
 			Gdx.input.setInputProcessor(sip);
@@ -422,14 +422,16 @@ public class CombatScreen extends BaseScreen {
 			
 		} else if (keycode == Keys.G) {
 			getChest(party.getActivePlayer(), active.currentX, active.currentY);
-
 			return false;
+			
 		} else if (keycode == Keys.Z) {
 			showZstats = showZstats + 1;
 			if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
 				if (showZstats > party.getMembers().size()) showZstats = STATS_WEAPONS;
 			}
 			if (showZstats > STATS_SPELLS) showZstats = STATS_NONE;
+			
+			return false;
 		}
 		
 		finishPlayerTurn();
@@ -567,10 +569,6 @@ public class CombatScreen extends BaseScreen {
 		boolean quick = context.getAura().getType() == AuraType.QUICKNESS && (rand.nextInt(2) == 0);
 		
 		if (!quick) {
-			
-			//accept no input starting now
-			Gdx.input.setInputProcessor(null);
-			
 			SequenceAction seq = Actions.action(SequenceAction.class);
 			for (Creature cr : combatMap.getCreatures()) {
 				seq.addAction(Actions.run(new CreatureActionsAction(cr)));
@@ -578,7 +576,6 @@ public class CombatScreen extends BaseScreen {
 			}
 			seq.addAction(Actions.run(new FinishCreatureAction()));
 			stage.addAction(seq);
-			
 		}
 				
 	}
@@ -737,6 +734,9 @@ public class CombatScreen extends BaseScreen {
 	 * Return false if to remove from map.
 	 */
 	private boolean creatureAction(Creature creature) {
+		
+		//accept no input starting now, re-enabled when creature actions are done
+		Gdx.input.setInputProcessor(null);
 
 	    if (creature.getStatus() == StatusType.SLEEPING && rand.nextInt(8) == 0) {
 	        creature.setStatus(StatusType.GOOD); 
@@ -1157,7 +1157,7 @@ public class CombatScreen extends BaseScreen {
 		}
 	}
 	
-	public static void holeUp(Maps contextMap, final int x, final int y, final BaseScreen rs, Ultima4 mg, final Context context, CreatureSet cs, final TextureAtlas sa, final TextureAtlas ea) {
+	public static void holeUp(Maps contextMap, final int x, final int y, final BaseScreen rs, final Context context, CreatureSet cs, final TextureAtlas sa, final TextureAtlas ea) {
 		
 		Ultima4.hud.add("Hole up & Camp!");
 
@@ -1189,9 +1189,9 @@ public class CombatScreen extends BaseScreen {
 		
 		context.setCurrentTiledMap(tmap);
 		
-		final CombatScreen sc = new CombatScreen(mg, rs, context, contextMap, campMap, tmap, null, cs, ea, sa);
+		final CombatScreen sc = new CombatScreen(rs, context, contextMap, campMap, tmap, null, cs, ea, sa);
 
-		mg.setScreen(sc);
+		mainGame.setScreen(sc);
 
 		final int CAMP_HEAL_INTERVAL = 5;
 		Random rand = new Random();

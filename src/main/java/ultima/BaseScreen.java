@@ -24,11 +24,13 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 	
 	public ScreenType scType;
 	
-	public Ultima4 mainGame;
+	static Ultima4 mainGame;
+	static Skin skin;
+
 	protected BaseScreen returnScreen;
 	
 	protected Stage stage;
-	protected Skin skin;
+	
 	
 	protected float time = 0;
 	protected Random rand = new Random();
@@ -151,7 +153,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 	
 	@Override
 	public void hide() {
-		Gdx.input.setInputProcessor(null);
+		
 	}
 
 	@Override

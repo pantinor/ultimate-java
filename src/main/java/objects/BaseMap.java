@@ -103,7 +103,6 @@ public class BaseMap implements Constants {
 				ps.add(p);
 			}
 		}
-		if (ps.size() == 0) return null;
 		return ps;
 	}
 	
