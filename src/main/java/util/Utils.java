@@ -23,7 +23,6 @@ import javax.xml.bind.Unmarshaller;
 import objects.BaseMap;
 import objects.Conversation;
 import objects.Creature;
-import objects.CreatureSet;
 import objects.Party.PartyMember;
 import objects.Person;
 import objects.ProjectileActor;
@@ -38,12 +37,15 @@ import ultima.Constants;
 import ultima.Sound;
 import ultima.Sounds;
 import ultima.Ultima4;
+import ultima.Constants.DungeonTile;
+import ultima.Constants.HeadingDirection;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -172,6 +174,126 @@ public class Utils implements Constants {
 		}
 
 	    return path;
+	}
+	
+	public static Direction getPath(MapBorderBehavior borderbehavior, int width, int height, int toX, int toY, int validMovesMask, boolean towards, int fromX, int fromY) {
+	    /* find the directions that lead [to/away from] our target */
+	    int directionsToObject = towards ? getRelativeDirection(borderbehavior,width,height,toX,toY,fromX,fromY) : ~getRelativeDirection(borderbehavior,width,height,toX,toY,fromX,fromY);
+
+	    /* make sure we eliminate impossible options */
+	    directionsToObject &= validMovesMask;
+	    
+	    /* get the new direction to move */
+	    if (directionsToObject > 0)
+	        return Direction.getRandomValidDirection(directionsToObject);
+
+	    /* there are no valid directions that lead to our target, just move wherever we can! */
+	    else return null;//Direction.getRandomValidDirection(validMovesMask);
+	}
+	
+	/**
+	 * Returns a mask of directions that indicate where one point is relative
+	 * to another.  For instance, if the object at (x, y) is
+	 * northeast of (c.x, c.y), then this function returns
+	 * (MASK_DIR(DIR_NORTH) | MASK_DIR(DIR_EAST))
+	 * This function also takes into account map boundaries and adjusts
+	 * itself accordingly. If the two coordinates are not on the same z-plane,
+	 * then this function return DIR_NONE.
+	 */
+	public static int getRelativeDirection(MapBorderBehavior borderbehavior, int width, int height, int toX, int toY, int fromX, int fromY)  {
+	    int dx=0, dy=0;        
+	    int dirmask = 0;
+	    	    
+	    /* adjust our coordinates to find the closest path */
+		if (borderbehavior == MapBorderBehavior.wrap) {
+
+			if (Math.abs(fromX - toX) > Math.abs(fromX + width - toX))
+				fromX += width;
+			else if (Math.abs(fromX - toX) > Math.abs(fromX - width - toX))
+				fromX -= width;
+
+			if (Math.abs(fromY - toY) > Math.abs(fromY + width - toY))
+				fromY += height;
+			else if (Math.abs(fromY - toY) > Math.abs(fromY - width - toY))
+				fromY -= height;
+
+			dx = fromX - toX;
+			dy = fromY - toY;
+		} else {
+			dx = fromX - toX;
+			dy = fromY - toY;
+		}
+
+	    /* add x directions that lead towards to_x to the mask */
+	    if (dx < 0)         dirmask |= Direction.getMask(Direction.EAST);
+	    else if (dx > 0)    dirmask |= Direction.getMask(Direction.WEST);
+
+	    /* add y directions that lead towards to_y to the mask */
+	    if (dy < 0)         dirmask |= Direction.getMask(Direction.SOUTH);
+	    else if (dy > 0)    dirmask |= Direction.getMask(Direction.NORTH);
+
+	    /* return the result */
+	    return dirmask;
+	}
+	
+	/**
+	 * Finds the movement distance (not using diagonals) from point a to point b
+	 * on a map, taking into account map boundaries and such.
+	 */
+	public static int movementDistance(MapBorderBehavior borderbehavior, int width, int height, int fromX, int fromY, int toX, int toY) {
+	    int dirmask = 0;;
+	    int dist = 0;
+
+	    /* get the direction(s) to the coordinates */
+	    dirmask = getRelativeDirection(borderbehavior, width, height, toX, toY, fromX, fromY);
+	    
+		if (borderbehavior == MapBorderBehavior.wrap) {
+			if (Math.abs(fromX - toX) > Math.abs(fromX + width - toX))
+				fromX += width;
+			else if (Math.abs(fromX - toX) > Math.abs(fromX - width - toX))
+				fromX -= width;
+
+			if (Math.abs(fromY - toY) > Math.abs(fromY + width - toY))
+				fromY += height;
+			else if (Math.abs(fromY - toY) > Math.abs(fromY - width - toY))
+				fromY -= height;
+		}
+
+	    while (fromX != toX || fromY != toY) {
+	    	
+	        if (fromX != toX) {
+	            if (Direction.isDirInMask(Direction.WEST, dirmask)) {
+	                fromX--;
+	            } else {               
+	            	fromX++;
+            	}
+	            dist++;
+	        }
+	        if (fromY != toY) {
+	            if (Direction.isDirInMask(Direction.NORTH, dirmask)) {
+	                fromY--;
+	            } else {               
+	            	fromY++;
+            	}
+	            dist++;
+	        }    
+	        
+	    }
+
+	    return dist;
+	}
+	
+
+	public static int distance(MapBorderBehavior borderbehavior, int width, int height, int fromX, int fromY, int toX, int toY) {
+	    int dist = movementDistance(borderbehavior, width, height, fromX, fromY, toX, toY);
+	    
+	    if (dist <= 0)
+	        return dist;
+
+	    /* calculate how many fewer movements there would have been */
+	    dist -= Math.abs(fromX - toX) < Math.abs(fromY - toY) ? Math.abs(fromX - toX) : Math.abs(fromY - toY);
+
+	    return dist;
 	}
 	
 	public static void animateAttack(Stage stage, final CombatScreen scr, PartyMember attacker, Direction dir, int x, int y, int range) {

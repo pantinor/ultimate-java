@@ -7,6 +7,7 @@ import objects.Moongate;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.Tile;
+import ultima.Constants.Direction;
 import ultima.DungeonScreen.DungeonTileModelInstance;
 import util.Utils;
 
@@ -308,11 +309,11 @@ public class SpellUtil implements Constants {
 			DungeonScreen dngScreen = (DungeonScreen)screen;
 			int x = (Math.round(dngScreen.currentPos.x)-1);
 			int y = (Math.round(dngScreen.currentPos.z)-1);
-			
-			if (dngScreen.currentDir == Direction.NORTH) y--;
-			if (dngScreen.currentDir == Direction.SOUTH) y++;
-			if (dngScreen.currentDir == Direction.EAST) x++;
-			if (dngScreen.currentDir == Direction.WEST) x--;
+						
+			if (dngScreen.currentDir == Direction.NORTH) y = y-1<0?DungeonScreen.DUNGEON_MAP-1:y-1;
+			if (dngScreen.currentDir == Direction.SOUTH) y = y+1>=DungeonScreen.DUNGEON_MAP?0:y+1;
+			if (dngScreen.currentDir == Direction.EAST) x = x+1>=DungeonScreen.DUNGEON_MAP?0:x+1;
+			if (dngScreen.currentDir == Direction.WEST) x = x-1<0?DungeonScreen.DUNGEON_MAP-1:x-1;
 			
 		    DungeonTileModelInstance dispellable = null;
 		    for (DungeonTileModelInstance dmi : dngScreen.modelInstances) {

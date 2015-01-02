@@ -15,8 +15,8 @@ import objects.TileSet;
 
 import org.apache.commons.io.IOUtils;
 
-import ultima.Constants.Maps;
 import util.DungeonRoomTiledMapLoader;
+import util.UltimaTiledMapLoader;
 import util.Utils;
 
 import com.badlogic.gdx.Gdx;
@@ -43,6 +43,8 @@ import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
+import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
@@ -65,6 +67,7 @@ public class DungeonScreen extends BaseScreen {
 	public Environment environment;
 	public ModelBatch modelBatch;
 	private SpriteBatch batch;
+	private DecalBatch decalBatch;
 	
 	public CameraInputController inputController;
 
@@ -114,8 +117,7 @@ public class DungeonScreen extends BaseScreen {
 	public SecondaryInputProcessor sip;
 	private Texture miniMap;
 	private MiniMapIcon miniMapIcon;
-	BitmapFont smallFont;
-	
+	BitmapFont smallFont;	
 
 	public DungeonScreen(Ultima4 mainGame, Stage stage, GameScreen gameScreen, Maps map) {
 		
@@ -134,7 +136,7 @@ public class DungeonScreen extends BaseScreen {
 	@Override
 	public void show() {
 		if (stage != null) {
-			Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
+			Gdx.input.setInputProcessor(new InputMultiplexer(this, stage, inputController));
 		} else {
 			Gdx.input.setInputProcessor(this);
 		}
@@ -192,9 +194,12 @@ public class DungeonScreen extends BaseScreen {
 		cam.far = 1000f;
 		cam.update();
 		
-//		inputController = new CameraInputController(cam);
-//		inputController.rotateLeftKey = inputController.rotateRightKey = inputController.forwardKey = inputController.backwardKey = 0;
-//		inputController.translateUnits = 30f;
+		decalBatch = new DecalBatch(new CameraGroupStrategy(cam));
+
+		
+		inputController = new CameraInputController(cam);
+		inputController.rotateLeftKey = inputController.rotateRightKey = inputController.forwardKey = inputController.backwardKey = 0;
+		inputController.translateUnits = 30f;
 				
 
 		ModelBuilder builder = new ModelBuilder();
@@ -401,6 +406,7 @@ public class DungeonScreen extends BaseScreen {
 	public void dispose() {
 		modelBatch.dispose();
 		batch.dispose();
+		decalBatch.dispose();
 		MINI_MAP_TEXTURE.dispose();
 		miniMapIcon.dispose();
 		stage.dispose();
@@ -451,6 +457,11 @@ public class DungeonScreen extends BaseScreen {
 		}
 		
 		modelBatch.end();
+		
+		for (Creature cr : dngMap.getMap().getCreatures()) {
+			decalBatch.add(cr.getDecal());
+		}
+		decalBatch.flush();
 
 		drawHUD();
 				
@@ -500,7 +511,7 @@ public class DungeonScreen extends BaseScreen {
 			}
 			
 		} else if (tile == DungeonTile.CHEST) {
-			ModelInstance instance = new ModelInstance(chestModel, tx-.15f, 0, tz+.2f);
+			ModelInstance instance = new ModelInstance(chestModel, tx, 0, tz);
 			instance.nodes.get(0).scale.set(.010f, .010f, .010f);
 			instance.calculateTransforms();
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
@@ -763,6 +774,17 @@ public class DungeonScreen extends BaseScreen {
 		
 	}
 	
+	public void battleWandering(Creature cr, int x, int y) {
+		if (cr == null) return;
+		Maps contextMap = Maps.get(dngMap.getId());
+		DungeonTile tile = dungeonTiles[currentLevel][x][y];
+		TiledMap tmap = new UltimaTiledMapLoader(tile.getCombatMap(), GameScreen.standardAtlas, 11, 11, 16, 16).load();
+		GameScreen.context.setCurrentTiledMap(tmap);
+		CombatScreen sc = new CombatScreen(mainGame, this, GameScreen.context, contextMap, tile.getCombatMap().getMap(), tmap, cr.getTile(), GameScreen.creatures, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+		mainGame.setScreen(sc);
+		currentEncounter = cr;
+	}
+	
 	public void partyDeath() {
     	//death scene
     	mainGame.setScreen(new DeathScreen(mainGame, gameScreen, GameScreen.context.getParty()));
@@ -775,14 +797,38 @@ public class DungeonScreen extends BaseScreen {
 		mainGame.setScreen(this);
 		
 		if (isWon) {
-            GameScreen.context.getParty().adjustKarma(KarmaAction.KILLED_EVIL);
+			
+			if (currentEncounter != null) {
+				log("Victory!");
+	            GameScreen.context.getParty().adjustKarma(KarmaAction.KILLED_EVIL);
+	    		int x = (Math.round(currentPos.x)-1);
+	    		int y = (Math.round(currentPos.z)-1);
+			    /* add a chest, if the creature leaves one */
+			    if (!currentEncounter.getNochest() && dungeonTiles[currentLevel][x][y] == DungeonTile.NOTHING) {
+					ModelInstance instance = new ModelInstance(chestModel, x+.5f, 0, y+.5f);
+					instance.nodes.get(0).scale.set(.010f, .010f, .010f);
+					instance.calculateTransforms();
+					DungeonTileModelInstance in = new DungeonTileModelInstance(instance, DungeonTile.CHEST, currentLevel);
+					in.x=x;in.y=y;
+					modelInstances.add(in);
+					dungeonTiles[currentLevel][x][y] = DungeonTile.CHEST;
+			    }
+			}
+            
 		} else {
 			if (GameScreen.context.getParty().didAnyoneFlee()) {
+                log("Battle is lost!");
 				//no flee penalty in dungeons
             } else if (!GameScreen.context.getParty().isAnyoneAlive()) {
             	partyDeath();
             }
 		}
+		
+		if (currentEncounter != null) {
+			dngMap.getMap().removeCreature(currentEncounter);
+			currentEncounter = null;
+		}
+
 		
 		//if exiting dungeon rooms, move out of the room with orientation to next coordinate
 		if (combatMap.getType() == MapType.dungeon) {
@@ -859,6 +905,9 @@ public class DungeonScreen extends BaseScreen {
 				cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
 				currentDir = Direction.EAST;
 			}
+			setCreatureRotations();
+			return false;
+
 						
 		} else if (keycode == Keys.RIGHT) {
 			
@@ -875,6 +924,9 @@ public class DungeonScreen extends BaseScreen {
 				cam.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
 				currentDir = Direction.WEST;
 			}
+			setCreatureRotations();
+			return false;
+
 						
 		} else if (keycode == Keys.UP) {
 			
@@ -915,6 +967,7 @@ public class DungeonScreen extends BaseScreen {
 					}
 				}
 				enterRoom(loc, Direction.reverse(currentDir));
+				return false;
 			}
 
 		} else if (keycode == Keys.DOWN) {
@@ -955,6 +1008,7 @@ public class DungeonScreen extends BaseScreen {
 					}
 				}
 				enterRoom(loc, currentDir);
+				return false;
 			}
 			
 			
@@ -970,6 +1024,7 @@ public class DungeonScreen extends BaseScreen {
 					createMiniMap();
 				}
 			}
+			return false;
 
 		} else if (keycode == Keys.D) {
 			if (tile == DungeonTile.LADDER_DOWN || tile == DungeonTile.LADDER_UP_DOWN) {
@@ -980,7 +1035,8 @@ public class DungeonScreen extends BaseScreen {
 					createMiniMap();
 				}
 			}
-			
+			return false;
+
 		} else if (keycode == Keys.N) {
 			log("New Order:");
 			log("exhange #:");
@@ -991,12 +1047,12 @@ public class DungeonScreen extends BaseScreen {
 		} else if (keycode == Keys.Q) {
 			GameScreen.context.saveGame(x, y, currentLevel, currentDir, dngMap);
 			log("Saved Game.");
-			
+			return false;
+
 		} else if (keycode == Keys.C) {
 			log("Cast Spell: ");
 			log("Who casts (1-8): ");
 			Gdx.input.setInputProcessor(new SpellInputProcessor(this, stage, x, y, null));
-			return false;	
 			
 		} else if (keycode == Keys.I) {
 			
@@ -1006,7 +1062,6 @@ public class DungeonScreen extends BaseScreen {
 			log("Which party member?");
 			Gdx.input.setInputProcessor(sip);
 			sip.setinitialKeyCode(keycode, tile, x, y);
-			return false;
 			
 		} else if (keycode == Keys.H) {
 
@@ -1034,7 +1089,6 @@ public class DungeonScreen extends BaseScreen {
 
 				Gdx.input.setInputProcessor(sip);
 				sip.setinitialKeyCode(keycode, tile, x, y);
-				return false;
 			}
 			
 		} else if (keycode == Keys.Z) {
@@ -1043,10 +1097,28 @@ public class DungeonScreen extends BaseScreen {
 				if (showZstats > GameScreen.context.getParty().getMembers().size()) showZstats = STATS_WEAPONS;
 			}
 			if (showZstats > STATS_SPELLS) showZstats = STATS_NONE;
+			return false;
+			  
+		} else {
+			log("Pass");
 		}
 			
-			
+		finishTurn(x, y);
+		
 		return false;
+	}
+	
+	@Override
+	public void finishTurn(int currentX, int currentY) {
+		GameScreen.context.getAura().passTurn();
+		
+		creatureCleanup(currentX, currentY);
+		
+		if (checkRandomDungeonCreatures()) {
+			spawnDungeonCreature(null, currentX, currentY);
+		}
+		
+		moveDungeonCreatures(this, currentX, currentY);	
 	}
 	
 	@SuppressWarnings("incomplete-switch")
@@ -1182,7 +1254,7 @@ public class DungeonScreen extends BaseScreen {
 	    DungeonTileModelInstance chest = null;
 	    for (DungeonTileModelInstance dmi : modelInstances) {
 	    	if (dmi.tile == DungeonTile.CHEST) {
-	    		if (dmi.x == x && dmi.y == y) {
+	    		if (dmi.x == x && dmi.y == y && dmi.getLevel() == currentLevel) {
 	    			chest = dmi;
 		    		break;
 	    		}
@@ -1203,10 +1275,200 @@ public class DungeonScreen extends BaseScreen {
 		}
 	}
 	
+	private void creatureCleanup(int currentX, int currentY) {
+	    Iterator<Creature> i = dngMap.getMap().getCreatures().iterator();
+	    while (i.hasNext()) {
+	       Creature cr = i.next();
+	        if (cr.currentLevel != this.currentLevel) {
+	        	i.remove();           
+	        }
+	    }
+	}
+	
+	private boolean checkRandomDungeonCreatures() {
+		int spawnValue = 32 - (currentLevel << 2);
+	    if (dngMap.getMap().getCreatures().size() >= MAX_WANDERING_CREATURES_IN_DUNGEON || rand.nextInt(spawnValue) != 0) {
+	        return false;
+	    }
+	    return true;
+	}
+	
+	private boolean spawnDungeonCreature(Creature creature, int currentX, int currentY) {
 
-	@Override
-	public void finishTurn(int currentX, int currentY) {
-		//no op
+		int dx = 0;
+        int dy = 0;
+        int tmp = 0;
+            	
+		boolean ok = false;
+		int tries = 0;
+		int MAX_TRIES = 10;
+
+		while (!ok && (tries < MAX_TRIES)) {
+			dx = 7;
+			dy = rand.nextInt(7);
+
+			if (rand.nextInt(2) > 0) {
+				dx = -dx;
+			}
+			if (rand.nextInt(2) > 0) {
+				dy = -dy;
+			}
+			if (rand.nextInt(2) > 0) {
+				tmp = dx;
+				dx = dy;
+				dy = tmp;
+			}
+
+			dx = currentX + dx;
+			dy = currentY + dy;
+
+			if (dx < 0) {
+				dx = DUNGEON_MAP + dx;
+			} else if (dx > DUNGEON_MAP - 1) {
+				dx = dx - DUNGEON_MAP;
+			}
+			if (dy < 0) {
+				dy = DUNGEON_MAP + dy;
+			} else if (dy > DUNGEON_MAP - 1) {
+				dy = dy - DUNGEON_MAP;
+			}
+
+			/* make sure we can spawn the creature there */
+			if (creature != null) {
+				DungeonTile tile = dungeonTiles[currentLevel][dx][dy];
+				if (tile.getCreatureWalkable()) {
+					ok = true;
+				} else {
+					tries++;
+				}
+			} else {
+				ok = true;
+			}
+		}
+
+		if (!ok) {
+			return false;
+		}
+	     
+	    
+	    if (creature != null) {
+
+	    } else {
+
+	    	//Make a Weighted Random Choice not differentiating on the level
+			int total = 0;
+			for (CreatureType ct : CreatureType.values()) {
+			    total += ct.getSpawnWeight();
+			}
+
+			int thresh = rand.nextInt(total);
+			CreatureType monster = null;
+
+			for (CreatureType ct : CreatureType.values()) {
+			    thresh -= ct.getSpawnWeight();
+			    if ( thresh < 0 ) {
+			    	monster = ct;
+			        break;
+			    }
+			}
+			
+	    	creature = GameScreen.creatures.getInstance(monster, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+	    }
+	    
+	    if (creature != null) {
+	    	creature.currentX = dx;
+	    	creature.currentY = dy;
+	    	creature.currentLevel = currentLevel;
+	    	dngMap.getMap().addCreature(creature);
+	    	
+	    	System.out.println("spawned " + creature.getTile());
+			setCreatureRotations();
+
+	    } else {
+	    	return false;
+	    }
+	        
+	    return true;
+	}
+	
+	private void moveDungeonCreatures(BaseScreen screen, int avatarX, int avatarY) {
+		for (Creature cr : dngMap.getMap().getCreatures()) {
+	        
+			int mask = getValidMovesMask(cr.currentX, cr.currentY, cr, avatarX, avatarY);
+	        //dont use wrap border behavior with the dungeon maps
+	        Direction dir = Utils.getPath(MapBorderBehavior.wrap, DUNGEON_MAP, DUNGEON_MAP, avatarX, avatarY, mask, true, cr.currentX, cr.currentY);
+			if (dir == null) continue;
+			
+			if (dir == Direction.NORTH) cr.currentY = cr.currentY-1<0?DUNGEON_MAP-1:cr.currentY-1;
+			if (dir == Direction.SOUTH) cr.currentY = cr.currentY+1>=DUNGEON_MAP?0:cr.currentY+1;
+			if (dir == Direction.EAST) cr.currentX = cr.currentX+1>=DUNGEON_MAP?0:cr.currentX+1;
+			if (dir == Direction.WEST) cr.currentX = cr.currentX-1<0?DUNGEON_MAP-1:cr.currentX-1;
+
+			cr.getDecal().setPosition(cr.currentX + .5f, .3f, cr.currentY + .5f);
+			
+			//if next to the avatar then invoke battle!
+			if (Utils.distance(MapBorderBehavior.wrap, DUNGEON_MAP, DUNGEON_MAP, avatarX, avatarY, cr.currentX, cr.currentY) == 1) {
+				battleWandering(cr, avatarX, avatarY);
+			}
+			
+		}
+	}
+	
+	private void setCreatureRotations() {
+		for (Creature cr : dngMap.getMap().getCreatures()) {
+			if (currentDir == Direction.NORTH) {
+				cr.getDecal().setRotationY(0);
+			}
+			if (currentDir == Direction.SOUTH) {
+				cr.getDecal().setRotationY(0);
+			}
+			if (currentDir == Direction.EAST) {
+				cr.getDecal().setRotationY(90);
+			}
+			if (currentDir == Direction.WEST) {
+				cr.getDecal().setRotationY(90);
+			}
+		}
+	}
+	
+	private int getValidMovesMask(int x, int y, Creature cr, int avatarX, int avatarY) {
+		
+		int mask = 0;
+
+		DungeonTile north = dungeonTiles[currentLevel][x][y-1<0?DUNGEON_MAP-1:y-1];
+		DungeonTile south = dungeonTiles[currentLevel][x][y+1>=DUNGEON_MAP?0:y+1];
+		DungeonTile east = dungeonTiles[currentLevel][x+1>=DUNGEON_MAP?0:x+1][y];
+		DungeonTile west = dungeonTiles[currentLevel][x-1<0?DUNGEON_MAP-1:x-1][y];
+
+		mask = addToMask(Direction.NORTH, mask, north, x, y-1<0?DUNGEON_MAP-1:y-1, cr, avatarX, avatarY);
+		mask = addToMask(Direction.SOUTH, mask, south, x, y+1>=DUNGEON_MAP?0:y+1, cr, avatarX, avatarY);
+		mask = addToMask(Direction.EAST, mask, east, x+1>=DUNGEON_MAP-1?0:x+1, y, cr, avatarX, avatarY);
+		mask = addToMask(Direction.WEST, mask, west, x-1<0?DUNGEON_MAP-1:x-1, y, cr, avatarX, avatarY);
+			
+		return mask;
+		
+	}
+	
+	private int addToMask(Direction dir, int mask, DungeonTile tile, int x, int y, Creature cr, int avatarX, int avatarY) {
+		if (tile != null) {
+			boolean canmove = false;
+			if (tile.getCreatureWalkable()) {
+				canmove = true;
+			}
+			if (avatarX == x && avatarY == y) {
+				canmove = false;
+			}
+			for(Creature cre : dngMap.getMap().getCreatures()) {
+				if (cre.currentX == x && cre.currentY == y && cre.currentLevel == cr.currentLevel) {
+					canmove = false;
+					break;
+				}
+			}
+			if (canmove) {
+				mask = Direction.addToMask(dir, mask);
+			}
+		}
+		return mask;
 	}
 	
 	public class RoomLocater {

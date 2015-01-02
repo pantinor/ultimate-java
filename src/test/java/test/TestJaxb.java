@@ -5,6 +5,7 @@ import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 import javax.xml.bind.JAXBContext;
@@ -30,9 +31,13 @@ import org.apache.commons.io.IOUtils;
 import org.testng.annotations.Test;
 
 import ultima.Constants;
+import ultima.Constants.CreatureType;
 import ultima.Constants.Direction;
+import ultima.Constants.DungeonTile;
+import ultima.Constants.HeadingDirection;
 import ultima.Constants.Item;
 import ultima.Constants.KarmaAction;
+import ultima.Constants.MapBorderBehavior;
 import ultima.Constants.Maps;
 import ultima.Constants.TileAttrib;
 import ultima.Constants.TileRule;
@@ -425,26 +430,15 @@ public class TestJaxb {
 		
 	}
 	
-	//@Test
+	@Test
 	public void testMovement() throws Exception {
-				
-		TileSet baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	
-		baseTileSet.setMaps();
-					
-		MapSet maps = (MapSet) Utils.loadXml("maps.xml", MapSet.class);
-		maps.init(baseTileSet);
-		
-		BaseMap map = Maps.BRICK_CON.getMap();
-		
-		//int d = map.movementDistance(8, 3, 1, 9);
-
-	    int dirmask = map.getRelativeDirection(7, 7, 1, 1);
-
-		
+							
+	    int dist = Utils.movementDistance(MapBorderBehavior.wrap, 8, 8, 2, 1, 2, 7);
+		System.out.println(dist);
 
 	}
 	
-	@Test
+	//@Test
 	public void testNibbles() throws Exception {
 		byte[] data = new byte[4];
 		data[1] = (byte)0x85;
@@ -453,6 +447,121 @@ public class TestJaxb {
 		
 		int z = x;
 	}
+	
+	//@Test
+	public void testRandDung() throws Exception {
+		Random rand = new Random();
+		
+		for (int i=0;i<20;i++) {
+			
+			int total = 0;
+			for (CreatureType ct : CreatureType.values()) {
+			    total += ct.getSpawnWeight();
+			}
+
+			int thresh = rand.nextInt( total );
+			CreatureType monster = null;
+
+			for (CreatureType ct : CreatureType.values()) {
+			    thresh -= ct.getSpawnWeight();
+			    if ( thresh < 0 ) {
+			    	monster = ct;
+			        break;
+			    }
+			}
+			
+			System.out.println(monster.toString());
+		}
+	}
+	
+	//@Test
+	public void testDungSpawn() throws Exception {
+		
+		int dx = 0;
+        int dy = 0;
+        int tmp = 0;
+        
+        int currentX = 1;
+        int currentY = 1;
+        int DUNGEON_MAP = 8;
+        Random rand = new Random();
+        
+		
+		DungeonTile[][] dungeonTiles = new DungeonTile[8][8];
+		for (int i=0;i<DUNGEON_MAP;i++) {
+			for (int j=0;j<DUNGEON_MAP;j++) {
+				dungeonTiles[i][j] = DungeonTile.NOTHING;
+			}
+		}
+
+		for (int i=0;i<20;i++) {
+			dx = 8;
+			dy = rand.nextInt(8);
+
+			if (rand.nextInt(2) > 0) {
+				dx = -dx;
+			}
+			if (rand.nextInt(2) > 0) {
+				dy = -dy;
+			}
+			if (rand.nextInt(2) > 0) {
+				tmp = dx;
+				dx = dy;
+				dy = tmp;
+			}
+
+			dx = currentX + dx;
+			dy = currentY + dy;
+			
+			if (dx < 0) {
+				dx = DUNGEON_MAP + dx;
+			} else if (dx > DUNGEON_MAP - 1) {
+				dx = dx - DUNGEON_MAP;
+			}
+			if (dy < 0) {
+				dy = DUNGEON_MAP + dy;
+			} else if (dy > DUNGEON_MAP - 1) {
+				dy = dy - DUNGEON_MAP;
+			}
+
+
+			DungeonTile tile = dungeonTiles[dx][dy];
+			if (tile.getCreatureWalkable()) {
+				System.out.println("ok");
+			} else {
+				System.out.println("bad");
+			}
+
+		}
+		
+		
+	}
+	
+	//@Test
+	public void testDirectionalsYDown() throws Exception {
+	
+		int fromX = 2;
+		int fromY = 3;
+		int toX = 2;
+		int toY = 7;
+		
+		HeadingDirection d = HeadingDirection.getDirection(fromX - toX, fromY - toY);
+	    
+	    System.out.println(String.format("heading: %s from: %d,%d to: %d,%d", d.toString(), fromX, fromY,toX,toY));
+		for (int y=0;y<8;y++) {
+			for (int x=0;x<8;x++) {
+				if (fromX == x && fromY == y) System.out.print("F");
+				else if (toX == x && toY == y) System.out.print("T");
+				else System.out.print("*");
+			}
+			System.out.println("");
+		}
+		
+	}
+		
+		
+		
+	
 
 
 }

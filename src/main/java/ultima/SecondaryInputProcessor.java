@@ -323,7 +323,7 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
 			} else if (initialKeyCode == Keys.G) {
 				
 				if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
-					dngScreen.getChest(keycode - 7 - 1, x, y);
+					dngScreen.getChest(keycode - 7 - 1, currentX, currentY);
 				}
 				
 			} else if (initialKeyCode == Keys.R) {

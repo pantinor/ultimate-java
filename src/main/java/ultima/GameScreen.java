@@ -202,8 +202,13 @@ public class GameScreen extends BaseScreen {
 //			party.getMember(0).getPlayer().hpMax = 999;
 //			party.getMember(0).getPlayer().intel = 99;
 //			party.getMember(0).getPlayer().mp = 999;
+
+//			for (Virtue v : Virtue.values()) {
+//				sg.karma[v.ordinal()] = 99;
+//			}
+//			sg.stones = 0xff;
+//			sg.runes = 0xff;
 //
-//			for (Virtue v : Virtue.values()) sg.karma[v.ordinal()] = 99;
 //
 //			party.join(NpcDefaults.Geoffrey.name());
 //			party.join(NpcDefaults.Shamino.name());
@@ -217,10 +222,8 @@ public class GameScreen extends BaseScreen {
 //			sg.gold = 9999;
 //			sg.keys = 20;
 //			sg.gems = 15;
-//			sg.runes |= Virtue.SPIRITUALITY.getLoc();
 //			sg.moves = 2800;
-//			sg.karma[Virtue.SPIRITUALITY.ordinal()] = 99;
-//			sg.stones = 0xff;
+			
 //			party.getMember(0).getPlayer().status = StatusType.POISONED;
 //			party.getMember(0).getPlayer().xp = 999;
 //			party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
@@ -229,7 +232,6 @@ public class GameScreen extends BaseScreen {
 //			party.getSaveGame().sextants = 1;
 //
 //			for (Spell sp : Spell.values()) party.getSaveGame().mixtures[sp.ordinal()] = 99;
-
 			
 			//load the surface world first
 			loadNextMap(Maps.WORLD, sg.x, sg.y);
@@ -671,21 +673,18 @@ public class GameScreen extends BaseScreen {
 	
 	public void finishTurn(int currentX, int currentY) {
 		
-		if (true) {
 			
-			context.getParty().endTurn(context.getCurrentMap().getType());
-			
-			context.getAura().passTurn();
-			
-			creatureCleanup(currentX, currentY);
-			
-			if (checkRandomCreatures()) {
-				spawnCreature(null, currentX, currentY);
-			}
-			
-			context.getCurrentMap().moveObjects(this, currentX, currentY);
-			
+		context.getParty().endTurn(context.getCurrentMap().getType());
+		
+		context.getAura().passTurn();
+		
+		creatureCleanup(currentX, currentY);
+		
+		if (checkRandomCreatures()) {
+			spawnCreature(null, currentX, currentY);
 		}
+		
+		context.getCurrentMap().moveObjects(this, currentX, currentY);		
 		
 	}
 	
@@ -716,21 +715,14 @@ public class GameScreen extends BaseScreen {
 		context.getCurrentMap().setTile(baseTileSet.getTileByName(name), x, y);
 	}
 	
-	public boolean checkRandomCreatures() {
-		
-	    boolean canSpawnHere = context.getCurrentMap().getId() == Maps.WORLD.getId();
-	    //int spawnDivisor = dungeonViewer != null ? (32 - (dungeonViewer.currentLevel << 2)) : 32;
-	    int spawnDivisor = 32;
-	    int spawnVal = rand.nextInt(spawnDivisor);
-
-	    if (!canSpawnHere || context.getCurrentMap().getCreatures().size() >= MAX_CREATURES_ON_MAP || spawnVal != 0) {
+	private boolean checkRandomCreatures() {
+	    if (context.getCurrentMap().getCreatures().size() >= MAX_CREATURES_ON_MAP || rand.nextInt(32) != 0) {
 	        return false;
 	    }
-	    
 	    return true;
 	}
 	
-	public boolean spawnCreature(Creature creature, int currentX, int currentY) {
+	private boolean spawnCreature(Creature creature, int currentX, int currentY) {
 
 		int dx = 0;
         int dy = 0;
@@ -798,7 +790,7 @@ public class GameScreen extends BaseScreen {
 	    return true;
 	}
 	
-	public Creature getRandomCreatureForTile(Tile tile) {
+	private Creature getRandomCreatureForTile(Tile tile) {
 
 		int era = 0;
 		int randId = 0;
@@ -840,7 +832,7 @@ public class GameScreen extends BaseScreen {
 	}
 		
 	
-	public void updateMoons(boolean showmoongates) {
+	private void updateMoons(boolean showmoongates) {
 		
 		// world map only
 		if (context.getCurrentMap().getId() == 0) {
@@ -889,7 +881,7 @@ public class GameScreen extends BaseScreen {
 		}
 	}
 	
-	public Vector3 getDestinationForMoongate(Moongate m) {
+	private Vector3 getDestinationForMoongate(Moongate m) {
 		Vector3 dest = new Vector3(m.getX(), m.getY(), 0);
 		String destGate = null;
 		
@@ -936,7 +928,7 @@ public class GameScreen extends BaseScreen {
 		
 	}	
 	
-	public void checkSpecialCreatures(Direction dir, int x, int y) {
+	private void checkSpecialCreatures(Direction dir, int x, int y) {
 
 	    /*
 	     * if heading east into pirates cove (O'A" N'N"), generate pirate ships
@@ -967,7 +959,7 @@ public class GameScreen extends BaseScreen {
 	    }
 	}
 	
-	public void checkBridgeTrolls(int x, int y) {
+	private void checkBridgeTrolls(int x, int y) {
 	    Tile bridge = context.getCurrentMap().getTile(x, y);
 	    
 	    if (!bridge.getName().equals("bridge")) {

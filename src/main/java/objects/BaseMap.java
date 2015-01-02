@@ -15,6 +15,7 @@ import objects.Party.PartyMember;
 import ultima.BaseScreen;
 import ultima.Constants;
 import ultima.GameScreen;
+import util.Utils;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -435,7 +436,7 @@ public class BaseMap implements Constants {
 				case ATTACK_AVATAR:
 				case FOLLOW_AVATAR:
 			        int mask = getValidMovesMask(p.getX(), p.getY(), p.getEmulatingCreature(), avatarX, avatarY);
-			        dir = getPath(avatarX, avatarY, mask, true, p.getX(), p.getY());
+			        dir = Utils.getPath(borderbehavior, width, height, avatarX, avatarY, mask, true, p.getX(), p.getY());
 					break;
 				case FIXED:
 					break;
@@ -465,7 +466,7 @@ public class BaseMap implements Constants {
 		
 		for (Creature cr : creatures) {
 	        int mask = getValidMovesMask(cr.currentX, cr.currentY, cr, avatarX, avatarY);
-	        Direction dir = getPath(avatarX, avatarY, mask, true, cr.currentX, cr.currentY);
+	        Direction dir = Utils.getPath(borderbehavior, width, height, avatarX, avatarY, mask, true, cr.currentX, cr.currentY);
 			if (dir == null) continue;
 			Vector3 pos = null;
 			if (dir == Direction.NORTH) pos = new Vector3(cr.currentX, cr.currentY-1, 0);
@@ -479,21 +480,7 @@ public class BaseMap implements Constants {
 		}
 		
 	}
-	
-	public Direction getPath(int toX, int toY, int validMovesMask, boolean towards, int fromX, int fromY) {
-	    /* find the directions that lead [to/away from] our target */
-	    int directionsToObject = towards ? getRelativeDirection(toX,toY,fromX,fromY) : ~getRelativeDirection(toX,toY,fromX,fromY);
-
-	    /* make sure we eliminate impossible options */
-	    directionsToObject &= validMovesMask;
-	    
-	    /* get the new direction to move */
-	    if (directionsToObject > 0)
-	        return Direction.getRandomValidDirection(directionsToObject);
-
-	    /* there are no valid directions that lead to our target, just move wherever we can! */
-	    else return null;//Direction.getRandomValidDirection(validMovesMask);
-	}
+		
 	
 	public boolean isTileBlockedForRangedAttack(int x, int y, boolean checkForCreatures) {
 		Tile tile = getTile(x,y);
@@ -669,106 +656,7 @@ public class BaseMap implements Constants {
 			}
 		}
 	}
-	
-	/**
-	 * Returns a mask of directions that indicate where one point is relative
-	 * to another.  For instance, if the object at (x, y) is
-	 * northeast of (c.x, c.y), then this function returns
-	 * (MASK_DIR(DIR_NORTH) | MASK_DIR(DIR_EAST))
-	 * This function also takes into account map boundaries and adjusts
-	 * itself accordingly. If the two coordinates are not on the same z-plane,
-	 * then this function return DIR_NONE.
-	 */
-	public int getRelativeDirection(int toX, int toY, int fromX, int fromY)  {
-	    int dx=0, dy=0;        
-	    int dirmask = 0;
-	    
-	    /* adjust our coordinates to find the closest path */
-		if (borderbehavior == MapBorderBehavior.wrap) {
-
-			if (Math.abs(fromX - toX) > Math.abs(fromX + width - toX))
-				fromX += width;
-			else if (Math.abs(fromX - toX) > Math.abs(fromX - width - toX))
-				fromX -= width;
-
-			if (Math.abs(fromY - toY) > Math.abs(fromY + width - toY))
-				fromY += height;
-			else if (Math.abs(fromY - toY) > Math.abs(fromY - width - toY))
-				fromY -= height;
-
-			dx = fromX - toX;
-			dy = fromY - toY;
-		} else {
-			dx = fromX - toX;
-			dy = fromY - toY;
-		}
-
-	    /* add x directions that lead towards to_x to the mask */
-	    if (dx < 0)         dirmask |= Direction.getMask(Direction.EAST);
-	    else if (dx > 0)    dirmask |= Direction.getMask(Direction.WEST);
-
-	    /* add y directions that lead towards to_y to the mask */
-	    if (dy < 0)         dirmask |= Direction.getMask(Direction.SOUTH);
-	    else if (dy > 0)    dirmask |= Direction.getMask(Direction.NORTH);
-
-	    /* return the result */
-	    return dirmask;
-	}
-	
-	
-	/**
-	 * Finds the movement distance (not using diagonals) from point a to point b
-	 * on a map, taking into account map boundaries and such.  If the two coords
-	 * are not on the same z-plane, then this function returns -1;
-	 */
-	public int movementDistance(int fromX, int fromY, int toX, int toY) {
-	    int dirmask = 0;;
-	    int dist = 0;
-
-	    /* get the direction(s) to the coordinates */
-	    dirmask = getRelativeDirection(toX, toY, fromX, fromY);
-
-	    while (fromX != toX || fromY != toY) {
-	    	
-	        if (fromX != toX) {
-	            if (Direction.isDirInMask(Direction.WEST, dirmask)) {
-	                fromX--;
-	            } else {               
-	            	fromX++;
-            	}
-	            dist++;
-	        }
-	        if (fromY != toY) {
-	            if (Direction.isDirInMask(Direction.NORTH, dirmask)) {
-	                fromY--;
-	            } else {               
-	            	fromY++;
-            	}
-	            dist++;
-	        }            
-	    }
-
-	    return dist;
-	}
-	
-	/**
-	 * Finds the distance (using diagonals) from point a to point b on a map
-	 * If the two coordinates are not on the same z-plane, then this function
-	 * returns -1. This function also takes into account map boundaries.
-	 */ 
-	public int distance(int fromX, int fromY, int toX, int toY) {
-	    int dist = movementDistance(fromX, fromY, toX, toY);
-	    if (dist <= 0)
-	        return dist;
-
-	    /* calculate how many fewer movements there would have been */
-	    dist -= Math.abs(fromX - toX) < Math.abs(fromY - toY) ? Math.abs(fromX - toX) : Math.abs(fromY - toY);
-
-	    return dist;
-	}
-	
-	
-	
+		
 	public DoorStatus getDoor(int x, int y) {
 		for (DoorStatus ds : doors) {
 			if (ds.x == x && ds.y == y) return ds;

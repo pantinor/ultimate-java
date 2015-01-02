@@ -10,6 +10,7 @@ import objects.Weapon;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
@@ -301,6 +302,51 @@ public interface Constants {
 		fixed;
 	}
 	
+
+	public enum HeadingDirection {
+		NORTH(0),
+		NORTH_EAST(2),
+		EAST(3),
+		SOUTH_EAST(4),
+		SOUTH(5),
+		SOUTH_WEST(6),
+		WEST(7),
+		NORTH_WEST(8);
+		private int heading;
+		private HeadingDirection(int heading) {
+			this.heading = heading;
+		}
+		public int getHeading() {
+			return heading;
+		}
+		public static HeadingDirection getByValue(int val) {
+			HeadingDirection ret = HeadingDirection.NORTH;
+			for (HeadingDirection d : HeadingDirection.values()) {
+				if (val == d.getHeading()) {
+					ret = d;
+					break;
+				}
+			}
+			return ret;
+		}
+		
+		/**
+		 * Use Y Down coordinate system with atan2, so negated the values to the function.
+		 * @param dx  delta of the x coords
+		 * @param dy  delta of the y coords
+		 */
+		public static HeadingDirection getDirection(float dx, float dy) {
+		    double theta = MathUtils.atan2(-dy, -dx);
+		    double ang = theta * MathUtils.radDeg;
+			if (ang < 0) {
+				ang = 360 + ang;
+			}
+			ang = (ang + 90 + 45 + 22.5f) % 360;
+			ang /= 45f;
+			return HeadingDirection.getByValue((int)ang);
+		}
+	}
+	
 	public static int MOON_PHASES = 24;
 	public static int MOON_SECONDS_PER_PHASE = 4;
 	public static int MOON_CHAR = 20;
@@ -420,67 +466,74 @@ public interface Constants {
 	
 	public enum DungeonTile {
 		
-		NOTHING(0x00,"Nothing","blank"),
-		LADDER_UP(0x10 	,"Ladder Up", "up_ladder", Maps.DNG1_CON),
-		LADDER_DOWN(0x20 	,"Ladder Down", "down_ladder", Maps.DNG2_CON),
-		LADDER_UP_DOWN(0x30 	,"Ladder Up & Down", "down_ladder", Maps.DNG3_CON),
-		CHEST(0x40 	,"Treasure Chest", "chest"),
-		CEILING_HOLE(0x50 	,"Ceiling Hole", "rocks"),
-		FLOOR_HOLE(0x60 	,"Floor Hole", "rocks"),
-		ORB(0x70 	,"Magic Orb", "hit_flash"),
-		WIND_TRAP(0x80 	,"Winds/Darknes Trap", "swamp"),
-		ROCK_TRAP(0x81 	,"Falling Rock Trap", "swamp"),
-		PIT_TRAP(0x8E 	,"Pit Trap", "swamp"),
-		FOUNTAIN_PLAIN(0x90 	,"Plain Fountain", "magic_flash"),
-		FOUNTAIN_HEAL(0x91 	,"Healing Fountain", "magic_flash"),
-		FOUNTAIN_ACID(0x92 	,"Acid Fountain", "magic_flash"),
-		FOUNTAIN_CURE(0x93 	,"Cure Fountain", "magic_flash"),
-		FOUNTAIN_POISON(0x94 	,"Poison Fountain", "magic_flash"),
-		FIELD_POISON(0xA0 	,"Poison Field", "poison_field"),
-		FIELD_ENERGY(0xA1 	,"Energy Field", "energy_field"),
-		FIELD_FIRE(0xA2 	,"Fire Field", "fire_field"),
-		FIELD_SLEEP(0xA3 	,"Sleep Field", "sleep_field"),
-		ALTAR(0xB0 	,"Altar", "altar"),
-		DOOR(0xC0 	,"Door", "locked_door", Maps.DNG5_CON),
-		ROOM_1(0xD0 	,"Dungeon Room 1", "spacer_square"),
-		ROOM_2(0xD1 	,"Dungeon Room 2", "spacer_square"),
-		ROOM_3(0xD2 	,"Dungeon Room 3", "spacer_square"),
-		ROOM_4(0xD3 	,"Dungeon Room 4", "spacer_square"),
-		ROOM_5(0xD4 	,"Dungeon Room 5", "spacer_square"),
-		ROOM_6(0xD5 	,"Dungeon Room 6", "spacer_square"),
-		ROOM_7(0xD6 	,"Dungeon Room 7", "spacer_square"),
-		ROOM_8(0xD7 	,"Dungeon Room 8", "spacer_square"),
-		ROOM_9(0xD8 	,"Dungeon Room 9", "spacer_square"),
-		ROOM_10(0xD9 	,"Dungeon Room 10", "spacer_square"),
-		ROOM_11(0xDA 	,"Dungeon Room 11", "spacer_square"),
-		ROOM_12(0xDB 	,"Dungeon Room 12", "spacer_square"),
-		ROOM_13(0xDC 	,"Dungeon Room 13", "spacer_square"),
-		ROOM_14(0xDD 	,"Dungeon Room 14", "spacer_square"),
-		ROOM_15(0xDE 	,"Dungeon Room 15", "spacer_square"),
-		ROOM_16(0xDF 	,"Dungeon Room 16", "spacer_square"),
-		SECRET_DOOR(0xE0 	,"Secret Door", "secret_door", Maps.DNG6_CON),
-		WALL(0xF0 	,"Wall ", "stone_wall");
+		NOTHING(0x00,"Nothing","brick_floor", true),
+		LADDER_UP(0x10 	,"Ladder Up", "up_ladder", true, Maps.DNG1_CON),
+		LADDER_DOWN(0x20 	,"Ladder Down", "down_ladder", true,Maps.DNG2_CON),
+		LADDER_UP_DOWN(0x30 	,"Ladder Up & Down", "down_ladder", true,Maps.DNG3_CON),
+		CHEST(0x40 	,"Treasure Chest", "chest",true),
+		CEILING_HOLE(0x50 	,"Ceiling Hole", "rocks",false),
+		FLOOR_HOLE(0x60 	,"Floor Hole", "rocks",false),
+		ORB(0x70 	,"Magic Orb", "hit_flash",true),
+		WIND_TRAP(0x80 	,"Winds/Darknes Trap", "swamp",true),
+		ROCK_TRAP(0x81 	,"Falling Rock Trap", "swamp",true),
+		PIT_TRAP(0x8E 	,"Pit Trap", "swamp",true),
+		FOUNTAIN_PLAIN(0x90 	,"Plain Fountain", "magic_flash",true),
+		FOUNTAIN_HEAL(0x91 	,"Healing Fountain", "magic_flash",true),
+		FOUNTAIN_ACID(0x92 	,"Acid Fountain", "magic_flash",true),
+		FOUNTAIN_CURE(0x93 	,"Cure Fountain", "magic_flash",true),
+		FOUNTAIN_POISON(0x94 	,"Poison Fountain", "magic_flash",true),
+		FIELD_POISON(0xA0 	,"Poison Field", "poison_field",false),
+		FIELD_ENERGY(0xA1 	,"Energy Field", "energy_field",false),
+		FIELD_FIRE(0xA2 	,"Fire Field", "fire_field",false),
+		FIELD_SLEEP(0xA3 	,"Sleep Field", "sleep_field",false),
+		ALTAR(0xB0 	,"Altar", "altar",true),
+		DOOR(0xC0 	,"Door", "dungeon_door", true, Maps.DNG5_CON),
+		ROOM_1(0xD0 	,"Dungeon Room 1", "spacer_square",true),
+		ROOM_2(0xD1 	,"Dungeon Room 2", "spacer_square",true),
+		ROOM_3(0xD2 	,"Dungeon Room 3", "spacer_square",true),
+		ROOM_4(0xD3 	,"Dungeon Room 4", "spacer_square",true),
+		ROOM_5(0xD4 	,"Dungeon Room 5", "spacer_square",true),
+		ROOM_6(0xD5 	,"Dungeon Room 6", "spacer_square",true),
+		ROOM_7(0xD6 	,"Dungeon Room 7", "spacer_square",true),
+		ROOM_8(0xD7 	,"Dungeon Room 8", "spacer_square",true),
+		ROOM_9(0xD8 	,"Dungeon Room 9", "spacer_square",true),
+		ROOM_10(0xD9 	,"Dungeon Room 10", "spacer_square",true),
+		ROOM_11(0xDA 	,"Dungeon Room 11", "spacer_square",true),
+		ROOM_12(0xDB 	,"Dungeon Room 12", "spacer_square",true),
+		ROOM_13(0xDC 	,"Dungeon Room 13", "spacer_square",true),
+		ROOM_14(0xDD 	,"Dungeon Room 14", "spacer_square",true),
+		ROOM_15(0xDE 	,"Dungeon Room 15", "spacer_square",true),
+		ROOM_16(0xDF 	,"Dungeon Room 16", "spacer_square",true),
+		SECRET_DOOR(0xE0 	,"Secret Door", "secret_door", true, Maps.DNG6_CON),
+		WALL(0xF0 	,"Wall ", "stone_wall",false);
 				
 		private int value;
 		private String type;
 		private String tileName;
 		private Maps combatMap = Maps.DNG0_CON;
+		private boolean creatureWalkable;
 		
-		private DungeonTile(int value, String type, String tileName) {
+		private DungeonTile(int value, String type, String tileName, boolean cw) {
 			this.value = value;
 			this.type = type;
 			this.tileName = tileName;
+			this.creatureWalkable = cw;
 		}
 		
-		private DungeonTile(int value, String type, String tileName, Maps combatMap) {
+		private DungeonTile(int value, String type, String tileName, boolean cw, Maps combatMap) {
 			this.value = value;
 			this.type = type;
 			this.tileName = tileName;
 			this.combatMap = combatMap;
+			this.creatureWalkable = cw;
 		}
 
 		public int getValue() {
 			return value;
+		}
+		
+		public boolean getCreatureWalkable() {
+			return creatureWalkable;
 		}
 
 		public String getType() {
@@ -1317,42 +1370,52 @@ public interface Constants {
 		whirlpool(23),
 		//twister(24),
 		
-		rat(25),
-		bat(26),
-		spider(27),
-		ghost(28),
-		slime(29),
-		troll(30),
-		gremlin(31),
+		rat(25,5),
+		bat(26,5),
+		spider(27,5),
+		ghost(28,5),
+		slime(29,5),
+		troll(30,5),
+		gremlin(31,5),
 		mimic(32),
 		reaper(33),
 		insect_swarm(34),
-		gazer(35),
-		phantom(36),
-		orc(37),
-		skeleton(38),
+		gazer(35,3),
+		phantom(36,3),
+		orc(37,5),
+		skeleton(38,5),
 		rogue(39),
 		python(40),
-		ettin(41),
-		headless(42),
-		cyclops(43),
-		wisp(44),
-		evil_mage(45),
+		ettin(41,5),
+		headless(42,5),
+		cyclops(43,5),
+		wisp(44,5),
+		evil_mage(45,3),
 		liche(46),
 		lava_lizard(47),
 		zorn(48),
-		daemon(49),
+		daemon(49,3),
 		hydra(50),
 		dragon(51),
 		balron(52);
 		
 		private int intValue;
+		private int dungeonSpawnWeight;
 		private Creature creature;
+		
 		private CreatureType(int value) {
 			intValue = value;
+			dungeonSpawnWeight = 0;
+		}
+		private CreatureType(int value, int dsw) {
+			intValue = value;
+			dungeonSpawnWeight = dsw;
 		}
 		public int getValue() {
 			return intValue;
+		}
+		public int getSpawnWeight() {
+			return dungeonSpawnWeight;
 		}
 		public static CreatureType get(int v) {
 			for (CreatureType x : values()) {
@@ -1410,6 +1473,7 @@ public interface Constants {
 	}
 
 	public static final int MAX_CREATURES_ON_MAP = 4;
+	public static final int MAX_WANDERING_CREATURES_IN_DUNGEON = 2;
 	public static final int MAX_CREATURE_DISTANCE = 24;
 		
 	public class ClasspathFileHandleResolver implements FileHandleResolver {

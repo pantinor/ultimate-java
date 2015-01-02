@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import ultima.Constants;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
 
 @XmlRootElement(name = "creature")
@@ -61,8 +62,10 @@ public class Creature implements Constants {
 	
 	private CreatureType tile;
 	private Animation anim;
+	private Decal decal;
 	public int currentX;
 	public int currentY;
+	public int currentLevel;//only for dungeon wandering creatures
 	public Vector3 currentPos; //in pixels
 	public Direction sailDir = Direction.EAST; // for pirate ships only
 	
@@ -406,13 +409,23 @@ public class Creature implements Constants {
 			return CreatureStatus.BARELYWOUNDED;
 		
 	}
-
+	
+	@XmlTransient
 	public Animation getAnim() {
 		return anim;
 	}
 
 	public void setAnim(Animation anim) {
 		this.anim = anim;
+	}
+	
+	@XmlTransient
+	public Decal getDecal() {
+		return decal;
+	}
+
+	public void setDecal(Decal d) {
+		this.decal = d;
 	}
 
 	@Override

@@ -846,7 +846,7 @@ public class CombatScreen extends BaseScreen {
 	    case RANGED: {
 
 	        // figure out which direction to fire the weapon
-		    int dirmask = combatMap.getRelativeDirection(target.combatCr.currentX, target.combatCr.currentY, creature.currentX, creature.currentY);
+		    int dirmask = Utils.getRelativeDirection(MapBorderBehavior.fixed, combatMap.getWidth(), combatMap.getHeight(), target.combatCr.currentX, target.combatCr.currentY, creature.currentX, creature.currentY);
 
 	        Sounds.play(Sound.NPC_ATTACK);
 	        
@@ -900,9 +900,9 @@ public class CombatScreen extends BaseScreen {
 			
 			if (!jinx) {
 				if (ranged) {
-					d = combatMap.distance(fromX, fromY, pm.combatCr.currentX, pm.combatCr.currentY);
+					d = Utils.distance(MapBorderBehavior.fixed, combatMap.getWidth(), combatMap.getHeight(), fromX, fromY, pm.combatCr.currentX, pm.combatCr.currentY);
 				} else {
-					d = combatMap.movementDistance(fromX, fromY, pm.combatCr.currentX, pm.combatCr.currentY);
+					d = Utils.movementDistance(MapBorderBehavior.fixed, combatMap.getWidth(), combatMap.getHeight(), fromX, fromY, pm.combatCr.currentX, pm.combatCr.currentY);
 				}
 
 				/* skip target 50% of time if same distance */
@@ -966,7 +966,7 @@ public class CombatScreen extends BaseScreen {
         Direction dir;
 
 	    if (action == CombatAction.FLEE) {
-	        dir = combatMap.getPath(targetX, targetY, mask, false, nx, ny);
+	        dir = Utils.getPath(MapBorderBehavior.fixed, combatMap.getWidth(), combatMap.getHeight(), targetX, targetY, mask, false, nx, ny);
 	        if (dir == null && (nx == 0 || ny == 0)) {
 	        	//force a map exit
 	        	cr.currentX = -1;
@@ -974,7 +974,7 @@ public class CombatScreen extends BaseScreen {
 	        	return true;
 	        }
 	    } else {
-	        dir = combatMap.getPath(targetX, targetY, mask, true, nx, ny);
+	        dir = Utils.getPath(MapBorderBehavior.fixed, combatMap.getWidth(), combatMap.getHeight(), targetX, targetY, mask, true, nx, ny);
 	    }
 	    
 		Vector3 pixelPos = null;

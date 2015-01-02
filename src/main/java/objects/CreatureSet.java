@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.utils.Array;
 
 @XmlRootElement(name = "creatures")
@@ -55,6 +56,10 @@ public class CreatureSet {
 				
 				newCr.setAnim(new Animation(frameRate, reg));
 				
+				Decal d = Decal.newDecal(reg, true);
+				d.setScale(.018f);
+				newCr.setDecal(d);
+				
 				if (type == CreatureType.pirate_ship) {
 					newCr.setAnim(new Animation(frameRate, tr));
 				}
@@ -62,6 +67,7 @@ public class CreatureSet {
 				return newCr;
 			}
 		}
+		
 		System.err.println(type + " not found.");
 
 		return null;
