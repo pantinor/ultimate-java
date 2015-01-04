@@ -239,7 +239,8 @@ public class GameScreen extends BaseScreen {
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
 				loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation+1), true);
-				//loadNextMap(Maps.DESPISE, 0, 0, 3, 3, 7, Direction.NORTH, true);
+				//loadNextMap(Maps.ABYSS, 0, 0, 1, 1, 7, Direction.NORTH, true);
+				//loadNextMap(Maps.DESPISE, 0, 0, 3, 7, 4, Direction.NORTH, true);
 			}
 		}
 		

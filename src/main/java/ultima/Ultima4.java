@@ -8,6 +8,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class Ultima4 extends Game {
 	
@@ -35,6 +36,8 @@ public class Ultima4 extends Game {
 		hud = new LogDisplay(logFont);
 
 		setScreen(new StartScreen(this));
+		//setScreen(new CodexScreen(new Stage(), null));
+
 		
 	}
 

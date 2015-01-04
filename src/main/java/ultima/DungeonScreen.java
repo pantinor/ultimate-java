@@ -523,7 +523,7 @@ public class DungeonScreen extends BaseScreen {
 			in.x=(int)tx;in.y=(int)tz;
 			modelInstances.add(in);
 		} else if (tile == DungeonTile.ALTAR) {
-			ModelInstance instance = new ModelInstance(altarModel, tx-.40f, 0, tz+.45f);
+			ModelInstance instance = new ModelInstance(altarModel, tx, 0, tz);
 			instance.nodes.get(0).scale.set(.0040f, .0040f, .0040f);
 			instance.calculateTransforms();
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
@@ -576,7 +576,7 @@ public class DungeonScreen extends BaseScreen {
 		public int x;
 		public int y;
 		
-		private DungeonTileModelInstance(ModelInstance instance, DungeonTile tile, int level) {
+		public DungeonTileModelInstance(ModelInstance instance, DungeonTile tile, int level) {
 			this.instance = instance;
 			this.tile = tile;
 			this.level = level;
@@ -768,7 +768,7 @@ public class DungeonScreen extends BaseScreen {
 			c.currentY = startY;
 			c.currentPos = sc.getMapPixelCoords(startX, startY);
 
-			//baseMap.addCreature(c);
+			baseMap.addCreature(c);
 		}
 		
 		mainGame.setScreen(sc);
@@ -1080,14 +1080,18 @@ public class DungeonScreen extends BaseScreen {
 			sip.setinitialKeyCode(keycode, tile, x, y);
 			
 		} else if (keycode == Keys.H) {
-
 			CombatScreen.holeUp(this.dngMap, x, y, this, GameScreen.context, GameScreen.creatures, GameScreen.standardAtlas, GameScreen.enhancedAtlas);
 			return false;
+			
 		} else if (keycode == Keys.V) {
 			showMiniMap = !showMiniMap;
 		} else if (keycode == Keys.M) {
 			
 			new MixtureDialog(GameScreen.context.getParty(), this, stage, skin).show();
+		} else if (keycode == Keys.U) {
+			//log("Which party member?");
+			//Gdx.input.setInputProcessor(sip);
+			//sip.setinitialKeyCode(keycode, tile, x, y);
 			
 		} else if (keycode == Keys.S) {
 			if (tile == DungeonTile.ALTAR) {

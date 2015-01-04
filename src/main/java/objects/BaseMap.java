@@ -96,8 +96,8 @@ public class BaseMap implements Constants {
 	}
 	
 	public List<Portal> getPortals(int x, int y, int z) {
-		if (portals == null) return null;
 		List<Portal> ps = new ArrayList<Portal>();
+		if (portals == null) return ps;
 		for (Portal p : portals) {
 			if (p.getX() == x && p.getY() == y && p.getZ() == z) {
 				ps.add(p);
