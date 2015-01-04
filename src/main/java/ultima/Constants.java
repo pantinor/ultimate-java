@@ -10,6 +10,7 @@ import objects.Weapon;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -664,26 +665,28 @@ public interface Constants {
 
 	
 	public enum Virtue {
-		
-		HONESTY("HSTY","honest", "AHM", 0x01),
-		COMPASSION("COMP","compassionate", "MU", 0x02),
-		VALOR("VALO","valiant", "RA", 0x04),
-		JUSTICE("JUST","just", "BEH", 0x08),
-		SACRIFICE("SACR","sacrificial", "CAH", 0x10),
-		HONOR("HONR","honorable", "SUMM", 0x20),
-		SPIRITUALITY("SPIR","spiritual", "OM", 0x40),
-		HUMILITY("HUMI","humble", "LUM", 0x80);
+				
+		HONESTY("HSTY","honest", "AHM", 0x01, Color.BLUE),
+		COMPASSION("COMP","compassionate", "MU", 0x02, Color.YELLOW),
+		VALOR("VALO","valiant", "RA", 0x04, Color.RED),
+		JUSTICE("JUST","just", "BEH", 0x08, Color.GREEN),
+		SACRIFICE("SACR","sacrificial", "CAH", 0x10, Color.ORANGE),
+		HONOR("HONR","honorable", "SUMM", 0x20, Color.PURPLE),
+		SPIRITUALITY("SPIR","spiritual", "OM", 0x40, Color.WHITE),
+		HUMILITY("HUMI","humble", "LUM", 0x80, Color.BLACK);
 		
 		private String description;
 		private String abbr;
 		private String mantra;
 		private int loc;
+		private Color color;
 		
-		private Virtue(String abbr, String d, String ab, int loc) {
+		private Virtue(String abbr, String d, String ab, int loc, Color color) {
 			this.abbr = abbr;
 			this.description = d;
 			this.mantra = ab;
 			this.loc = loc;
+			this.color = color;
 		}
 		public static Virtue get(int v) {
 			for (Virtue x : values()) {
@@ -704,6 +707,9 @@ public interface Constants {
 		}
 		public String getAbbr() {
 			return abbr;
+		}
+		public Color getColor() {
+			return this.color;
 		}
 	}
 	

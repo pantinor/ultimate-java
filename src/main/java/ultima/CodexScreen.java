@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
@@ -11,10 +13,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -52,6 +57,8 @@ public class CodexScreen extends BaseScreen {
 	
 	//3d models
 	public Model altarModel;
+	public Model avatarModel;
+
 	
 	public List<ModelInstance> modelInstances = new ArrayList<ModelInstance>();
 	public List<ModelInstance> floor = new ArrayList<ModelInstance>();
@@ -64,8 +71,76 @@ public class CodexScreen extends BaseScreen {
 	Renderable pLight;
 	PointLight fixedLight;
 	float lightFactor;
+		
+	Texture bkgrnd;
+	
+	enum CodexEjectCode {
+	    CODEX_EJECT_NO_3_PART_KEY,
+	    CODEX_EJECT_BAD_WOP,
+	    CODEX_EJECT_NO_FULL_PARTY,
+	    CODEX_EJECT_NO_FULL_AVATAR,
+	    CODEX_EJECT_HONESTY,
+	    CODEX_EJECT_COMPASSION,
+	    CODEX_EJECT_VALOR,
+	    CODEX_EJECT_JUSTICE,
+	    CODEX_EJECT_SACRIFICE,
+	    CODEX_EJECT_HONOR,
+	    CODEX_EJECT_SPIRITUALITY,
+	    CODEX_EJECT_HUMILITY,
+	    CODEX_EJECT_TRUTH,
+	    CODEX_EJECT_LOVE,
+	    CODEX_EJECT_COURAGE,
+	    CODEX_EJECT_BAD_INFINITY 
+	};
+	
+	public static final String entrance = "There is a sudden darkness, and you find yourself alone in an empty chamber.";    
+	
+	public static final String[] codexQuestions = {
+		"What dost thou possess if all may rely upon your every word?",
+		"What quality compels one to share in the journeys of others?",
+		"What answers when great deeds are called for?",
+		"What should be the same for Lord and Serf alike?",
+		"What is loath to place the self above aught else?",
+		"What shirks no duty?",
+		"What, in knowing the true self, knows all?",
+		"What is that which Serfs are born with but Nobles must strive to obtain?",
+		"If all else is imaginary, this is real...What plunges to the depths, while soaring on the heights?",
+		"What turns not away from any peril?"
+	};
+	
+	public static final String[] text1 = {
+		"The boundless knowledge of the Codex of Ultimate Wisdom is revealed unto thee.",
+		"The voice says: Thou hast proven thyself to be truly good in nature.",
+		"Thou must know that thy quest to become an Avatar is the endless quest of a lifetime.",
+		"Avatarhood is a living gift.  It must always and forever be nurtured to flourish.",
+		"For if thou dost stray from the paths of virtue, thy way may be lost forever.",
+		"Return now unto thine own world. Live there as an example to thy people, as our memory of thy gallant deeds serves us.",
+		"As the sound of the voice trails off, darkness seems to rise around you. There is a moment of intense, wrenching vertigo"
+	};
+	
+	public static final String[] text2 = {
+		"You open your eyes to a familiar circle of stones.  You wonder of your recent adventures.",
+		"It seems a time and place very distant.  You wonder if it really happened. Then you realize that in your hand you hold The Ankh.",
+		"You walk away from the circle, knowing that you can always return from whence you came, since you now know the secret of the gates.",
+		"CONGRATULATIONS!",
+		"Thou hast completed ULTIMA IV Quest of the AVATAR in %s turns!",
+		"Report thy feat unto Lord British at Origin Systems!"
+	};
 	
 	int inc;
+
+	State state = State.enter;
+	
+	public enum State {
+		enter,
+		approach1,
+		approach2,
+		
+		use,
+		use_stone,
+		
+		
+	}
 	
 	public CodexScreen(Stage stage, GameScreen gameScreen) {
 		
@@ -93,8 +168,9 @@ public class CodexScreen extends BaseScreen {
 		
 		ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader(), new ClasspathFileHandleResolver());
 		altarModel = gloader.loadModel(Gdx.files.internal("assets/graphics/altar.g3db"));
-		
-		font = new BitmapFont();
+		avatarModel = gloader.loadModel(Gdx.files.internal("assets/graphics/avatar.g3db"));
+
+		font = new BitmapFont(Gdx.files.internal("assets/fonts/corsiva-20.fnt"), false);
 		font.setColor(Color.WHITE);
 		
 		environment = new Environment();
@@ -104,11 +180,14 @@ public class CodexScreen extends BaseScreen {
 		fixedLight = new PointLight();
 		environment.add(fixedLight);
 		
-		environment.add(new PointLight().set(1f, 0.8f, 0.6f, 5.5f, 3f, 2f, 8f));
+		environment.add(new PointLight().set(1f, 0.8f, 0.6f, 7.5f, 3f, 7f, 8f));
+		environment.add(new PointLight().set(1f, 0.8f, 0.6f, 1.5f, 3f, 7f, 8f));
+
 		
 		modelBatch = new ModelBatch();
-		batch = new SpriteBatch();
 		
+		batch = new SpriteBatch();
+
 		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		cam.near = 0.1f;
 		cam.far = 1000f;
@@ -136,19 +215,34 @@ public class CodexScreen extends BaseScreen {
 				}
 			}
 		}
-		
-		Model sf = builder.createCylinder(4.5f, .2f, 4.5f, 32, new Material(ColorAttribute.createDiffuse(Color.DARK_GRAY), ColorAttribute.createSpecular(Color.DARK_GRAY), new BlendingAttribute(0.7f)), Usage.Position | Usage.Normal);		
-		modelInstances.add(new ModelInstance(sf, center));
-		
+				
 		ModelInstance instance2 = new ModelInstance(altarModel, 5.5f, 0f, 2f);
 		instance2.nodes.get(0).scale.set(.005f, .005f, .005f);
 		instance2.calculateTransforms();
 		modelInstances.add(instance2);
+		
+
+		modelInstances.add(getFigure(4.5f, 0.528f, 3f, 0));
+		modelInstances.add(getFigure(4.0f, 0.528f, 2f, -10));
+		modelInstances.add(getFigure(3.5f, 0.528f, 3f, 30));
+		
+		modelInstances.add(getFigure(4.5f, 0.528f, 1.5f, -5));
+		modelInstances.add(getFigure(3.2f, 0.528f, 2.2f, 30));
+		
+		modelInstances.add(getFigure(6.5f, 0.528f, 2f, -20));
+		modelInstances.add(getFigure(7.0f, 0.528f, 2.3f, -30));
+		modelInstances.add(getFigure(7.2f, 0.528f, 2.8f, -40));
+		
+		Pixmap pixmap = new Pixmap(400,100, Format.RGBA8888);
+		pixmap.setColor(0f,0f,0f,0.65f);
+		pixmap.fillRectangle(0, 0, 400, 100);
+		bkgrnd =  new Texture(pixmap);
+		pixmap.dispose();
 
 		
-		currentPos = new Vector3(5.5f, 2, 1.8f);
+		currentPos = new Vector3(5.5f, 2f, 0f);
 		cam.position.set(currentPos);
-		cam.lookAt(5.5f, 0, 5.5f);
+		cam.lookAt(5.5f, 0.2f, 5.5f);
 		
 		//createAxes();
 
@@ -156,6 +250,9 @@ public class CodexScreen extends BaseScreen {
 	
 	@Override
 	public boolean keyUp (int keycode) {
+		
+
+		
 		inc ++;
 		nextPiece();
 		return false;
@@ -163,39 +260,55 @@ public class CodexScreen extends BaseScreen {
 	
 	private void nextPiece() {
 		
+		
 		switch (inc) {
 		case 1:
-			modelInstances.add(createLine(3.75f, 6.5f, 5.5f, 3.5f, 0.204f, Color.WHITE));
+			//modelInstances.add(createLine(3.75f, 6.5f, 5.5f, 3.5f, 0.204f, Color.WHITE));
+			modelInstances.add(createPolygonBox(Virtue.HONESTY.getColor(), .02f, .02f, 3.5f, -30f, 4.65f, 0.204f, 5.0f));
 			break;
 		case 2:
-			modelInstances.add(createLine(5.5f, 3.5f, 7.25f, 6.5f, 0.204f, Color.WHITE));
+			//modelInstances.add(createLine(5.5f, 3.5f, 7.25f, 6.5f, 0.204f, Color.WHITE));
+			modelInstances.add(createPolygonBox(Virtue.COMPASSION.getColor(), .02f, .02f, 3.5f, 30f, 6.35f, 0.204f, 5.0f));
 			break;
 		case 3:
-			modelInstances.add(createLine(7.25f, 6.5f, 3.75f, 6.5f, 0.204f, Color.WHITE));
+			//modelInstances.add(createLine(7.25f, 6.5f, 3.75f, 6.5f, 0.204f, Color.WHITE));
+			modelInstances.add(createPolygonBox(Virtue.VALOR.getColor(), .02f, .02f, 3.5f, 90f, 5.5f, 0.204f, 6.5f));
 			break;
 		case 4:
-			modelInstances.add(createLine(3.5f, 4.75f, 7.5f, 4.75f, 0.204f, Color.WHITE));
+			//modelInstances.add(createLine(3.5f, 4.75f, 7.5f, 4.75f, 0.204f, Color.WHITE));
+			modelInstances.add(createPolygonBox(Virtue.JUSTICE.getColor(), .02f, .02f, 3.7f, 90f, 5.5f, 0.204f, 4.75f));
 			break;
 		case 5:
-			modelInstances.add(createLine(7.25f, 4.25f, 5.25f, 7.5f, 0.204f, Color.WHITE));
+			//modelInstances.add(createLine(7.25f, 4.25f, 5.25f, 7.5f, 0.204f, Color.WHITE));
+			modelInstances.add(createPolygonBox(Virtue.SACRIFICE.getColor(), .02f, .02f, 3.7f, -30f, 6.2f, 0.204f, 5.9f));
 			break;
 		case 6:
-			modelInstances.add(createLine(5.75f, 7.5f, 3.75f, 4.25f, 0.204f, Color.WHITE));
+			//modelInstances.add(createLine(5.75f, 7.5f, 3.75f, 4.25f, 0.204f, Color.WHITE));
+			modelInstances.add(createPolygonBox(Virtue.HONOR.getColor(), .02f, .02f, 3.7f, 30f, 4.8f, 0.204f, 5.9f));
 			break;
 		case 7:
-			modelInstances.add(fillCircle(.05f, center, 0.204f, Color.WHITE));
+			ModelBuilder builder = new ModelBuilder();
+			Model sp = builder.createSphere(.08f, .08f, .08f, 32, 32, new Material(ColorAttribute.createDiffuse(Virtue.SPIRITUALITY.getColor())), Usage.Position | Usage.Normal);
+	        ModelInstance modelInstance = new ModelInstance(sp);
+	        modelInstance.transform.setTranslation(5.5f, 0.204f, 5.5f);
+	        modelInstances.add(modelInstance);
+			//modelInstances.add(fillCircle(.05f, center, 0.204f, Virtue.SPIRITUALITY.getColor()));
 			break;
 		case 8:
-			modelInstances.add(createCircle(4f, .1f,center, 0.204f, Color.WHITE));
+			//modelInstances.add(fillCircle(2.5f,center, 0.202f, Virtue.HUMILITY.getColor()));
+			modelInstances.add(createCylinder(4.0f, .1f, 5.5f, 0.1f, 5.5f, Virtue.HUMILITY.getColor()));
 			break;
 		case 9:
-			modelInstances.add(createCircle(.9f, .03f, new Vector3(5.05f, 0, 5.25f), 0.204f, Color.WHITE));
+			//modelInstances.add(createCircle(.9f, .03f, new Vector3(5.05f, 0, 5.25f), 0.204f, Color.BLUE));
+			modelInstances.add(createCylinder(.9f, .1f, 5.05f, 0.204f, 5.25f, Color.BLUE));
 			break;		
 		case 10:
-			modelInstances.add(createCircle(.9f, .03f,new Vector3(5.95f, 0, 5.25f), 0.204f, Color.WHITE));
+			//modelInstances.add(createCircle(.9f, .03f,new Vector3(5.95f, 0, 5.25f), 0.204f, Color.YELLOW));
+			modelInstances.add(createCylinder(.9f, .1f, 5.95f, 0.204f, 5.25f, Color.YELLOW));
 			break;		
 		case 11:
-			modelInstances.add(createCircle(.9f, .03f,new Vector3(5.5f, 0, 6.025f), 0.204f, Color.WHITE));
+			//modelInstances.add(createCircle(.9f, .03f,new Vector3(5.5f, 0, 6.025f), 0.204f, Color.RED));
+			modelInstances.add(createCylinder(.9f, .1f, 5.5f, 0.204f, 6.025f, Color.RED));
 			break;
 		default:
 			break;
@@ -223,10 +336,6 @@ public class CodexScreen extends BaseScreen {
 		for (ModelInstance i : floor) {
 			modelBatch.render(i, environment);
 		}
-		
-		for (ModelInstance i : ceiling) {
-			//modelBatch.render(i, environment);
-		}
 						
 		for (ModelInstance i : modelInstances) {
 			modelBatch.render(i, environment);
@@ -239,8 +348,42 @@ public class CodexScreen extends BaseScreen {
 		stage.draw();
 		
         //modelBatch.render(axesInstance);
+		
+		batch.begin();
+		batch.draw(bkgrnd, 200, 500);
+		
+		switch (state) {
+		case enter:
+			drawText(entrance, 200, 400);
+			break;
+		}
+		batch.end();
 
-
+        
+	}
+	
+	private void drawText(String text, int x, int width) {
+		TextBounds bounds = font.getWrappedBounds(text, width - 20);
+		float y = Ultima4.SCREEN_HEIGHT - bounds.height - 10;
+		font.drawWrapped(batch, text, x+10, y, width - 20);
+	}
+	
+	private StringBuilder inputBuffer = new StringBuilder();
+	
+	class CodexInputAdapter extends InputAdapter {
+		@Override
+		public boolean keyUp(int keycode) {
+			if (keycode == Keys.ENTER) {
+				if (inputBuffer.length() < 1) return false;
+				
+			} else if (keycode == Keys.BACKSPACE) {
+				if (inputBuffer.length() > 0)
+					inputBuffer.deleteCharAt(inputBuffer.length() - 1);
+			} else if (keycode >= 29 && keycode <= 54) {
+				inputBuffer.append(Keys.toString(keycode).toUpperCase());
+			}
+			return false;
+		}
 	}
 
 	@Override
@@ -286,7 +429,7 @@ public class CodexScreen extends BaseScreen {
         Model model = null;
         ModelBuilder mb = new ModelBuilder();
         mb.begin();
-        MeshPartBuilder part = mb.part("circle", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(color), ColorAttribute.createSpecular(color), new BlendingAttribute(0.6f)));
+        MeshPartBuilder part = mb.part("circle", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(color)));
         part.circle(radius, 32, c, new Vector3(0, 1, 0));
         model = mb.end();
 
@@ -296,12 +439,20 @@ public class CodexScreen extends BaseScreen {
         return modelInstance;
     }
 	
+	private ModelInstance createCylinder(float width, float height, float x, float y, float z, Color color) {
+        ModelBuilder mb = new ModelBuilder();
+		Model sf = mb.createCylinder(width, height, width, 32, new Material(ColorAttribute.createDiffuse(color), ColorAttribute.createSpecular(color), new BlendingAttribute(0.8f)), Usage.Position | Usage.Normal);		
+        ModelInstance modelInstance = new ModelInstance(sf);
+        modelInstance.transform.setToTranslation(x, y, z);
+        return modelInstance;
+	}
+	
 	private ModelInstance createCircle(float radius, float thickness, Vector3 c, float cz, Color color) {
 
         Model model = null;
         ModelBuilder mb = new ModelBuilder();
         mb.begin();
-        MeshPartBuilder part = mb.part("circle", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(color), ColorAttribute.createSpecular(color), new BlendingAttribute(0.6f)));
+        MeshPartBuilder part = mb.part("circle", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(color)));
         part.ellipse (radius, radius, radius-thickness, radius-thickness, 32, c, new Vector3(0, 1, 0));
         model = mb.end();
 
@@ -328,5 +479,43 @@ public class CodexScreen extends BaseScreen {
 
         return modelInstance;
     }
+	
+	public ModelInstance createPolygonBox(Color color, float width, float height, float length, float rotation, float x, float y, float z) {
+		
+		Vector3 corner000 = new Vector3(-width/2,-height/2,-length/2); 
+		Vector3 corner010 = new Vector3(width/2,-height/2, -length/2); 
+		Vector3 corner100 = new Vector3(-width/2,-height/2, length/2); 
+		Vector3 corner110 = new Vector3(width/2,-height/2, length/2);
+		
+		Vector3 corner001 = new Vector3(-width/2,height/2,-length/2); 
+		Vector3 corner011 = new Vector3(width/2,height/2,-length/2); 
+		Vector3 corner101 = new Vector3(-width/2,height/2,length/2); 
+		Vector3 corner111 = new Vector3(width/2,height/2,length/2);
+		
+		
+		Material material = new Material(ColorAttribute.createDiffuse(color));
+        ModelBuilder mb = new ModelBuilder();
+        mb.begin();
+        mb.part("box", GL30.GL_TRIANGLES, Usage.Position | Usage.Normal, material).box(corner000, corner010, corner100, corner110, corner001, corner011, corner101, corner111);
+		Model model = mb.end();
+		
+        ModelInstance modelInstance = new ModelInstance(model);
+
+        modelInstance.transform.rotate(new Vector3(0, 1, 0), rotation);
+        modelInstance.transform.setTranslation(x,y,z);
+
+		return modelInstance;
+	}
+	
+	public ModelInstance getFigure(float x, float y, float z, float rotation) {
+		ModelInstance instance = new ModelInstance(avatarModel, x, y, z);
+		instance.nodes.get(0).scale.set(.01f, .01f, .01f);
+		instance.transform.rotate(new Vector3(0, 1, 0), rotation);
+		instance.calculateTransforms();
+		return instance;
+	}
+	
+
+
 	
 }
