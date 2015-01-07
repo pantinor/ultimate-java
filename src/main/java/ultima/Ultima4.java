@@ -17,6 +17,8 @@ public class Ultima4 extends Game {
 	
 	public static LogDisplay hud;
 	public static BitmapFont logFont;
+	
+	public static StartScreen startScreen;
 		
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
@@ -35,9 +37,8 @@ public class Ultima4 extends Game {
 		logFont.setColor(Color.WHITE);	
 		hud = new LogDisplay(logFont);
 
-		setScreen(new StartScreen(this));
-		//setScreen(new CodexScreen(new Stage(), null));
-
+		startScreen = new StartScreen(this);
+		setScreen(startScreen);
 		
 	}
 

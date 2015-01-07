@@ -203,12 +203,9 @@ public class GameScreen extends BaseScreen {
 //			party.getMember(0).getPlayer().mp = 999;
 //			for (Spell sp : Spell.values()) party.getSaveGame().mixtures[sp.ordinal()] = 99;
 //			for (Virtue v : Virtue.values()) {
-//				sg.karma[v.ordinal()] = 99;
+//				sg.karma[v.ordinal()] = 0;
 //			}
-//			sg.stones = 0xff;
-//			sg.runes = 0xff;
-
-
+//
 //			party.join(NpcDefaults.Geoffrey.name());
 //			party.join(NpcDefaults.Shamino.name());
 //			party.join(NpcDefaults.Katrina.name());
@@ -216,12 +213,16 @@ public class GameScreen extends BaseScreen {
 //			party.join(NpcDefaults.Dupre.name());
 //			party.join(NpcDefaults.Iolo.name());
 //			party.join(NpcDefaults.Julia.name());
-//
+//			party.join(NpcDefaults.Jaana.name());
+//			
 //			sg.food = 30000;
-//			sg.gold = 9999;
+//			sg.gold = 999;
 //			sg.keys = 20;
 //			sg.gems = 15;
 //			sg.moves = 2800;
+//			sg.stones = 0xff;
+//			sg.runes = 0xff;
+//			sg.items = 0xff;
 			
 //			party.getMember(0).getPlayer().status = StatusType.POISONED;
 //			party.getMember(0).getPlayer().xp = 999;
@@ -234,13 +235,13 @@ public class GameScreen extends BaseScreen {
 			
 			//load the surface world first
 			loadNextMap(Maps.WORLD, sg.x, sg.y);
-			//loadNextMap(Maps.WORLD, 156, 27);
+			//loadNextMap(Maps.WORLD, 233, 233);
 
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
 				loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation+1), true);
-				//loadNextMap(Maps.ABYSS, 0, 0, 1, 1, 7, Direction.NORTH, true);
-				//loadNextMap(Maps.DESPISE, 0, 0, 3, 7, 4, Direction.NORTH, true);
+				//loadNextMap(Maps.ABYSS, 0, 0, 5, 5, 0, Direction.SOUTH, true);
+				//loadNextMap(Maps.DESPISE, 0, 0, 5, 5, 0, Direction.NORTH, true);
 			}
 		}
 		
@@ -529,7 +530,18 @@ public class GameScreen extends BaseScreen {
 						log("A strange force keeps you out!");
 					}
 				} else {
-					loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
+					
+					Maps dest = Maps.get(p.getDestmapid());
+		            if (dest == Maps.ABYSS) {
+			            if (	(context.getParty().getSaveGame().items & Item.CANDLE_USED.getLoc()) == 0 ||
+			            		(context.getParty().getSaveGame().items & Item.BELL_USED.getLoc()) == 0 ||
+			            		(context.getParty().getSaveGame().items & Item.BOOK_USED.getLoc()) == 0) {
+							log("A strange force keeps you out!");
+			    			return false;
+			            }
+		            }
+					
+					loadNextMap(dest, p.getStartx(), p.getStarty());
 				}
 			}
 		} else if (keycode == Keys.Q) {

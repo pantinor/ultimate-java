@@ -19,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 public interface Constants {
 	
 	public enum ScreenType {
-		MAIN,COMBAT,DUNGEON,SHRINE;
+		MAIN,COMBAT,DUNGEON,SHRINE,CODEX;
 	}
 	
 	public static int tilePixelWidth = 32;
@@ -665,28 +665,30 @@ public interface Constants {
 
 	
 	public enum Virtue {
-				
-		HONESTY("HSTY","honest", "AHM", 0x01, Color.BLUE),
-		COMPASSION("COMP","compassionate", "MU", 0x02, Color.YELLOW),
-		VALOR("VALO","valiant", "RA", 0x04, Color.RED),
-		JUSTICE("JUST","just", "BEH", 0x08, Color.GREEN),
-		SACRIFICE("SACR","sacrificial", "CAH", 0x10, Color.ORANGE),
-		HONOR("HONR","honorable", "SUMM", 0x20, Color.PURPLE),
-		SPIRITUALITY("SPIR","spiritual", "OM", 0x40, Color.WHITE),
-		HUMILITY("HUMI","humble", "LUM", 0x80, Color.BLACK);
+						
+		HONESTY("HSTY","honest", "AHM", 0x01, Color.BLUE,"Truth"),
+		COMPASSION("COMP","compassionate", "MU", 0x02, Color.YELLOW,"Love"),
+		VALOR("VALO","valiant", "RA", 0x04, Color.RED,"Courage"),
+		JUSTICE("JUST","just", "BEH", 0x08, Color.GREEN,"Truth and Love"),
+		SACRIFICE("SACR","sacrificial", "CAH", 0x10, Color.ORANGE,"Love and Courage"),
+		HONOR("HONR","honorable", "SUMM", 0x20, Color.PURPLE,"Courage and Truth"),
+		SPIRITUALITY("SPIR","spiritual", "OM", 0x40, Color.WHITE,"Truth, Love and Courage"),
+		HUMILITY("HUMI","humble", "LUM", 0x80, Color.BLACK,"");
 		
 		private String description;
 		private String abbr;
 		private String mantra;
 		private int loc;
 		private Color color;
+		private String baseVirtues;
 		
-		private Virtue(String abbr, String d, String ab, int loc, Color color) {
+		private Virtue(String abbr, String d, String ab, int loc, Color color, String bv) {
 			this.abbr = abbr;
 			this.description = d;
 			this.mantra = ab;
 			this.loc = loc;
 			this.color = color;
+			this.baseVirtues = bv;
 		}
 		public static Virtue get(int v) {
 			for (Virtue x : values()) {
@@ -710,6 +712,9 @@ public interface Constants {
 		}
 		public Color getColor() {
 			return this.color;
+		}
+		public String getBaseVirtues() {
+			return this.baseVirtues;
 		}
 	}
 	
@@ -1024,6 +1029,7 @@ public interface Constants {
 		}
 		
 	}
+
 	
 	public enum BaseVirtue {
 		NONE(0x00),

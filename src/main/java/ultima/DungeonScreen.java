@@ -16,12 +16,14 @@ import objects.TileSet;
 
 import org.apache.commons.io.IOUtils;
 
+import ultima.Constants.Stone;
 import util.DungeonRoomTiledMapLoader;
 import util.UltimaTiledMapLoader;
 import util.Utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
@@ -408,14 +410,8 @@ public class DungeonScreen extends BaseScreen {
 		MINI_MAP_TEXTURE.dispose();
 		miniMapIcon.dispose();
 		stage.dispose();
-		for (DungeonTileModelInstance mi : modelInstances) mi.getInstance().model.dispose();
 		for (ModelInstance mi : floor) mi.model.dispose();
 		for (ModelInstance mi : ceiling) mi.model.dispose();
-		fountainModel.dispose();
-		ladderModel.dispose();
-		chestModel.dispose();
-		orbModel.dispose();
-		altarModel.dispose();
 		font.dispose();
 	}
 	
@@ -487,8 +483,7 @@ public class DungeonScreen extends BaseScreen {
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
 		} else if (tile.getValue() >= 10 && tile.getValue() <= 48) {
-			ModelInstance instance = new ModelInstance(ladderModel, tx-.15f, 0, tz+.2f);
-			//instance.transform.setToRotation(Vector3.Y, 45);
+			ModelInstance instance = new ModelInstance(ladderModel, tx, 0, tz);
 			instance.nodes.get(0).scale.set(.060f, .060f, .060f);
 			instance.calculateTransforms();
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
@@ -527,6 +522,7 @@ public class DungeonScreen extends BaseScreen {
 			instance.nodes.get(0).scale.set(.0040f, .0040f, .0040f);
 			instance.calculateTransforms();
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+			in.x=(int)tx;in.y=(int)tz;
 			modelInstances.add(in);
 		} else if (tile.getValue() >= 160 && tile.getValue() <= 163) {
 			Color c = Color.GREEN;
@@ -1026,7 +1022,7 @@ public class DungeonScreen extends BaseScreen {
 				enterRoom(loc, currentDir);
 				return false;
 			}
-			
+		
 			
 		} else if (keycode == Keys.K) {
 			if (tile == DungeonTile.LADDER_UP || tile == DungeonTile.LADDER_UP_DOWN) {
@@ -1035,6 +1031,7 @@ public class DungeonScreen extends BaseScreen {
 					currentLevel = 0;
 					if (mainGame != null) {
 						mainGame.setScreen(gameScreen);
+						dispose();
 					}
 				} else {
 					createMiniMap();
@@ -1088,10 +1085,6 @@ public class DungeonScreen extends BaseScreen {
 		} else if (keycode == Keys.M) {
 			
 			new MixtureDialog(GameScreen.context.getParty(), this, stage, skin).show();
-		} else if (keycode == Keys.U) {
-			//log("Which party member?");
-			//Gdx.input.setInputProcessor(sip);
-			//sip.setinitialKeyCode(keycode, tile, x, y);
 			
 		} else if (keycode == Keys.S) {
 			if (tile == DungeonTile.ALTAR) {
@@ -1114,6 +1107,15 @@ public class DungeonScreen extends BaseScreen {
 
 				Gdx.input.setInputProcessor(sip);
 				sip.setinitialKeyCode(keycode, tile, x, y);
+			}
+			
+		} else if (keycode == Keys.U) {
+			if (dngMap == Maps.ABYSS && tile == DungeonTile.ALTAR) {
+				log("Use which item?");
+				log("");
+				AbyssInputAdapter aia = new AbyssInputAdapter(x, y);
+				Gdx.input.setInputProcessor(aia);
+				return false;
 			}
 			
 		} else if (keycode == Keys.Z) {
@@ -1216,7 +1218,7 @@ public class DungeonScreen extends BaseScreen {
 	    DungeonTileModelInstance orb = null;
 	    for (DungeonTileModelInstance dmi : modelInstances) {
 	    	if (dmi.tile == DungeonTile.ORB) {
-	    		if (dmi.x == x && dmi.y == y) {
+	    		if (dmi.x == x && dmi.y == y && dmi.level == currentLevel) {
 	    			orb = dmi;
 		    		break;
 	    		}
@@ -1653,5 +1655,107 @@ public class DungeonScreen extends BaseScreen {
 	}
 
 
+	private StringBuilder inputBuffer = new StringBuilder();
+	
+	class AbyssInputAdapter extends InputAdapter {
+		int state = 1;
+		int x, y;
+		AbyssInputAdapter(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+		@Override
+		public boolean keyUp(int keycode) {
+			
+			if (keycode == Keys.ENTER) {
+				
+				if (inputBuffer.length() < 1) return false;
+				String input = inputBuffer.toString().toLowerCase();
+				
+				if (state == 1) {
+					if (input.startsWith("stone") && (GameScreen.context.getParty().getSaveGame().stones & Stone.get(currentLevel).getLoc()) == 0) {
+						log("None owned!");
+						Gdx.input.setInputProcessor(new InputMultiplexer(DungeonScreen.this, stage));
+						return false;
+					}
+					if (input.startsWith("stone")) {
+						state = 2;
+						if (currentLevel == 7) {
+							log("A voice rings out: What virtue exists independently of Truth, Love and Courage?");
+						} else {
+							log("A voice rings out: What virtue dost stem from "+Virtue.get(currentLevel).getBaseVirtues()+"?");
+						}
+						log("");
+					} else {
+						log("Hmm, no effect!");
+						Gdx.input.setInputProcessor(new InputMultiplexer(DungeonScreen.this, stage));
+					}
+				}
+				
+				else if (state == 2) {
+					if (input.startsWith(Virtue.get(currentLevel).toString().toLowerCase())) {
+						state = 3;
+						log("The voice says:");
+						log("Use thy Stone: ");
+		    			Sounds.play(Sound.POSITIVE_EFFECT);
+					} else {
+						log("That is not correct!");
+						Gdx.input.setInputProcessor(new InputMultiplexer(DungeonScreen.this, stage));
+					}
+				}
+				
+				else if (state == 3) {
+					if (input.startsWith(Stone.get(currentLevel).toString().toLowerCase())) {
+		    			Sounds.play(Sound.POSITIVE_EFFECT);
+						if (currentLevel == 7) {
+							CodexScreen sc = new CodexScreen(DungeonScreen.this);
+							mainGame.setScreen(sc);
+						} else {
+							log("The altar changes before thyne eyes!");
+						    DungeonTileModelInstance altar = null;
+						    for (DungeonTileModelInstance dmi : modelInstances) {
+						    	if (dmi.tile == DungeonTile.ALTAR) {
+						    		if (dmi.x == x && dmi.y == y && dmi.level == currentLevel) {
+						    			altar = dmi;
+							    		break;
+						    		}
+						    	}
+						    }
+						    modelInstances.remove(altar);
+							dungeonTiles[currentLevel][x][y] = DungeonTile.LADDER_DOWN;
+							
+							ModelInstance instance = new ModelInstance(ladderModel, x+.5f, 0, y+.5f);
+							instance.nodes.get(0).scale.set(.060f, .060f, .060f);
+							instance.calculateTransforms();
+							DungeonTileModelInstance in = new DungeonTileModelInstance(instance, DungeonTile.LADDER_DOWN, currentLevel);
+							modelInstances.add(in);
+							
+							Model manhole = new ModelBuilder().createCylinder(.75f, .02f, .75f, 32, new Material(ColorAttribute.createDiffuse(Color.DARK_GRAY)), Usage.Position | Usage.Normal);
+							instance = new ModelInstance(manhole, x+.5f, 0, y+.5f);
+							modelInstances.add(new DungeonTileModelInstance(instance, DungeonTile.LADDER_DOWN, currentLevel));
+
+							Gdx.input.setInputProcessor(new InputMultiplexer(DungeonScreen.this, stage));
+						}
+
+					} else {
+						log("That is not correct!");
+						Gdx.input.setInputProcessor(new InputMultiplexer(DungeonScreen.this, stage));
+					}
+				}
+				
+				inputBuffer = new StringBuilder();
+				
+			} else if (keycode == Keys.BACKSPACE) {
+				if (inputBuffer.length() > 0) {
+					inputBuffer.deleteCharAt(inputBuffer.length() - 1);
+					logDeleteLastChar();
+				}
+			} else if (keycode >= 29 && keycode <= 54) {
+				inputBuffer.append(Keys.toString(keycode).toUpperCase());
+				logAppend(Keys.toString(keycode).toUpperCase());
+			}
+			return false;
+		}
+	}
 
 }

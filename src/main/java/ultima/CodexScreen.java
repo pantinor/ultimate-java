@@ -3,6 +3,9 @@ package ultima;
 import java.util.ArrayList;
 import java.util.List;
 
+import ultima.Constants.Direction;
+import util.CodexLogDisplay;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
@@ -13,13 +16,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -37,11 +37,13 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.UBJsonReader;
 
 public class CodexScreen extends BaseScreen {
 	
-	public GameScreen gameScreen;
+	public final DungeonScreen returnScreen;
 	
 	public Environment environment;
 	public ModelBatch modelBatch;
@@ -62,7 +64,6 @@ public class CodexScreen extends BaseScreen {
 	
 	public List<ModelInstance> modelInstances = new ArrayList<ModelInstance>();
 	public List<ModelInstance> floor = new ArrayList<ModelInstance>();
-	public List<ModelInstance> ceiling = new ArrayList<ModelInstance>();
 	
 	private Vector3 nll2 = new Vector3(1f, 0.8f, 0.6f);
 	private Vector3 center = new Vector3(5.5f, 0, 5.5f);
@@ -71,41 +72,38 @@ public class CodexScreen extends BaseScreen {
 	Renderable pLight;
 	PointLight fixedLight;
 	float lightFactor;
+
+	CodexLogDisplay logs;
+
+	int codexQuestionCount;
 		
-	Texture bkgrnd;
-	
-	enum CodexEjectCode {
-	    CODEX_EJECT_NO_3_PART_KEY,
-	    CODEX_EJECT_BAD_WOP,
-	    CODEX_EJECT_NO_FULL_PARTY,
-	    CODEX_EJECT_NO_FULL_AVATAR,
-	    CODEX_EJECT_HONESTY,
-	    CODEX_EJECT_COMPASSION,
-	    CODEX_EJECT_VALOR,
-	    CODEX_EJECT_JUSTICE,
-	    CODEX_EJECT_SACRIFICE,
-	    CODEX_EJECT_HONOR,
-	    CODEX_EJECT_SPIRITUALITY,
-	    CODEX_EJECT_HUMILITY,
-	    CODEX_EJECT_TRUTH,
-	    CODEX_EJECT_LOVE,
-	    CODEX_EJECT_COURAGE,
-	    CODEX_EJECT_BAD_INFINITY 
-	};
-	
-	public static final String entrance = "There is a sudden darkness, and you find yourself alone in an empty chamber.";    
-	
-	public static final String[] codexQuestions = {
-		"What dost thou possess if all may rely upon your every word?",
-		"What quality compels one to share in the journeys of others?",
-		"What answers when great deeds are called for?",
-		"What should be the same for Lord and Serf alike?",
-		"What is loath to place the self above aught else?",
-		"What shirks no duty?",
-		"What, in knowing the true self, knows all?",
-		"What is that which Serfs are born with but Nobles must strive to obtain?",
-		"If all else is imaginary, this is real...What plunges to the depths, while soaring on the heights?",
-		"What turns not away from any peril?"
+	enum CodexQuestion {
+		honesty("What dost thou possess if all may rely upon your every word?"),
+		compassion("What quality compels one to share in the journeys of others?"),
+		valor("What answers when great deeds are called for?"),
+		justice("What should be the same for Lord and Serf alike?"),
+		sacrifice("What is loath to place the self above aught else?"),
+		honor("What shirks no duty?"),
+		spirituality("What, in knowing the true self, knows all?"),
+		humility("What is that which Serfs are born with but Nobles must strive to obtain?"),
+		truth("If all else is imaginary, this is real..."),
+		love("What plunges to the depths, while soaring on the heights?"),
+		courage("What turns not away from any peril?"),
+		infinity("Then what is the one thing which encompasses and is the whole of all undeniable Truth, unending Love, and unyielding Courage?");
+		private String question;
+		private CodexQuestion(String q) {
+			this.question = q;	
+		}
+		public static CodexQuestion getQ(int val) {
+			CodexQuestion ret = CodexQuestion.honesty;
+			for (CodexQuestion d : CodexQuestion.values()) {
+				if (val == d.ordinal()) {
+					ret = d;
+					break;
+				}
+			}
+			return ret;
+		}
 	};
 	
 	public static final String[] text1 = {
@@ -115,10 +113,7 @@ public class CodexScreen extends BaseScreen {
 		"Avatarhood is a living gift.  It must always and forever be nurtured to flourish.",
 		"For if thou dost stray from the paths of virtue, thy way may be lost forever.",
 		"Return now unto thine own world. Live there as an example to thy people, as our memory of thy gallant deeds serves us.",
-		"As the sound of the voice trails off, darkness seems to rise around you. There is a moment of intense, wrenching vertigo"
-	};
-	
-	public static final String[] text2 = {
+		"As the sound of the voice trails off, darkness seems to rise around you. There is a moment of intense, wrenching vertigo",
 		"You open your eyes to a familiar circle of stones.  You wonder of your recent adventures.",
 		"It seems a time and place very distant.  You wonder if it really happened. Then you realize that in your hand you hold The Ankh.",
 		"You walk away from the circle, knowing that you can always return from whence you came, since you now know the secret of the gates.",
@@ -127,27 +122,19 @@ public class CodexScreen extends BaseScreen {
 		"Report thy feat unto Lord British at Origin Systems!"
 	};
 	
-	int inc;
-
-	State state = State.enter;
+	State state = State.wordOfPassage;
 	
 	public enum State {
-		enter,
-		approach1,
-		approach2,
-		
-		use,
-		use_stone,
-		
-		
+		wordOfPassage,
+		codexQuestions,
+		endText,
+		done;
 	}
 	
-	public CodexScreen(Stage stage, GameScreen gameScreen) {
+	public CodexScreen(DungeonScreen returnScreen) {
 		
-		scType = ScreenType.DUNGEON;
-		this.gameScreen = gameScreen;
-		this.stage = stage;
-
+		scType = ScreenType.CODEX;
+		this.returnScreen = returnScreen;
 		init();
 	}
 	
@@ -156,7 +143,14 @@ public class CodexScreen extends BaseScreen {
 		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage, inputController));
 	}
 	
+	@Override
+	public void hide() {
+		dispose();
+	}
+	
 	public void init() {
+		
+		this.stage = new Stage();
 		
 		assets = new AssetManager();
 		assets.load("assets/graphics/dirt.png", Texture.class);
@@ -223,27 +217,52 @@ public class CodexScreen extends BaseScreen {
 		
 
 		modelInstances.add(getFigure(4.5f, 0.528f, 3f, 0));
-		modelInstances.add(getFigure(4.0f, 0.528f, 2f, -10));
-		modelInstances.add(getFigure(3.5f, 0.528f, 3f, 30));
+//		modelInstances.add(getFigure(4.0f, 0.528f, 2f, -10));
+//		modelInstances.add(getFigure(3.5f, 0.528f, 3f, 30));
+//		
+//		modelInstances.add(getFigure(4.5f, 0.528f, 1.5f, -5));
+//		modelInstances.add(getFigure(3.2f, 0.528f, 2.2f, 30));
+//		
+//		modelInstances.add(getFigure(6.5f, 0.528f, 2f, -20));
+//		modelInstances.add(getFigure(7.0f, 0.528f, 2.3f, -30));
+//		modelInstances.add(getFigure(7.2f, 0.528f, 2.8f, -40));
 		
-		modelInstances.add(getFigure(4.5f, 0.528f, 1.5f, -5));
-		modelInstances.add(getFigure(3.2f, 0.528f, 2.2f, 30));
-		
-		modelInstances.add(getFigure(6.5f, 0.528f, 2f, -20));
-		modelInstances.add(getFigure(7.0f, 0.528f, 2.3f, -30));
-		modelInstances.add(getFigure(7.2f, 0.528f, 2.8f, -40));
-		
-		Pixmap pixmap = new Pixmap(400,100, Format.RGBA8888);
-		pixmap.setColor(0f,0f,0f,0.65f);
-		pixmap.fillRectangle(0, 0, 400, 100);
-		bkgrnd =  new Texture(pixmap);
-		pixmap.dispose();
-
 		
 		currentPos = new Vector3(5.5f, 2f, 0f);
 		cam.position.set(currentPos);
 		cam.lookAt(5.5f, 0.2f, 5.5f);
 		
+		logs = new CodexLogDisplay(font);
+		logs.add("There is a sudden darkness, and you find yourself alone in an empty chamber.");
+		
+		int haveKeys = (GameScreen.context.getParty().getSaveGame().items & (Item.KEY_C.getLoc() | Item.KEY_L.getLoc() | Item.KEY_T.getLoc())) ;
+		int keys = (Item.KEY_C.getLoc() | Item.KEY_L.getLoc() | Item.KEY_T.getLoc());
+	    if (haveKeys != keys) {
+	    	codexEject("Thou dost not have the Key of Three Parts.");
+	    } else {
+	    	
+	    	
+			SequenceAction seq = Actions.action(SequenceAction.class);
+			seq.addAction(Actions.delay(5f));
+			seq.addAction(Actions.run(new Runnable() {
+				public void run() {
+				    logs.add("You use yor key of three parts.");
+				}
+			}));
+			seq.addAction(Actions.delay(5f));
+			seq.addAction(Actions.run(new Runnable() {
+				public void run() {
+				    logs.add("A voice rings out:");
+				    logs.add("What is the Word of Passage?");
+				    logs.add(" ");
+					CodexInputAdapter cia = new CodexInputAdapter();
+					Gdx.input.setInputProcessor(cia);
+				}
+			}));
+			stage.addAction(seq);
+	    	
+	    }
+	   
 		//createAxes();
 
 	}
@@ -251,17 +270,30 @@ public class CodexScreen extends BaseScreen {
 	@Override
 	public boolean keyUp (int keycode) {
 		
-
-		
-		inc ++;
-		nextPiece();
+		if (state == State.endText) {
+			state = State.done;
+			SequenceAction seq = Actions.action(SequenceAction.class);
+			for (final String s : text1) {
+				seq.addAction(Actions.delay(5f));
+				seq.addAction(Actions.run(new Runnable() {
+					public void run() {
+						logs.add(s);
+					}
+				}));				
+			}
+			seq.addAction(Actions.run(new Runnable() {
+				public void run() {
+	    			mainGame.setScreen(Ultima4.startScreen);
+				}
+			}));
+			stage.addAction(seq);
+		}
 		return false;
 	}
 	
 	private void nextPiece() {
 		
-		
-		switch (inc) {
+		switch (codexQuestionCount) {
 		case 1:
 			//modelInstances.add(createLine(3.75f, 6.5f, 5.5f, 3.5f, 0.204f, Color.WHITE));
 			modelInstances.add(createPolygonBox(Virtue.HONESTY.getColor(), .02f, .02f, 3.5f, -30f, 4.65f, 0.204f, 5.0f));
@@ -350,51 +382,105 @@ public class CodexScreen extends BaseScreen {
         //modelBatch.render(axesInstance);
 		
 		batch.begin();
-		batch.draw(bkgrnd, 200, 500);
-		
-		switch (state) {
-		case enter:
-			drawText(entrance, 200, 400);
-			break;
-		}
+		logs.render(batch);
 		batch.end();
+		
+		nextPiece();
 
         
 	}
 	
-	private void drawText(String text, int x, int width) {
-		TextBounds bounds = font.getWrappedBounds(text, width - 20);
-		float y = Ultima4.SCREEN_HEIGHT - bounds.height - 10;
-		font.drawWrapped(batch, text, x+10, y, width - 20);
-	}
 	
 	private StringBuilder inputBuffer = new StringBuilder();
 	
 	class CodexInputAdapter extends InputAdapter {
 		@Override
 		public boolean keyUp(int keycode) {
+			
 			if (keycode == Keys.ENTER) {
+				
 				if (inputBuffer.length() < 1) return false;
+				String input = inputBuffer.toString().toLowerCase();
+				
+				if (state == State.wordOfPassage) {
+					if (input.startsWith("veramocor")) {
+						
+				        if (GameScreen.context.getParty().getMembers().size() != 8) {
+					    	codexEject("Thou art not ready.");
+							return false;
+				        }
+				        
+				        for (int i = 0; i < 8; i++) {
+				            if (GameScreen.context.getParty().getSaveGame().karma[i] != 0) {
+						    	codexEject("Thou hast not proved thy leadership in all eight virtues.");
+								return false;
+				            }
+				        } 
+				        
+						state = State.codexQuestions;
+						inputBuffer = new StringBuilder();
+						logs.add("Passage is granted.");
+						logs.add(CodexQuestion.honesty.question);
+						logs.add("");
+		    			Sounds.play(Sound.POSITIVE_EFFECT);
+					} else {
+						codexEject("Passage is not granted.");
+					}
+				}
+				
+				else if (state == State.codexQuestions) {
+					if (input.startsWith(CodexQuestion.getQ(codexQuestionCount).toString())) {
+						inputBuffer = new StringBuilder();
+						codexQuestionCount ++;
+						if (codexQuestionCount == CodexQuestion.infinity.ordinal()) {
+							logs.add("The ground rumbles beneath your feet.");
+			    			Sounds.play(Sound.TREMOR);
+						} else if (codexQuestionCount > CodexQuestion.infinity.ordinal()) {
+							state = State.endText;
+							Gdx.input.setInputProcessor(new InputMultiplexer(CodexScreen.this, stage, inputController));
+							return false;
+						} else {
+			    			Sounds.play(Sound.POSITIVE_EFFECT);
+						}
+						logs.add(CodexQuestion.getQ(codexQuestionCount).question);
+						logs.add("");
+					} else {
+						codexEject("That is not correct!");
+					}
+				}
 				
 			} else if (keycode == Keys.BACKSPACE) {
-				if (inputBuffer.length() > 0)
+				if (inputBuffer.length() > 0) {
 					inputBuffer.deleteCharAt(inputBuffer.length() - 1);
+					logs.logDeleteLastChar();
+				}
 			} else if (keycode >= 29 && keycode <= 54) {
 				inputBuffer.append(Keys.toString(keycode).toUpperCase());
+				logs.append(Keys.toString(keycode).toUpperCase());
 			}
 			return false;
 		}
 	}
+	
+	
+	private void codexEject(String text) {
+		logs.add(text);
 
-	@Override
-	public void finishTurn(int currentX, int currentY) {
-		
+		SequenceAction seq = Actions.action(SequenceAction.class);
+		seq.addAction(Actions.run(new Runnable() {
+			public void run() {
+    			Sounds.play(Sound.NEGATIVE_EFFECT);
+			}
+		}));
+		seq.addAction(Actions.delay(3f));
+		seq.addAction(Actions.run(new Runnable() {
+			public void run() {
+    			mainGame.setScreen(returnScreen);
+			}
+		}));
+		stage.addAction(seq);
 	}
 
-	@Override
-	public void partyDeath() {
-		
-	}
 	
 	final float GRID_MIN = -1*12;
 	final float GRID_MAX = 1*12;
@@ -515,7 +601,24 @@ public class CodexScreen extends BaseScreen {
 		return instance;
 	}
 	
+	@Override
+	public void dispose() {
+		modelBatch.dispose();
+		batch.dispose();
+		stage.dispose();
+		for (ModelInstance mi : floor) mi.model.dispose();
+		for (ModelInstance mi : modelInstances) mi.model.dispose();
+		font.dispose();
+	}
 
+	@Override
+	public void finishTurn(int currentX, int currentY) {
+		
+	}
 
+	@Override
+	public void partyDeath() {
+		
+	}
 	
 }
