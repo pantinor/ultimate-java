@@ -840,7 +840,7 @@ public class CombatScreen extends BaseScreen {
 
 	        Sounds.play(Sound.NPC_ATTACK);
 	        
-		    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dirmask, creature.currentX, creature.currentY, 1, 11, false, false);
+		    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dirmask, creature.currentX, creature.currentY, 1, 11, false, false, false);
 		    for (AttackVector v : path) {
 		        if (rangedAttackAt(v, creature)) {
 		            break;

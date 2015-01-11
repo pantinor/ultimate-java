@@ -23,8 +23,8 @@ import javax.xml.bind.Unmarshaller;
 import objects.BaseMap;
 import objects.Conversation;
 import objects.Creature;
-import objects.Party.PartyMember;
 import objects.Drawable;
+import objects.Party.PartyMember;
 import objects.Person;
 import objects.ProjectileActor;
 import objects.Tile;
@@ -33,25 +33,24 @@ import objects.TileSet;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.BufferUtils;
 
+import ultima.BaseScreen;
 import ultima.CombatScreen;
 import ultima.Constants;
 import ultima.GameScreen;
 import ultima.Sound;
 import ultima.Sounds;
 import ultima.Ultima4;
-import ultima.Constants.DungeonTile;
-import ultima.Constants.HeadingDirection;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 public class Utils implements Constants {
 	
@@ -130,15 +129,8 @@ public class Utils implements Constants {
 	    map.setTiles(tiles);
 	}
 	
-	/**
-	 * Gets the path of coordinates for an action.  Each tile in the
-	 * direction specified by dirmask, between the minimum and maximum
-	 * distances given, is included in the path, until blockedPredicate
-	 * fails.  If a tile is blocked, that tile is included in the path
-	 * only if includeBlocked is true.
-	 */
 	public static List<AttackVector> getDirectionalActionPath(BaseMap combatMap, int dirmask, int x, int y, int minDistance, int maxDistance, 
-			boolean weaponCanAttackThroughObjects, boolean checkForCreatures) {
+			boolean weaponCanAttackThroughObjects, boolean checkForCreatures, boolean isCannonBall) {
 		
 	    List<AttackVector> path = new ArrayList<AttackVector>();
 
@@ -157,11 +149,11 @@ public class Utils implements Constants {
 			}
 
 			boolean blocked = combatMap.isTileBlockedForRangedAttack(nx, ny, checkForCreatures);
+			
 			Tile tile = combatMap.getTile(nx, ny);
-			boolean canAttackOverSolid = (tile != null && tile.getRule() != null 
-					&& tile.getRule() == TileRule.solid_attackover && weaponCanAttackThroughObjects);
+			boolean canAttackOverSolid = (tile != null && tile.getRule() == TileRule.solid_attackover && weaponCanAttackThroughObjects);
 
-			if (!blocked || canAttackOverSolid) {
+			if (!blocked || canAttackOverSolid || isCannonBall) {
 				path.add(new AttackVector(nx, ny));
 			} else {
 				path.add(new AttackVector(nx, ny));
@@ -305,7 +297,7 @@ public class Utils implements Constants {
 	    
 		final AttackVector target = Utils.attack(scr.combatMap, attacker, dir, x, y, range);
 
-		final ProjectileActor p = new ProjectileActor(scr, Color.RED, x, y, target.res);
+		final ProjectileActor p = new ProjectileActor(scr, Color.RED, x, y, target.result);
 		
 		Vector3 v = scr.getMapPixelCoords(target.x, target.y);
 		
@@ -336,7 +328,7 @@ public class Utils implements Constants {
 	    WeaponType wt = attacker.getPlayer().weapon;
 		boolean weaponCanAttackThroughObjects = wt.getWeapon().getAttackthroughobjects();
 	    
-	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), x, y, 1, range, weaponCanAttackThroughObjects, true);
+	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), x, y, 1, range, weaponCanAttackThroughObjects, true, false);
 	    
 	    AttackVector target = null;
 	    boolean foundTarget = false;
@@ -344,7 +336,7 @@ public class Utils implements Constants {
 	    for (AttackVector v : path) {
             AttackResult res = attackAt(combatMap, v, attacker, dir, range, distance);
             target = v;
-            target.setResult(res);
+            target.result = res;
 	        if (res != AttackResult.NONE) {
 	        	foundTarget = true;
 	            break;
@@ -378,7 +370,7 @@ public class Utils implements Constants {
 		case MAGICMISSILE:color = Color.BLUE;break;
 		}
 
-		final ProjectileActor p = new ProjectileActor(scr, color, x, y, target.res);
+		final ProjectileActor p = new ProjectileActor(scr, color, x, y, target.result);
 		
 		Vector3 v = scr.getMapPixelCoords(target.x, target.y);
 		
@@ -408,16 +400,14 @@ public class Utils implements Constants {
 	
 	private static AttackVector castSpellAttack(BaseMap combatMap, PartyMember attacker, Direction dir, int x, int y, int minDamage, int maxDamage) {
 	    
-	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), x, y, 1, 11, true, true);
+	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), x, y, 1, 11, true, true, false);
 	    
 	    AttackVector target = null;
-	    boolean foundTarget = false;
 	    for (AttackVector v : path) {
             AttackResult res = castAt(combatMap, v, attacker, minDamage, maxDamage);
             target = v;
-            target.setResult(res);
+            target.result = res;
 	        if (res != AttackResult.NONE) {
-	        	foundTarget = true;
 	            break;
 	        }
 	    }
@@ -489,15 +479,49 @@ public class Utils implements Constants {
         return res;
 	}
 	
+	
+	
+	public static void animateCannonFire(final BaseScreen screen, final Stage stage, final BaseMap map, final AttackVector av, final int sx, final int sy, final boolean avatarAttack) {
+		
+        Sounds.play(Sound.CANNON);
+		
+		final ProjectileActor p = new ProjectileActor(screen, Color.WHITE, sx, sy, av.result);
+		
+		Vector3 d = screen.getMapPixelCoords(av.x, av.y);
+		
+		p.addAction(sequence(moveTo(d.x, d.y, .3f), Actions.run(new Runnable() {
+			public void run() {
+				switch(p.res) {
+				case HIT:
+					p.resultTexture = CombatScreen.hitTile;
+				    map.removeCreature(av.impactedCreature);
+				    if (av.impactedDrawable != null && av.impactedDrawable.getShipHull() <= 0) av.impactedDrawable.remove();
+					break;
+				case MISS:
+					p.resultTexture = CombatScreen.missTile;
+					break;
+				}
+				
+				if (avatarAttack) {
+					Vector3 v = screen.getCurrentMapCoords();
+					screen.finishTurn((int)v.x, (int)v.y);
+				}
+				
+			}
+		}), Actions.fadeOut(.3f), removeActor(p)));
+		
+		stage.addActor(p);
+	}
+	
 	public static AttackVector enemyfireCannon(Stage stage, BaseMap combatMap, Direction dir, int startX, int startY, int avatarX, int avatarY) {
 	    
-	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), startX, startY, 1, 4, true, false);
+	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), startX, startY, 1, 4, true, false, true);
 	    
 	    AttackVector target = null;
 	    for (AttackVector v : path) {
             AttackResult res = fireAt(stage, combatMap, v, false, avatarX, avatarY);
             target = v;
-            target.setResult(res);
+            target.result = res;
 	        if (res != AttackResult.NONE) {
 	            break;
 	        }
@@ -508,13 +532,13 @@ public class Utils implements Constants {
 	
 	public static AttackVector avatarfireCannon(Stage stage, BaseMap combatMap, Direction dir, int startX, int startY) {
 	    
-	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), startX, startY, 1, 4, true, true);
+	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), startX, startY, 1, 4, true, true, true);
 	    
 	    AttackVector target = null;
 	    for (AttackVector v : path) {
             AttackResult res = fireAt(stage, combatMap, v, true, 0, 0);
             target = v;
-            target.setResult(res);
+            target.result = res;
 	        if (res != AttackResult.NONE) {
 	            break;
 	        }
@@ -539,8 +563,8 @@ public class Utils implements Constants {
 		}
 		
 	    if (ship != null) {
-        	int hull = ship.damageShip(-1, 10);
-        	if (hull <= 0) ship.remove();
+        	ship.damageShip(-1, 10);
+        	target.impactedDrawable = ship;
             return AttackResult.HIT;
 	    }  
 		
@@ -560,6 +584,7 @@ public class Utils implements Constants {
 		    
             if (rand.nextInt(4) == 0) {
                 res = AttackResult.HIT;
+                target.impactedCreature = creature;
             } else {
             	res = AttackResult.MISS;
             }

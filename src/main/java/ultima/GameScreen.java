@@ -1,7 +1,5 @@
 package ultima;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
 import java.util.Random;
@@ -16,7 +14,6 @@ import objects.Moongate;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.Portal;
-import objects.ProjectileActor;
 import objects.SaveGame;
 import objects.Tile;
 import objects.TileSet;
@@ -231,9 +228,9 @@ public class GameScreen extends BaseScreen {
 //			sg.stones = 0xff;
 //			sg.runes = 0xff;
 //			sg.items = 0xff;
-			
-//			party.getMember(0).getPlayer().status = StatusType.POISONED;
-//			party.getMember(0).getPlayer().xp = 999;
+//			
+//			party.getMember(0).getPlayer().status = StatusType.GOOD;
+//			party.getMember(0).getPlayer().xp = 899;
 //			party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
 //			party.getMember(0).getPlayer().armor = ArmorType.MYSTICROBE;
 //			party.getSaveGame().weapons[9] = 99;
@@ -255,6 +252,17 @@ public class GameScreen extends BaseScreen {
 			}
 			
 			party.setTransport(baseTileSet.getTileByIndex(sg.transport));
+			
+			switch (sg.transport) {
+				case 31: mainAvatar = avatarAnim; break;
+				case 16: 
+				case 17: 
+				case 18: 
+				case 19: mainAvatar = shipAnim; break;
+				case 20: 
+				case 21: mainAvatar = horseAnim; break;
+				case 24: mainAvatar = balloonAnim; break;
+			}
 
 		}
 		
@@ -438,7 +446,7 @@ public class GameScreen extends BaseScreen {
 
 		//Vector3 v = getCurrentMapCoords();
 		//font.draw(batch, "map coords: " + v, 10, 500);
-		//font.draw(batch2, "fps: " + Gdx.graphics.getFramesPerSecond(), 0, 20);
+		font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 0, 20);
 		//font.draw(batch, "mouse: " + currentMousePos, 10, 70);
 		
 		Ultima4.hud.render(batch, context.getParty());
@@ -598,8 +606,8 @@ public class GameScreen extends BaseScreen {
 			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
                 if (context.getParty().getSaveGame().sextants >= 1) {
                 	log("Locate position with sextant");
-                    log(String.format("Latitude: %s'%s", (int)v.y / 16 + 'A', (int)v.y % 16 + 'A'));
-                    log(String.format("Longitude: %s'%s", (int)v.x / 16 + 'A', (int)v.x % 16 + 'A'));
+                    log(String.format("Latitude:    %s' %s\"", (char)((int)v.y / 16 + 'A'), (char)((int)v.y % 16 + 'A')));
+                    log(String.format("Longitude: %s' %s\"", (char)((int)v.x / 16 + 'A'), (char)((int)v.x % 16 + 'A')));
 				} else {
                     log("Locate position with what?");
 				}
@@ -751,8 +759,9 @@ public class GameScreen extends BaseScreen {
 			spawnCreature(null, currentX, currentY);
 		}
 		
-		context.getCurrentMap().moveObjects(this, currentX, currentY);		
+		context.getCurrentMap().moveObjects(this, currentX, currentY);	
 		
+		checkHullIntegrity(context.getCurrentMap(), currentX, currentY);
 	}
 	
 
@@ -964,7 +973,6 @@ public class GameScreen extends BaseScreen {
 		return dest;
 	}
 	
-	//TODO fix this
 	class GameTimer implements Runnable {
 		boolean run = true;
 		public void run() {
@@ -1134,46 +1142,15 @@ public class GameScreen extends BaseScreen {
 			if (fireDir != null) {
 				logAppend(fireDir.toString());
 				AttackVector av = Utils.avatarfireCannon(mapObjectsStage, GameScreen.context.getCurrentMap(), fireDir, (int)pos.x, (int)pos.y);
-				fire(fireDir, av, (int)mapCamera.position.x, (int)mapCamera.position.y);
+				Utils.animateCannonFire(GameScreen.this, projectilesStage, context.getCurrentMap(), av, (int)mapCamera.position.x, (int)mapCamera.position.y, true);
 			} else {
 				log("Broadsides only!");
 			}
-			
-			Vector3 v = getCurrentMapCoords();
-			GameScreen.this.finishTurn((int)v.x, (int)v.y);
-			
+						
 			Gdx.input.setInputProcessor(new InputMultiplexer(GameScreen.this, stage));
 			return false;
 		}
 	}
-	
-	public void fire(Direction dir, final AttackVector av, int sx, int sy) {
-		
-        Sounds.play(Sound.CANNON);
-		
-		final ProjectileActor p = new ProjectileActor(GameScreen.this, Color.WHITE, sx, sy, av.res);
-		
-		Vector3 d = getMapPixelCoords(av.x, av.y);
-		p.addAction(sequence(moveTo(d.x, d.y, .3f), Actions.run(new Runnable() {
-			public void run() {
-				switch(p.res) {
-				case HIT:
-					p.resultTexture = CombatScreen.hitTile;
-					Creature cr = context.getCurrentMap().getCreatureAt(av.x, av.y);
-				    if (cr != null) {
-				    	context.getCurrentMap().removeCreature(cr);
-				    }
-					break;
-				case MISS:
-					p.resultTexture = CombatScreen.missTile;
-					break;
-				}
-			}
-		}), Actions.fadeOut(.3f), removeActor(p)));
-		
-		projectilesStage.addActor(p);
-	}
-	
 	
 	
 	public void getChest(int index, int x, int y) {
@@ -1452,6 +1429,25 @@ public class GameScreen extends BaseScreen {
 	    	log("Hmm...No effect!");
 	    }
 	}
+	
+	private void checkHullIntegrity(BaseMap bm, int x, int y) {
 
+		boolean killAll = false;
+		if (context.getTransportContext() == TransportContext.SHIP && context.getParty().getSaveGame().shiphull <= 0) {
+			log("Thy ship sinks!");
+			killAll = true;
+		} else if (context.getTransportContext() == TransportContext.FOOT && bm.getTile(x,y).getRule().has(TileAttrib.sailable)) {
+			log("Trapped at sea without thy ship, thou dost drown!");
+			killAll = true;
+		}
+
+		if (killAll) {
+			context.getParty().killAll();
+	    	context.getParty().setTransport(baseTileSet.getTileByIndex(0x1f));
+	    	mainAvatar = avatarAnim;
+        	partyDeath();
+		}
+	}
+	
 
 }

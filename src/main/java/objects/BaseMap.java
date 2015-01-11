@@ -285,9 +285,11 @@ public class BaseMap implements Constants {
 		return creatures;
 	}
 	public void addCreature(Creature cr) {
+		if (cr == null) return;
 		creatures.add(cr);
 	}
 	public void removeCreature(Creature cr) {
+		if (cr == null) return;
 		creatures.remove(cr);
 	}
 	public void clearCreatures() {
@@ -493,7 +495,7 @@ public class BaseMap implements Constants {
 		        if (relDirMask > 0 && (dist == 3 || dist == 2) && Direction.isDirInMask(relDirMask, broadsidesDirs)) {
 		        	Direction fireDir = Direction.getByMask(relDirMask);
 					AttackVector av = Utils.enemyfireCannon(surfaceMapStage, this, fireDir, cr.currentX, cr.currentY, avatarX, avatarY);
-					((GameScreen)screen).fire(fireDir, av, (int)cr.currentPos.x, (int)cr.currentPos.y);
+					Utils.animateCannonFire(screen, ((GameScreen)screen).projectilesStage, this, av, (int)cr.currentPos.x, (int)cr.currentPos.y, false);
 					continue;
 		        } else if (relDirMask > 0 && (dist == 3 || dist == 2) && !Direction.isDirInMask(relDirMask, broadsidesDirs) && Utils.rand.nextInt(2) == 0) {
 					cr.sailDir = Direction.goBroadsides(broadsidesDirs);

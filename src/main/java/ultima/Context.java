@@ -243,16 +243,9 @@ public class Context implements Constants {
     }
     
     public void damageShip(int minDamage, int maxDamage) {
-        int damage;
-
         if (transportContext == TransportContext.SHIP) {
-        	
-            damage = ((minDamage >= 0) && (minDamage < maxDamage)) ?
-                rand.nextInt((maxDamage + 1) - minDamage) + minDamage :
-                maxDamage;
-            
+			int damage = minDamage >= 0 && minDamage < maxDamage ? rand.nextInt(maxDamage + 1 - minDamage) + minDamage : maxDamage;
             party.adjustShipHull(-damage);        
-            //gameCheckHullIntegrity();        
         }
     }
     

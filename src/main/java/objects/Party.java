@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 
 import ultima.Constants;
 import ultima.Context;
+import ultima.Constants.TransportContext;
 import util.Utils;
 
 
@@ -78,25 +79,15 @@ public class Party extends Observable implements Constants {
 		}
 	}
 	
-	public int adjustShipHull(int str) {
-	    int newStr = Utils.adjustValue(str, 0, 50, 0);
-	    saveGame.shiphull = newStr;
+	public int adjustShipHull(int val) {
+		saveGame.shiphull = Utils.adjustValue(saveGame.shiphull, val, 50, 0);
 	    return saveGame.shiphull;
 	}
 	
-	/**
-	 * Deals an amount of damage between 'minDamage' and 'maxDamage'
-	 * to each party member, with a 50% chance for each member to 
-	 * avoid the damage.  If (minDamage == -1) or (minDamage >= maxDamage),
-	 * deals 'maxDamage' damage to each member.
-	 */
 	public void damageParty(int minDamage, int maxDamage) {
-	    int damage;
 	    for (int i = 0; i < members.size(); i++) {
 	        if (rand.nextInt(2) == 0) {
-	            damage = ((minDamage >= 0) && (minDamage < maxDamage)) ?
-	                rand.nextInt((maxDamage + 1) - minDamage) + minDamage :
-	                maxDamage;
+				int damage = minDamage >= 0 && minDamage < maxDamage ? rand.nextInt(maxDamage + 1 - minDamage) + minDamage : maxDamage;
 	            members.get(i).applyDamage(damage, true);
 	        }
 	    }
@@ -242,6 +233,15 @@ public class Party extends Observable implements Constants {
 			pm.fled = false;
 			pm.getPlayer().status = StatusType.GOOD;
 			pm.getPlayer().hp = pm.getPlayer().hpMax;
+		}
+	}
+	
+	public void killAll() {
+		activePlayer  = 0;
+		for (PartyMember pm : members) {
+			pm.fled = false;
+			pm.getPlayer().status = StatusType.DEAD;
+			pm.getPlayer().hp = 0;
 		}
 	}
 	
@@ -782,12 +782,13 @@ public class Party extends Observable implements Constants {
 			notifyObservers(PartyEvent.STARVING);
 		}
 		
-		// /* heal ship (25% chance it is healed each turn) */
-		// if ((c->location->context == CTX_WORLDMAP) && (saveGame->shiphull <
-		// 50) && xu4_random(4) == 0) {
-		// healShip(1);
-		// }
+		if (context.getCurrentMap().getId() == Maps.WORLD.getId() && saveGame.shiphull < 50 && rand.nextInt(4) == 0) {
+			saveGame.shiphull ++;
+			if (saveGame.shiphull > 50)
+				saveGame.shiphull = 50;
+		}
 	}
+	
 
 	public Context getContext() {
 		return context;

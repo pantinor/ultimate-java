@@ -209,12 +209,11 @@ public class SpellUtil implements Constants {
 			int x = (int) v.x;
 			int y = (int) v.y;
 
-			/* Blink doesn't work near the mouth of the abyss */
 			/*
+			 * Blink doesn't work near the mouth of the abyss
 			 * Note: This means you can teleport to Hythloth from the top of the
 			 * map, and that you can teleport to the abyss from the left edge of
-			 * the map, Unfortunately, this matches the bugs in the game. :(
-			 * Consider fixing.
+			 * the map, Unfortunately, this matches the bugs in the game.
 			 */
 			if (bm.getId() != Maps.WORLD.getId() || (x >= 192 && y >= 192)) {
 				return;

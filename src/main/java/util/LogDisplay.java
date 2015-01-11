@@ -8,6 +8,7 @@ import objects.Party.PartyMember;
 import org.apache.commons.collections.iterators.ReverseListIterator;
 
 import ultima.Constants.StatusType;
+import ultima.Constants.TransportContext;
 import ultima.Ultima4;
 
 import com.badlogic.gdx.graphics.Color;
@@ -70,15 +71,18 @@ public class LogDisplay {
 	}
 	
 	public void render(Batch batch, Party party) {
-		
+				
 		batch.draw(playbkgrnd, Ultima4.SCREEN_WIDTH - pbw - 10, Ultima4.SCREEN_HEIGHT - pbh - 10);
-
 		
 		int food = party.getSaveGame().food / 100;
 		font.setColor(food < 5 ? Color.RED: Color.WHITE);
 		font.draw(batch, "Food " + food, Ultima4.SCREEN_WIDTH - 140, Ultima4.SCREEN_HEIGHT - 10);
 		font.setColor(Color.WHITE);
-		font.draw(batch, "Gold " + party.getSaveGame().gold, Ultima4.SCREEN_WIDTH - 73, Ultima4.SCREEN_HEIGHT - 10);
+		if (party.getContext().getTransportContext() == TransportContext.SHIP) {
+			font.draw(batch, "Hull " + party.getSaveGame().shiphull, Ultima4.SCREEN_WIDTH - 73, Ultima4.SCREEN_HEIGHT - 10);
+		} else {
+			font.draw(batch, "Gold " + party.getSaveGame().gold, Ultima4.SCREEN_WIDTH - 73, Ultima4.SCREEN_HEIGHT - 10);
+		}
 
 		float y = Ultima4.SCREEN_HEIGHT - 30;
 		for (int i = 0; i < party.getMembers().size(); i++) {

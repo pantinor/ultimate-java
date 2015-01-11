@@ -5,6 +5,7 @@ import java.util.Random;
 import objects.Armor;
 import objects.BaseMap;
 import objects.Creature;
+import objects.Drawable;
 import objects.Weapon;
 
 import com.badlogic.gdx.Gdx;
@@ -389,7 +390,7 @@ public interface Constants {
 		
 		public static int removeFromMask(int mask, Direction... dirs) {
 			for (Direction dir : dirs) {
-				mask = ((~(1 << (dir.mask))) & (mask));
+				mask &= ~dir.getMask();
 			}
 			return mask;
 		}
@@ -671,11 +672,6 @@ public interface Constants {
 		
 	}
 	
-	public enum AttackResult {
-		NONE,
-		HIT,
-		MISS;
-	}
 	
 	public enum ArmorType {
 		NONE,
@@ -1309,38 +1305,6 @@ public interface Constants {
 	    FLEE,
 	    TELEPORT ;
 	}
-
-
-	public enum CreatureAttrib {
-		STEALFOOD(0x1),
-		STEALGOLD(0x2),
-		CASTS_SLEEP(0x4),
-		UNDEAD(0x8),
-		GOOD(0x10),
-		WATER(0x20),
-		NONATTACKABLE(0x40),
-		NEGATE(0x80),
-		CAMOUFLAGE(0x100),
-		NOATTACK(0x200),
-		AMBUSHES(0x400),
-		RANDOMRANGED(0x800),
-		INCORPOREAL(0x1000),
-		NOCHEST(0x2000),
-		DIVIDES(0x4000),
-		SPAWNSONDEATH(0x8000),
-		FORCE_OF_NATURE(0x10000);
-
-		private int intValue;
-
-		private CreatureAttrib(int value) {
-			intValue = value;
-		}
-
-		public int getValue() {
-			return intValue;
-		}
-
-	}
 	
     public enum PartyEvent {
         POSITIVE_KARMA,
@@ -1357,26 +1321,6 @@ public interface Constants {
         INVENTORY_ADDED,
     };
 
-	public enum CreatureMovementAttrib {
-		STATIONARY(0x1),
-		WANDERS(0x2),
-		SWIMS(0x4),
-		SAILS(0x8),
-		FLIES(0x10),
-		TELEPORT(0x20),
-		CANMOVECREATURES(0x40),
-		CANMOVEAVATAR(0x80);
-
-		private int intValue;
-
-		private CreatureMovementAttrib(int value) {
-			intValue = value;
-		}
-
-		public int getValue() {
-			return intValue;
-		}
-	}
 
 	public enum CreatureStatus {
 		FINE,
@@ -1719,26 +1663,28 @@ public interface Constants {
 		"Lord British says: I have pulled thy spirit and some possessions from the void.  Be more careful in the future!" 
      };
 	
+	
+	public enum AttackResult {
+		NONE,
+		HIT,
+		MISS;
+	}
+	
 	public class AttackVector {
+		
 		public int x;
 		public int y;
-		public AttackResult res;
+		
+		public AttackResult result;
 		public String leaveTileName;
+		
+		public Creature impactedCreature;
+		public Drawable impactedDrawable;
 		
 		public AttackVector(int x, int y) {
 			this.x=x;
 			this.y=y;
-		}
-		
-		public void setResult(AttackResult r) {
-			this.res = r;
-		}
-
-		@Override
-		public String toString() {
-			return String.format("[res=%s x=%s, y=%s]", res, x, y);
-		}
-		
+		}		
 	}
 	
 	public class AddActorAction implements Runnable {
