@@ -82,11 +82,6 @@ public class CombatScreen extends BaseScreen {
 	
 	private Random rand = new Random();
 	
-	public static TextureRegion hitTile;
-	public static TextureRegion missTile;
-	public static TextureRegion corpse;
-
-
 	public CombatScreen(BaseScreen returnScreen, Context context, Maps contextMap, 
 			BaseMap combatMap, TiledMap tmap, CreatureType cr, CreatureSet cs, TextureAtlas a1, TextureAtlas a2) {
 		
@@ -123,12 +118,7 @@ public class CombatScreen extends BaseScreen {
 		font.setColor(Color.WHITE);		
 
 		sip = new SecondaryInputProcessor(this, stage);
-		
-		hitTile = a2.findRegion("hit_flash");
-		missTile = a2.findRegion("miss_flash");
-		corpse = a1.findRegion("corpse");
-
-		
+				
 	    if (crType != null) {
 	    	fillCreatureTable(crType);
 	    }

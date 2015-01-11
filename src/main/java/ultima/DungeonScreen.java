@@ -16,7 +16,6 @@ import objects.TileSet;
 
 import org.apache.commons.io.IOUtils;
 
-import ultima.Constants.Stone;
 import util.DungeonRoomTiledMapLoader;
 import util.UltimaTiledMapLoader;
 import util.Utils;
@@ -1757,5 +1756,6 @@ public class DungeonScreen extends BaseScreen {
 			return false;
 		}
 	}
+	
 
 }

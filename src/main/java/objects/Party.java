@@ -78,9 +78,28 @@ public class Party extends Observable implements Constants {
 		}
 	}
 	
-	public void setShipHull(int str) {
-	    int newStr = Utils.adjustValue(str, 0, 99, 0);
+	public int adjustShipHull(int str) {
+	    int newStr = Utils.adjustValue(str, 0, 50, 0);
 	    saveGame.shiphull = newStr;
+	    return saveGame.shiphull;
+	}
+	
+	/**
+	 * Deals an amount of damage between 'minDamage' and 'maxDamage'
+	 * to each party member, with a 50% chance for each member to 
+	 * avoid the damage.  If (minDamage == -1) or (minDamage >= maxDamage),
+	 * deals 'maxDamage' damage to each member.
+	 */
+	public void damageParty(int minDamage, int maxDamage) {
+	    int damage;
+	    for (int i = 0; i < members.size(); i++) {
+	        if (rand.nextInt(2) == 0) {
+	            damage = ((minDamage >= 0) && (minDamage < maxDamage)) ?
+	                rand.nextInt((maxDamage + 1) - minDamage) + minDamage :
+	                maxDamage;
+	            members.get(i).applyDamage(damage, true);
+	        }
+	    }
 	}
 
 	public int getTorchduration() {

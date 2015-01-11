@@ -175,26 +175,7 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
 				
 				for (Creature c : bm.getCreatures()) {
 					if (c.currentX == x && c.currentY == y) {
-						Tile ct = bm.getTile(x, y);
-						Maps cm = ct.getCombatMap();
-						
-						TileRule ptr = bm.getTile(currentX, currentY).getRule();
-						if (c.getSwims() && !ptr.has(TileAttrib.unwalkable)) {
-							cm = Maps.SHORE_CON;
-						} else if (c.getSails() && !ptr.has(TileAttrib.unwalkable)) {
-							cm = Maps.SHORSHIP_CON;
-						}
-						
-						if (gameScreen.context.getTransportContext() == TransportContext.SHIP) {
-							if (c.getSwims()) {
-								cm = Maps.SHIPSEA_CON;
-							} else if (c.getSails()) {
-								cm = Maps.SHIPSHIP_CON;
-							} else {
-								cm = Maps.SHIPSHOR_CON;
-							}
-						}
-						
+						Maps cm = GameScreen.context.getCombatMap(c, bm, x, y, currentX, currentY);
 						gameScreen.attackAt(cm, c);
 						return false;
 					}

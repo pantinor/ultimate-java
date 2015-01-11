@@ -4,11 +4,16 @@ import java.util.Random;
 
 import objects.Aura;
 import objects.BaseMap;
+import objects.Creature;
 import objects.Drawable;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.Portal;
 import objects.Tile;
+import ultima.Constants.Maps;
+import ultima.Constants.TileAttrib;
+import ultima.Constants.TileRule;
+import ultima.Constants.TransportContext;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 
@@ -237,6 +242,20 @@ public class Context implements Constants {
             return false;
     }
     
+    public void damageShip(int minDamage, int maxDamage) {
+        int damage;
+
+        if (transportContext == TransportContext.SHIP) {
+        	
+            damage = ((minDamage >= 0) && (minDamage < maxDamage)) ?
+                rand.nextInt((maxDamage + 1) - minDamage) + minDamage :
+                maxDamage;
+            
+            party.adjustShipHull(-damage);        
+            //gameCheckHullIntegrity();        
+        }
+    }
+    
 	public boolean getChestTrapHandler(PartyMember pm) {
 
 		TileEffect trapType;
@@ -309,6 +328,30 @@ public class Context implements Constants {
 	}
 	public void setLastShip(Drawable lastShip) {
 		this.lastShip = lastShip;
+	}
+	
+	public Maps getCombatMap(Creature c, BaseMap bm, int creatureX, int creatureY, int avatarX, int avatarY) {
+		Tile ct = bm.getTile(creatureX, creatureY);
+		Maps cm = ct.getCombatMap();
+		
+		TileRule ptr = bm.getTile(avatarX, avatarY).getRule();
+		if (c.getSwims() && !ptr.has(TileAttrib.unwalkable)) {
+			cm = Maps.SHORE_CON;
+		} else if (c.getSails() && !ptr.has(TileAttrib.unwalkable)) {
+			cm = Maps.SHORSHIP_CON;
+		}
+		
+		if (transportContext == TransportContext.SHIP) {
+			if (c.getSwims()) {
+				cm = Maps.SHIPSEA_CON;
+			} else if (c.getSails()) {
+				cm = Maps.SHIPSHIP_CON;
+			} else {
+				cm = Maps.SHIPSHOR_CON;
+			}
+		}
+		
+		return cm;
 	}
     
 

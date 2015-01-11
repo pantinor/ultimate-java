@@ -354,36 +354,44 @@ public interface Constants {
 	
 	enum Direction {
 		
-	    WEST(1),
-	    NORTH(2),
-	    EAST(3),
-	    SOUTH(4);
+	    WEST(1,0x1),
+	    NORTH(2,0x2),
+	    EAST(3,0x4),
+	    SOUTH(4,0x8);
 	    
 	    private int val;
+	    private int mask;
 	    
-	    private Direction(int v) {
+	    private Direction(int v, int mask) {
 	    	this.val = v;
+	    	this.mask = mask;
 	    }
 
 		public int getVal() {
 			return val;
 		}
-		
-		public static int getMask(Direction dir) {
-			return (1 << (dir.getVal()));
+		public int getMask() {
+			return mask;
 		}
 		
 		public static boolean isDirInMask(Direction dir, int mask) {
-			int v = ((1 << (dir.getVal())) & (mask));
+			int v = (mask & dir.mask);
+			return (v>0);
+		}
+		public static boolean isDirInMask(int dir, int mask) {
+			int v = (mask & dir);
 			return (v>0);
 		}
 		
 		public static int addToMask(Direction dir, int mask) {
-			return ((1 << (dir.getVal())) | (mask));
+			return (dir.mask | mask);
 		}
 		
-		public static int removeFromMask(Direction dir, int mask) {
-			return ((~(1 << (dir.getVal()))) & (mask));
+		public static int removeFromMask(int mask, Direction... dirs) {
+			for (Direction dir : dirs) {
+				mask = ((~(1 << (dir.mask))) & (mask));
+			}
+			return mask;
 		}
 		
 		public static Direction getRandomValidDirection(int mask) {
@@ -415,7 +423,7 @@ public interface Constants {
 		}
 		
 		public static Direction getByValue(int val) {
-			Direction ret = Direction.WEST;
+			Direction ret = null;
 			for (Direction d : Direction.values()) {
 				if (val == d.getVal()) {
 					ret = d;
@@ -424,6 +432,43 @@ public interface Constants {
 			}
 			return ret;
 		}
+		public static Direction getByMask(int mask) {
+			Direction ret = null;
+			for (Direction d : Direction.values()) {
+				if (mask == d.mask) {
+					ret = d;
+					break;
+				}
+			}
+			return ret;
+		}
+		
+		public static int getBroadsidesDirectionMask(Direction dir) {
+			int mask = 0;
+			switch(dir) {
+			case EAST:
+			case WEST:
+				mask = (Direction.NORTH.mask | Direction.SOUTH.mask);
+				break;
+			case NORTH:
+			case SOUTH:
+				mask = (Direction.EAST.mask | Direction.WEST.mask);
+				break;			
+			}
+			return mask;
+		}
+		
+		public static Direction goBroadsides(int broadsidesMask) {
+			Direction ret = null;
+			for (Direction d : Direction.values()) {
+				if ((broadsidesMask & d.mask) > 0) {
+					ret = d;
+					break;
+				}
+			}
+			return ret;
+		}
+
 
 	};
 	

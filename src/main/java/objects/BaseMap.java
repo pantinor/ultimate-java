@@ -1,6 +1,7 @@
 package objects;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -15,6 +16,11 @@ import objects.Party.PartyMember;
 import ultima.BaseScreen;
 import ultima.Constants;
 import ultima.GameScreen;
+import ultima.Constants.AttackVector;
+import ultima.Constants.CreatureType;
+import ultima.Constants.Direction;
+import ultima.Constants.MapBorderBehavior;
+import ultima.Constants.Maps;
 import util.Utils;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -463,19 +469,80 @@ public class BaseMap implements Constants {
 			
 		}
 		
-		for (Creature cr : creatures) {
+	    Iterator<Creature> i = creatures.iterator();
+	    while (i.hasNext()) {
+	    	
+	       Creature cr = i.next();
+	       
+			int dist = Utils.movementDistance(borderbehavior, width, height, cr.currentX, cr.currentY, avatarX, avatarY);
+	        if (dist > MAX_CREATURE_DISTANCE) {
+	        	i.remove();    
+	        	continue;
+	        }
+	        
+			if (cr.getTile() == CreatureType.pirate_ship) {
+		        int relDirMask = Utils.getRelativeDirection(borderbehavior,width,height,avatarX,avatarY,cr.currentX,cr.currentY);
+		        if (avatarX == cr.currentX) {
+		        	relDirMask = Direction.removeFromMask(relDirMask, Direction.EAST, Direction.WEST);
+		        } else if (avatarY == cr.currentY) {
+		        	relDirMask = Direction.removeFromMask(relDirMask, Direction.NORTH, Direction.SOUTH);
+		        } else {
+		        	relDirMask = 0;
+		        }
+		        int broadsidesDirs = Direction.getBroadsidesDirectionMask(cr.sailDir);
+		        if (relDirMask > 0 && (dist == 3 || dist == 2) && Direction.isDirInMask(relDirMask, broadsidesDirs)) {
+		        	Direction fireDir = Direction.getByMask(relDirMask);
+					AttackVector av = Utils.enemyfireCannon(surfaceMapStage, this, fireDir, cr.currentX, cr.currentY, avatarX, avatarY);
+					((GameScreen)screen).fire(fireDir, av, (int)cr.currentPos.x, (int)cr.currentPos.y);
+					continue;
+		        } else if (relDirMask > 0 && (dist == 3 || dist == 2) && !Direction.isDirInMask(relDirMask, broadsidesDirs) && Utils.rand.nextInt(2) == 0) {
+					cr.sailDir = Direction.goBroadsides(broadsidesDirs);
+					continue;
+		        } else if (dist <= 1) {
+		        	if (Direction.isDirInMask(relDirMask, broadsidesDirs)) {
+		        		((GameScreen)screen).attackAt(Maps.SHIPSHIP_CON, cr);
+		        		break;
+		        	} else {
+						cr.sailDir = Direction.goBroadsides(broadsidesDirs);
+						continue;
+		        	}
+		        }
+		        
+			} else if (dist <= 1) {
+				
+				Maps cm = GameScreen.context.getCombatMap(cr, this, cr.currentX, cr.currentY, avatarX, avatarY);
+        		((GameScreen)screen).attackAt(cm, cr);
+        		break;
+        		
+			}
+			
 	        int mask = getValidMovesMask(cr.currentX, cr.currentY, cr, avatarX, avatarY);
 	        Direction dir = Utils.getPath(borderbehavior, width, height, avatarX, avatarY, mask, true, cr.currentX, cr.currentY);
-			if (dir == null) continue;
-			Vector3 pos = null;
-			if (dir == Direction.NORTH) pos = new Vector3(cr.currentX, cr.currentY-1, 0);
-			if (dir == Direction.SOUTH) pos = new Vector3(cr.currentX, cr.currentY+1, 0);
-			if (dir == Direction.EAST) pos = new Vector3(cr.currentX+1, cr.currentY, 0);
-			if (dir == Direction.WEST) pos = new Vector3(cr.currentX-1, cr.currentY, 0);
-			Vector3 pixelPos = screen.getMapPixelCoords((int)pos.x, (int)pos.y);
-			cr.currentPos = pixelPos;
-			cr.currentX = (int)pos.x;
-			cr.currentY = (int)pos.y;  
+			if (dir == null) {
+				continue;
+			}
+			
+			if (cr.getTile() == CreatureType.pirate_ship) {
+				if (cr.sailDir != dir) {
+					cr.sailDir = dir;
+					continue;
+				}
+			}
+			
+			if (borderbehavior == MapBorderBehavior.wrap) {
+				if (dir == Direction.NORTH) cr.currentY = cr.currentY-1<0?height-1:cr.currentY-1;
+				if (dir == Direction.SOUTH) cr.currentY = cr.currentY+1>=height?0:cr.currentY+1;
+				if (dir == Direction.EAST) cr.currentX = cr.currentX+1>=width?0:cr.currentX+1;
+				if (dir == Direction.WEST) cr.currentX = cr.currentX-1<0?width-1:cr.currentX-1;
+			} else {
+				if (dir == Direction.NORTH) cr.currentY = cr.currentY-1<0?cr.currentY:cr.currentY-1;
+				if (dir == Direction.SOUTH) cr.currentY = cr.currentY+1>=height?cr.currentY:cr.currentY+1;
+				if (dir == Direction.EAST) cr.currentX = cr.currentX+1>=width?cr.currentX:cr.currentX+1;
+				if (dir == Direction.WEST) cr.currentX = cr.currentX-1<0?cr.currentX:cr.currentX-1;
+			}
+			
+			cr.currentPos = screen.getMapPixelCoords(cr.currentX, cr.currentY);
+
 		}
 		
 	}
@@ -562,7 +629,7 @@ public class BaseMap implements Constants {
 					}
 				} else {
 					TransportContext tc = GameScreen.context.getTransportContext();
-					if (tc == null || tc == TransportContext.FOOT) {
+					if (tc == null || id != Maps.WORLD.getId() || tc == TransportContext.FOOT) {
 		                if (!rule.has(TileAttrib.unwalkable) || rule == TileRule.ship || rule.has(TileAttrib.chest) || rule == TileRule.horse || rule == TileRule.balloon) {
 		                	canmove = true;
 		                }

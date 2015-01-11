@@ -24,6 +24,7 @@ import objects.BaseMap;
 import objects.Conversation;
 import objects.Creature;
 import objects.Party.PartyMember;
+import objects.Drawable;
 import objects.Person;
 import objects.ProjectileActor;
 import objects.Tile;
@@ -34,6 +35,7 @@ import org.lwjgl.BufferUtils;
 
 import ultima.CombatScreen;
 import ultima.Constants;
+import ultima.GameScreen;
 import ultima.Sound;
 import ultima.Sounds;
 import ultima.Ultima4;
@@ -48,6 +50,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class Utils implements Constants {
@@ -197,8 +200,7 @@ public class Utils implements Constants {
 	 * northeast of (c.x, c.y), then this function returns
 	 * (MASK_DIR(DIR_NORTH) | MASK_DIR(DIR_EAST))
 	 * This function also takes into account map boundaries and adjusts
-	 * itself accordingly. If the two coordinates are not on the same z-plane,
-	 * then this function return DIR_NONE.
+	 * itself accordingly.
 	 */
 	public static int getRelativeDirection(MapBorderBehavior borderbehavior, int width, int height, int toX, int toY, int fromX, int fromY)  {
 	    int dx=0, dy=0;        
@@ -225,12 +227,12 @@ public class Utils implements Constants {
 		}
 
 	    /* add x directions that lead towards to_x to the mask */
-	    if (dx < 0)         dirmask |= Direction.getMask(Direction.EAST);
-	    else if (dx > 0)    dirmask |= Direction.getMask(Direction.WEST);
+	    if (dx < 0)         dirmask |= Direction.EAST.getMask();
+	    else if (dx > 0)    dirmask |= Direction.WEST.getMask();
 
 	    /* add y directions that lead towards to_y to the mask */
-	    if (dy < 0)         dirmask |= Direction.getMask(Direction.SOUTH);
-	    else if (dy > 0)    dirmask |= Direction.getMask(Direction.NORTH);
+	    if (dy < 0)         dirmask |= Direction.SOUTH.getMask();
+	    else if (dy > 0)    dirmask |= Direction.NORTH.getMask();
 
 	    /* return the result */
 	    return dirmask;
@@ -334,7 +336,7 @@ public class Utils implements Constants {
 	    WeaponType wt = attacker.getPlayer().weapon;
 		boolean weaponCanAttackThroughObjects = wt.getWeapon().getAttackthroughobjects();
 	    
-	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, Direction.getMask(dir), x, y, 1, range, weaponCanAttackThroughObjects, true);
+	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), x, y, 1, range, weaponCanAttackThroughObjects, true);
 	    
 	    AttackVector target = null;
 	    boolean foundTarget = false;
@@ -406,12 +408,12 @@ public class Utils implements Constants {
 	
 	private static AttackVector castSpellAttack(BaseMap combatMap, PartyMember attacker, Direction dir, int x, int y, int minDamage, int maxDamage) {
 	    
-	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, Direction.getMask(dir), x, y, 1, 11, true, true);
+	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), x, y, 1, 11, true, true);
 	    
 	    AttackVector target = null;
 	    boolean foundTarget = false;
 	    for (AttackVector v : path) {
-            AttackResult res = castAt(combatMap, v, attacker, dir, minDamage, maxDamage);
+            AttackResult res = castAt(combatMap, v, attacker, minDamage, maxDamage);
             target = v;
             target.setResult(res);
 	        if (res != AttackResult.NONE) {
@@ -455,7 +457,7 @@ public class Utils implements Constants {
         return res;
 	}
 	
-	private static AttackResult castAt(BaseMap combatMap, AttackVector target, PartyMember attacker, Direction dir, int minDamage, int maxDamage) {
+	private static AttackResult castAt(BaseMap combatMap, AttackVector target, PartyMember attacker, int minDamage, int maxDamage) {
 		
 		AttackResult res = AttackResult.NONE;
 	    Creature creature = null;
@@ -485,6 +487,95 @@ public class Utils implements Constants {
 	    }
 
         return res;
+	}
+	
+	public static AttackVector enemyfireCannon(Stage stage, BaseMap combatMap, Direction dir, int startX, int startY, int avatarX, int avatarY) {
+	    
+	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), startX, startY, 1, 4, true, false);
+	    
+	    AttackVector target = null;
+	    for (AttackVector v : path) {
+            AttackResult res = fireAt(stage, combatMap, v, false, avatarX, avatarY);
+            target = v;
+            target.setResult(res);
+	        if (res != AttackResult.NONE) {
+	            break;
+	        }
+	    }
+    	
+    	return target;
+	}
+	
+	public static AttackVector avatarfireCannon(Stage stage, BaseMap combatMap, Direction dir, int startX, int startY) {
+	    
+	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), startX, startY, 1, 4, true, true);
+	    
+	    AttackVector target = null;
+	    for (AttackVector v : path) {
+            AttackResult res = fireAt(stage, combatMap, v, true, 0, 0);
+            target = v;
+            target.setResult(res);
+	        if (res != AttackResult.NONE) {
+	            break;
+	        }
+	    }
+    	
+    	return target;
+	}
+	
+	private static AttackResult fireAt(Stage stage, BaseMap combatMap, AttackVector target, boolean avatarAttack, int avatarX, int avatarY) {
+	    
+		AttackResult res = AttackResult.NONE;
+		
+	    //check for ship
+		Drawable ship = null;
+		for (Actor a : stage.getActors()) {
+			if (a instanceof Drawable) {
+				Drawable d = (Drawable)a;
+				if (d.getTile().getName().equals("ship") && d.getCx() == target.x && d.getCy() == target.y) {
+					ship = d;
+				}
+			}
+		}
+		
+	    if (ship != null) {
+        	int hull = ship.damageShip(-1, 10);
+        	if (hull <= 0) ship.remove();
+            return AttackResult.HIT;
+	    }  
+		
+		if (avatarAttack) {
+		    
+		    Creature creature = null;
+		    for (Creature c : combatMap.getCreatures()) {
+		    	if (c.currentX == target.x && c.currentY == target.y) {
+		    		creature = c;
+		    		break;
+		    	}
+		    }
+		    
+		    if (creature == null) {
+		        return res;
+		    }  
+		    
+            if (rand.nextInt(4) == 0) {
+                res = AttackResult.HIT;
+            } else {
+            	res = AttackResult.MISS;
+            }
+            
+		} else if (target.x == avatarX && target.y == avatarY) {
+			  
+            if (GameScreen.context.getTransportContext() == TransportContext.SHIP) {
+            	GameScreen.context.damageShip(-1, 10);
+            } else {
+            	GameScreen.context.getParty().damageParty(10, 25);
+            }
+            
+            res = AttackResult.HIT;
+        }
+	        
+	    return res;
 	}
 	
 	public static AttackResult attackHit(Creature attacker, PartyMember defender) {

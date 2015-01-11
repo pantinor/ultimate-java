@@ -50,6 +50,7 @@ import util.Utils;
 import vendor.VendorClass;
 import vendor.VendorClassSet;
 
+import com.badlogic.gdx.math.Vector3;
 import com.google.common.io.LittleEndianDataInputStream;
 
 
@@ -213,7 +214,7 @@ public class TestJaxb {
 		mask = Direction.addToMask(Direction.WEST, mask);
 		assert(Direction.isDirInMask(dir, mask));
 		
-		mask = Direction.removeFromMask(Direction.WEST, mask);
+		mask = Direction.removeFromMask(mask, Direction.WEST);
 		assert(!Direction.isDirInMask(dir, mask));
 		
 		Direction dir2 = Direction.getRandomValidDirection(mask);
@@ -601,6 +602,38 @@ public class TestJaxb {
 		String v1 = Virtue.get(StartScreen.questionTree[round * 2]).toString().toLowerCase();
 		String v2 = Virtue.get(StartScreen.questionTree[round * 2 + 1]).toString().toLowerCase();
 		System.out.println(String.format("round: %d %s %d and %s %d", round, v1.toString(), (round * 2), v2.toString(), (round * 2 + 1)));
+	}
+	
+	@Test
+	public void testCoords() throws Exception {
+	
+//	6 0 Creature [id=21, name=Sea Serpent, tile=sea_serpent, currentX=213, currentY=2 currentPos=[6816.0, 8096.0, 0.0]]
+//			6 0 Creature [id=19, name=Nixie, tile=nixie, currentX=212, currentY=1 currentPos=[6784.0, 8128.0, 0.0]]
+//			6 0 Creature [id=23, name=Whirlpool, tile=whirlpool, currentX=215, currentY=8 currentPos=[6880.0, 7904.0, 0.0]]
+		
+		System.out.println(getMapPixelCoords(213, 2));
+		System.out.println(getMapPixelCoords(212, 1));
+		System.out.println(getMapPixelCoords(215, 8));
+		
+		for (Direction dir : Direction.values()) {
+			System.out.println(dir + " "+ Direction.getBroadsidesDirectionMask(dir));
+		}
+
+		
+	}
+	
+	public int yDownPixel(float y) {
+		return (int) (256*32 - y - 32);
+	}
+	
+	public Vector3 getMapPixelCoords(int x, int y) {
+		
+		Vector3 v = new Vector3(
+				x * 32, 
+				yDownPixel(y * 32), 
+				0);
+		
+		return v;
 	}
 	
 

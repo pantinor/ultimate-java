@@ -1,8 +1,9 @@
 package ultima;
 
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
-import java.util.Iterator;
 import java.util.Random;
 
 import objects.ArmorSet;
@@ -15,6 +16,7 @@ import objects.Moongate;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.Portal;
+import objects.ProjectileActor;
 import objects.SaveGame;
 import objects.Tile;
 import objects.TileSet;
@@ -84,14 +86,16 @@ public class GameScreen extends BaseScreen {
 	UltimaMapRenderer renderer;
 	Batch mapBatch, batch;
 	
+	public Stage mapObjectsStage;
+	public Stage projectilesStage;
+
+
 	Array<AtlasRegion> moongateTextures = new Array<AtlasRegion>();
 	public static int phase = 0, trammelphase = 0, trammelSubphase = 0, feluccaphase = 0;
-
-	Stage mapObjectsStage;
 	
 	public SecondaryInputProcessor sip;
 	Random rand = new Random();
-	
+
 	GameTimer gameTimer;
 	
 	public GameScreen(Ultima4 mainGame) {
@@ -107,6 +111,10 @@ public class GameScreen extends BaseScreen {
 			
 			baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	
 			baseTileSet.setMaps();
+			
+			hitTile = standardAtlas.findRegion("hit_flash");
+			missTile = standardAtlas.findRegion("miss_flash");
+			corpse = enhancedAtlas.findRegion("corpse");
 						
 			maps = (MapSet) Utils.loadXml("maps.xml", MapSet.class);
 			maps.init(baseTileSet);
@@ -140,7 +148,8 @@ public class GameScreen extends BaseScreen {
 			stage = new Stage(new ScreenViewport());
 			mapObjectsStage = new Stage(new ScreenViewport(mapCamera));
 			Maps.WORLD.getMap().setSurfaceMapStage(mapObjectsStage);	      
-			
+			projectilesStage = new Stage(new ScreenViewport(mapCamera));
+
 			sip = new SecondaryInputProcessor(this, stage);
 
 			gameTimer = new GameTimer();
@@ -195,7 +204,6 @@ public class GameScreen extends BaseScreen {
 			
 			Party party = new Party(sg);
 			context.setParty(party);
-			party.setTransport(baseTileSet.getTileByIndex(sg.transport));
 			
 //			party.getMember(0).getPlayer().hp = 999;
 //			party.getMember(0).getPlayer().hpMax = 999;
@@ -231,11 +239,13 @@ public class GameScreen extends BaseScreen {
 //			party.getSaveGame().weapons[9] = 99;
 //			party.getSaveGame().armor[6] = 99;
 //			party.getSaveGame().sextants = 1;
-//
+			
+//	    	mainAvatar = shipAnim;
+//			sg.transport = 0x10;
 			
 			//load the surface world first
 			loadNextMap(Maps.WORLD, sg.x, sg.y);
-			//loadNextMap(Maps.WORLD, 233, 233);
+			//loadNextMap(Maps.WORLD, 213, 224);
 
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
@@ -243,6 +253,9 @@ public class GameScreen extends BaseScreen {
 				//loadNextMap(Maps.ABYSS, 0, 0, 5, 5, 0, Direction.SOUTH, true);
 				//loadNextMap(Maps.DESPISE, 0, 0, 5, 5, 0, Direction.NORTH, true);
 			}
+			
+			party.setTransport(baseTileSet.getTileByIndex(sg.transport));
+
 		}
 		
 		context.getParty().addObserver(this);
@@ -453,6 +466,9 @@ public class GameScreen extends BaseScreen {
 		mapBatch.draw(mainAvatar.getKeyFrames()[avatarDirection], mapCamera.position.x, mapCamera.position.y, tilePixelWidth, tilePixelHeight);
 		mapBatch.end();
 		
+		projectilesStage.act();
+		projectilesStage.draw();
+		
 		stage.act();
 		stage.draw();
 		
@@ -468,6 +484,11 @@ public class GameScreen extends BaseScreen {
 		Tile ct = context.getCurrentMap().getTile(v);
 		
 		if (keycode == Keys.UP) {
+			if (context.getTransportContext() == TransportContext.SHIP && avatarDirection+1 != Direction.NORTH.getVal()) {
+				avatarDirection = Direction.NORTH.getVal()-1;
+				finishTurn((int)v.x, (int)v.y);
+				return false;
+			}
 			if (!preMove(v, Direction.NORTH)) return false;
 			if (mapCamera.position.y + tilePixelHeight > context.getCurrentMap().getHeight() * tilePixelHeight) {
 				mapCamera.position.y = 0;
@@ -478,6 +499,11 @@ public class GameScreen extends BaseScreen {
 			}
 			avatarDirection = Direction.NORTH.getVal()-1;
 		} else if (keycode == Keys.RIGHT) {
+			if (context.getTransportContext() == TransportContext.SHIP && avatarDirection+1 != Direction.EAST.getVal()) {
+				avatarDirection = Direction.EAST.getVal()-1;
+				finishTurn((int)v.x, (int)v.y);
+				return false;
+			}
 			if (!preMove(v, Direction.EAST)) return false;
 			if (mapCamera.position.x + tilePixelWidth > context.getCurrentMap().getWidth() * tilePixelWidth) {
 				mapCamera.position.x = 0;
@@ -488,6 +514,11 @@ public class GameScreen extends BaseScreen {
 			}
 			avatarDirection = Direction.EAST.getVal()-1;
 		} else if (keycode == Keys.LEFT) {
+			if (context.getTransportContext() == TransportContext.SHIP && avatarDirection+1 != Direction.WEST.getVal()) {
+				avatarDirection = Direction.WEST.getVal()-1;
+				finishTurn((int)v.x, (int)v.y);
+				return false;
+			}
 			if (!preMove(v, Direction.WEST)) return false;
 			if (mapCamera.position.x - tilePixelWidth < 0) {
 				mapCamera.position.x = context.getCurrentMap().getWidth() * tilePixelWidth;
@@ -498,6 +529,11 @@ public class GameScreen extends BaseScreen {
 			}
 			avatarDirection = Direction.WEST.getVal()-1;
 		} else if (keycode == Keys.DOWN) {
+			if (context.getTransportContext() == TransportContext.SHIP && avatarDirection+1 != Direction.SOUTH.getVal()) {
+				avatarDirection = Direction.SOUTH.getVal()-1;
+				finishTurn((int)v.x, (int)v.y);
+				return false;
+			}
 			if (!preMove(v, Direction.SOUTH)) return false;
 			if (mapCamera.position.y - tilePixelHeight < 0) {
 				mapCamera.position.y = context.getCurrentMap().getHeight() * tilePixelHeight;
@@ -513,6 +549,12 @@ public class GameScreen extends BaseScreen {
 				loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
 				log(p.getMessage());
 			}
+		} else if (keycode == Keys.F && context.getTransportContext() == TransportContext.SHIP) {
+			log("Fire Cannon > ");
+			ShipInputAdapter sia = new ShipInputAdapter(v);
+			Gdx.input.setInputProcessor(sia);
+			return false;
+			
 		} else if (keycode == Keys.H) {
 
 			CombatScreen.holeUp(Maps.WORLD, (int)v.x, (int)v.y, this, context, creatures, standardAtlas, enhancedAtlas);
@@ -586,6 +628,27 @@ public class GameScreen extends BaseScreen {
 						
 		} else if (keycode == Keys.B) {
 			board((int)v.x,(int)v.y);
+		} else if (keycode == Keys.X) {
+			if (context.getTransportContext() == TransportContext.SHIP) {
+		    	Tile st = baseTileSet.getTileByName("ship");
+		    	Drawable ship = new Drawable((int)v.x, (int)v.y, st, standardAtlas);
+		    	ship.setX(mapCamera.position.x);
+		    	ship.setY(mapCamera.position.y);
+		    	mapObjectsStage.addActor(ship);
+			} else if (context.getTransportContext() == TransportContext.HORSE) {
+				Creature cr = GameScreen.creatures.getInstance(CreatureType.horse, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+		    	cr.currentX = (int)v.x;
+		    	cr.currentY = (int)v.y;
+		    	context.getCurrentMap().addCreature(cr);
+			} else if (context.getTransportContext() == TransportContext.BALLOON) {
+		    	Tile st = baseTileSet.getTileByName("balloon");
+		    	Drawable balloon = new Drawable((int)v.x, (int)v.y, st, standardAtlas);
+		    	balloon.setX(mapCamera.position.x);
+		    	balloon.setY(mapCamera.position.y);
+		    	mapObjectsStage.addActor(balloon);
+			}
+		    context.getParty().setTransport(baseTileSet.getTileByIndex(0x1f));
+		    mainAvatar = avatarAnim;
 		} else if (keycode == Keys.P) {
 			peerGem();
 		} else if (keycode == Keys.U) {
@@ -683,9 +746,7 @@ public class GameScreen extends BaseScreen {
 		context.getParty().endTurn(context.getCurrentMap().getType());
 		
 		context.getAura().passTurn();
-		
-		creatureCleanup(currentX, currentY);
-		
+				
 		if (checkRandomCreatures()) {
 			spawnCreature(null, currentX, currentY);
 		}
@@ -694,19 +755,7 @@ public class GameScreen extends BaseScreen {
 		
 	}
 	
-	/**
-	 * Removes creatures from the current map if they are too far away from the avatar
-	 */
-	public void creatureCleanup(int currentX, int currentY) {
-	    BaseMap bm = context.getCurrentMap();
-	    Iterator<Creature> i = bm.getCreatures().iterator();
-	    while (i.hasNext()) {
-	       Creature cr = i.next();
-	        if (Math.abs(currentX - cr.currentX) > MAX_CREATURE_DISTANCE || Math.abs(currentY - cr.currentY) > MAX_CREATURE_DISTANCE) {
-	        	i.remove();           
-	        }
-	    }
-	}
+
 	
 	public void replaceTile(String name, int x, int y) {
 		if (name == null) {
@@ -722,10 +771,11 @@ public class GameScreen extends BaseScreen {
 	}
 	
 	private boolean checkRandomCreatures() {
-	    if (context.getCurrentMap().getCreatures().size() >= MAX_CREATURES_ON_MAP || rand.nextInt(32) != 0) {
+	    if (context.getCurrentMap().getId() != Maps.WORLD.getId() ||
+	    	context.getCurrentMap().getCreatures().size() >= MAX_CREATURES_ON_MAP) {
 	        return false;
 	    }
-	    return true;
+	    return rand.nextInt(32) == 0;
 	}
 	
 	private boolean spawnCreature(Creature creature, int currentX, int currentY) {
@@ -968,7 +1018,7 @@ public class GameScreen extends BaseScreen {
 	private void checkBridgeTrolls(int x, int y) {
 	    Tile bridge = context.getCurrentMap().getTile(x, y);
 	    
-	    if (!bridge.getName().equals("bridge")) {
+	    if (bridge == null || !bridge.getName().equals("bridge")) {
 	        return;
 	    }
 
@@ -1033,7 +1083,7 @@ public class GameScreen extends BaseScreen {
 	    if (tile.getRule().has(TileAttrib.ship)) {
 	    	log("Board Frigate!");
 	        if (context.getLastShip() != ship) {
-	            context.getParty().setShipHull(50);
+	            context.getParty().adjustShipHull(50);
 	        }
 	        context.setCurrentShip(ship);
 	    	ship.remove();
@@ -1056,6 +1106,72 @@ public class GameScreen extends BaseScreen {
 
 	    context.getParty().setTransport(tile);
 
+	}
+	
+	class ShipInputAdapter extends InputAdapter {
+		Vector3 pos;
+		ShipInputAdapter(Vector3 pos) {
+			this.pos = pos;
+		}
+		@Override
+		public boolean keyUp(int keycode) {
+			Direction fireDir = null;
+			
+			if (keycode == Keys.LEFT) {
+				if (avatarDirection+1 == Direction.NORTH.getVal()) fireDir = Direction.WEST;
+				if (avatarDirection+1 == Direction.SOUTH.getVal()) fireDir = Direction.WEST;
+			} else if (keycode == Keys.RIGHT) {
+				if (avatarDirection+1 == Direction.NORTH.getVal()) fireDir = Direction.EAST;
+				if (avatarDirection+1 == Direction.SOUTH.getVal()) fireDir = Direction.EAST;
+			} else if (keycode == Keys.UP) {
+				if (avatarDirection+1 == Direction.EAST.getVal()) fireDir = Direction.NORTH;
+				if (avatarDirection+1 == Direction.WEST.getVal()) fireDir = Direction.NORTH;
+			} else if (keycode == Keys.DOWN) {
+				if (avatarDirection+1 == Direction.EAST.getVal()) fireDir = Direction.SOUTH;
+				if (avatarDirection+1 == Direction.WEST.getVal()) fireDir = Direction.SOUTH;
+			}
+			
+			if (fireDir != null) {
+				logAppend(fireDir.toString());
+				AttackVector av = Utils.avatarfireCannon(mapObjectsStage, GameScreen.context.getCurrentMap(), fireDir, (int)pos.x, (int)pos.y);
+				fire(fireDir, av, (int)mapCamera.position.x, (int)mapCamera.position.y);
+			} else {
+				log("Broadsides only!");
+			}
+			
+			Vector3 v = getCurrentMapCoords();
+			GameScreen.this.finishTurn((int)v.x, (int)v.y);
+			
+			Gdx.input.setInputProcessor(new InputMultiplexer(GameScreen.this, stage));
+			return false;
+		}
+	}
+	
+	public void fire(Direction dir, final AttackVector av, int sx, int sy) {
+		
+        Sounds.play(Sound.CANNON);
+		
+		final ProjectileActor p = new ProjectileActor(GameScreen.this, Color.WHITE, sx, sy, av.res);
+		
+		Vector3 d = getMapPixelCoords(av.x, av.y);
+		p.addAction(sequence(moveTo(d.x, d.y, .3f), Actions.run(new Runnable() {
+			public void run() {
+				switch(p.res) {
+				case HIT:
+					p.resultTexture = CombatScreen.hitTile;
+					Creature cr = context.getCurrentMap().getCreatureAt(av.x, av.y);
+				    if (cr != null) {
+				    	context.getCurrentMap().removeCreature(cr);
+				    }
+					break;
+				case MISS:
+					p.resultTexture = CombatScreen.missTile;
+					break;
+				}
+			}
+		}), Actions.fadeOut(.3f), removeActor(p)));
+		
+		projectilesStage.addActor(p);
 	}
 	
 	
@@ -1122,7 +1238,7 @@ public class GameScreen extends BaseScreen {
 				img = new Image(t);
 				img.setX(0);
 				img.setY(0);
-				img.addAction(sequence(Actions.alpha(0), Actions.fadeIn(2f, Interpolation.fade)));
+				img.addAction(sequence(Actions.alpha(0), Actions.fadeIn(1f, Interpolation.fade)));
 		        stage.addActor(img);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1153,7 +1269,7 @@ public class GameScreen extends BaseScreen {
 					img = new Image(t);
 					img.setX(0);
 					img.setY(0);
-					img.addAction(sequence(Actions.alpha(0), Actions.fadeIn(2f, Interpolation.fade)));
+					img.addAction(sequence(Actions.alpha(0), Actions.fadeIn(1f, Interpolation.fade)));
 			        stage.addActor(img);
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -33,6 +33,8 @@ public enum Sound {
 	FIREBALL ("Fireball.ogg", false, 0.3f),
 	ROCKS ("StoneRain.ogg", false, 0.3f),
 	WIND ("tornado.ogg", false, 0.3f),
+	
+	CANNON ("cannon.mp3", false, 0.3f),
 
 	//music
 	OUTSIDE ("Wanderer.mp3", false, 0.1f), 

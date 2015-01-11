@@ -7,7 +7,6 @@ import objects.Moongate;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.Tile;
-import ultima.Constants.Direction;
 import ultima.DungeonScreen.DungeonTileModelInstance;
 import util.Utils;
 
@@ -200,76 +199,86 @@ public class SpellUtil implements Constants {
 	}
 
 	public static void spellBlink(BaseScreen screen, Direction dir) {
-		
+
 		if (screen.scType == ScreenType.MAIN) {
-			
-			GameScreen gameScreen = (GameScreen)screen;
+
+			GameScreen gameScreen = (GameScreen) screen;
+			BaseMap bm = GameScreen.context.getCurrentMap();
+
 			Vector3 v = gameScreen.getCurrentMapCoords();
-			int x = (int)v.x;
-			int y = (int)v.y;
-    
-		    /* Blink doesn't work near the mouth of the abyss */
-		    /* Note: This means you can teleport to Hythloth from the top of the map,
-		       and that you can teleport to the abyss from the left edge of the map,
-		       Unfortunately, this matches the bugs in the game. :(  Consider fixing. */
-		    if (x >= 192 && y >= 192) {
-		    	return;
+			int x = (int) v.x;
+			int y = (int) v.y;
+
+			/* Blink doesn't work near the mouth of the abyss */
+			/*
+			 * Note: This means you can teleport to Hythloth from the top of the
+			 * map, and that you can teleport to the abyss from the left edge of
+			 * the map, Unfortunately, this matches the bugs in the game. :(
+			 * Consider fixing.
+			 */
+			if (bm.getId() != Maps.WORLD.getId() || (x >= 192 && y >= 192)) {
+				return;
 			}
-		    
-		    int distance = 0;
-		    int diff = 0;
-		    Direction reverseDir = Direction.reverse(dir);
-	
-		    /* figure out what numbers we're working with */
-		    int var = (dir.getVal() & (Direction.WEST.getVal() | Direction.EAST.getVal())) > 0 ? x : y;
-	        
-		    /* find the distance we are going to move */
-		    distance = (var) % 0x10;
-		    if (dir == Direction.EAST || dir == Direction.SOUTH) {
-		    	distance = 0x10 - distance;
-		    }
-	    
-		    /* see if we move another 16 spaces over */
-		    diff = 0x10 - distance;
-		    if ((diff > 0) && (Utils.rand.nextInt(diff * diff) > distance)) {
-		        distance += 0x10;
-		    }
-	
-		    /* test our distance, and see if it works */
-		    for (int i = 0; i < distance; i++) {
-				if (dir == Direction.NORTH) y--;
-				if (dir == Direction.SOUTH) y++;
-				if (dir == Direction.WEST) x--;
-				if (dir == Direction.EAST) x++;
-		    }
-		    
-		    BaseMap bm = GameScreen.context.getCurrentMap();
-		    int i = distance;   
-		    /* begin walking backward until you find a valid spot */
-		    while ((i-- > 0) && bm.getTile(x, y) != null && bm.getTile(x, y).getRule().has(TileAttrib.unwalkable)) {
-				if (reverseDir == Direction.NORTH) y--;
-				if (reverseDir == Direction.SOUTH) y++;
-				if (reverseDir == Direction.WEST) x--;
-				if (reverseDir == Direction.EAST) x++;
-		    }
-    
-		    if (bm.getTile(x, y) != null && !bm.getTile(x, y).getRule().has(TileAttrib.unwalkable)) {
-		        
-		    	/* we didn't move! */
-		        if (x == (int)v.x && y == (int)v.y) {
-		            screen.log("Failed to blink!");
-		        }
-		        
+
+			int distance = 0;
+			int diff = 0;
+			Direction reverseDir = Direction.reverse(dir);
+
+			/* figure out what numbers we're working with */
+			int var = (dir.getMask() & (Direction.WEST.getMask() | Direction.EAST.getMask())) > 0 ? x : y;
+
+			/* find the distance we are going to move */
+			distance = (var) % 0x10;
+			if (dir == Direction.EAST || dir == Direction.SOUTH) {
+				distance = 0x10 - distance;
+			}
+
+			/* see if we move another 16 spaces over */
+			diff = 0x10 - distance;
+			if ((diff > 0) && (Utils.rand.nextInt(diff * diff) > distance)) {
+				distance += 0x10;
+			}
+
+			/* test our distance, and see if it works */
+			for (int i = 0; i < distance; i++) {
+				if (dir == Direction.NORTH)
+					y--;
+				if (dir == Direction.SOUTH)
+					y++;
+				if (dir == Direction.WEST)
+					x--;
+				if (dir == Direction.EAST)
+					x++;
+			}
+
+			int i = distance;
+			/* begin walking backward until you find a valid spot */
+			while ((i-- > 0) && bm.getTile(x, y) != null && bm.getTile(x, y).getRule().has(TileAttrib.unwalkable)) {
+				if (reverseDir == Direction.NORTH)
+					y--;
+				if (reverseDir == Direction.SOUTH)
+					y++;
+				if (reverseDir == Direction.WEST)
+					x--;
+				if (reverseDir == Direction.EAST)
+					x++;
+			}
+
+			if (bm.getTile(x, y) != null && !bm.getTile(x, y).getRule().has(TileAttrib.unwalkable)) {
+
+				/* we didn't move! */
+				if (x == (int) v.x && y == (int) v.y) {
+					screen.log("Failed to blink!");
+				}
+
 				gameScreen.newMapPixelCoords = gameScreen.getMapPixelCoords(x, y);
 				gameScreen.changeMapPosition = true;
-				
-		    } else {
-	            screen.log("Failed to blink!");
-		    }
-    }    
 
-		
-		
+			} else {
+				screen.log("Failed to blink!");
+			}
+		}
+
 	}
 
 	public static void spellCure(PartyMember subject) {

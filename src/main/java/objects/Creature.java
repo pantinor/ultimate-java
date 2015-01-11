@@ -430,7 +430,7 @@ public class Creature implements Constants {
 
 	@Override
 	public String toString() {
-		return String.format("Creature [id=%s, name=%s, tile=%s]", id, name, tile);
+		return String.format("Creature [id=%s, name=%s, tile=%s, currentX=%d, currentY=%d currentPos=%s, sailDir=%s]", id, name, tile, currentX, currentY, currentPos, sailDir);
 	}
 
 	@XmlTransient

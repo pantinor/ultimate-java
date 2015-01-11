@@ -29,8 +29,6 @@ import objects.BaseMap.DoorStatus;
 import objects.Creature;
 import objects.Person;
 import ultima.Constants;
-import ultima.GameScreen;
-import ultima.Constants.CreatureType;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -41,6 +39,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
+import com.badlogic.gdx.math.Vector3;
 
 public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constants {
 	
@@ -209,11 +208,12 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 //				}
 				
 				//see if person is in shadow
-				int px = Math.round(p.getCurrentPos().x / tilePixelWidth);
-				int py = Math.round(p.getCurrentPos().y / tilePixelHeight);
+//				int px = Math.round(p.getCurrentPos().x / tilePixelWidth);
+//				int py = Math.round(p.getCurrentPos().y / tilePixelHeight);
 //				if (lightMap != null && lightMap[px][py] <= 0) {
 //					continue;
 //				}
+				
 				batch.draw(p.getTextureRegion(), p.getCurrentPos().x, p.getCurrentPos().y, tilePixelWidth, tilePixelHeight);
 				//batch.draw(p.getAnim().getKeyFrame(stateTime, true), p.getCurrentPos().x, p.getCurrentPos().y, tilePixelWidth, tilePixelHeight);
 			}
@@ -226,18 +226,23 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 				if (cr.currentPos == null  || !cr.getVisible()) {
 					continue;
 				}
+				
 				//see if in shadow
-				int px = Math.round(cr.currentX / tilePixelWidth);
-				int py = Math.round(cr.currentY / tilePixelHeight);
+//				int px = Math.round(cr.currentX / tilePixelWidth);
+//				int py = Math.round(cr.currentY / tilePixelHeight);
 //				if (lightMap != null && lightMap[px][py] <= 0) {
 //					continue;
 //				}
+
+//				System.out.println(cr);
+				
 				if (cr.getTile() == CreatureType.pirate_ship) {
-					TextureRegion tr = cr.getAnim().getKeyFrames()[cr.sailDir.ordinal()-1];
+					TextureRegion tr = cr.getAnim().getKeyFrames()[cr.sailDir.getVal()-1];
 					batch.draw(tr, cr.currentPos.x, cr.currentPos.y, tilePixelWidth, tilePixelHeight);
 				} else {
 					batch.draw(cr.getAnim().getKeyFrame(stateTime, true), cr.currentPos.x, cr.currentPos.y, tilePixelWidth, tilePixelHeight);
 				}
+				
 
 			}
 		}
