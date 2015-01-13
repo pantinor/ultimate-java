@@ -52,6 +52,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
@@ -92,15 +93,16 @@ public class GameScreen extends BaseScreen {
 	
 	public SecondaryInputProcessor sip;
 	Random rand = new Random();
-
-	GameTimer gameTimer;
+	
+	GameTimer gameTimer = new GameTimer();
+	MoonsTimer moonsTimer = new MoonsTimer();
 	
 	public GameScreen(Ultima4 mainGame) {
 		
 		scType = ScreenType.MAIN;
 		
-		this.mainGame = mainGame;
-		this.skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
+		GameScreen.mainGame = mainGame;
+		GameScreen.skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
 		
 		try {
 			standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-vga-atlas.txt"));
@@ -148,8 +150,16 @@ public class GameScreen extends BaseScreen {
 			projectilesStage = new Stage(new ScreenViewport(mapCamera));
 
 			sip = new SecondaryInputProcessor(this, stage);
+			
+			SequenceAction seq1 = Actions.action(SequenceAction.class);
+			seq1.addAction(Actions.delay(20f));
+			seq1.addAction(Actions.run(gameTimer));
+			stage.addAction(Actions.forever(seq1));
 
-			gameTimer = new GameTimer();
+			SequenceAction seq2 = Actions.action(SequenceAction.class);
+			seq2.addAction(Actions.delay(.25f));
+			seq2.addAction(Actions.run(moonsTimer));
+			stage.addAction(Actions.forever(seq2));
 			
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -183,11 +193,29 @@ public class GameScreen extends BaseScreen {
 		balloonAnim = new Animation(0.25f, tmp);
 	}
 	
+	class GameTimer implements Runnable {
+		boolean active = true;
+		public void run() {
+			if (active) {
+				keyUp(Keys.SPACE);
+			}
+		}
+	}
+	
+	class MoonsTimer implements Runnable {
+		boolean active = true;
+		public void run() {
+			if (active) {
+				updateMoons(true);		
+			}
+		}
+	}	
+	
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
-		gameTimer.run = true;
-		new Thread(gameTimer).start();
+		gameTimer.active = true;
+		moonsTimer.active = true;
 
 		//load save game if initializing
 		if (context == null) {
@@ -272,7 +300,8 @@ public class GameScreen extends BaseScreen {
 	
 	@Override
 	public void hide() {
-		gameTimer.run = false;
+		gameTimer.active = false;
+		moonsTimer.active = false;
 		context.getParty().deleteObserver(this);
 	}
 	
@@ -332,15 +361,12 @@ public class GameScreen extends BaseScreen {
 		Maps contextMap = Maps.get(context.getCurrentMap().getId());
 		BaseMap combatMap = combat.getMap();
 		
-		map = new UltimaTiledMapLoader(combat, standardAtlas, combat.getMap().getWidth(), combat.getMap().getHeight(), 16, 16).load();
+		TiledMap tmap = new UltimaTiledMapLoader(combat, standardAtlas, combat.getMap().getWidth(), combat.getMap().getHeight(), 16, 16).load();
 		
-		context.setCurrentTiledMap(map);
-		
-		CombatScreen sc = new CombatScreen(this, context, contextMap, combatMap, map, cr.getTile(), creatures, enhancedAtlas, standardAtlas);
+		CombatScreen sc = new CombatScreen(this, context, contextMap, combatMap, tmap, cr.getTile(), creatures, enhancedAtlas, standardAtlas);
 		mainGame.setScreen(sc);
 		
 		currentEncounter = cr;
-
 	}
 	
 	@Override
@@ -365,7 +391,7 @@ public class GameScreen extends BaseScreen {
 			    /* add a chest, if the creature leaves one */
 			    if (!currentEncounter.getNochest() && (r == null || !r.has(TileAttrib.unwalkable))) {
 			    	Tile ct = baseTileSet.getTileByName("chest");
-			    	Drawable chest = new Drawable(currentEncounter.currentX, currentEncounter.currentY, ct, standardAtlas);
+			    	Drawable chest = new Drawable(context.getCurrentMap().getId(), currentEncounter.currentX, currentEncounter.currentY, ct, standardAtlas);
 			    	chest.setX(currentEncounter.currentPos.x);
 			    	chest.setY(currentEncounter.currentPos.y);
 			    	mapObjectsStage.addActor(chest);
@@ -373,7 +399,7 @@ public class GameScreen extends BaseScreen {
 			    /* add a ship if you just defeated a pirate ship */
 			    else if (currentEncounter.getTile() == CreatureType.pirate_ship) {
 			    	Tile st = baseTileSet.getTileByName("ship");
-			    	Drawable ship = new Drawable(currentEncounter.currentX, currentEncounter.currentY, st, standardAtlas);
+			    	Drawable ship = new Drawable(context.getCurrentMap().getId(), currentEncounter.currentX, currentEncounter.currentY, st, standardAtlas);
 			    	ship.setX(currentEncounter.currentPos.x);
 			    	ship.setY(currentEncounter.currentPos.y);
 			    	mapObjectsStage.addActor(ship);
@@ -441,12 +467,15 @@ public class GameScreen extends BaseScreen {
 		}
 
 		mapBatch.end();
+		
+		mapObjectsStage.act();
+		mapObjectsStage.draw();
 
 		batch.begin();
 
 		//Vector3 v = getCurrentMapCoords();
 		//font.draw(batch, "map coords: " + v, 10, 500);
-		font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 0, 20);
+		//font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 0, 20);
 		//font.draw(batch, "mouse: " + currentMousePos, 10, 70);
 		
 		Ultima4.hud.render(batch, context.getParty());
@@ -467,9 +496,6 @@ public class GameScreen extends BaseScreen {
 
 		batch.end();
 		
-		mapObjectsStage.act();
-		mapObjectsStage.draw();
-		
 		mapBatch.begin();
 		mapBatch.draw(mainAvatar.getKeyFrames()[avatarDirection], mapCamera.position.x, mapCamera.position.y, tilePixelWidth, tilePixelHeight);
 		mapBatch.end();
@@ -485,9 +511,7 @@ public class GameScreen extends BaseScreen {
 
 	@Override
 	public boolean keyUp (int keycode) {
-		
-		context.setLastCommandTime(System.currentTimeMillis());
-		
+				
 		Vector3 v = getCurrentMapCoords();
 		Tile ct = context.getCurrentMap().getTile(v);
 		
@@ -592,6 +616,7 @@ public class GameScreen extends BaseScreen {
 		            }
 					
 					loadNextMap(dest, p.getStartx(), p.getStarty());
+					return false;
 				}
 			}
 		} else if (keycode == Keys.Q) {
@@ -639,7 +664,7 @@ public class GameScreen extends BaseScreen {
 		} else if (keycode == Keys.X) {
 			if (context.getTransportContext() == TransportContext.SHIP) {
 		    	Tile st = baseTileSet.getTileByName("ship");
-		    	Drawable ship = new Drawable((int)v.x, (int)v.y, st, standardAtlas);
+		    	Drawable ship = new Drawable(context.getCurrentMap().getId(), (int)v.x, (int)v.y, st, standardAtlas);
 		    	ship.setX(mapCamera.position.x);
 		    	ship.setY(mapCamera.position.y);
 		    	mapObjectsStage.addActor(ship);
@@ -650,7 +675,7 @@ public class GameScreen extends BaseScreen {
 		    	context.getCurrentMap().addCreature(cr);
 			} else if (context.getTransportContext() == TransportContext.BALLOON) {
 		    	Tile st = baseTileSet.getTileByName("balloon");
-		    	Drawable balloon = new Drawable((int)v.x, (int)v.y, st, standardAtlas);
+		    	Drawable balloon = new Drawable(context.getCurrentMap().getId(), (int)v.x, (int)v.y, st, standardAtlas);
 		    	balloon.setX(mapCamera.position.x);
 		    	balloon.setY(mapCamera.position.y);
 		    	mapObjectsStage.addActor(balloon);
@@ -708,6 +733,17 @@ public class GameScreen extends BaseScreen {
 		BaseMap bm = context.getCurrentMap();
 		if (bm.getBorderbehavior() == MapBorderBehavior.exit) {
 			if (nx > bm.getWidth()-1 || nx < 0 || ny > bm.getHeight()-1 || ny < 0) {
+				
+				//remove any city/town actors (chests) from the map we are leaving
+				for (Actor a : mapObjectsStage.getActors()) {
+					if (a instanceof Drawable) {
+						Drawable d = (Drawable)a;
+						if (d.getMapId() != Maps.WORLD.getId() && d.getMapId() == bm.getId()) {
+							d.remove();
+						}
+					}
+				}
+				
 				Portal p = Maps.WORLD.getMap().getPortal(bm.getId());
 				loadNextMap(Maps.WORLD, p.getX(), p.getY());
 				return false;
@@ -871,12 +907,12 @@ public class GameScreen extends BaseScreen {
 
 		if (tile.getRule().has(TileAttrib.sailable)) {
 			randId = CreatureType.pirate_ship.getValue();
-			randId += rand.nextInt(6);
+			randId += rand.nextInt(7);
 			Creature cr = creatures.getInstance(CreatureType.get(randId), enhancedAtlas, standardAtlas);
 			return cr;
 		} else if (tile.getRule().has(TileAttrib.swimmable)) {
 			randId = CreatureType.nixie.getValue();
-			randId += rand.nextInt(4);
+			randId += rand.nextInt(5);
 			Creature cr = creatures.getInstance(CreatureType.get(randId), enhancedAtlas, standardAtlas);
 			return cr;
 		}
@@ -972,25 +1008,6 @@ public class GameScreen extends BaseScreen {
 		
 		return dest;
 	}
-	
-	class GameTimer implements Runnable {
-		boolean run = true;
-		public void run() {
-			while (run) {
-				try {
-					Thread.sleep(250);
-					updateMoons(true);		
-					
-					if (System.currentTimeMillis() - context.getLastCommandTime() > 20*1000) {
-						keyUp(Keys.SPACE);
-					}
-					
-				} catch (InterruptedException e) {
-				}
-			}
-		}
-		
-	}	
 	
 	private void checkSpecialCreatures(Direction dir, int x, int y) {
 
@@ -1142,7 +1159,7 @@ public class GameScreen extends BaseScreen {
 			if (fireDir != null) {
 				logAppend(fireDir.toString());
 				AttackVector av = Utils.avatarfireCannon(mapObjectsStage, GameScreen.context.getCurrentMap(), fireDir, (int)pos.x, (int)pos.y);
-				Utils.animateCannonFire(GameScreen.this, projectilesStage, context.getCurrentMap(), av, (int)mapCamera.position.x, (int)mapCamera.position.y, true);
+				Utils.animateCannonFire(GameScreen.this, projectilesStage, context.getCurrentMap(), av, (int)pos.x, (int)pos.y, true);
 			} else {
 				log("Broadsides only!");
 			}

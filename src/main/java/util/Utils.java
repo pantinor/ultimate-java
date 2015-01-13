@@ -301,7 +301,7 @@ public class Utils implements Constants {
 		
 		Vector3 v = scr.getMapPixelCoords(target.x, target.y);
 		
-		p.addAction(sequence(moveTo(v.x, v.y, .3f), new Action() {
+		p.addAction(sequence(moveTo(v.x, v.y, target.distance*.1f), new Action() {
 			public boolean act(float delta) {
 				switch(p.res) {
 				case HIT:
@@ -337,6 +337,7 @@ public class Utils implements Constants {
             AttackResult res = attackAt(combatMap, v, attacker, dir, range, distance);
             target = v;
             target.result = res;
+            target.distance = distance;
 	        if (res != AttackResult.NONE) {
 	        	foundTarget = true;
 	            break;
@@ -374,7 +375,7 @@ public class Utils implements Constants {
 		
 		Vector3 v = scr.getMapPixelCoords(target.x, target.y);
 		
-		p.addAction(sequence(moveTo(v.x, v.y, .3f), new Action() {
+		p.addAction(sequence(moveTo(v.x, v.y, target.distance*.1f), new Action() {
 			public boolean act(float delta) {
 				
 				switch(p.res) {
@@ -403,13 +404,16 @@ public class Utils implements Constants {
 	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), x, y, 1, 11, true, true, false);
 	    
 	    AttackVector target = null;
+	    int distance = 1;
 	    for (AttackVector v : path) {
             AttackResult res = castAt(combatMap, v, attacker, minDamage, maxDamage);
             target = v;
             target.result = res;
+            target.distance = distance;
 	        if (res != AttackResult.NONE) {
 	            break;
 	        }
+	        distance++;
 	    }
     	
     	return target;
@@ -489,7 +493,7 @@ public class Utils implements Constants {
 		
 		Vector3 d = screen.getMapPixelCoords(av.x, av.y);
 		
-		p.addAction(sequence(moveTo(d.x, d.y, .3f), Actions.run(new Runnable() {
+		p.addAction(sequence(moveTo(d.x, d.y, av.distance*.1f), Actions.run(new Runnable() {
 			public void run() {
 				switch(p.res) {
 				case HIT:
@@ -518,13 +522,16 @@ public class Utils implements Constants {
 	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), startX, startY, 1, 4, true, false, true);
 	    
 	    AttackVector target = null;
+	    int distance = 1;
 	    for (AttackVector v : path) {
             AttackResult res = fireAt(stage, combatMap, v, false, avatarX, avatarY);
             target = v;
             target.result = res;
+            target.distance = distance;
 	        if (res != AttackResult.NONE) {
 	            break;
 	        }
+	        distance++;
 	    }
     	
     	return target;
@@ -535,13 +542,16 @@ public class Utils implements Constants {
 	    List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), startX, startY, 1, 4, true, true, true);
 	    
 	    AttackVector target = null;
+	    int distance = 1;
 	    for (AttackVector v : path) {
             AttackResult res = fireAt(stage, combatMap, v, true, 0, 0);
             target = v;
             target.result = res;
+            target.distance = distance;
 	        if (res != AttackResult.NONE) {
 	            break;
 	        }
+	        distance++;
 	    }
     	
     	return target;

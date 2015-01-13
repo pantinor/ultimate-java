@@ -237,7 +237,7 @@ public interface Constants {
 	    fire_field(TileAttrib.dispelable.getVal(), TileSpeed.VVSLOW, TileEffect.FIRE, TileAnimationStyle.NONE),
 	    sleep_field(TileAttrib.dispelable.getVal(), TileSpeed.FAST, TileEffect.SLEEP, TileAnimationStyle.NONE),
 	    lava(TileAttrib.replacement.getVal(), TileSpeed.FAST, TileEffect.LAVA, TileAnimationStyle.NONE),
-	    signs(TileAttrib.unwalkable.getVal()),
+	    signs(TileAttrib.unwalkable.getVal() | TileAttrib.unflyable.getVal()),
 	    spacers(TileAttrib.unwalkable.getVal()),
 	    monster(TileAttrib.livingthing.getVal() & TileAttrib.unwalkable.getVal());
 	    
@@ -1369,7 +1369,7 @@ public interface Constants {
 		sea_serpent(21),
 		sea_horse(22),
 		whirlpool(23),
-		//twister(24),
+		twister(24),
 		
 		rat(25,5,0),
 		bat(26,5,0),
@@ -1674,6 +1674,7 @@ public interface Constants {
 		
 		public int x;
 		public int y;
+		public int distance;
 		
 		public AttackResult result;
 		public String leaveTileName;

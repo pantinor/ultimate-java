@@ -16,11 +16,6 @@ import objects.Party.PartyMember;
 import ultima.BaseScreen;
 import ultima.Constants;
 import ultima.GameScreen;
-import ultima.Constants.AttackVector;
-import ultima.Constants.CreatureType;
-import ultima.Constants.Direction;
-import ultima.Constants.MapBorderBehavior;
-import ultima.Constants.Maps;
 import util.Utils;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -371,9 +366,19 @@ public class BaseMap implements Constants {
 
 
 	
-	public void initObjects(BaseScreen screen, TextureAtlas atlas1, TextureAtlas atlas2) {
+	public void initObjects(GameScreen screen, TextureAtlas atlas1, TextureAtlas atlas2) {
 		
-		if (initialized) return;
+		if (initialized) {
+		
+			if (city != null) {
+				for(Person p : city.getPeople()) {
+					if (p == null) continue;
+					p.setRemovedFromMap(false);
+				}
+			}
+			
+			return;
+		}
 		
 		if (city != null) {
 			
@@ -426,14 +431,14 @@ public class BaseMap implements Constants {
 	}
 	
 
-	public void moveObjects(BaseScreen screen, int avatarX, int avatarY) {
+	public void moveObjects(GameScreen screen, int avatarX, int avatarY) {
 		
 		if (city != null) {
 			
 			wanderFlag++;
 			
 			for(Person p : city.getPeople()) {
-				if (p == null) continue;
+				if (p == null || p.isRemovedFromMap()) continue;
 				
 				Vector3 pos = null;
 				Vector3 pixelPos = null;
@@ -441,16 +446,36 @@ public class BaseMap implements Constants {
 				
 				switch (p.getMovement()) {
 				case ATTACK_AVATAR:
+				{
+					int dist = Utils.movementDistance(borderbehavior, width, height, p.getX(), p.getY(), avatarX, avatarY);
+					if (dist <= 1) {
+						Maps cm = GameScreen.context.getCombatMap(p.getEmulatingCreature(), this, p.getX(), p.getY(), avatarX, avatarY);
+						Creature attacker = GameScreen.creatures.getInstance(p.getEmulatingCreature().getTile(), GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+						attacker.currentX = p.getX();
+						attacker.currentY = p.getY();
+						attacker.currentPos = screen.getMapPixelCoords(p.getX(), p.getY());
+						screen.attackAt(cm, attacker);
+		        		p.setRemovedFromMap(true);
+						continue;
+					}
+					int mask = getValidMovesMask(p.getX(), p.getY(), p.getEmulatingCreature(), avatarX, avatarY);
+			        dir = Utils.getPath(borderbehavior, width, height, avatarX, avatarY, mask, true, p.getX(), p.getY());
+				}
+					break;
 				case FOLLOW_AVATAR:
+				{
 			        int mask = getValidMovesMask(p.getX(), p.getY(), p.getEmulatingCreature(), avatarX, avatarY);
 			        dir = Utils.getPath(borderbehavior, width, height, avatarX, avatarY, mask, true, p.getX(), p.getY());
+				}
 					break;
 				case FIXED:
 					break;
 				case WANDER:
+				{
 					if (wanderFlag % 2 == 0) continue; 
 					if (p.isTalking()) continue; 
 					dir = Direction.getRandomValidDirection(getValidMovesMask(p.getX(), p.getY(), p.getEmulatingCreature(), avatarX, avatarY));
+				}
 					break;
 				default:
 					break;
@@ -495,14 +520,14 @@ public class BaseMap implements Constants {
 		        if (relDirMask > 0 && (dist == 3 || dist == 2) && Direction.isDirInMask(relDirMask, broadsidesDirs)) {
 		        	Direction fireDir = Direction.getByMask(relDirMask);
 					AttackVector av = Utils.enemyfireCannon(surfaceMapStage, this, fireDir, cr.currentX, cr.currentY, avatarX, avatarY);
-					Utils.animateCannonFire(screen, ((GameScreen)screen).projectilesStage, this, av, (int)cr.currentPos.x, (int)cr.currentPos.y, false);
+					Utils.animateCannonFire(screen, screen.projectilesStage, this, av, cr.currentX, cr.currentY, false);
 					continue;
 		        } else if (relDirMask > 0 && (dist == 3 || dist == 2) && !Direction.isDirInMask(relDirMask, broadsidesDirs) && Utils.rand.nextInt(2) == 0) {
 					cr.sailDir = Direction.goBroadsides(broadsidesDirs);
 					continue;
 		        } else if (dist <= 1) {
 		        	if (Direction.isDirInMask(relDirMask, broadsidesDirs)) {
-		        		((GameScreen)screen).attackAt(Maps.SHIPSHIP_CON, cr);
+		        		screen.attackAt(Maps.SHIPSHIP_CON, cr);
 		        		break;
 		        	} else {
 						cr.sailDir = Direction.goBroadsides(broadsidesDirs);
@@ -512,14 +537,37 @@ public class BaseMap implements Constants {
 		        
 			} else if (dist <= 1) {
 				
-				Maps cm = GameScreen.context.getCombatMap(cr, this, cr.currentX, cr.currentY, avatarX, avatarY);
-        		((GameScreen)screen).attackAt(cm, cr);
-        		break;
+		        if (cr.getWontattack()) {
+		        	if (cr.getTile() == CreatureType.whirlpool) {
+		            	GameScreen.context.damageShip(-1, 10);
+		            	//teleport to lock lake
+		            	screen.newMapPixelCoords = screen.getMapPixelCoords(127, 78);
+		            	screen.changeMapPosition = true;
+		            	i.remove();
+		            	continue;
+		        	} else if (cr.getTile() == CreatureType.twister) {
+		        		if (GameScreen.context.getTransportContext() == TransportContext.SHIP) {
+		        			GameScreen.context.damageShip(10, 30);
+		        		} else if (GameScreen.context.getTransportContext() != TransportContext.BALLOON) {
+		                	GameScreen.context.getParty().damageParty(0, 75);
+		        		}
+		        		continue;
+		        	}
+		        } else {
+					Maps cm = GameScreen.context.getCombatMap(cr, this, cr.currentX, cr.currentY, avatarX, avatarY);
+					screen.attackAt(cm, cr);
+	        		break;
+		        }
         		
 			}
 			
 	        int mask = getValidMovesMask(cr.currentX, cr.currentY, cr, avatarX, avatarY);
-	        Direction dir = Utils.getPath(borderbehavior, width, height, avatarX, avatarY, mask, true, cr.currentX, cr.currentY);
+	        Direction dir = null;
+	        if (cr.getWontattack()) {
+	        	dir = Direction.getRandomValidDirection(mask);
+	        } else {
+	        	dir = Utils.getPath(borderbehavior, width, height, avatarX, avatarY, mask, true, cr.currentX, cr.currentY);
+	        }
 			if (dir == null) {
 				continue;
 			}
@@ -669,7 +717,7 @@ public class BaseMap implements Constants {
 			//see if another person is there
 			if (city != null) {
 				for(Person p : city.getPeople()) {
-					if (p == null) continue;
+					if (p == null || p.isRemovedFromMap()) continue;
 					if (p.getX() == x && p.getY() == y) {
 						canmove = false;
 						break;

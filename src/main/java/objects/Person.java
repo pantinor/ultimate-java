@@ -26,6 +26,7 @@ public class Person implements Constants {
 	private boolean isTalking = false;
 	private PersonRole role;
 	private Creature emulatingCreature;
+	private boolean removedFromMap;
 	
 	public int getId() {
 		return id;
@@ -153,6 +154,12 @@ public class Person implements Constants {
 	}
 	public void setTextureRegion(TextureRegion textureRegion) {
 		this.textureRegion = textureRegion;
+	}
+	public boolean isRemovedFromMap() {
+		return removedFromMap;
+	}
+	public void setRemovedFromMap(boolean removedFromMap) {
+		this.removedFromMap = removedFromMap;
 	}
 	
 	

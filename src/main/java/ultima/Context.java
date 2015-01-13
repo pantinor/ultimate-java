@@ -37,7 +37,6 @@ public class Context implements Constants {
     private Drawable lastShip;
     private Drawable currentShip;
 
-    private long lastCommandTime = System.currentTimeMillis();
     private Random rand = new Random();
     
 	public int getLine() {
@@ -67,9 +66,6 @@ public class Context implements Constants {
 	public TransportContext getTransportContext() {
 		return transportContext;
 	}
-	public long getLastCommandTime() {
-		return lastCommandTime;
-	}
 	public void setLine(int line) {
 		this.line = line;
 	}
@@ -96,9 +92,6 @@ public class Context implements Constants {
 	}
 	public void setTransportContext(TransportContext transportContext) {
 		this.transportContext = transportContext;
-	}
-	public void setLastCommandTime(long lastCommandTime) {
-		this.lastCommandTime = lastCommandTime;
 	}
 	public TiledMap getCurrentTiledMap() {
 		return currentTiledMap;

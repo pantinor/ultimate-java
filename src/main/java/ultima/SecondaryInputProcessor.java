@@ -128,6 +128,9 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
 					screen.log("Funny, no response! ");
 				}
 				
+				return false;
+
+				
 			} else if (initialKeyCode == Keys.O) {
 				
 				screen.logAppend(dir.toString());

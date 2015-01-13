@@ -74,7 +74,7 @@
 	<tile name="sleep_field" rule="sleep_field" animation="scroll" tiledInDungeon="true" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="71" />
 	<tile name="solid" rule="solid_attackover" index="72" />
 	<tile name="secret_door" rule="secret_door" opaque="true" index="73" />
-	<tile name="altar" usesReplacementTileAsBackground="true" index="74" />
+	<tile name="altar" rule="none" usesReplacementTileAsBackground="true" index="74" />
 	<tile name="campfire" rule="solid" animation="campfire" usesReplacementTileAsBackground="true" index="75" />
 	<tile name="lava" rule="lava" animation="scroll" index="76" />
 	<tile name="miss_flash" rule="none" usesReplacementTileAsBackground="true" index="77" />

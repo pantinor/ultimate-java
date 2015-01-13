@@ -439,7 +439,7 @@ public class SpellUtil implements Constants {
 						Utils.dealDamage(caster, cr, 0xFF);
 						
 						Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
-						Drawable d = new Drawable(cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+						Drawable d = new Drawable(combatScreen.combatMap.getId(), cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
 				    	d.setX(cr.currentPos.x);
 				    	d.setY(cr.currentPos.y);
 				    	d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));
@@ -453,7 +453,7 @@ public class SpellUtil implements Constants {
 							Utils.dealDamage(caster, cr, cr.getHP() - 23);
 							
 							Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
-							Drawable d = new Drawable(cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+							Drawable d = new Drawable(combatScreen.combatMap.getId(), cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
 					    	d.setX(cr.currentPos.x);
 					    	d.setY(cr.currentPos.y);
 					    	d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));
@@ -499,7 +499,7 @@ public class SpellUtil implements Constants {
 		    	if (cr.getUndead() && Utils.rand.nextInt(2) == 0) {
 		    		
 					Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
-					Drawable d = new Drawable(cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+					Drawable d = new Drawable(combatScreen.combatMap.getId(), cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
 			    	d.setX(cr.currentPos.x);
 			    	d.setY(cr.currentPos.y);
 			    	
@@ -647,7 +647,7 @@ public class SpellUtil implements Constants {
 				Utils.dealDamage(caster, cr, 0xFF);
 				
 				Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
-				Drawable d = new Drawable(cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+				Drawable d = new Drawable(GameScreen.context.getCurrentMap().getId(), cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
 		    	d.setX(cr.currentPos.x);
 		    	d.setY(cr.currentPos.y);
 		    	d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));

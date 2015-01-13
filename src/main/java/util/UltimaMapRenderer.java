@@ -39,7 +39,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
-import com.badlogic.gdx.math.Vector3;
 
 public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constants {
 	
@@ -199,7 +198,7 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 		//render person objects on map
 		if (bm.getCity() != null) {
 			for(Person p : bm.getCity().getPeople()) {
-				if (p == null) {
+				if (p == null || p.isRemovedFromMap()) {
 					continue;
 				}
 				
