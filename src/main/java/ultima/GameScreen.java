@@ -95,7 +95,6 @@ public class GameScreen extends BaseScreen {
 	Random rand = new Random();
 	
 	GameTimer gameTimer = new GameTimer();
-	MoonsTimer moonsTimer = new MoonsTimer();
 	
 	public GameScreen(Ultima4 mainGame) {
 		
@@ -152,14 +151,10 @@ public class GameScreen extends BaseScreen {
 			sip = new SecondaryInputProcessor(this, stage);
 			
 			SequenceAction seq1 = Actions.action(SequenceAction.class);
-			seq1.addAction(Actions.delay(20f));
+			seq1.addAction(Actions.delay(.25f));
 			seq1.addAction(Actions.run(gameTimer));
 			stage.addAction(Actions.forever(seq1));
 
-			SequenceAction seq2 = Actions.action(SequenceAction.class);
-			seq2.addAction(Actions.delay(.25f));
-			seq2.addAction(Actions.run(moonsTimer));
-			stage.addAction(Actions.forever(seq2));
 			
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -197,25 +192,21 @@ public class GameScreen extends BaseScreen {
 		boolean active = true;
 		public void run() {
 			if (active) {
-				keyUp(Keys.SPACE);
+				
+				updateMoons(true);		
+				
+				if (System.currentTimeMillis() - context.getLastCommandTime() > 20*1000) {
+					keyUp(Keys.SPACE);
+				}
 			}
 		}
 	}
-	
-	class MoonsTimer implements Runnable {
-		boolean active = true;
-		public void run() {
-			if (active) {
-				updateMoons(true);		
-			}
-		}
-	}	
+		
 	
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
 		gameTimer.active = true;
-		moonsTimer.active = true;
 
 		//load save game if initializing
 		if (context == null) {
@@ -301,7 +292,6 @@ public class GameScreen extends BaseScreen {
 	@Override
 	public void hide() {
 		gameTimer.active = false;
-		moonsTimer.active = false;
 		context.getParty().deleteObserver(this);
 	}
 	
@@ -511,6 +501,8 @@ public class GameScreen extends BaseScreen {
 
 	@Override
 	public boolean keyUp (int keycode) {
+		
+		context.setLastCommandTime(System.currentTimeMillis());
 				
 		Vector3 v = getCurrentMapCoords();
 		Tile ct = context.getCurrentMap().getTile(v);
@@ -1176,6 +1168,8 @@ public class GameScreen extends BaseScreen {
 			log("Not in a ballon!");
 			return;
 		}
+		
+		boolean found = false;
 
 		Drawable chest = null;
 		Array<Actor> as = mapObjectsStage.getActors();
@@ -1184,13 +1178,25 @@ public class GameScreen extends BaseScreen {
 				Drawable d = (Drawable)a;
 				if (StringUtils.equals("chest", d.getTile().getName()) && d.getCx() == x && d.getCy() == y) {
 					chest = (Drawable)a;
+					found = true;
+					chest.remove();
+					break;
 				}
 			}
 		}
+		
+		
+		if (chest == null) {
+			//check tile too, ie in cities
+			Tile tile = context.getCurrentMap().getTile(x, y);
+			if (tile.getRule() == TileRule.chest) {
+				replaceTile("brick_floor", x, y);
+				found = true;
+			}
+		}
 
-		if (chest != null) {
+		if (found) {
 			PartyMember pm = context.getParty().getMember(index);
-			chest.remove();
 			context.getChestTrapHandler(pm);
 			log(String.format("The Chest Holds: %d Gold", context.getParty().getChestGold()));
 			if (context.getCurrentMap().getType() == MapType.city) {
@@ -1199,6 +1205,7 @@ public class GameScreen extends BaseScreen {
 		} else {
 			log("Not Here!");
 		}
+		
 	}
 	
 	public void peerGem() {

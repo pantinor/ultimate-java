@@ -2,12 +2,12 @@ package objects;
 
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import ultima.Constants.CreatureType;
+import util.Utils;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -49,9 +49,9 @@ public class CreatureSet {
 					tr = atlas2.findRegions(cr.getTile().toString());
 				}
 				
-				int frameRate = ThreadLocalRandom.current().nextInt(1,3);
+				int frameRate = Utils.getRandomBetween(1,3);
 				
-				int fr = ThreadLocalRandom.current().nextInt(0,tr.size);
+				int fr = Utils.getRandomBetween(0,tr.size);
 				TextureRegion reg = tr.get(fr);
 				
 				newCr.setAnim(new Animation(frameRate, reg));

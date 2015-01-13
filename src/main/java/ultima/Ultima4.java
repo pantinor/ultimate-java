@@ -8,7 +8,6 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class Ultima4 extends Game {
 	
@@ -21,6 +20,7 @@ public class Ultima4 extends Game {
 	public static StartScreen startScreen;
 		
 	public static void main(String[] args) {
+				
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "Ultima 4 - Quest of the Avatar";
 		cfg.width = SCREEN_WIDTH;

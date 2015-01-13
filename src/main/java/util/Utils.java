@@ -59,6 +59,11 @@ public class Utils implements Constants {
 	public static String properCase(String s) {
 		return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
 	}
+	//This gives you a random number in between low (inclusive) and high (exclusive)
+	public static int getRandomBetween(int low, int high) {
+		return rand.nextInt(high-low) + low;
+	}
+	
 	
 	/**
 	 * load the tile indexes from the ULT file

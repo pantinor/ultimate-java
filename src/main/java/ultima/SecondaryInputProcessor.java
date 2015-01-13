@@ -6,6 +6,7 @@ import objects.Creature;
 import objects.Party.PartyMember;
 import objects.Person;
 import objects.Tile;
+import ultima.Constants.ArmorType;
 import util.Utils;
 
 import com.badlogic.gdx.Gdx;
@@ -404,17 +405,33 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
 			this.ready = ready;
 			this.pm = pm;
 			
-			StringBuffer sb = new StringBuffer();
 			if (ready) {
-				for (char ch='a';ch<='p';ch++) {
-					if (pm.getParty().getSaveGame().weapons[ch - 'a'] > 0 ) sb.append(Character.toUpperCase(ch) + " - " + WeaponType.get(ch - 'a'));
+				for (WeaponType wt : WeaponType.values()) {
+					char ch = (char)('a' + wt.ordinal());
+					if (wt == WeaponType.HANDS) {
+						screen.log(Character.toUpperCase(ch) + " - " + WeaponType.get(ch - 'a'));
+						continue;
+					}
+					if (pm.getParty().getSaveGame().weapons[wt.ordinal()] > 0 ) {
+						screen.log(Character.toUpperCase(ch) + " - " + WeaponType.get(ch - 'a'));
+					} else if (pm.getPlayer().weapon == wt) {
+						screen.log(Character.toUpperCase(ch) + " - " + WeaponType.get(ch - 'a'));
+					}
 				}
 			} else {
-				for (char ch='a';ch<='h';ch++) {
-					if (pm.getParty().getSaveGame().armor[ch - 'a'] > 0 ) sb.append(Character.toUpperCase(ch) + " - " + ArmorType.get(ch - 'a'));
+				for (ArmorType at : ArmorType.values()) {
+					char ch = (char)('a' + at.ordinal());
+					if (at == ArmorType.NONE) {
+						screen.log(Character.toUpperCase(ch) + " - " + ArmorType.get(ch - 'a'));
+						continue;
+					}
+					if (pm.getParty().getSaveGame().armor[at.ordinal()] > 0 ) {
+						screen.log(Character.toUpperCase(ch) + " - " + ArmorType.get(ch - 'a'));
+					} else if (pm.getPlayer().armor == at) {
+						screen.log(Character.toUpperCase(ch) + " - " + ArmorType.get(ch - 'a'));
+					}
 				}
 			}
-			screen.log(sb.length()>0?sb.toString():"Nothing owned.");
 		}
 
 		@Override

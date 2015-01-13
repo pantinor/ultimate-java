@@ -474,6 +474,16 @@ public class Party extends Observable implements Constants {
 		public boolean readyWeapon(int i) {
 			
 			if (i >= 16) return false;
+			if (i==0) {
+		        if (player.weapon.ordinal() != 0) party.getSaveGame().weapons[player.weapon.ordinal()] ++;
+		        player.weapon = WeaponType.HANDS;
+				return true;
+			}
+			
+			if (player.weapon.ordinal() == i) {
+				return true;
+			}
+
 			if (party.getSaveGame().weapons[i] <= 0) return false;
 			
 			WeaponType wt = WeaponType.get(i);
@@ -486,6 +496,17 @@ public class Party extends Observable implements Constants {
 		
 		public boolean wearArmor(int i) {
 			if (i >= 8) return false;
+			
+			if (i==0) {
+				if (player.armor.ordinal() != 0) party.getSaveGame().armor[player.armor.ordinal()] ++;
+		        player.armor = ArmorType.NONE;
+				return true;
+			}
+			
+			if (player.armor.ordinal() == i) {
+				return true;
+			}
+			
 			if (party.getSaveGame().armor[i] <= 0) return false;
 			
 			ArmorType at = ArmorType.get(i);

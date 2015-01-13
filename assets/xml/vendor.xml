@@ -74,8 +74,8 @@
 
 		<vendor id="BRITAIN" name="Winsdor Armour" owner="Winston" type="ARMOR" personId="27">
 			<item choice="b" type="ARMOR" name="Cloth" armorType="CLOTH" price="50" description="Cloth Armour is good for a tight budget, Fairly priced at %dgp." />
-			<item choice="c" type="ARMOR" name="Leather" armorType="CLOTH" price="200" description="Leather Armour is both supple and strong, and costs a mere %dgp. A Bargain!" />
-			<item choice="d" type="ARMOR" name="Chain Mail" armorType="CLOTH" price="600" description="Chail Mail is the armour used by more warriors than all others. Ours costs %dgp." />
+			<item choice="c" type="ARMOR" name="Leather" armorType="LEATHER" price="200" description="Leather Armour is both supple and strong, and costs a mere %dgp. A Bargain!" />
+			<item choice="d" type="ARMOR" name="Chain Mail" armorType="CHAIN" price="600" description="Chail Mail is the armour used by more warriors than all others. Ours costs %dgp." />
 		</vendor>
 
 		<vendor id="JHELOM" name="Valiant's Armour" owner="Valiant" type="ARMOR" personId="27">

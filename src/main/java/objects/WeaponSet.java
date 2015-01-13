@@ -19,7 +19,7 @@ public class WeaponSet {
 	public void setWeapons(List<Weapon> weapons) {
 		this.weapons = weapons;
 		
-		for (Weapon w :weapons) {
+		for (Weapon w : this.weapons) {
 			WeaponType t = w.getType();
 			t.setWeapon(w);
 		}

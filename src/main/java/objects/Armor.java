@@ -53,13 +53,21 @@ public class Armor {
 	
 	public boolean canUse(ClassType klazz) {
 		if (constraints == null) return true;
-
+		boolean canuse = true;
 		for (Constraint c : constraints) {
-			if (c.getCanuse() && (c.getCharClass().equals(klazz.toString().toLowerCase()) || c.getCharClass().equals("all"))) {
-				return true;
+			boolean b1 = c.getCharClass().equals(klazz.toString().toLowerCase());
+			boolean b2 = c.getCharClass().equals("all");
+			if (!c.getCanuse() && b1) {
+				canuse = false;
+			}
+			if (!c.getCanuse() && b2) {
+				canuse = false;
+			}
+			if (c.getCanuse() && b1) {
+				canuse = true;
 			}
 		}
-		return false;
+		return canuse;
 	}
 	
 

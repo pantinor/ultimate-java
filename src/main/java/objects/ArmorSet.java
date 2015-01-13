@@ -19,7 +19,7 @@ public class ArmorSet {
 	public void setArmors(List<Armor> armors) {
 		this.armors = armors;
 		
-		for (Armor a :armors) {
+		for (Armor a : this.armors) {
 			ArmorType t = a.getType();
 			t.setArmor(a);
 		}

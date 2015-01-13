@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -398,7 +397,7 @@ public class BaseMap implements Constants {
 				}
 								
 				//random rate between 1 and 4
-				int frameRate = ThreadLocalRandom.current().nextInt(1,4);
+				int frameRate = Utils.getRandomBetween(1,4);
 				p.setAnim(new Animation(frameRate, tr));
 				
 				Vector3 pixelPos = screen.getMapPixelCoords(p.getStart_x(), p.getStart_y());

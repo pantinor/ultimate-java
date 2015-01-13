@@ -10,10 +10,6 @@ import objects.Party;
 import objects.Party.PartyMember;
 import objects.Portal;
 import objects.Tile;
-import ultima.Constants.Maps;
-import ultima.Constants.TileAttrib;
-import ultima.Constants.TileRule;
-import ultima.Constants.TransportContext;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 
@@ -36,6 +32,8 @@ public class Context implements Constants {
     private TransportContext transportContext;
     private Drawable lastShip;
     private Drawable currentShip;
+    
+    private long lastCommandTime = System.currentTimeMillis();
 
     private Random rand = new Random();
     
@@ -338,6 +336,12 @@ public class Context implements Constants {
 		}
 		
 		return cm;
+	}
+	public long getLastCommandTime() {
+		return lastCommandTime;
+	}
+	public void setLastCommandTime(long lastCommandTime) {
+		this.lastCommandTime = lastCommandTime;
 	}
     
 
