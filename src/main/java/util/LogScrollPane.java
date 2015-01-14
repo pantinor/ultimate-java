@@ -26,8 +26,12 @@ public class LogScrollPane extends ScrollPane {
 				
 		internalTable.align(Align.topLeft);
 	}
-
+	
 	public void add(String text) {
+		add(text, true);
+	}
+
+	public void add(String text, boolean scrollBottom) {
 		
 		if (text == null) return;
 		
@@ -39,7 +43,7 @@ public class LogScrollPane extends ScrollPane {
 		internalTable.row();
 
 		pack();
-		scrollTo(0, 0, 0, 0);
+		if (scrollBottom) scrollTo(0, 0, 0, 0);
 
 	}
 

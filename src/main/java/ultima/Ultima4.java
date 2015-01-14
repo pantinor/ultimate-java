@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 public class Ultima4 extends Game {
 	
 	public static int SCREEN_WIDTH = 800;
-	public static int SCREEN_HEIGHT = 600;
+	public static int SCREEN_HEIGHT = 640;
 	
 	public static LogDisplay hud;
 	public static BitmapFont logFont;

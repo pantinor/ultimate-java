@@ -702,6 +702,11 @@ public class GameScreen extends BaseScreen {
 				if (showZstats > context.getParty().getMembers().size()) showZstats = STATS_WEAPONS;
 			}
 			if (showZstats > STATS_SPELLS) showZstats = STATS_NONE;
+			
+		} else if (keycode == Keys.ESCAPE) {
+			
+			new DocumentationDialog(this, stage, skin).show();
+
 		} else if (keycode == Keys.SPACE) {
 			log("Pass");
 		}

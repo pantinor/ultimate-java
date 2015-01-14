@@ -22,11 +22,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 public class LogDisplay {
 	
 	Texture logbkgrnd, playbkgrnd;
-	List<String> logs = new FixedSizeArrayList<String>(5);
+	List<String> logs = new FixedSizeArrayList<String>(7);
 	BitmapFont font;
 	
 	int width = 180;
-	int height = 18*5;
+	int height = 18*7;
 	
 	int pbh = 170;
 	int pbw = 142;
