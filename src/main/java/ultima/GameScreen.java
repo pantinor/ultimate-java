@@ -124,7 +124,9 @@ public class GameScreen extends BaseScreen {
 			armors = (ArmorSet) Utils.loadXml("armors.xml", ArmorSet.class);
 			creatures = (CreatureSet) Utils.loadXml("creatures.xml", CreatureSet.class);
 			creatures.init();
-
+			weapons.init();
+			armors.init();
+			
 			initTransportAnimations();
 			mainAvatar = avatarAnim;;
 					

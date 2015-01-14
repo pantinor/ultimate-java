@@ -18,7 +18,9 @@ public class ArmorSet {
 
 	public void setArmors(List<Armor> armors) {
 		this.armors = armors;
-		
+	}
+	
+	public void init() {
 		for (Armor a : this.armors) {
 			ArmorType t = a.getType();
 			t.setArmor(a);
