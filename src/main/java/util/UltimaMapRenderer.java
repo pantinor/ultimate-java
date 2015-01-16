@@ -35,6 +35,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -43,7 +44,7 @@ import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
 public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constants {
 	
 	private BaseMap bm;
-	private ShadowFOV fov = new ShadowFOV();
+	private SpreadFOV fov;
 	float stateTime = 0;
 	
 	TextureRegion door;
@@ -53,6 +54,8 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 	public UltimaMapRenderer(TextureAtlas atlas, BaseMap bm, TiledMap map, float unitScale) {
 		super(map, unitScale);
 		this.bm = bm;
+		
+		this.fov = new SpreadFOV(bm.getWidth(), bm.getHeight());
 		
 		if (atlas != null) {
 		
@@ -66,9 +69,22 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 		}
 
 	}
-
-	@Override
+	
+	public void render (int avatarX, int avatarY) {
+		beginRender();
+		for (MapLayer layer : map.getLayers()) {
+			if (layer.isVisible()) {
+				renderTileLayer((TiledMapTileLayer)layer, avatarX, avatarY);
+			}
+		}
+		endRender();
+	}
+	
 	public void renderTileLayer(TiledMapTileLayer layer) {
+		renderTileLayer(layer);
+	}
+
+	public void renderTileLayer(TiledMapTileLayer layer, int avatarX, int avatarY) {
 				
 		stateTime += Gdx.graphics.getDeltaTime();
 
@@ -98,10 +114,9 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 		float y = row2 * layerTileHeight;
 		float startX = col1 * layerTileWidth;
 		
-		//float[][] lightMap = null;
-		//if (bm.getShadownMap() != null) {
-		//	lightMap = fov.calculateFOV(bm.getShadownMap(), startx, starty, 15);	
-		//}
+		if (bm.getShadownMap() != null) {
+			fov.calculateFOV(bm.getShadownMap(), avatarX, avatarY, 17f);	
+		}
 
 		for (int row = row2; row >= row1; row--) {
 			
@@ -126,13 +141,15 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 					}
 					
 					cell = layer.getCell(cx, cy);
+					color = getColor(batchColor, cx, layerHeight - cy - 1);
 
 				} else {
 					cell = layer.getCell(col, row);
+					color = getColor(batchColor, col, layerHeight - row - 1);
 				}
 				
 								
-				if (cell == null) { // || (lightMap != null && lightMap[col][row] <= 0)) {
+				if (cell == null) {
 					x += layerTileWidth;
 					continue;
 				}
@@ -195,26 +212,14 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 		}
 		
 		
-		//render person objects on map
 		if (bm.getCity() != null) {
 			for(Person p : bm.getCity().getPeople()) {
+				
 				if (p == null || p.isRemovedFromMap()) {
 					continue;
 				}
 				
-//				if (p.getConversation() != null && GameScreen.context.getParty().isJoinedInParty(p.getConversation().getName())) {
-//					continue;
-//				}
-				
-				//see if person is in shadow
-//				int px = Math.round(p.getCurrentPos().x / tilePixelWidth);
-//				int py = Math.round(p.getCurrentPos().y / tilePixelHeight);
-//				if (lightMap != null && lightMap[px][py] <= 0) {
-//					continue;
-//				}
-				
-				batch.draw(p.getTextureRegion(), p.getCurrentPos().x, p.getCurrentPos().y, tilePixelWidth, tilePixelHeight);
-				//batch.draw(p.getAnim().getKeyFrame(stateTime, true), p.getCurrentPos().x, p.getCurrentPos().y, tilePixelWidth, tilePixelHeight);
+				draw(p.getTextureRegion(), p.getCurrentPos().x, p.getCurrentPos().y, p.getX(), p.getY());
 			}
 			
 		}
@@ -222,28 +227,77 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 		List<Creature> crs = bm.getCreatures();
 		if (crs.size() > 0) {
 			for (Creature cr : crs) {
+				
 				if (cr.currentPos == null  || !cr.getVisible()) {
 					continue;
 				}
 				
-				//see if in shadow
-//				int px = Math.round(cr.currentX / tilePixelWidth);
-//				int py = Math.round(cr.currentY / tilePixelHeight);
-//				if (lightMap != null && lightMap[px][py] <= 0) {
-//					continue;
-//				}
-
-//				System.out.println(cr);
-				
 				if (cr.getTile() == CreatureType.pirate_ship) {
 					TextureRegion tr = cr.getAnim().getKeyFrames()[cr.sailDir.getVal()-1];
-					batch.draw(tr, cr.currentPos.x, cr.currentPos.y, tilePixelWidth, tilePixelHeight);
+					draw(tr, cr.currentPos.x, cr.currentPos.y, cr.currentX, cr.currentY);
 				} else {
-					batch.draw(cr.getAnim().getKeyFrame(stateTime, true), cr.currentPos.x, cr.currentPos.y, tilePixelWidth, tilePixelHeight);
+					draw(cr.getAnim().getKeyFrame(stateTime, true), cr.currentPos.x, cr.currentPos.y, cr.currentX, cr.currentY);
 				}
 				
 
 			}
 		}
+	}
+	
+	public float getColor(Color batchColor, int x, int y) {
+		
+		float[][] lightMap = fov.getLightMap();
+		
+		if (!(x >= 0 && x < lightMap.length && y >= 0 && y < lightMap[0].length)) {
+			return Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, 1f);
+		}
+			
+		if (lightMap[x][y] <= 0) {
+			return Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, .2f);
+		} else {
+			return Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, lightMap[x][y]<.2f?.2f:lightMap[x][y]);
+		}
+		
+	}
+	
+	public void draw(TextureRegion region, float x, float y, int locX, int locY) {
+
+		float x1 = x;
+		float y1 = y;
+		float x2 = x1 + 32;
+		float y2 = y1 + 32;
+
+		float u1 = region.getU();
+		float v1 = region.getV2();
+		float u2 = region.getU2();
+		float v2 = region.getV();
+		
+		float color = getColor(batch.getColor(), locX, locY);
+
+		vertices[X1] = x1;
+		vertices[Y1] = y1;
+		vertices[C1] = color;
+		vertices[U1] = u1;
+		vertices[V1] = v1;
+
+		vertices[X2] = x1;
+		vertices[Y2] = y2;
+		vertices[C2] = color;
+		vertices[U2] = u1;
+		vertices[V2] = v2;
+
+		vertices[X3] = x2;
+		vertices[Y3] = y2;
+		vertices[C3] = color;
+		vertices[U3] = u2;
+		vertices[V3] = v2;
+
+		vertices[X4] = x2;
+		vertices[Y4] = y1;
+		vertices[C4] = color;
+		vertices[U4] = u2;
+		vertices[V4] = v1;
+
+		batch.draw(region.getTexture(), vertices, 0, 20);
 	}
 }

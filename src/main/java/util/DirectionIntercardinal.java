@@ -10,7 +10,7 @@ package util;
  *
  * @author Eben Howard - http://squidpony.com - howard@squidpony.com
  */
-public enum DirectionIntercardinal implements Topology {
+public enum DirectionIntercardinal {
 
     UP(0, -1, '^'), DOWN(0, 1, 'v'), LEFT(-1, 0, '<'), RIGHT(1, 0, '>'), UP_LEFT(-1, -1, '7'), UP_RIGHT(1, -1, '9'), DOWN_LEFT(-1, 1, '1'), DOWN_RIGHT(1, 1, '3'), NONE(0, 0, '-');
     /**

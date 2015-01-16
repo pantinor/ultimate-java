@@ -3,7 +3,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
@@ -42,10 +41,10 @@ import ultima.Constants.MapBorderBehavior;
 import ultima.Constants.Maps;
 import ultima.Constants.TileAttrib;
 import ultima.Constants.TileRule;
-import ultima.Constants.AttackVector;
 import ultima.Constants.Virtue;
 import ultima.StartScreen;
 import util.ShadowFOV;
+import util.SpreadFOV;
 import util.Utils;
 import vendor.VendorClass;
 import vendor.VendorClassSet;
@@ -354,34 +353,44 @@ public class TestJaxb {
 	//@Test
 	public void testMapShadows() throws Exception {
 				
-		File file2 = new File("target/classes/xml/tileset-base.xml");
+		File file2 = new File("assets/xml/tileset-base.xml");
 		JAXBContext jaxbContext = JAXBContext.newInstance(TileSet.class);
 		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 		TileSet ts = (TileSet) jaxbUnmarshaller.unmarshal(file2);
 		ts.setMaps();
 		
-		File file3 = new File("target/classes/xml/maps.xml");
+		File file3 = new File("assets/xml/maps.xml");
 		jaxbContext = JAXBContext.newInstance(MapSet.class);
 		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 		MapSet ms = (MapSet) jaxbUnmarshaller.unmarshal(file3);
 		ms.init(ts);
 		
-		BaseMap m = Maps.WORLD.getMap();
+		BaseMap m = Maps.BRITAIN.getMap();
 
-		int startx = 56;
-		int starty = 65;
+		int startx = 2;
+		int starty = 4;
 		
 		long t = System.currentTimeMillis();
 
 		
-		ShadowFOV fov = new ShadowFOV();
+		SpreadFOV fov = new SpreadFOV(32, 32);
 
 		float[][] lightMap = fov.calculateFOV(m.getShadownMap(), startx, starty, 20);
 		
-		for (int y=0;y<256;y++) {
-			for (int x=0;x<256;x++) {
-				System.out.print(lightMap[x][y] <= 0?"X":"0");
-				//System.out.print("|"+los[x][y]);
+		for (int y=0;y<32;y++) {
+			for (int x=0;x<32;x++) {
+//				Tile tile = m.getTile(x, y);
+//				if (tile.isOpaque()) {
+//					//System.out.print("W");
+//					System.out.print(lightMap[x][y] <= 0?"D":"W");
+//				} else 
+				
+				if (startx == x && starty == y) {
+					System.out.print("_");
+				} else {
+					//System.out.print(lightMap[x][y] <= 0?"X":" ");
+					System.out.print(lightMap[x][y]);
+				}
 			}
 			System.out.println("");
 
@@ -604,7 +613,7 @@ public class TestJaxb {
 		System.out.println(String.format("round: %d %s %d and %s %d", round, v1.toString(), (round * 2), v2.toString(), (round * 2 + 1)));
 	}
 	
-	@Test
+	//@Test
 	public void testCoords() throws Exception {
 	
 //	6 0 Creature [id=21, name=Sea Serpent, tile=sea_serpent, currentX=213, currentY=2 currentPos=[6816.0, 8096.0, 0.0]]

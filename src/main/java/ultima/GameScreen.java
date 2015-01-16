@@ -443,7 +443,9 @@ public class GameScreen extends BaseScreen {
 
 		mapCamera.update();
 		renderer.setView(mapCamera);
-		renderer.render();
+		
+		Vector3 avatarCoord = getCurrentMapCoords();
+		renderer.render((int)avatarCoord.x,(int)avatarCoord.y);
 
 		mapBatch.begin();
 

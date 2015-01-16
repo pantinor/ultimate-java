@@ -10,7 +10,7 @@ package util;
  *
  * @author Eben Howard - http://squidpony.com - howard@squidpony.com
  */
-public enum DirectionCardinal implements Topology {
+public enum DirectionCardinal {
 
     UP(0, -1, '^'), DOWN(0, 1, 'v'), LEFT(-1, 0, '<'), RIGHT(1, 0, '>'), NONE(0, 0, '-');
     /**
