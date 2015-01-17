@@ -291,17 +291,21 @@ public class Party extends Observable implements Constants {
 	    for (int i = 0; i < members.size(); i++) {
 	        switch(effect) {
 	        case NONE:
+	        	break;
 	        case ELECTRICITY:
 	            members.get(i).applyEffect(effect);
+	        	break;
 	        case LAVA:
 	        case FIRE:        
 	        case SLEEP:
 	            if (rand.nextInt(2) == 0)
 	            	members.get(i).applyEffect(effect);
+	        	break;
 	        case POISONFIELD:
 	        case POISON:
 	            if (rand.nextInt(5) == 0)
 	            	members.get(i).applyEffect(effect);
+	        	break;
 	        }        
 	    }
 	}

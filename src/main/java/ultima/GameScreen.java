@@ -74,6 +74,7 @@ public class GameScreen extends BaseScreen {
 	
 	public static Animation mainAvatar;
 	public static Animation avatarAnim;
+	public static Animation corpseAnim;
 	public static Animation horseAnim;
 	public static Animation shipAnim;
 	public static Animation balloonAnim;
@@ -166,6 +167,7 @@ public class GameScreen extends BaseScreen {
 	
 	private void initTransportAnimations() {
 		Array<AtlasRegion> avatar = enhancedAtlas.findRegions("avatar");
+		Array<AtlasRegion> corpse = enhancedAtlas.findRegions("corpse");
 		Array<AtlasRegion> horse = enhancedAtlas.findRegions("horse");
 		Array<AtlasRegion> ship = standardAtlas.findRegions("ship");
 		Array<AtlasRegion> balloon = standardAtlas.findRegions("balloon");
@@ -173,6 +175,10 @@ public class GameScreen extends BaseScreen {
 		Array<AtlasRegion> tmp = new Array<AtlasRegion>(4);
 		for (int i=0;i<4;i++) tmp.add(avatar.get(0));
 		avatarAnim = new Animation(0.25f, tmp);
+		
+		Array<AtlasRegion> tmp2 = new Array<AtlasRegion>(4);
+		for (int i=0;i<4;i++) tmp2.add(corpse.get(0));
+		corpseAnim = new Animation(0.25f, tmp2);
 		
 		tmp = new Array<AtlasRegion>(4);
 		AtlasRegion ar = new AtlasRegion(horse.get(2));
@@ -254,8 +260,8 @@ public class GameScreen extends BaseScreen {
 //			party.getMember(0).getPlayer().xp = 899;
 //			party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
 //			party.getMember(0).getPlayer().armor = ArmorType.MYSTICROBE;
-//			party.getSaveGame().weapons[9] = 99;
-//			party.getSaveGame().armor[6] = 99;
+//			for (int i=1;i<16;i++) party.getSaveGame().weapons[i] = 2;
+//			for (int i=1;i<8;i++) party.getSaveGame().armor[i] = 2;
 //			party.getSaveGame().sextants = 1;
 			
 //	    	mainAvatar = shipAnim;
@@ -722,10 +728,15 @@ public class GameScreen extends BaseScreen {
 	}
 	
 	private boolean preMove(Vector3 currentTile, Direction dir) {
-		
-		
+				
 		int nx = (int)currentTile.x;
 		int ny = (int)currentTile.y;
+		
+		if (context.getParty().getMember(0).getPlayer().status == StatusType.SLEEPING) {
+			finishTurn(nx, ny);
+			return false;
+		}
+		
 		if (dir == Direction.NORTH) ny = (int)currentTile.y-1;
 		if (dir == Direction.SOUTH) ny = (int)currentTile.y+1;
 		if (dir == Direction.WEST) nx = (int)currentTile.x-1;
@@ -754,6 +765,7 @@ public class GameScreen extends BaseScreen {
 		int mask = bm.getValidMovesMask((int)currentTile.x, (int)currentTile.y);
 		if (!Direction.isDirInMask(dir, mask)) {
 			Sounds.play(Sound.BLOCKED);
+			finishTurn((int)currentTile.x, (int)currentTile.y);
 			return false;
 		}
 		
@@ -787,18 +799,47 @@ public class GameScreen extends BaseScreen {
 	}
 	
 	public void finishTurn(int currentX, int currentY) {
+		
+		boolean checkSleeping = false;
+		if (context.getParty().getMember(0).getPlayer().status == StatusType.SLEEPING) {
+			checkSleeping = true;
+		}
 			
 		context.getParty().endTurn(context.getCurrentMap().getType());
 		
-		context.getAura().passTurn();
-				
-		if (checkRandomCreatures()) {
-			spawnCreature(null, currentX, currentY);
+		if (checkSleeping && context.getParty().getMember(0).getPlayer().status != StatusType.SLEEPING) {
+			mainAvatar = avatarAnim;
 		}
 		
-		context.getCurrentMap().moveObjects(this, currentX, currentY);	
+		context.getAura().passTurn();
 		
 		checkHullIntegrity(context.getCurrentMap(), currentX, currentY);
+
+				
+		if (context.getTransportContext() != TransportContext.BALLOON) {
+			
+			TileEffect effect = context.getCurrentMap().getTile(currentX, currentY).getRule().getEffect();
+			context.getParty().applyEffect(effect);
+			if (effect == TileEffect.FIRE) {
+				Sounds.play(Sound.ACID);
+			} else if (effect == TileEffect.POISON) {
+				Sounds.play(Sound.POISON_EFFECT);
+			} else if (effect == TileEffect.SLEEP) {
+				Sounds.play(Sound.SLEEP);
+				if (context.getParty().getMember(0).getPlayer().status == StatusType.SLEEPING) {
+					mainAvatar = corpseAnim;
+				}
+			} else if (effect == TileEffect.LAVA) {
+				Sounds.play(Sound.BOOM);
+			}
+			
+			if (checkRandomCreatures()) {
+				spawnCreature(null, currentX, currentY);
+			}
+			
+			context.getCurrentMap().moveObjects(this, currentX, currentY);	
+		}
+		
 	}
 	
 

@@ -3,7 +3,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
 
@@ -578,32 +580,47 @@ public class TestJaxb {
 		
 	//@Test
 	public void testStartQuestions() throws Exception {
-		StartScreen.initQuestionTree();
 		
-		System.out.println("INIT\n");
-		for (int i = 0; i < 15; i++) {
-			System.out.println(i + ") " + Virtue.get(StartScreen.questionTree[i]));
+		Map<ClassType, Integer> dist = new HashMap<ClassType, Integer>();
+		for (ClassType ct : ClassType.values()) {
+			dist.put(ct, 0);
 		}
 		
-		while (!StartScreen.doQuestion(1)) {
-			printQuestionDesc(StartScreen.questionRound);
+		for (int z = 0;z<100;z++) {
+			StartScreen.questionRound = 0;
+			StartScreen.initQuestionTree();
+			
+	//		System.out.println("INIT\n");
+	//		for (int i = 0; i < 15; i++) {
+	//			System.out.println(i + ") " + Virtue.get(StartScreen.questionTree[i]));
+	//		}
+			
+			while (!StartScreen.doQuestion(new Random().nextInt(2))) {
+				//printQuestionDesc(StartScreen.questionRound);
+			}
+			
+	//		System.out.println("\nANSWERS\n");
+	//		for (int i = 0; i < 15; i++) {
+	//			System.out.println(i + ") " +Virtue.get(StartScreen.questionTree[i]));
+	//		}
+			
+			
+			SaveGame sg = new SaveGame();
+			SaveGame.SaveGamePlayerRecord avatar = sg.new SaveGamePlayerRecord();
+			avatar.adjuestAttribsPerKarma(StartScreen.questionTree);
+			
+			avatar.klass = ClassType.get(StartScreen.questionTree[14]);
+			
+		    int[] questionTree = StartScreen.questionTree;
+			
+			//System.out.println(avatar.klass);
+			
+			dist.put(avatar.klass, dist.get(avatar.klass)+1);
 		}
 		
-		System.out.println("\nANSWERS\n");
-		for (int i = 0; i < 15; i++) {
-			System.out.println(i + ") " +Virtue.get(StartScreen.questionTree[i]));
+		for (ClassType ct : ClassType.values()) {
+			System.out.println(ct + " " + dist.get(ct));
 		}
-		
-		
-		SaveGame sg = new SaveGame();
-		SaveGame.SaveGamePlayerRecord avatar = sg.new SaveGamePlayerRecord();
-		avatar.adjuestAttribsPerKarma(StartScreen.questionTree);
-		
-		avatar.klass = ClassType.get(StartScreen.questionTree[14]);
-		
-	    int[] questionTree = StartScreen.questionTree;
-		
-		System.out.println(avatar.klass);
 
 	}
 	

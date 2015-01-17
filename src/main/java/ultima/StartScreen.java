@@ -455,6 +455,12 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 		if (answerInd > 14) {
 			return true;
 		}
+		
+//		if (questionTree[questionRound * 2] > questionTree[questionRound * 2 + 1]) {
+//			int tmp = questionTree[questionRound * 2];
+//			questionTree[questionRound * 2] = questionTree[questionRound * 2 + 1];
+//			questionTree[questionRound * 2 + 1] = tmp;
+//		}
         
 		return false;
 	}
