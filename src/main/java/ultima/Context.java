@@ -25,7 +25,7 @@ public class Context implements Constants {
     private int moonPhase = 0;
     private Direction windDirection = Direction.NORTH;
     private int windCounter;
-    private boolean windLock;
+    private int balloonMovementCounter;
     private Aura aura = new Aura();    
     private int horseSpeed;
     private int opacity;
@@ -49,11 +49,17 @@ public class Context implements Constants {
 	public Direction getWindDirection() {
 		return windDirection;
 	}
-	public int getWindCounter() {
-		return windCounter;
+	public int incrementWindCounter() {
+		return ++windCounter;
 	}
-	public boolean isWindLock() {
-		return windLock;
+	public void setWindCounter(int v) {
+		windCounter = v;
+	}
+	public int incrementBalloonCounter() {
+		return ++balloonMovementCounter;
+	}
+	public void setBalloonCounter(int v) {
+		balloonMovementCounter = v;
 	}
 	public int getHorseSpeed() {
 		return horseSpeed;
@@ -75,12 +81,6 @@ public class Context implements Constants {
 	}
 	public void setWindDirection(Direction windDirection) {
 		this.windDirection = windDirection;
-	}
-	public void setWindCounter(int windCounter) {
-		this.windCounter = windCounter;
-	}
-	public void setWindLock(boolean windLock) {
-		this.windLock = windLock;
 	}
 	public void setHorseSpeed(int horseSpeed) {
 		this.horseSpeed = horseSpeed;

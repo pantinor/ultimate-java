@@ -269,7 +269,7 @@ public class GameScreen extends BaseScreen {
 			
 			//load the surface world first
 			loadNextMap(Maps.WORLD, sg.x, sg.y);
-			//loadNextMap(Maps.WORLD, 213, 224);
+			//loadNextMap(Maps.WORLD, 212, 250);
 
 			//load the dungeon if save game starts in dungeon
 			if (Maps.get(sg.location) != Maps.WORLD) {
@@ -289,6 +289,10 @@ public class GameScreen extends BaseScreen {
 				case 20: 
 				case 21: mainAvatar = horseAnim; break;
 				case 24: mainAvatar = balloonAnim; break;
+			}
+			
+			if (sg.balloonfound == 1 && context.getTransportContext() != TransportContext.BALLOON) {	    	
+		    	addBalloonActor(sg.balloonx, sg.balloony);
 			}
 
 		}
@@ -488,6 +492,7 @@ public class GameScreen extends BaseScreen {
 		if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
 			batch.draw(moonAtlas.findRegion("phase_" + trammelphase), 375, Ultima4.SCREEN_HEIGHT - 25, 25, 25);
 			batch.draw(moonAtlas.findRegion("phase_" + feluccaphase), 400, Ultima4.SCREEN_HEIGHT - 25, 25, 25);
+			font.draw(batch, "Wind " + context.getWindDirection().toString(), 375, 15);
 		}
 		
 		if (context.getAura().getType() != AuraType.NONE) {
@@ -577,12 +582,7 @@ public class GameScreen extends BaseScreen {
 				postMove(Direction.SOUTH, (int)v.x,(int)v.y+1);
 			}
 			avatarDirection = Direction.SOUTH.getVal()-1;
-		} else if (keycode == Keys.K || keycode == Keys.D) {
-			if (ct.climbable()) {
-				Portal p = context.getCurrentMap().getPortal(v.x, v.y);
-				loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
-				log(p.getMessage());
-			}
+
 		} else if (keycode == Keys.F && context.getTransportContext() == TransportContext.SHIP) {
 			log("Fire Cannon > ");
 			ShipInputAdapter sia = new ShipInputAdapter(v);
@@ -593,8 +593,36 @@ public class GameScreen extends BaseScreen {
 
 			CombatScreen.holeUp(Maps.WORLD, (int)v.x, (int)v.y, this, context, creatures, standardAtlas, enhancedAtlas);
 			return false;
-
+			
+		} else if (keycode == Keys.K || keycode == Keys.D) {
+			
+			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
+				if (keycode == Keys.K && context.getTransportContext() == TransportContext.BALLOON) {
+					context.getParty().getSaveGame().balloonstate = 1;
+					log("Klimb altitude");
+				} else if (keycode == Keys.D && context.getTransportContext() == TransportContext.BALLOON) {
+					if (ct.getRule().has(TileAttrib.canlandballoon)) {
+						context.getParty().getSaveGame().balloonstate = 0;
+						log("Land balloon");
+					} else {
+						log("Not here!");
+					}
+				}
+			} else {
+				if (ct.climbable()) {
+					Portal p = context.getCurrentMap().getPortal(v.x, v.y);
+					loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
+					log(p.getMessage());
+				} 
+			}
+			
 		} else if (keycode == Keys.E) {
+			
+		    if (context.getTransportContext() == TransportContext.BALLOON) {
+				log("Only on foot!");
+    			return false;
+		    }
+		    
 			Portal p = context.getCurrentMap().getPortal(v.x, v.y);
 			if (p != null) {
 				if (Maps.get(p.getDestmapid()).getMap().getType() == MapType.shrine) {
@@ -622,11 +650,11 @@ public class GameScreen extends BaseScreen {
 				}
 			}
 		} else if (keycode == Keys.Q) {
-			if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
+			if (context.getCurrentMap().getId() == Maps.WORLD.getId() && context.getParty().getSaveGame().balloonstate == 0) {
 				context.saveGame(v.x,v.y,0,null,Maps.WORLD);
 				log("Saved Game.");
 			} else {
-				log("Cannot save inside!");
+				log("Cannot save here!");
 			}
 		} else if (keycode == Keys.L) {
 			
@@ -676,11 +704,14 @@ public class GameScreen extends BaseScreen {
 		    	cr.currentY = (int)v.y;
 		    	context.getCurrentMap().addCreature(cr);
 			} else if (context.getTransportContext() == TransportContext.BALLOON) {
-		    	Tile st = baseTileSet.getTileByName("balloon");
-		    	Drawable balloon = new Drawable(context.getCurrentMap().getId(), (int)v.x, (int)v.y, st, standardAtlas);
-		    	balloon.setX(mapCamera.position.x);
-		    	balloon.setY(mapCamera.position.y);
-		    	mapObjectsStage.addActor(balloon);
+				if (context.getParty().getSaveGame().balloonstate == 0) {
+			    	addBalloonActor((int)v.x, (int)v.y);
+			    	context.getParty().getSaveGame().balloonx = (int)v.x;
+			    	context.getParty().getSaveGame().balloony = (int)v.y;
+				} else {
+					log("Thou must land first!");
+					return false;
+				}
 			}
 		    context.getParty().setTransport(baseTileSet.getTileByIndex(0x1f));
 		    mainAvatar = avatarAnim;
@@ -734,6 +765,11 @@ public class GameScreen extends BaseScreen {
 		
 		if (context.getParty().getMember(0).getPlayer().status == StatusType.SLEEPING) {
 			finishTurn(nx, ny);
+			return false;
+		}
+		
+		if (context.getTransportContext() == TransportContext.BALLOON) {
+			log("Drift only!");
 			return false;
 		}
 		
@@ -979,6 +1015,20 @@ public class GameScreen extends BaseScreen {
 		
 		// world map only
 		if (context.getCurrentMap().getId() == 0) {
+			
+			if (context.incrementWindCounter() >= MOON_SECONDS_PER_PHASE * 4) {
+				if (rand.nextInt(4) == 1) {
+					context.setWindDirection(Direction.getRandomValidDirection(0xff));
+				}
+				context.setWindCounter(0);
+			}
+
+			if (context.incrementBalloonCounter() >= 2) {
+				if (context.getParty().getSaveGame().balloonstate == 1) {
+					driftBalloon(context.getWindDirection());
+				}
+				context.setBalloonCounter(0);
+			}
 			
 			context.setMoonPhase(context.getMoonPhase() + 1);
 			if (context.getMoonPhase() >= MOON_PHASES * MOON_SECONDS_PER_PHASE * 4) {
@@ -1523,5 +1573,44 @@ public class GameScreen extends BaseScreen {
 		}
 	}
 	
-
+	public void addBalloonActor(int x, int y) {
+    	Tile st = baseTileSet.getTileByName("balloon");
+    	Drawable balloon = new Drawable(Maps.WORLD.getId(), x, y, st, standardAtlas);
+    	Vector3 bpos= getMapPixelCoords(x, y);
+    	balloon.setX(bpos.x);
+    	balloon.setY(bpos.y);
+    	mapObjectsStage.addActor(balloon);
+	}
+	
+	private void driftBalloon(Direction dir) {
+		
+		if (dir == Direction.NORTH) {
+			if (mapCamera.position.y + tilePixelHeight > context.getCurrentMap().getHeight() * tilePixelHeight) {
+				mapCamera.position.y = 0;
+			} else {
+				mapCamera.position.y = mapCamera.position.y + tilePixelHeight;
+			}
+		} else if (dir == Direction.SOUTH) {
+			if (mapCamera.position.y - tilePixelHeight < 0) {
+				mapCamera.position.y = context.getCurrentMap().getHeight() * tilePixelHeight;
+			} else {
+				mapCamera.position.y = mapCamera.position.y - tilePixelHeight;
+			}
+		} else if (dir == Direction.EAST) {
+			if (mapCamera.position.x + tilePixelWidth > context.getCurrentMap().getWidth() * tilePixelWidth) {
+				mapCamera.position.x = 0;
+			} else {
+				mapCamera.position.x = mapCamera.position.x + tilePixelWidth;
+			}
+		} else if (dir == Direction.WEST) {
+			if (mapCamera.position.x - tilePixelWidth < 0) {
+				mapCamera.position.x = context.getCurrentMap().getWidth() * tilePixelWidth;
+			} else {
+				mapCamera.position.x = mapCamera.position.x - tilePixelWidth;
+			}
+		}
+		
+		
+	}
+	
 }

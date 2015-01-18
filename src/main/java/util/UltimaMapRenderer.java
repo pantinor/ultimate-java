@@ -29,6 +29,7 @@ import objects.BaseMap.DoorStatus;
 import objects.Creature;
 import objects.Person;
 import ultima.Constants;
+import ultima.GameScreen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -114,7 +115,7 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 		float y = row2 * layerTileHeight;
 		float startX = col1 * layerTileWidth;
 		
-		if (bm.getShadownMap() != null) {
+		if (bm.getShadownMap() != null && GameScreen.context.getParty().getSaveGame().balloonstate == 0) {
 			fov.calculateFOV(bm.getShadownMap(), avatarX, avatarY, 17f);	
 		}
 
@@ -245,6 +246,10 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 	}
 	
 	public float getColor(Color batchColor, int x, int y) {
+		
+		if (GameScreen.context.getParty().getSaveGame().balloonstate == 1) {
+			return Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, 1f);
+		}
 		
 		float[][] lightMap = fov.getLightMap();
 		

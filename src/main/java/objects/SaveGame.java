@@ -50,6 +50,10 @@ public class SaveGame implements Constants {
 	public int transport = 0x1f; //avatar tile id
 
 	public int balloonstate = 0;
+	public int balloonfound = 0;
+	public int balloonx = 0;
+	public int balloony = 0;
+
 	public int torchduration = 0;
 
 	public int trammelphase = 0;
@@ -135,6 +139,10 @@ public class SaveGame implements Constants {
 		dos.writeShort(orientation);
 		dos.writeShort(dnglevel);
 		dos.writeShort(location);
+		dos.writeShort(balloonfound);
+		dos.writeShort(balloonx);
+		dos.writeShort(balloony);
+
 		
 		dos.close();
 
@@ -214,7 +222,11 @@ public class SaveGame implements Constants {
 		orientation = dis.readShort()& 0xff;
 		dnglevel = dis.readShort();
 		location = dis.readShort()& 0xff;
+		balloonfound = dis.readShort()& 0xff;
+		balloonx = dis.readShort()& 0xff;
+		balloony = dis.readShort()& 0xff;
 
+		
 		/* workaround of U4DOS bug to retain savegame compatibility */
 		if (location == 0 && dnglevel == 0) {
 			dnglevel = (short) 0xFFFF;

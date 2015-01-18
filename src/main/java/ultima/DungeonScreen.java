@@ -1029,6 +1029,14 @@ public class DungeonScreen extends BaseScreen {
 				currentLevel --;
 				if (currentLevel < 0) {
 					currentLevel = 0;
+					if (dngMap == Maps.HYTHLOTH) {
+						if (GameScreen.context.getParty().getSaveGame().balloonfound == 0) {
+							gameScreen.addBalloonActor(233, 242);
+							GameScreen.context.getParty().getSaveGame().balloonx = 233;
+							GameScreen.context.getParty().getSaveGame().balloony = 242;
+						}
+						GameScreen.context.getParty().getSaveGame().balloonfound = 1;
+					}
 					if (mainGame != null) {
 						mainGame.setScreen(gameScreen);
 						dispose();
