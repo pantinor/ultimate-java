@@ -1,5 +1,6 @@
 package ultima;
 
+import generator.GeneratedDungeonScreen;
 import objects.BaseMap;
 import objects.Creature;
 import objects.Drawable;
@@ -272,6 +273,7 @@ public class SpellUtil implements Constants {
 
 				gameScreen.newMapPixelCoords = gameScreen.getMapPixelCoords(x, y);
 				gameScreen.changeMapPosition = true;
+				gameScreen.recalcFOV(bm, x, y);
 
 			} else {
 				screen.log("Failed to blink!");
@@ -439,7 +441,7 @@ public class SpellUtil implements Constants {
 						Utils.dealDamage(caster, cr, 0xFF);
 						
 						Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
-						Drawable d = new Drawable(combatScreen.combatMap.getId(), cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+						Drawable d = new Drawable(combatScreen.combatMap, cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
 				    	d.setX(cr.currentPos.x);
 				    	d.setY(cr.currentPos.y);
 				    	d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));
@@ -453,7 +455,7 @@ public class SpellUtil implements Constants {
 							Utils.dealDamage(caster, cr, cr.getHP() - 23);
 							
 							Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
-							Drawable d = new Drawable(combatScreen.combatMap.getId(), cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+							Drawable d = new Drawable(combatScreen.combatMap, cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
 					    	d.setX(cr.currentPos.x);
 					    	d.setY(cr.currentPos.y);
 					    	d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));
@@ -499,7 +501,7 @@ public class SpellUtil implements Constants {
 		    	if (cr.getUndead() && Utils.rand.nextInt(2) == 0) {
 		    		
 					Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
-					Drawable d = new Drawable(combatScreen.combatMap.getId(), cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+					Drawable d = new Drawable(combatScreen.combatMap, cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
 			    	d.setX(cr.currentPos.x);
 			    	d.setY(cr.currentPos.y);
 			    	
@@ -532,6 +534,9 @@ public class SpellUtil implements Constants {
 		if (screen.scType == ScreenType.MAIN) {
 			GameScreen gameScreen = (GameScreen)screen;
 			Gdx.input.setInputProcessor(gameScreen.new PeerGemInputAdapter());
+		} else if (screen.scType == ScreenType.RANDOMDNG) {
+			GeneratedDungeonScreen sc = (GeneratedDungeonScreen)screen;
+			Gdx.input.setInputProcessor(sc.new PeerGemInputAdapter());
 		}
 	}
 
@@ -647,7 +652,7 @@ public class SpellUtil implements Constants {
 				Utils.dealDamage(caster, cr, 0xFF);
 				
 				Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
-				Drawable d = new Drawable(GameScreen.context.getCurrentMap().getId(), cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+				Drawable d = new Drawable(GameScreen.context.getCurrentMap(), cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
 		    	d.setX(cr.currentPos.x);
 		    	d.setY(cr.currentPos.y);
 		    	d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));

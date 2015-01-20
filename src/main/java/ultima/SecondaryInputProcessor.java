@@ -1,12 +1,12 @@
 package ultima;
 
+import generator.GeneratedDungeonScreen;
 import objects.BaseMap;
 import objects.City;
 import objects.Creature;
 import objects.Party.PartyMember;
 import objects.Person;
 import objects.Tile;
-import ultima.Constants.ArmorType;
 import util.Utils;
 
 import com.badlogic.gdx.Gdx;
@@ -282,6 +282,7 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
 			}
 			
 		} else if (screen.scType == ScreenType.DUNGEON) {
+			
 			DungeonScreen dngScreen = (DungeonScreen)screen;
 			
 			if (initialKeyCode == Keys.S) {
@@ -327,7 +328,49 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
 			}
 			
 			Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
-
+			
+		} else if (screen.scType == ScreenType.RANDOMDNG) {
+			
+			GeneratedDungeonScreen dngScreen = (GeneratedDungeonScreen)screen;
+			
+			if (initialKeyCode == Keys.S) {
+				
+				switch(dngTile) {
+				case FOUNTAIN_PLAIN:
+				case FOUNTAIN_HEAL:
+				case FOUNTAIN_ACID:
+				case FOUNTAIN_CURE:
+				case FOUNTAIN_POISON:
+					if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+						dngScreen.dungeonDrinkFountain(dngTile, keycode - 7 - 1);
+					}
+					break;
+				default:
+					break;
+				}
+				
+			} else if (initialKeyCode == Keys.G) {
+				
+				if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+					dngScreen.getChest(keycode - 7 - 1, currentX, currentY);
+				}
+				
+			} else if (initialKeyCode == Keys.R) {
+				
+				if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+					Gdx.input.setInputProcessor(new ReadyWearInputAdapter(GameScreen.context.getParty().getMember(keycode -7 - 1), true));
+					return false;
+				}
+				
+			} else if (initialKeyCode == Keys.W) {
+				
+				if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+					Gdx.input.setInputProcessor(new ReadyWearInputAdapter(GameScreen.context.getParty().getMember(keycode -7 - 1), false));
+					return false;
+				}
+			}
+			
+			Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
 		}
 		
 		screen.finishTurn(currentX, currentY);

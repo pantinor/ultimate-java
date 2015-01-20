@@ -37,6 +37,8 @@
 		<portal x="81" y="207" destmapid="30" startx="0" starty="0"  condition="shrine" savelocation="true" transport="footorhorse" />
 		<portal x="231" y="216" destmapid="32" startx="0" starty="0"  condition="shrine" savelocation="true" transport="footorhorse" />
 
+		<portal x="21" y="64" destmapid="56" startx="1" starty="1"  savelocation="false" transport="foot" />
+		
 		<moongate name="moonglow" phase="0" x="224" y="133" d1="moonglow" d2="britain" d3="jhelom" dm1="0" dm2="1" dm3="2" />
 		<moongate name="britain" phase="1" x="96" y="102" d1="yew" d2="minoc" d3="trinsic" dm1="3" dm2="4" dm3="5" />
 		<moongate name="jhelom" phase="2" x="38" y="224" d1="skara brae" d2="magincia" d3="moonglow" dm1="6" dm2="7" dm3="0" />
@@ -489,4 +491,9 @@
 	<map id="54" type="combat" fname="shorship.con" width="11" height="11" levels="1" borderbehavior="fixed" nolineofsight="true" music="8" tileset="base" tilemap="base" />
 	<map id="55" type="combat" fname="camp.dng" width="11" height="11" levels="1" borderbehavior="fixed" nolineofsight="true" music="8" tileset="base" tilemap="base" />
 
+	
+	<map id="56" type="dungeon" fname="" width="32" height="32" levels="8" borderbehavior="fixed" firstperson="true" music="7" tileset="dungeon" tilemap="dungeon">
+		<dungeon name="The Birthplace of Minax" />
+	</map>
+	
 </maps>

@@ -29,7 +29,6 @@ import objects.WeaponSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.testng.annotations.Test;
 
 import ultima.Constants;
 import ultima.Constants.ClassType;
@@ -45,7 +44,6 @@ import ultima.Constants.TileAttrib;
 import ultima.Constants.TileRule;
 import ultima.Constants.Virtue;
 import ultima.StartScreen;
-import util.ShadowFOV;
 import util.SpreadFOV;
 import util.Utils;
 import vendor.VendorClass;
@@ -56,6 +54,7 @@ import com.google.common.io.LittleEndianDataInputStream;
 
 
 public class TestJaxb {
+	
 	
 	//@Test
 	public void testScript() throws Exception {
@@ -312,11 +311,11 @@ public class TestJaxb {
 
 	
 	//@Test
-	public void testLOS2() throws Exception {
-		
-		long t = System.currentTimeMillis();
-		
-		int dim = 21;
+	public void testFOV() throws Exception {
+				
+		int dim = 25;
+		int startx = 13;
+		int starty = 13;
 		
 		float[][] vt = new float[dim][dim];
 		for (int x=0;x<dim;x++) {
@@ -326,29 +325,28 @@ public class TestJaxb {
 			}
 		}
 		
-		vt[12][2] = 1f;
-		vt[11][8] = 1f;
-		vt[18][1] = 1f;
-		vt[18][8] = 1f;
-		vt[18][7] = 1f;
-		vt[18][6] = 1f;
+//		vt[1][1] = 1f;
+//		vt[1][6] = 1f;
+//		vt[6][6] = 1f;
+//		vt[6][1] = 1f;
 		
-		ShadowFOV fov = new ShadowFOV();
+		SpreadFOV fov = new SpreadFOV(dim,dim, true);
 
-		float[][] los = fov.calculateFOV(vt, 10, 10, dim);
+		float[][] los = fov.calculateFOV(vt, startx, starty, 10);
 		
 		for (int y=0;y<dim;y++) {
 			for (int x=0;x<dim;x++) {
-				System.out.print(los[x][y] <= 0?"X":"0");
-				//System.out.print("|"+los[x][y]);
+				if (startx == x && starty == y) {
+					//System.out.print("_");
+					System.out.print(los[x][y] + "|");
+				} else {
+					//System.out.print(los[x][y] <= 0?"X":" ");
+					System.out.print(los[x][y] + "|");
+				}
 			}
 			System.out.println("");
-
 		}
 		
-		System.out.println("testLOS2 time: " + (System.currentTimeMillis() - t));
-
-
 
 	}
 	
@@ -375,7 +373,7 @@ public class TestJaxb {
 		long t = System.currentTimeMillis();
 
 		
-		SpreadFOV fov = new SpreadFOV(32, 32);
+		SpreadFOV fov = new SpreadFOV(32, 32, true);
 
 		float[][] lightMap = fov.calculateFOV(m.getShadownMap(), startx, starty, 20);
 		

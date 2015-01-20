@@ -16,17 +16,17 @@ public class Drawable extends Actor {
 	private int cy;
 	private TextureRegion texture;
 	private Tile tile;
-	private int mapId;
+	private BaseMap map;
 	
 	//drawable is used for ships
 	private int shipHull = 50;
 
-	public Drawable(int id, int cx, int cy, Tile tile, TextureAtlas atlas) {
+	public Drawable(BaseMap map, int cx, int cy, Tile tile, TextureAtlas atlas) {
 		super();
 		this.cx = cx;
 		this.cy = cy;
 		this.tile = tile;
-		this.mapId = id;
+		this.map = map;
 		this.texture = atlas.findRegion(tile.getName());
 	}
 	public int getCx() {
@@ -63,7 +63,7 @@ public class Drawable extends Actor {
 		return this.shipHull;
     }
 	public int getMapId() {
-		return mapId;
+		return map.getId();
 	}
 	
 }

@@ -20,7 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 public interface Constants {
 	
 	public enum ScreenType {
-		MAIN,COMBAT,DUNGEON,SHRINE,CODEX;
+		MAIN,COMBAT,DUNGEON,SHRINE,CODEX,RANDOMDNG;
 	}
 	
 	public static int tilePixelWidth = 32;
@@ -54,6 +54,7 @@ public interface Constants {
 		SHAME(22,"Dungeon of Shame"),
 		HYTHLOTH(23,"Dungeon of Hythloth"),
 		ABYSS(24,"The Abyss"),
+		
 		SHRINE_HONESTY(25,"Shrine of Honesty"),
 		SHRINE_COMPASSION(26,"Shrine of Compassion"),
 		SHRINE_VALOR(27,"Shrine of Valor"),
@@ -84,7 +85,10 @@ public interface Constants {
 		SHIPSHOR_CON(52,""),
 		SHORE_CON(53,""),
 		SHORSHIP_CON(54,""),
-		CAMP_DNG(55,"");
+		CAMP_DNG(55,""),
+		
+		RANDOM_DUNGEON_GENERATOR(56,"The Birthplace of Minax");
+
 		
 		private int id;
 		private String label;

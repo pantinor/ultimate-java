@@ -1,6 +1,7 @@
 package ultima;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
+import generator.GeneratedDungeonScreen;
 
 import java.util.Random;
 
@@ -317,13 +318,16 @@ public class GameScreen extends BaseScreen {
 		
 		if (m.getMap().getType() == MapType.dungeon) {
 			
-			DungeonScreen sc = new DungeonScreen(stage, this, m);
-			
-			if (restoreSG) {
-				sc.restoreSaveGameLocation(dngx, dngy, dngLevel, orientation);
+			if (m != Maps.RANDOM_DUNGEON_GENERATOR) {
+				DungeonScreen sc = new DungeonScreen(stage, this, m);
+				if (restoreSG) {
+					sc.restoreSaveGameLocation(dngx, dngy, dngLevel, orientation);
+				}
+				mainGame.setScreen(sc);
+			} else {
+				GeneratedDungeonScreen sc = new GeneratedDungeonScreen(stage, this, m);
+				mainGame.setScreen(sc);
 			}
-			
-			mainGame.setScreen(sc);
 			
 		} else if (m.getMap().getType() == MapType.shrine) {
 			BaseMap sm = m.getMap();
@@ -352,10 +356,16 @@ public class GameScreen extends BaseScreen {
 			
 			bm.initObjects(this, enhancedAtlas, standardAtlas);
 			
+			renderer.getFOV().calculateFOV(bm.getShadownMap(), x, y, 17f);	
+			
 			newMapPixelCoords = getMapPixelCoords(x, y);
 			changeMapPosition = true;
 		}
 						
+	}
+	
+	public void recalcFOV(BaseMap bm, int x, int y) {
+		renderer.getFOV().calculateFOV(bm.getShadownMap(), x, y, 17f);	
 	}
 	
 	public void attackAt(Maps combat, Creature cr) {
@@ -393,7 +403,7 @@ public class GameScreen extends BaseScreen {
 			    /* add a chest, if the creature leaves one */
 			    if (!currentEncounter.getNochest() && (r == null || !r.has(TileAttrib.unwalkable))) {
 			    	Tile ct = baseTileSet.getTileByName("chest");
-			    	Drawable chest = new Drawable(context.getCurrentMap().getId(), currentEncounter.currentX, currentEncounter.currentY, ct, standardAtlas);
+			    	Drawable chest = new Drawable(context.getCurrentMap(), currentEncounter.currentX, currentEncounter.currentY, ct, standardAtlas);
 			    	chest.setX(currentEncounter.currentPos.x);
 			    	chest.setY(currentEncounter.currentPos.y);
 			    	mapObjectsStage.addActor(chest);
@@ -401,7 +411,7 @@ public class GameScreen extends BaseScreen {
 			    /* add a ship if you just defeated a pirate ship */
 			    else if (currentEncounter.getTile() == CreatureType.pirate_ship) {
 			    	Tile st = baseTileSet.getTileByName("ship");
-			    	Drawable ship = new Drawable(context.getCurrentMap().getId(), currentEncounter.currentX, currentEncounter.currentY, st, standardAtlas);
+			    	Drawable ship = new Drawable(context.getCurrentMap(), currentEncounter.currentX, currentEncounter.currentY, st, standardAtlas);
 			    	ship.setX(currentEncounter.currentPos.x);
 			    	ship.setY(currentEncounter.currentPos.y);
 			    	mapObjectsStage.addActor(ship);
@@ -603,6 +613,7 @@ public class GameScreen extends BaseScreen {
 				} else if (keycode == Keys.D && context.getTransportContext() == TransportContext.BALLOON) {
 					if (ct.getRule().has(TileAttrib.canlandballoon)) {
 						context.getParty().getSaveGame().balloonstate = 0;
+						renderer.getFOV().calculateFOV(context.getCurrentMap().getShadownMap(), (int)v.x, (int)v.y, 17f);	
 						log("Land balloon");
 					} else {
 						log("Not here!");
@@ -694,7 +705,7 @@ public class GameScreen extends BaseScreen {
 		} else if (keycode == Keys.X) {
 			if (context.getTransportContext() == TransportContext.SHIP) {
 		    	Tile st = baseTileSet.getTileByName("ship");
-		    	Drawable ship = new Drawable(context.getCurrentMap().getId(), (int)v.x, (int)v.y, st, standardAtlas);
+		    	Drawable ship = new Drawable(context.getCurrentMap(), (int)v.x, (int)v.y, st, standardAtlas);
 		    	ship.setX(mapCamera.position.x);
 		    	ship.setY(mapCamera.position.y);
 		    	mapObjectsStage.addActor(ship);
@@ -830,6 +841,8 @@ public class GameScreen extends BaseScreen {
 				checkBridgeTrolls(newx, newy);
 		    }
 		}
+		
+		renderer.getFOV().calculateFOV(context.getCurrentMap().getShadownMap(), newx, newy, 17f);	
 				
 		log(dir.toString());
 	}
@@ -1575,7 +1588,7 @@ public class GameScreen extends BaseScreen {
 	
 	public void addBalloonActor(int x, int y) {
     	Tile st = baseTileSet.getTileByName("balloon");
-    	Drawable balloon = new Drawable(Maps.WORLD.getId(), x, y, st, standardAtlas);
+    	Drawable balloon = new Drawable(Maps.WORLD.getMap(), x, y, st, standardAtlas);
     	Vector3 bpos= getMapPixelCoords(x, y);
     	balloon.setX(bpos.x);
     	balloon.setY(bpos.y);

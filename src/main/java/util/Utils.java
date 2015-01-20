@@ -70,7 +70,9 @@ public class Utils implements Constants {
 	 */
 	public static void setMapTiles(BaseMap map, TileSet ts) throws Exception {
 		
-		InputStream is = new FileInputStream("assets/data/" + map.getFname().toUpperCase());
+		if (map.getFname().length() < 1) return;
+		
+		InputStream is = new FileInputStream("assets/data/" + map.getFname().toLowerCase());
 		byte[] bytes = IOUtils.toByteArray(is);
 
 		Tile[] tiles = new Tile[map.getWidth() * map.getHeight()];

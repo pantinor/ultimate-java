@@ -56,7 +56,7 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 		super(map, unitScale);
 		this.bm = bm;
 		
-		this.fov = new SpreadFOV(bm.getWidth(), bm.getHeight());
+		this.fov = new SpreadFOV(bm.getWidth(), bm.getHeight(), bm.getBorderbehavior() == MapBorderBehavior.wrap);
 		
 		if (atlas != null) {
 		
@@ -69,6 +69,10 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 			locked_door.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 		}
 
+	}
+	
+	public SpreadFOV getFOV() {
+		return this.fov;
 	}
 	
 	public void render (int avatarX, int avatarY) {
@@ -115,10 +119,6 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 		float y = row2 * layerTileHeight;
 		float startX = col1 * layerTileWidth;
 		
-		if (bm.getShadownMap() != null && GameScreen.context.getParty().getSaveGame().balloonstate == 0) {
-			fov.calculateFOV(bm.getShadownMap(), avatarX, avatarY, 17f);	
-		}
-
 		for (int row = row2; row >= row1; row--) {
 			
 			float x = startX;
