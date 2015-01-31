@@ -7,11 +7,10 @@ import java.util.Random;
 
 import objects.SaveGame.SaveGamePlayerRecord;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ultima.Constants;
 import ultima.Context;
-import ultima.Constants.TransportContext;
 import util.Utils;
 
 

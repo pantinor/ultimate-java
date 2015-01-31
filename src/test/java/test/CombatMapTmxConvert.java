@@ -7,16 +7,14 @@ import javax.xml.bind.Unmarshaller;
 
 import objects.BaseMap;
 import objects.MapSet;
-import objects.Person;
 import objects.Tile;
 import objects.TileSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ultima.Constants.MapType;
-import ultima.Constants.ObjectMovementBehavior;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData;

@@ -1,7 +1,7 @@
 package ultima;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
-import generator.GeneratedDungeonScreen;
+import generator.StaticGeneratedDungeonScreen;
 
 import java.util.Random;
 
@@ -20,7 +20,7 @@ import objects.Tile;
 import objects.TileSet;
 import objects.WeaponSet;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import util.UltimaMapRenderer;
 import util.UltimaTiledMapLoader;
@@ -318,14 +318,14 @@ public class GameScreen extends BaseScreen {
 		
 		if (m.getMap().getType() == MapType.dungeon) {
 			
-			if (m != Maps.RANDOM_DUNGEON_GENERATOR) {
+			if (m != Maps.DELVE_SORROWS) {
 				DungeonScreen sc = new DungeonScreen(stage, this, m);
 				if (restoreSG) {
 					sc.restoreSaveGameLocation(dngx, dngy, dngLevel, orientation);
 				}
 				mainGame.setScreen(sc);
 			} else {
-				GeneratedDungeonScreen sc = new GeneratedDungeonScreen(stage, this, m);
+				StaticGeneratedDungeonScreen sc = new StaticGeneratedDungeonScreen(stage, this, m);
 				mainGame.setScreen(sc);
 			}
 			
@@ -1310,6 +1310,12 @@ public class GameScreen extends BaseScreen {
 
 		if (found) {
 			PartyMember pm = context.getParty().getMember(index);
+			if (pm == null) {
+				System.err.println("member is null " + index);
+			}
+			if (pm.getPlayer() == null) {
+				System.err.println("player is null " + index);
+			}
 			context.getChestTrapHandler(pm);
 			log(String.format("The Chest Holds: %d Gold", context.getParty().getChestGold()));
 			if (context.getCurrentMap().getType() == MapType.city) {

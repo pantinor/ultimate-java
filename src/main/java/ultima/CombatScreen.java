@@ -19,7 +19,7 @@ import objects.Party.PartyMember;
 import objects.ProjectileActor;
 import objects.Tile;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ultima.DungeonScreen.DungeonRoom;
 import ultima.DungeonScreen.Trigger;
@@ -63,7 +63,7 @@ public class CombatScreen extends BaseScreen {
 	public static int AREA_CREATURES = 16;
 	public static int AREA_PLAYERS  =  8;
 	
-	private CreatureType[] crSlots = new CreatureType[AREA_CREATURES];
+	private CreatureType[] crSlots;
 	
 	private CursorActor cursor;
 
@@ -90,7 +90,8 @@ public class CombatScreen extends BaseScreen {
 		this.returnScreen = returnScreen;
 		this.contextMap = contextMap;
 		this.combatMap = combatMap;
-		
+		this.combatMap.clearCreatures();
+
 		this.crType = cr;
 		
 		this.context = context;
@@ -118,6 +119,9 @@ public class CombatScreen extends BaseScreen {
 		font.setColor(Color.WHITE);		
 
 		sip = new SecondaryInputProcessor(this, stage);
+		
+		crSlots = new CreatureType[AREA_CREATURES];
+
 				
 	    if (crType != null) {
 	    	fillCreatureTable(crType);
@@ -394,7 +398,7 @@ public class CombatScreen extends BaseScreen {
 			return false;	
 		} else if (keycode == Keys.U) {
 			Tile tile = combatMap.getTile(active.currentX,active.currentY);
-			if (tile.getIndex() == 74) { //altar
+			if (tile.getIndex() == 74 || party.getSaveGame().rageofgod > 0) { //altar or rage of god
 				log("Use which item: ");
 				log("");
 				Gdx.input.setInputProcessor(sip);

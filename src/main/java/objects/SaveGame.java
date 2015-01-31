@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Random;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ultima.Constants;
 import util.Utils;
@@ -40,6 +40,10 @@ public class SaveGame implements Constants {
 	public int[] weapons = new int[16];
 	public int[] reagents = {0,3,4,0,0,0,0,0};
 	public int[] mixtures = new int[SPELL_MAX];
+	
+	public int maskofminax = 0;
+	public int rageofgod = 0;
+	public int lastrage = 0;
 	
 	public int items = 0;
 	public int x = 0;
@@ -142,6 +146,10 @@ public class SaveGame implements Constants {
 		dos.writeShort(balloonfound);
 		dos.writeShort(balloonx);
 		dos.writeShort(balloony);
+		
+		dos.writeShort(maskofminax);
+		dos.writeShort(rageofgod);
+		dos.writeShort(lastrage);
 
 		
 		dos.close();
@@ -225,7 +233,10 @@ public class SaveGame implements Constants {
 		balloonfound = dis.readShort()& 0xff;
 		balloonx = dis.readShort()& 0xff;
 		balloony = dis.readShort()& 0xff;
-
+		
+		maskofminax = dis.readShort()& 0xff;
+		rageofgod = dis.readShort()& 0xff;
+		lastrage = dis.readShort()& 0xff;
 		
 		/* workaround of U4DOS bug to retain savegame compatibility */
 		if (location == 0 && dnglevel == 0) {
@@ -607,6 +618,9 @@ public class SaveGame implements Constants {
         	//if (!item.isVisible()) continue;
         	sb4.append((this.items & (1 << item.ordinal())) > 0 ? item.getDesc() + "|" : "") ;
         }
+        
+		if (maskofminax > 0) sb4.append("|" + maskofminax + " - Mask of Minax");
+		if (rageofgod > 0) sb4.append("|" + rageofgod + " - Rage of God");
 
 		StringBuffer sb5 = new StringBuffer();
 		for (int i=0;i<8;i++) {

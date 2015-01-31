@@ -1,6 +1,6 @@
 package ultima;
 
-import generator.GeneratedDungeonScreen;
+import generator.StaticGeneratedDungeonScreen;
 import objects.BaseMap;
 import objects.Creature;
 import objects.Drawable;
@@ -8,7 +8,7 @@ import objects.Moongate;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.Tile;
-import ultima.DungeonScreen.DungeonTileModelInstance;
+import util.DungeonTileModelInstance;
 import util.Utils;
 
 import com.badlogic.gdx.Gdx;
@@ -534,8 +534,8 @@ public class SpellUtil implements Constants {
 		if (screen.scType == ScreenType.MAIN) {
 			GameScreen gameScreen = (GameScreen)screen;
 			Gdx.input.setInputProcessor(gameScreen.new PeerGemInputAdapter());
-		} else if (screen.scType == ScreenType.RANDOMDNG) {
-			GeneratedDungeonScreen sc = (GeneratedDungeonScreen)screen;
+		} else if (screen.scType == ScreenType.TMXDUNGEON) {
+			StaticGeneratedDungeonScreen sc = (StaticGeneratedDungeonScreen)screen;
 			Gdx.input.setInputProcessor(sc.new PeerGemInputAdapter());
 		}
 	}
@@ -670,6 +670,66 @@ public class SpellUtil implements Constants {
 		    
 			gameScreen.getStage().addAction(seq);
 
+		}
+		
+	}
+	
+	public static void useRageOfGod(BaseScreen screen, PartyMember caster) {
+		
+		if (screen.scType == ScreenType.COMBAT) {
+			
+			final CombatScreen combatScreen = (CombatScreen)screen;
+			
+			final SequenceAction seq = Actions.action(SequenceAction.class);
+
+		    for (Creature cr : combatScreen.combatMap.getCreatures()) {
+					
+				if (Utils.rand.nextInt(2) == 0) {
+					/* Deal maximum damage to creature */
+					Utils.dealDamage(caster, cr, 0xFF);
+				} else if (Utils.rand.nextInt(2) == 0) {
+					/* Deal enough damage to creature to make it flee */
+					if (cr.getHP() > 23) {
+						Utils.dealDamage(caster, cr, cr.getHP() - 23);
+					}
+				} else {
+					//deal damage of half its hit points
+					Utils.dealDamage(caster, cr, cr.getHP()/2);
+				}
+				
+				Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
+				Drawable d = new Drawable(combatScreen.combatMap, cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+		    	d.setX(cr.currentPos.x);
+		    	d.setY(cr.currentPos.y);
+		    	d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));
+				
+				seq.addAction(Actions.run(new AddActorAction(combatScreen.getStage(),d)));
+				seq.addAction(Actions.run(new PlaySoundAction(Sound.NPC_STRUCK)));
+				
+				if (cr.getDamageStatus() == CreatureStatus.DEAD) {
+					seq.addAction(Actions.run(combatScreen.new RemoveCreatureAction(cr)));
+				}
+		    	
+		    }
+		    
+			seq.addAction(Actions.run(new Runnable() {
+				@Override
+				public void run() {
+					combatScreen.finishPlayerTurn();
+				}
+			}));
+
+		    
+		    OnCompletionListener ocl = new OnCompletionListener() {
+				@Override
+				public void onCompletion(Music music) {
+				    music.setOnCompletionListener(null);
+				    combatScreen.getStage().addAction(seq);
+				}
+		    };
+			
+		    Sounds.play(Sound.RAGE, ocl);
+		    
 		}
 		
 	}

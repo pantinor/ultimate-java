@@ -90,8 +90,8 @@ public class ShaderLesson6 implements ApplicationListener {
 
 	@Override
 	public void create() {
-		rock = new Texture(Gdx.files.classpath("graphics/rock.png"));
-		rockNormals = new Texture(Gdx.files.classpath("graphics/grass.png"));
+		rock = new Texture(Gdx.files.internal("assets/graphics/rock.png"));
+		rockNormals = new Texture(Gdx.files.internal("assets/graphics/rock.png"));
 
 		ShaderProgram.pedantic = false;
 		shader = new ShaderProgram(VERT, FRAG);

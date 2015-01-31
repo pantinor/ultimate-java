@@ -1,8 +1,6 @@
 package generator;
 
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +18,7 @@ import ultima.Sound;
 import ultima.Sounds;
 import ultima.SpellInputProcessor;
 import ultima.Ultima4;
+import ultima.Constants.ItemMapLabels;
 import util.DungeonTileModelInstance;
 import util.UltimaTiledMapLoader;
 import util.Utils;
@@ -30,19 +29,22 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Region;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
@@ -52,22 +54,27 @@ import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.UBJsonReader;
 
-public class GeneratedDungeonScreen extends BaseScreen {
+public class StaticGeneratedDungeonScreen extends BaseScreen {
+	
+	public static final int DUNGEON_MAP = 35;
+	public static final int DUNGEON_LEVELS = 2;
 	
 	public Maps dngMap;
 	public GameScreen gameScreen;
 	
-	public Environment environment;
+	public Environment[] environment = new Environment[DUNGEON_LEVELS];
 	public ModelBatch modelBatch;
 	private SpriteBatch batch;
 	private DecalBatch decalBatch;
@@ -84,7 +91,7 @@ public class GeneratedDungeonScreen extends BaseScreen {
 	public Model chestModel;
 	public Model orbModel;
 	public Model altarModel;
-	public Model blocksModel;
+	public Model rocksModel;
 
 	boolean showMiniMap = true;
 
@@ -93,30 +100,26 @@ public class GeneratedDungeonScreen extends BaseScreen {
 	private Vector3 nll2 = new Vector3(1f, 0.8f, 0.6f);
 	private Vector3 nll = new Vector3(.96f, .58f, 0.08f);
 
-	Model lightModel;
-	Renderable pLight;
 	PointLight fixedLight;
 	float lightFactor;
-	
-	public static final int DUNGEON_MAP = 32;
-	public static final int DUNGEON_LEVELS = 8;
 
-	public Dungeon[] dungeons = new Dungeon[DUNGEON_LEVELS];
+	public String[] mapTileIds;
+	
+	public TiledMapTileLayer[] layers = new TiledMapTileLayer[DUNGEON_LEVELS];
+	
 	public DungeonTile[][][] dungeonTiles = new DungeonTile[DUNGEON_LEVELS][DUNGEON_MAP][DUNGEON_MAP];
 	
 	public List<DungeonTileModelInstance> modelInstances = new ArrayList<DungeonTileModelInstance>();
-	public List<ModelInstance> floor = new ArrayList<ModelInstance>();
-	public List<ModelInstance> ceiling = new ArrayList<ModelInstance>();
-	
+
 	public int currentLevel = 0;
 	public Vector3 currentPos;
 	public Direction currentDir = Direction.EAST;
 		
 	public SecondaryInputProcessor sip;
 
-	public GeneratedDungeonScreen(Stage stage, GameScreen gameScreen, Maps map) {
+	public StaticGeneratedDungeonScreen(Stage stage, GameScreen gameScreen, Maps map) {
 		this.dngMap = map;
-		scType = ScreenType.RANDOMDNG;
+		scType = ScreenType.TMXDUNGEON;
 		this.gameScreen = gameScreen;
 		this.stage = stage;
 		sip = new SecondaryInputProcessor(this, stage);
@@ -126,7 +129,7 @@ public class GeneratedDungeonScreen extends BaseScreen {
 	
 	@Override
 	public void show() {
-		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
+		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage, inputController));
 		GameScreen.context.getParty().addObserver(this);
 	}
 	
@@ -147,6 +150,12 @@ public class GeneratedDungeonScreen extends BaseScreen {
 		assets.load("assets/graphics/rock.png", Texture.class);
 
 		assets.update(2000);
+		
+		assets.get("assets/graphics/rock.png", Texture.class).setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		assets.get("assets/graphics/door.png", Texture.class).setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		assets.get("assets/graphics/mortar.png", Texture.class).setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		assets.get("assets/graphics/dirt.png", Texture.class).setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		
 		//convert the collada dae format to the g3db format (do not use the obj format)
 		//C:\Users\Paul\Desktop\blender>fbx-conv-win32.exe -o G3DB ./Chess/pawn.dae ./pawn.g3db
 		ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader(), new ClasspathFileHandleResolver());
@@ -155,18 +164,13 @@ public class GeneratedDungeonScreen extends BaseScreen {
 		chestModel = gloader.loadModel(Gdx.files.internal("assets/graphics/chest.g3db"));
 		orbModel = gloader.loadModel(Gdx.files.internal("assets/graphics/orb.g3db"));
 		altarModel = gloader.loadModel(Gdx.files.internal("assets/graphics/altar.g3db"));
-		//blocksModel = gloader.loadModel(Gdx.files.internal("assets/graphics/box.g3db"));
+		rocksModel = gloader.loadModel(Gdx.files.internal("assets/graphics/rocks.g3db"));
 		
 				
 		font = new BitmapFont();
 		font.setColor(Color.WHITE);
 		
-		environment = new Environment();
-		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.05f, 0.05f, 0.05f, 1f));
-		//environment.set(new ColorAttribute(ColorAttribute.Fog, 0.13f, 0.13f, 0.13f, 1f));
-
 		fixedLight = new PointLight().set(1f, 0.8f, 0.6f, 4f, 4f, 4f, 5f);
-		environment.add(fixedLight);
 		
 		modelBatch = new ModelBatch();
 		batch = new SpriteBatch();
@@ -185,54 +189,78 @@ public class GeneratedDungeonScreen extends BaseScreen {
 				
 
 		ModelBuilder builder = new ModelBuilder();
-		lightModel = builder.createSphere(.1f, .1f, .1f, 10, 10, new Material(ColorAttribute.createDiffuse(1, 1, 1, 1)), Usage.Position);
-		lightModel.nodes.get(0).parts.get(0).setRenderable(pLight = new Renderable());
 		
-		for (int x=0;x<DUNGEON_MAP;x++) {
-			for (int y=0;y<DUNGEON_MAP;y++) {
-				Model sf = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("assets/graphics/rock.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);
-				floor.add(new ModelInstance(sf, new Vector3(x-1.5f,-.5f,y-1.5f)));
-			}
-		}
-		for (int x=0;x<DUNGEON_MAP;x++) {
-			for (int y=0;y<DUNGEON_MAP;y++) {
-				Model sf = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("assets/graphics/dirt.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);
-				ceiling.add(new ModelInstance(sf, new Vector3(x-1.5f,1.5f,y-1.5f)));
-			}
-		}
+		Model fm = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("assets/graphics/rock.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);
+		Model cm = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("assets/graphics/dirt.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);
 		
 		try {
 			
-			for (int i = 0; i< DUNGEON_LEVELS;i++) {
-				dungeons[i] = new Dungeon();
-				dungeons[i].createDungeon(DUNGEON_MAP, DUNGEON_MAP, 30);
-			}
-
-						
-			for (int i = 0;i<DUNGEON_LEVELS;i++) { 
-				for (int y = 0; y < DUNGEON_MAP; y++) {
-					for (int x = 0; x < DUNGEON_MAP; x++) {
-						int val = dungeons[i].getCell(x, y);
-						DungeonTile tile = null;
-						switch (val) {
-							case Dungeon.tileUnused: tile = DungeonTile.WALL;break;
-							case Dungeon.tileDirtWall: tile = DungeonTile.WALL;break;
-							case Dungeon.tileDirtFloor: tile = DungeonTile.NOTHING;break;
-							case Dungeon.tileStoneWall: tile = DungeonTile.WALL;break;
-							case Dungeon.tileCorridor: tile = DungeonTile.NOTHING;break;
-							case Dungeon.tileDoor: tile = DungeonTile.DOOR;break;
-							case Dungeon.tileUpStairs: tile = DungeonTile.LADDER_UP;break;
-							case Dungeon.tileDownStairs: tile = DungeonTile.LADDER_DOWN;break;
-							case Dungeon.tileChest: tile = DungeonTile.CHEST;break;
-						}
-						dungeonTiles[i][x][y] = tile;
-						addBlock(i, tile, x+.5f,.5f,y+.5f);
-					}
-				}
+			int TILE_SIZE = 16;
+			FileHandle f = new FileHandle("assets/tilemaps/tiles-vga-atlas.txt");
+			TextureAtlasData a = new TextureAtlasData(f, f.parent(), false);
+			mapTileIds = new String[a.getRegions().size + 1];
+			for (Region r : a.getRegions()) {
+				int x = r.left / r.width;
+				int y = r.top / r.height;
+				int i = y * TILE_SIZE + x + 1;
+				mapTileIds[i] = r.name;
 			}
 			
-			//System.out.println(dungeons[0].showDungeon());
+			TiledMap map = new TmxMapLoader().load("assets/tilemaps/delveOfSorrows.tmx");
+			Iterator<MapLayer> iter = map.getLayers().iterator();
+			int level = 0;
+			while (iter.hasNext()) {
+				
+				environment[level] = new Environment();
+				environment[level].set(new ColorAttribute(ColorAttribute.Ambient, 0.5f, 0.5f, 0.5f, 1f));
+				environment[level].add(fixedLight);
+				
+				layers[level] = (TiledMapTileLayer) iter.next();
+				for (int y = 0; y < DUNGEON_MAP; y++) {
+					for (int x = 0; x < DUNGEON_MAP; x++) {
+						
+						String val = mapTileIds[layers[level].getCell(x, DUNGEON_MAP - y - 1).getTile().getId()];
+						DungeonTile tile = DungeonTile.getTileByName(val);
 
+						if (tile == null) {
+							CreatureType ct = CreatureType.get(val);
+							if (ct != null) {
+								Creature creature = GameScreen.creatures.getInstance(ct, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+								creature.currentX = x;
+								creature.currentY = y;
+								creature.currentLevel = level;
+								creature.getDecal().setPosition(creature.currentX + .5f, .3f, creature.currentY + .5f);
+								//dngMap.getMap().addCreature(creature);
+
+							} else {
+								System.err.println(val);
+							}
+							dungeonTiles[level][x][y] = DungeonTile.NOTHING;
+							
+						} else 	if (tile == DungeonTile.WATER) {
+							Model w = builder.createBox(1, 1, 1, getMaterial(Color.BLUE, .9f), Usage.Position | Usage.Normal);		
+							ModelInstance wi = new ModelInstance(w, x+.5f,-.5f,y+.5f);
+							DungeonTileModelInstance fin = new DungeonTileModelInstance(wi, DungeonTile.WATER, level);
+							modelInstances.add(fin);
+							dungeonTiles[level][x][y] = DungeonTile.NOTHING;
+						} else {
+
+							dungeonTiles[level][x][y] = tile;
+							addBlock(level, tile, x + .5f, .5f, y + .5f);
+						}
+						
+						if (tile == null || tile != DungeonTile.WATER) {
+							DungeonTileModelInstance fin = new DungeonTileModelInstance(new ModelInstance(fm, new Vector3(x+.5f,-.5f,y+.5f)), DungeonTile.FLOOR, level);
+							modelInstances.add(fin);
+						}
+						
+						DungeonTileModelInstance cin = new DungeonTileModelInstance(new ModelInstance(cm, new Vector3(x+.5f,1.5f,y+.5f)), DungeonTile.FLOOR, level);
+						modelInstances.add(cin);
+					}
+
+				}
+				level ++;
+			}
 			
 			setStartPosition();
 			
@@ -260,6 +288,7 @@ public class GeneratedDungeonScreen extends BaseScreen {
 				}
 				if (tile == DungeonTile.LADDER_UP) {
 					currentPos = new Vector3(x+.5f,.5f,y+.5f);
+					fixedLight.set(nll2.x, nll2.y,  nll2.z, currentPos.x, currentPos.y + .35f, currentPos.z, 4.75f);
 				}
 			}
 		}
@@ -274,8 +303,6 @@ public class GeneratedDungeonScreen extends BaseScreen {
 		modelBatch.dispose();
 		batch.dispose();
 		decalBatch.dispose();
-		for (ModelInstance mi : floor) mi.model.dispose();
-		for (ModelInstance mi : ceiling) mi.model.dispose();
 		font.dispose();
 	}
 	
@@ -294,29 +321,21 @@ public class GeneratedDungeonScreen extends BaseScreen {
 		Vector3 ll = isTorchOn ? nll : vdll;
 		ll = isTorchOn ? nll2 : vdll;
 		fixedLight.set(ll.x, ll.y,  ll.z, currentPos.x, currentPos.y + .35f, currentPos.z, lightSize);
-		((ColorAttribute)pLight.material.get(ColorAttribute.Diffuse)).color.set(fixedLight.color);
-		pLight.worldTransform.setTranslation(fixedLight.position);
 		
 		modelBatch.begin(cam);
-		
-		modelBatch.render(pLight);
-		
-		for (ModelInstance i : floor) {
-			modelBatch.render(i, environment);
-		}
-		for (ModelInstance i : ceiling) {
-			modelBatch.render(i, environment);
-		}
 						
 		for (DungeonTileModelInstance i : modelInstances) {
 			if (i.getLevel() == currentLevel) {
-				modelBatch.render(i.getInstance(), environment);
+				modelBatch.render(i.getInstance(), environment[currentLevel]);
 			}
 		}
 		
 		modelBatch.end();
 		
 		for (Creature cr : dngMap.getMap().getCreatures()) {
+			if (cr.currentLevel != this.currentLevel) {
+				continue;
+			}
 			decalBatch.add(cr.getDecal());
 		}
 		decalBatch.flush();
@@ -329,12 +348,24 @@ public class GeneratedDungeonScreen extends BaseScreen {
 
 
 	}
+	
+	private Material getMaterial(Texture t) {
+		Material mat = new Material(TextureAttribute.createDiffuse(t));
+        //mat.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 1f));
+		return mat;
+		//return new Material(TextureAttribute.createNormal(t), TextureAttribute.createDiffuse(t), TextureAttribute.createSpecular(t));
+		//return new Material(TextureAttribute.createDiffuse(t), TextureAttribute.createSpecular(t));
+	}
+	
+	private Material getMaterial(Color c, float blending) {
+		return new Material(ColorAttribute.createDiffuse(c), ColorAttribute.createSpecular(c), new BlendingAttribute(blending));
+	}
 
 	
 	public void addBlock(int level, DungeonTile tile, float tx, float ty, float tz) {
 		ModelBuilder builder = new ModelBuilder();
 		if (tile == DungeonTile.WALL) {
-			Model model = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("assets/graphics/mortar.png", Texture.class))),	Usage.Position | Usage.Normal | Usage.TextureCoordinates );		
+			Model model = builder.createBox(1, 1, 1, getMaterial(assets.get("assets/graphics/mortar.png", Texture.class)), Usage.Position | Usage.Normal | Usage.TextureCoordinates );		
 			ModelInstance instance = new ModelInstance(model, tx, ty, tz);
 			//rotate so the texture is aligned right
 			instance.transform.setFromEulerAngles(0, 0, 90).trn(tx, ty, tz);
@@ -346,6 +377,12 @@ public class GeneratedDungeonScreen extends BaseScreen {
 			instance.calculateTransforms();
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
+		} else if (tile == DungeonTile.ROCKS) {
+			ModelInstance instance = new ModelInstance(rocksModel, tx, 0, tz);
+			instance.nodes.get(0).scale.set(.010f, .010f, .010f);
+			instance.calculateTransforms();
+			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+			modelInstances.add(in);
 		} else if (tile.getValue() >= 10 && tile.getValue() <= 48) {
 			ModelInstance instance = new ModelInstance(ladderModel, tx, 0, tz);
 			instance.nodes.get(0).scale.set(.060f, .060f, .060f);
@@ -353,7 +390,7 @@ public class GeneratedDungeonScreen extends BaseScreen {
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
 			
-			Model manhole = builder.createCylinder(.75f, .02f, .75f, 32, new Material(ColorAttribute.createDiffuse(Color.DARK_GRAY)), Usage.Position | Usage.Normal);
+			Model manhole = builder.createCylinder(.75f, .02f, .75f, 32, getMaterial(Color.DARK_GRAY, 1), Usage.Position | Usage.Normal);
 			if (tile == DungeonTile.LADDER_DOWN) {
 				instance = new ModelInstance(manhole, tx, 0, tz);
 				modelInstances.add(new DungeonTileModelInstance(instance, tile, level));
@@ -374,6 +411,13 @@ public class GeneratedDungeonScreen extends BaseScreen {
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
 			in.x=(int)tx;in.y=(int)tz;
+		} else if (tile == DungeonTile.COLUMN) {
+			Model sf = builder.createCylinder(.35f, 2.5f, .35f, 32, getMaterial(assets.get("assets/graphics/Stone_Masonry.jpg", Texture.class)), Usage.Position | Usage.TextureCoordinates | Usage.Normal);
+	        ModelInstance instance = new ModelInstance(sf);
+	        instance.transform.setToTranslation(tx, 0, tz);
+			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+			in.x=(int)tx; in.y=(int)tz;
+			modelInstances.add(in);
 		} else if (tile == DungeonTile.ORB) {
 			ModelInstance instance = new ModelInstance(orbModel, tx, .5f, tz);
 			instance.nodes.get(0).scale.set(.0025f, .0025f, .0025f);
@@ -388,33 +432,44 @@ public class GeneratedDungeonScreen extends BaseScreen {
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			in.x=(int)tx;in.y=(int)tz;
 			modelInstances.add(in);
+			
+		} else if (tile == DungeonTile.LIGHT) {
+//			PointLight pl = new PointLight().set(nll2.x, nll2.y,  nll2.z, tx, .8f, tz, 2f);
+//			DirectionalLight pl = new DirectionalLight().set(nll2.x, nll2.y,  nll2.z, tx, .8f, tz);
+//			environment[level].add(pl);
+			
+//			Model lm = builder.createSphere(.02f, .02f, .02f, 10, 10, getMaterial(new Color(nll2.x, nll2.y,  nll2.z, 1), .7f), Usage.Position);
+//	        ModelInstance instance = new ModelInstance(lm);
+//	        instance.transform.setToTranslation(tx, .8f, tz);
+//			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+//			in.x=(int)tx; in.y=(int)tz;
+//			modelInstances.add(in);
+		} else if (tile == DungeonTile.FIRE) {
+			
+			
 		} else if (tile.getValue() >= 160 && tile.getValue() <= 163) {
 			Color c = Color.GREEN;
 			if (tile == DungeonTile.FIELD_ENERGY) c = Color.BLUE;
 			if (tile == DungeonTile.FIELD_FIRE) c = Color.RED;
 			if (tile == DungeonTile.FIELD_SLEEP) c = Color.PURPLE;
-			Model model = builder.createBox(1, 1, 1, new Material(ColorAttribute.createDiffuse(c), ColorAttribute.createSpecular(c), new BlendingAttribute(0.7f)), Usage.Position | Usage.Normal);		
+			Model model = builder.createBox(1, 1, 1, getMaterial(c, .7f), Usage.Position | Usage.Normal);		
 			ModelInstance instance = new ModelInstance(model, tx, .5f, tz);
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
 			in.x=(int)tx;in.y=(int)tz;
-		} else if (tile.getValue() >= 208 && tile.getValue() <= 223) { //room indicator
-			Model model = builder.createBox(1, 1, 1, new Material(ColorAttribute.createDiffuse(Color.DARK_GRAY), ColorAttribute.createSpecular(Color.DARK_GRAY), new BlendingAttribute(0.6f)), Usage.Position | Usage.Normal);		
-			ModelInstance instance = new ModelInstance(model, tx, .5f, tz);
-			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
-			modelInstances.add(in);
-		} else if (tile == DungeonTile.DOOR || tile == DungeonTile.SECRET_DOOR) {
-			Model model = builder.createBox(1, 1, 1, new Material(TextureAttribute.createDiffuse(assets.get("assets/graphics/mortar.png", Texture.class))),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
+
+		} else if (tile == DungeonTile.DOOR || tile == DungeonTile.SECRET_DOOR || tile == DungeonTile.LOCKED_DOOR) {
+			Model model = builder.createBox(1, 1, 1, getMaterial(assets.get("assets/graphics/mortar.png", Texture.class)),	Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
 			ModelInstance instance = new ModelInstance(model, tx, ty, tz);
 			instance.transform.setFromEulerAngles(0, 0, 90).trn(tx, ty, tz);
 			DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
 			modelInstances.add(in);
 			
 			Material matDoor = null;
-			if (tile == DungeonTile.DOOR) {
-				matDoor = new Material(TextureAttribute.createDiffuse(assets.get("assets/graphics/door.png", Texture.class)));
+			if (tile == DungeonTile.DOOR || tile == DungeonTile.LOCKED_DOOR) {
+				matDoor = getMaterial(assets.get("assets/graphics/door.png", Texture.class));
 			} else {
-				matDoor = new Material(new Material(ColorAttribute.createDiffuse(Color.DARK_GRAY), ColorAttribute.createSpecular(Color.DARK_GRAY), new BlendingAttribute(0.3f)));
+				matDoor = getMaterial(Color.DARK_GRAY, .3f);
 			}
 			
 			model = builder.createBox(1.04f, .85f, .6f, matDoor, Usage.Position | Usage.TextureCoordinates | Usage.Normal);		
@@ -428,9 +483,7 @@ public class GeneratedDungeonScreen extends BaseScreen {
 			modelInstances.add(in);
 		}
 	}
-	
-
-	
+			
 	public void drawHUD() {
 				
 		batch.begin();
@@ -623,11 +676,7 @@ public class GeneratedDungeonScreen extends BaseScreen {
 						mainGame.setScreen(gameScreen);
 						dispose();
 					}
-				} else {
-					Vector2 p = findOpenRoom(x, y);
-					currentPos = new Vector3(p.x+.5f,.5f,p.y+.5f);
 				}
-				//System.out.println(dungeons[currentLevel].showDungeon());
 
 			}
 			return false;
@@ -635,15 +684,9 @@ public class GeneratedDungeonScreen extends BaseScreen {
 		} else if (keycode == Keys.D) {
 			if (tile == DungeonTile.LADDER_DOWN || tile == DungeonTile.LADDER_UP_DOWN) {
 				currentLevel ++;
-				
 				if (currentLevel > DUNGEON_MAP) {
 					currentLevel = DUNGEON_MAP;
-				} else {
-					Vector2 p = findOpenRoom(x, y);
-					currentPos = new Vector3(p.x+.5f,.5f,p.y+.5f);
 				}
-				//System.out.println(dungeons[currentLevel].showDungeon());
-
 			}
 			return false;
 
@@ -680,7 +723,13 @@ public class GeneratedDungeonScreen extends BaseScreen {
 			
 		} else if (keycode == Keys.S) {
 			if (tile == DungeonTile.ALTAR) {
-
+				log("Search Altar");
+				ItemMapLabels l = dngMap.getMap().searchLocation(this, GameScreen.context.getParty(), x, y, currentLevel);
+				if (l != null) {
+					log("You found " + l.getDesc() + ".");
+				} else {
+					log("Nothing!");
+				}
 			} else {
 				
 				if (tile.getValue() >= 144 && tile.getValue() <= 148) {
@@ -717,9 +766,7 @@ public class GeneratedDungeonScreen extends BaseScreen {
 	@Override
 	public void finishTurn(int currentX, int currentY) {
 		GameScreen.context.getAura().passTurn();
-		
-		creatureCleanup(currentX, currentY);
-		
+				
 		if (checkRandomDungeonCreatures()) {
 			spawnDungeonCreature(null, currentX, currentY);
 		}
@@ -795,6 +842,64 @@ public class GeneratedDungeonScreen extends BaseScreen {
 	    }
 	}
 	
+	public void dungeonTouchOrb(int index) {
+		
+		if (index >= GameScreen.context.getParty().getMembers().size()) return;
+	    PartyMember pm = GameScreen.context.getParty().getMember(index);
+		int x = (Math.round(currentPos.x)-1);
+		int y = (Math.round(currentPos.z)-1);
+		
+	    int stats = 0;
+	    int damage = 0;       
+    
+	    if (dngMap == Maps.DELVE_SORROWS) {
+	    	if (currentLevel == 1) {
+	    		stats = STATSBONUS_INT | STATSBONUS_DEX;
+	    	} else {
+	    		stats = STATSBONUS_INT | STATSBONUS_DEX | STATSBONUS_STR;
+	    	}
+	    } else {
+	    	stats = STATSBONUS_STR;
+	    }
+
+	    if ((stats & STATSBONUS_STR) > 0) {
+	        log("Strength + 5");
+			int n = Utils.adjustValueMax(pm.getPlayer().str, 5, 50);
+			pm.getPlayer().str = n;
+	        damage += 200;
+	    }
+	    if ((stats & STATSBONUS_DEX) > 0) {
+	        log("Dexterity + 5");
+			int n = Utils.adjustValueMax(pm.getPlayer().dex, 5, 50);
+			pm.getPlayer().dex = n;
+	        damage += 200;
+	    }
+	    if ((stats & STATSBONUS_INT) > 0) {
+	        log("Intelligence + 5");
+			int n = Utils.adjustValueMax(pm.getPlayer().intel, 5, 50);
+			pm.getPlayer().intel = n;
+	        damage += 200;
+	    }   
+	    
+	    pm.applyDamage(damage, false);
+	    
+	    Sounds.play(Sound.LIGHTNING);
+	    
+	    //remove orb model instance
+	    DungeonTileModelInstance orb = null;
+	    for (DungeonTileModelInstance dmi : modelInstances) {
+	    	if (dmi.getTile() == DungeonTile.ORB) {
+	    		if (dmi.x == x && dmi.y == y && dmi.getLevel() == currentLevel) {
+	    			orb = dmi;
+		    		break;
+	    		}
+	    	}
+	    }
+	    modelInstances.remove(orb);
+		dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
+
+	}
+	
 	public boolean validTeleportLocation(int x, int y, int z) {
 		return 	dungeonTiles[z][x][y] == DungeonTile.NOTHING;
 	}
@@ -825,15 +930,6 @@ public class GeneratedDungeonScreen extends BaseScreen {
 		}
 	}
 	
-	private void creatureCleanup(int currentX, int currentY) {
-	    Iterator<Creature> i = dngMap.getMap().getCreatures().iterator();
-	    while (i.hasNext()) {
-	       Creature cr = i.next();
-	        if (cr.currentLevel != this.currentLevel) {
-	        	i.remove();           
-	        }
-	    }
-	}
 	
 	private boolean checkRandomDungeonCreatures() {
 		int spawnValue = 24;
@@ -946,9 +1042,17 @@ public class GeneratedDungeonScreen extends BaseScreen {
 	
 	private void moveDungeonCreatures(BaseScreen screen, int avatarX, int avatarY) {
 		for (Creature cr : dngMap.getMap().getCreatures()) {
+			
+			if (cr.currentLevel != this.currentLevel) {
+				continue;
+			}
+			
+			//dont move the creature unless the avatar gets close
+			if (Utils.movementDistance(MapBorderBehavior.wrap, DUNGEON_MAP, DUNGEON_MAP, avatarX, avatarY, cr.currentX, cr.currentY) > 3) {
+				continue;
+			}
 	        
 			int mask = getValidMovesMask(cr.currentX, cr.currentY, cr, avatarX, avatarY);
-	        //dont use wrap border behavior with the dungeon maps
 	        Direction dir = Utils.getPath(MapBorderBehavior.wrap, DUNGEON_MAP, DUNGEON_MAP, avatarX, avatarY, mask, true, cr.currentX, cr.currentY);
 			if (dir == null) continue;
 			
@@ -1028,11 +1132,11 @@ public class GeneratedDungeonScreen extends BaseScreen {
 			try {
 				int x = (Math.round(currentPos.x)-1);
 				int y = (Math.round(currentPos.z)-1);
-				Texture t = dungeons[currentLevel].peerGem(x, y);
+				Texture t = Utils.peerGem(layers[currentLevel], mapTileIds, GameScreen.standardAtlas, x, y);
 				img = new Image(t);
 				img.setX(Ultima4.SCREEN_WIDTH/2 - t.getWidth()/2);
 				img.setY(Ultima4.SCREEN_HEIGHT/2 - t.getHeight()/2);
-				img.addAction(sequence(Actions.alpha(0), Actions.fadeIn(1f, Interpolation.fade)));
+				img.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(1f, Interpolation.fade)));
 		        stage.addActor(img);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1043,63 +1147,14 @@ public class GeneratedDungeonScreen extends BaseScreen {
 			if (img != null) {
 				img.remove();
 			}
-			Gdx.input.setInputProcessor(new InputMultiplexer(GeneratedDungeonScreen.this, stage));
+			Gdx.input.setInputProcessor(new InputMultiplexer(StaticGeneratedDungeonScreen.this, stage));
 			return false;
 		}
 	}
 	
-	private Vector2 findOpenRoom(int currentX, int currentY) {
-
-		int dx = 0;
-        int dy = 0;
-        int tmp = 0;
-            	
-		boolean ok = false;
-
-		while (!ok) {
-			dx = 7;
-			dy = rand.nextInt(7);
-
-			if (rand.nextInt(2) > 0) {
-				dx = -dx;
-			}
-			if (rand.nextInt(2) > 0) {
-				dy = -dy;
-			}
-			if (rand.nextInt(2) > 0) {
-				tmp = dx;
-				dx = dy;
-				dy = tmp;
-			}
-
-			dx = currentX + dx;
-			dy = currentY + dy;
-
-			if (dx < 0) {
-				dx = DUNGEON_MAP + dx;
-			} else if (dx > DUNGEON_MAP - 1) {
-				dx = dx - DUNGEON_MAP;
-			}
-			if (dy < 0) {
-				dy = DUNGEON_MAP + dy;
-			} else if (dy > DUNGEON_MAP - 1) {
-				dy = dy - DUNGEON_MAP;
-			}
-
-			/* make sure it is a room */
-			DungeonTile tile = dungeonTiles[currentLevel][dx][dy];
-			if (tile.getCreatureWalkable()) {
-				ok = true;
-			}
 	
-		}
+	
 
-		if (!ok) {
-			return new Vector2(currentX, currentY);
-		}
-		return new Vector2(dx, dy);
-		
-	}
 	
 
 }

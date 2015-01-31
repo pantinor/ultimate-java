@@ -8,6 +8,8 @@ import objects.Creature;
 import objects.Drawable;
 import objects.Weapon;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
@@ -20,7 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 public interface Constants {
 	
 	public enum ScreenType {
-		MAIN,COMBAT,DUNGEON,SHRINE,CODEX,RANDOMDNG;
+		MAIN,COMBAT,DUNGEON,SHRINE,CODEX,RANDOMDNG,TMXDUNGEON;
 	}
 	
 	public static int tilePixelWidth = 32;
@@ -87,7 +89,7 @@ public interface Constants {
 		SHORSHIP_CON(54,""),
 		CAMP_DNG(55,""),
 		
-		RANDOM_DUNGEON_GENERATOR(56,"The Birthplace of Minax");
+		DELVE_SORROWS(56,"The Delve of Sorrows!");
 
 		
 		private int id;
@@ -518,27 +520,43 @@ public interface Constants {
 	public enum DungeonTile {
 		
 		NOTHING(0x00,"Nothing","brick_floor", true),
+		
+		FLOOR(0x00,"Floor","brick_floor", true),
+		WATER(0x00,"Water","water", true),
+		CEILING(0x00,"Ceiling","none", false),
+		
 		LADDER_UP(0x10 	,"Ladder Up", "up_ladder", true, Maps.DNG1_CON),
 		LADDER_DOWN(0x20 	,"Ladder Down", "down_ladder", true,Maps.DNG2_CON),
 		LADDER_UP_DOWN(0x30 	,"Ladder Up & Down", "down_ladder", true,Maps.DNG3_CON),
+		
+		CEILING_HOLE(0 	,"Ceiling Hole", "solid",false),
+		FLOOR_HOLE(0 	,"Floor Hole", "solid",false),
+		
+		ORB(0 	,"Magic Orb", "magic_flash",true),
+		LIGHT(0 	,"Light", "miss_flash",true),
+		ALTAR(0 	,"Altar", "altar",true),
 		CHEST(0x40 	,"Treasure Chest", "chest",true),
-		CEILING_HOLE(0x50 	,"Ceiling Hole", "rocks",false),
-		FLOOR_HOLE(0x60 	,"Floor Hole", "rocks",false),
-		ORB(0x70 	,"Magic Orb", "hit_flash",true),
-		WIND_TRAP(0x80 	,"Winds/Darknes Trap", "swamp",true),
-		ROCK_TRAP(0x81 	,"Falling Rock Trap", "swamp",true),
-		PIT_TRAP(0x8E 	,"Pit Trap", "swamp",true),
-		FOUNTAIN_PLAIN(0x90 	,"Plain Fountain", "magic_flash",true),
-		FOUNTAIN_HEAL(0x91 	,"Healing Fountain", "magic_flash",true),
-		FOUNTAIN_ACID(0x92 	,"Acid Fountain", "magic_flash",true),
-		FOUNTAIN_CURE(0x93 	,"Cure Fountain", "magic_flash",true),
-		FOUNTAIN_POISON(0x94 	,"Poison Fountain", "magic_flash",true),
+		FIRE(0x40 	,"Fireplace", "campfire",true),
+
+		WIND_TRAP(0 	,"Winds/Darknes Trap", "hit_flash",true),
+		ROCK_TRAP(0 	,"Falling Rock Trap", "hit_flash",true),
+		PIT_TRAP(0 	,"Pit Trap", "hit_flash",true),
+		
+		FOUNTAIN_PLAIN(0x90 	,"Plain Fountain", "Z",true),
+		FOUNTAIN_HEAL(0x91 	,"Healing Fountain", "H",true),
+		FOUNTAIN_ACID(0x92 	,"Acid Fountain", "A",true),
+		FOUNTAIN_CURE(0x93 	,"Cure Fountain", "C",true),
+		FOUNTAIN_POISON(0x94 	,"Poison Fountain", "P",true),
+		
 		FIELD_POISON(0xA0 	,"Poison Field", "poison_field",false),
 		FIELD_ENERGY(0xA1 	,"Energy Field", "energy_field",false),
 		FIELD_FIRE(0xA2 	,"Fire Field", "fire_field",false),
 		FIELD_SLEEP(0xA3 	,"Sleep Field", "sleep_field",false),
-		ALTAR(0xB0 	,"Altar", "altar",true),
-		DOOR(0xC0 	,"Door", "dungeon_door", true, Maps.DNG5_CON),
+		
+		DOOR(0 	,"Door", "door", true, Maps.DNG5_CON),
+		LOCKED_DOOR(0 	,"Locked Door", "locked_door", false, Maps.DNG5_CON),
+		SECRET_DOOR(0 	,"Secret Door", "secret_door", false, Maps.DNG6_CON),
+		
 		ROOM_1(0xD0 	,"Dungeon Room 1", "spacer_square",true),
 		ROOM_2(0xD1 	,"Dungeon Room 2", "spacer_square",true),
 		ROOM_3(0xD2 	,"Dungeon Room 3", "spacer_square",true),
@@ -555,8 +573,10 @@ public interface Constants {
 		ROOM_14(0xDD 	,"Dungeon Room 14", "spacer_square",true),
 		ROOM_15(0xDE 	,"Dungeon Room 15", "spacer_square",true),
 		ROOM_16(0xDF 	,"Dungeon Room 16", "spacer_square",true),
-		SECRET_DOOR(0xE0 	,"Secret Door", "secret_door", true, Maps.DNG6_CON),
-		WALL(0xF0 	,"Wall ", "stone_wall",false);
+		
+		COLUMN(0 	,"Column", "column",false),
+		ROCKS(0 	,"Rocks", "rocks",false),
+		WALL(0 	,"Wall ", "brick_wall",false);
 				
 		private int value;
 		private String type;
@@ -594,23 +614,22 @@ public interface Constants {
 		public String getTileName() {
 			return tileName;
 		}
-
-		public void setValue(int value) {
-			this.value = value;
-		}
-
-		public void setType(String type) {
-			this.type = type;
-		}
-
-		public void setTileName(String tileName) {
-			this.tileName = tileName;
-		}	
 		
 		public static DungeonTile getTileByValue(int val) {
 			DungeonTile ret = DungeonTile.NOTHING;
 			for (DungeonTile d : DungeonTile.values()) {
 				if (val == d.getValue()) {
+					ret = d;
+					break;
+				}
+			}
+			return ret;
+		}
+		
+		public static DungeonTile getTileByName(String name) {
+			DungeonTile ret = null;
+			for (DungeonTile d : DungeonTile.values()) {
+				if (StringUtils.equals(name, d.getTileName())) {
 					ret = d;
 					break;
 				}
@@ -1190,7 +1209,11 @@ public interface Constants {
 		redstone("the Red Stone", 0),
 		greenstone("the Green Stone", 0),
 		orangestone("the Orange Stone", 0),
-		purplestone("the Purple Stone", 0);
+		purplestone("the Purple Stone", 0),
+		
+		maskofminax("the Mask of Minax", 0),
+		rageofgod("the Rage of God", 0);
+
 		
 		private String desc;
 		private int conditions;

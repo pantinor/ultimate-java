@@ -40,12 +40,14 @@ import ultima.GameScreen;
 import ultima.Sound;
 import ultima.Sounds;
 import ultima.Ultima4;
+import ultima.Constants.DungeonTile;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -687,6 +689,30 @@ public class Utils implements Constants {
 	    }
 
 	    return true;
+	}
+	
+	public static Texture peerGem(TiledMapTileLayer layer, String[] ids, TextureAtlas atlas, int cx, int cy) throws Exception {
+		BufferedImage sheet = ImageIO.read(new File("assets/tilemaps/tiles-vga.png"));
+		BufferedImage canvas = new BufferedImage(16*layer.getWidth(), 16*layer.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		
+		for (int y = 0; y < layer.getHeight(); y++) {
+			for (int x = 0; x < layer.getWidth(); x++) {
+				String val = ids[layer.getCell(x, layer.getHeight() - y - 1).getTile().getId()];
+				DungeonTile tile = DungeonTile.getTileByName(val);
+				if (tile == null) val = "brick_floor";
+				if (x == cx && y == cy) val = "avatar";
+				AtlasRegion ar = (AtlasRegion)atlas.findRegion(val);
+				BufferedImage sub = sheet.getSubimage(ar.getRegionX(), ar.getRegionY(), 16, 16);
+				canvas.getGraphics().drawImage(sub,x*16,y*16,16,16,null);
+			}
+		}
+		
+		Pixmap p = Utils.createPixmap(canvas.getWidth(), canvas.getHeight(), canvas, 0, 0);
+		
+		Texture t = new Texture(p);
+		p.dispose();
+			
+		return t;
 	}
 	
 	//used for telescope viewing

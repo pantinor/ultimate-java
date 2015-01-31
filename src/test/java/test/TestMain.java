@@ -1,4 +1,6 @@
 package test;
+import java.util.Iterator;
+
 import objects.ArmorSet;
 import objects.CreatureSet;
 import objects.MapSet;
@@ -18,6 +20,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -25,6 +28,12 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Region;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.Array;
 
 public class TestMain extends Game {
@@ -49,6 +58,23 @@ public class TestMain extends Game {
 	public void create() {
 		
 		try {
+			int TILE_SIZE = 16;
+			FileHandle f = new FileHandle("assets/tilemaps/tiles-vga-atlas.txt");
+			TextureAtlasData a = new TextureAtlasData(f, f.parent(), false);
+			String[] mapTileIds = new String[a.getRegions().size + 1];
+			for (Region r : a.getRegions()) {
+				int x = r.left / r.width;
+				int y = r.top / r.height;
+				int i = y * TILE_SIZE + x + 1;
+				mapTileIds[i] = r.name;
+			}
+			
+			TiledMap map = new TmxMapLoader().load("assets/tilemaps/delveOfSorrows.tmx");
+			Iterator<MapLayer> iter = map.getLayers().iterator();
+			while (iter.hasNext()) {
+				TiledMapTileLayer layer = (TiledMapTileLayer)iter.next();
+				System.out.println(mapTileIds[layer.getCell(0, 0).getTile().getId()]);
+			}
 					
 			TileSet baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);	
 			baseTileSet.setMaps();

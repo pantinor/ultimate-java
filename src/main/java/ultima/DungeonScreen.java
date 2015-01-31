@@ -17,6 +17,7 @@ import objects.TileSet;
 import org.apache.commons.io.IOUtils;
 
 import util.DungeonRoomTiledMapLoader;
+import util.DungeonTileModelInstance;
 import util.UltimaTiledMapLoader;
 import util.Utils;
 
@@ -565,40 +566,6 @@ public class DungeonScreen extends BaseScreen {
 		}
 	}
 	
-	public class DungeonTileModelInstance {
-		private ModelInstance instance;
-		private DungeonTile tile;
-		private int level;
-		public int x;
-		public int y;
-		
-		public DungeonTileModelInstance(ModelInstance instance, DungeonTile tile, int level) {
-			this.instance = instance;
-			this.tile = tile;
-			this.level = level;
-		}
-		public ModelInstance getInstance() {
-			return instance;
-		}
-		public DungeonTile getTile() {
-			return tile;
-		}
-		public int getLevel() {
-			return level;
-		}
-		public void setInstance(ModelInstance instance) {
-			this.instance = instance;
-		}
-		public void setTile(DungeonTile tile) {
-			this.tile = tile;
-		}
-		public void setLevel(int level) {
-			this.level = level;
-		}
-		
-	}
-	
-
 	
 	public void createMiniMap() {
 		
@@ -1225,8 +1192,8 @@ public class DungeonScreen extends BaseScreen {
 	    //remove orb model instance
 	    DungeonTileModelInstance orb = null;
 	    for (DungeonTileModelInstance dmi : modelInstances) {
-	    	if (dmi.tile == DungeonTile.ORB) {
-	    		if (dmi.x == x && dmi.y == y && dmi.level == currentLevel) {
+	    	if (dmi.getTile() == DungeonTile.ORB) {
+	    		if (dmi.x == x && dmi.y == y && dmi.getLevel() == currentLevel) {
 	    			orb = dmi;
 		    		break;
 	    		}
@@ -1288,7 +1255,7 @@ public class DungeonScreen extends BaseScreen {
 
 	    DungeonTileModelInstance chest = null;
 	    for (DungeonTileModelInstance dmi : modelInstances) {
-	    	if (dmi.tile == DungeonTile.CHEST) {
+	    	if (dmi.getTile() == DungeonTile.CHEST) {
 	    		if (dmi.x == x && dmi.y == y && dmi.getLevel() == currentLevel) {
 	    			chest = dmi;
 		    		break;
@@ -1722,8 +1689,8 @@ public class DungeonScreen extends BaseScreen {
 							log("The altar changes before thyne eyes!");
 						    DungeonTileModelInstance altar = null;
 						    for (DungeonTileModelInstance dmi : modelInstances) {
-						    	if (dmi.tile == DungeonTile.ALTAR) {
-						    		if (dmi.x == x && dmi.y == y && dmi.level == currentLevel) {
+						    	if (dmi.getTile() == DungeonTile.ALTAR) {
+						    		if (dmi.x == x && dmi.y == y && dmi.getLevel() == currentLevel) {
 						    			altar = dmi;
 							    		break;
 						    		}

@@ -1,6 +1,6 @@
 package ultima;
 
-import generator.GeneratedDungeonScreen;
+import generator.StaticGeneratedDungeonScreen;
 import objects.BaseMap;
 import objects.City;
 import objects.Creature;
@@ -262,6 +262,17 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
 						buffer = new StringBuilder();
 						StoneColorsInputAdapter scia = new StoneColorsInputAdapter(combatScreen);
 						Gdx.input.setInputProcessor(scia);
+						
+					} else if (useItem.startsWith("rage")) {
+						if (combatScreen.party.getSaveGame().moves - combatScreen.party.getSaveGame().lastrage >= 16) {
+							screen.log("Use Rage of God!");
+						    PartyMember attacker = combatScreen.party.getActivePartyMember();
+							SpellUtil.useRageOfGod(combatScreen, attacker);
+							combatScreen.party.getSaveGame().lastrage = combatScreen.party.getSaveGame().moves;
+						} else {
+							screen.log("no effect!");
+						}
+						Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
 					} else {
 						screen.log("Not a usable item!");
 						Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
@@ -329,9 +340,9 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
 			
 			Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
 			
-		} else if (screen.scType == ScreenType.RANDOMDNG) {
+		} else if (screen.scType == ScreenType.TMXDUNGEON) {
 			
-			GeneratedDungeonScreen dngScreen = (GeneratedDungeonScreen)screen;
+			StaticGeneratedDungeonScreen dngScreen = (StaticGeneratedDungeonScreen)screen;
 			
 			if (initialKeyCode == Keys.S) {
 				
@@ -343,6 +354,11 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
 				case FOUNTAIN_POISON:
 					if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
 						dngScreen.dungeonDrinkFountain(dngTile, keycode - 7 - 1);
+					}
+					break;
+				case ORB:
+					if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
+						dngScreen.dungeonTouchOrb(keycode - 7 - 1);
 					}
 					break;
 				default:

@@ -29,6 +29,7 @@ import objects.WeaponSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.testng.annotations.Test;
 
 import ultima.Constants;
 import ultima.Constants.ClassType;
@@ -646,6 +647,24 @@ public class TestJaxb {
 		
 	}
 	
+	@Test
+	public void testLastReagent() throws Exception {
+		
+		int moves = 1000;
+		int lastrage = moves ;
+		
+		for (int m=0;m< 50;m++) {
+			moves ++;
+			if ((moves - lastrage) >= 16) {
+				System.out.println("true");
+				lastrage = moves ;
+			} else {
+				System.out.println("false");
+			}
+		}
+		
+	}
+	
 	public int yDownPixel(float y) {
 		return (int) (256*32 - y - 32);
 	}
@@ -659,7 +678,6 @@ public class TestJaxb {
 		
 		return v;
 	}
-	
 
 
 }

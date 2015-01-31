@@ -35,7 +35,8 @@ public enum Sound {
 	WIND ("tornado.ogg", false, 0.3f),
 	
 	CANNON ("cannon.mp3", false, 0.3f),
-
+	RAGE ("RageOfGod.ogg", false, 0.3f),
+	
 	//music
 	OUTSIDE ("Wanderer.mp3", false, 0.1f), 
 	TOWNS ("Towns.mp3", false, 0.1f), 

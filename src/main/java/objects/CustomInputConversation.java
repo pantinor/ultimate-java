@@ -1,6 +1,7 @@
 package objects;
 
-import org.apache.commons.lang.StringUtils;
+
+import org.apache.commons.lang3.StringUtils;
 
 import ultima.Constants.KarmaAction;
 

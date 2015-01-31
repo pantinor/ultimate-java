@@ -1088,6 +1088,26 @@ public class BaseMap implements Constants {
 			break;
 		case lockelake:
 			break;
+			
+		case maskofminax:
+			if (sg.maskofminax > 0)
+				break;
+			sg.maskofminax = 1;
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 200;
+			sg.lastreagent = sg.moves & 0xF0;
+			added = true;
+			break;
+			
+		case rageofgod:
+			if (sg.rageofgod > 0)
+				break;
+			sg.rageofgod = 1;
+			p.adjustKarma(KarmaAction.FOUND_ITEM);
+			expPoints = 400;
+			sg.lastreagent = sg.moves & 0xF0;
+			added = true;
+			break;
 
 		default:
 			break;
