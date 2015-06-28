@@ -60,7 +60,7 @@ public class DocumentationDialog extends Window implements Constants {
 		internalTable.defaults().pad(5);
 		
 		TextButton tb = new TextButton("X", skin);
-		getButtonTable().add(tb).height(getPadTop());
+		getTitleTable().add(tb).height(getPadTop());
 		tb.addListener(new ClickListener() {
 			public void clicked (InputEvent event, float x, float y) {
 				if (!cancelHide) {
