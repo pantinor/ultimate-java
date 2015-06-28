@@ -105,7 +105,11 @@ public class GameScreen extends BaseScreen {
         GameScreen.skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
 
         try {
+            
+            //use this to see the original tile set
+            //standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-ega-atlas.txt"));
             standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-vga-atlas.txt"));
+            //set this to the standardAtlas variable to use all of the original tiles
             enhancedAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/monsters-u4.atlas"));
 
             baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);
@@ -184,12 +188,12 @@ public class GameScreen extends BaseScreen {
         corpseAnim = new Animation(0.25f, tmp2);
 
         tmp = new Array<AtlasRegion>(4);
-        AtlasRegion ar = new AtlasRegion(horse.get(2));
+        AtlasRegion ar = new AtlasRegion(horse.get(1));
         ar.flip(true, false);
         tmp.add(ar);
-        tmp.add(horse.get(2));
-        tmp.add(horse.get(2));
-        tmp.add(horse.get(2));
+        tmp.add(horse.get(1));
+        tmp.add(horse.get(1));
+        tmp.add(horse.get(1));
         horseAnim = new Animation(0.25f, tmp);
 
         shipAnim = new Animation(0.25f, ship);
@@ -276,7 +280,7 @@ public class GameScreen extends BaseScreen {
 //            }
 //            party.getSaveGame().sextants = 1;
 //            mainAvatar = shipAnim;
-//            sg.transport = 0x10;
+//            sg.transport = 21;
             
             //load the surface world first
             loadNextMap(Maps.WORLD, sg.x, sg.y);
