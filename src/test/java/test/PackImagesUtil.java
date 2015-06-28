@@ -1,9 +1,9 @@
 package test;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -15,150 +15,150 @@ import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 
 public class PackImagesUtil {
 
-	public static File dir = new File("D:\\xu4-source\\u4\\graphics\\png");
-	
-	public static List<File> listFileTree(File dir) {
-		List<File> fileTree = new ArrayList<File>();
-	    for (File entry : dir.listFiles()) {
-	        if (entry.isFile()) fileTree.add(entry);
-	        else fileTree.addAll(listFileTree(entry));
-	    }
-	    return fileTree;
-	}
-	
-	public static void main1(String[] argv) throws Exception {
+    public static File dir = new File("D:\\xu4-source\\u4\\graphics\\png");
 
-		List<File> files = listFileTree(new File("C:\\Users\\Paul\\Desktop\\crawl-tiles Oct-5-2010\\dc-dngn"));
-		Collections.sort(files);
-		
-		Map<String,BufferedImage> imgMap = new TreeMap<String,BufferedImage>();
-		
-		for (File file : files) {
-			if (file.isDirectory() || !file.getName().endsWith("png")) continue;
-			String name = file.getName();
-			BufferedImage fr = ImageIO.read(file);
-			imgMap.put(name, fr);
-		}
+    public static List<File> listFileTree(File dir) {
+        List<File> fileTree = new ArrayList<File>();
+        for (File entry : dir.listFiles()) {
+            if (entry.isFile()) {
+                fileTree.add(entry);
+            } else {
+                fileTree.addAll(listFileTree(entry));
+            }
+        }
+        return fileTree;
+    }
 
-		Settings settings = new Settings();
-		settings.maxWidth = 768;
-		settings.maxHeight = 768;
-		settings.paddingX = 0;
-		settings.paddingY = 0;
-		settings.fast = true;
-		settings.pot = false;
-		settings.grid = true;
+    public static void main1(String[] argv) throws Exception {
 
-		TexturePacker tp = new TexturePacker(settings);
-		
-		for (String name : imgMap.keySet()) {
-			BufferedImage image = imgMap.get(name);
-			tp.addImage(image, name);
-		}
-		
-		
-		System.out.println("Writing: number of res: " + imgMap.size());
-		
-		tp.pack(new File("."), "utumno-dngn");
-		
-	    System.out.println("done");
-		
+        List<File> files = listFileTree(new File("C:\\Users\\Paul\\Desktop\\crawl-tiles Oct-5-2010\\dc-dngn"));
+        Collections.sort(files);
 
+        Map<String, BufferedImage> imgMap = new TreeMap<String, BufferedImage>();
 
-	}
-	
-	public static void main2(String[] argv) throws Exception {
+        for (File file : files) {
+            if (file.isDirectory() || !file.getName().endsWith("png")) {
+                continue;
+            }
+            String name = file.getName();
+            BufferedImage fr = ImageIO.read(file);
+            imgMap.put(name, fr);
+        }
 
-		List<File> files = listFileTree(new File("C:\\Users\\Paul\\Desktop\\crawl-tiles Oct-5-2010\\Monsters"));
-		Collections.sort(files);
-		
-		List<File> files2 = listFileTree(new File("C:\\Users\\Paul\\Desktop\\crawl-tiles Oct-5-2010\\dc-mon"));
-		Collections.sort(files2);
+        Settings settings = new Settings();
+        settings.maxWidth = 768;
+        settings.maxHeight = 768;
+        settings.paddingX = 0;
+        settings.paddingY = 0;
+        settings.fast = true;
+        settings.pot = false;
+        settings.grid = true;
 
-		Map<String,BufferedImage> imgMap = new TreeMap<String,BufferedImage>();
-		
-		for (File file : files) {
-			if (file.isDirectory() || !file.getName().endsWith("PNG")) continue;
-			String name = file.getName();
-			BufferedImage fr = ImageIO.read(file);
-			BufferedImage sub = fr.getSubimage(11, 11, 32, 32);
-			imgMap.put(name, sub);
-		}
-		
-		for (File file : files2) {
-			if (file.isDirectory() || !file.getName().endsWith("png")) continue;
-			String name = file.getName();
-			BufferedImage fr = ImageIO.read(file);
-			imgMap.put(name, fr);
-		}
-		
-		System.out.println("Writing: number of images: " + imgMap.size());
+        TexturePacker tp = new TexturePacker(settings);
 
+        for (String name : imgMap.keySet()) {
+            BufferedImage image = imgMap.get(name);
+            tp.addImage(image, name);
+        }
 
-		Settings settings = new Settings();
-		settings.maxWidth = 1440;
-		settings.maxHeight = 2048;
-		settings.paddingX = 0;
-		settings.paddingY = 0;
-		settings.fast = true;
-		settings.pot = false;
-		settings.grid = true;
+        System.out.println("Writing: number of res: " + imgMap.size());
 
-		TexturePacker tp = new TexturePacker(settings);
-		for (String name : imgMap.keySet()) {
-			BufferedImage image = imgMap.get(name);
-			tp.addImage(image, name);
-		}
-		tp.pack(new File("."), "monsters");
-		
-		java.awt.Color[] col = {java.awt.Color.MAGENTA};
-		ImageTransparency.convert("monsters.png", "monsters-trans.png", col);
-		
-	    System.out.println("done");
-		
+        tp.pack(new File("."), "utumno-dngn");
 
+        System.out.println("done");
 
-	}
+    }
 
-	public static void main(String[] argv) throws Exception {
+    public static void main2(String[] argv) throws Exception {
 
-		String dir = "D:\\xu4-source\\u4\\graphics\\png\\";
-		File[] files = new File[9];
-		for (int i=0;i<9;i++) files[i] = new File(dir + "rune" + i + ".png");
-		
-		Map<String,BufferedImage> imgMap = new TreeMap<String,BufferedImage>();
-		
-		for (File file : files) {
-			String name = file.getName();
-			BufferedImage fr = ImageIO.read(file);
-			BufferedImage sub = fr.getSubimage(8, 8, 176, 176);
-			imgMap.put(name, sub);
-		}
-		
-		System.out.println("Writing: number of images: " + imgMap.size());
+        List<File> files = listFileTree(new File("C:\\Users\\Paul\\Desktop\\crawl-tiles Oct-5-2010\\Monsters"));
+        Collections.sort(files);
 
+        List<File> files2 = listFileTree(new File("C:\\Users\\Paul\\Desktop\\crawl-tiles Oct-5-2010\\dc-mon"));
+        Collections.sort(files2);
 
-		Settings settings = new Settings();
-		settings.maxWidth = 176;
-		settings.maxHeight = 2048;
-		settings.paddingX = 0;
-		settings.paddingY = 0;
-		settings.fast = true;
-		settings.pot = false;
-		settings.grid = true;
+        Map<String, BufferedImage> imgMap = new TreeMap<String, BufferedImage>();
 
-		TexturePacker tp = new TexturePacker(settings);
-		for (String name : imgMap.keySet()) {
-			BufferedImage image = imgMap.get(name);
-			tp.addImage(image, name);
-		}
-		tp.pack(new File("."), "runes-visions");
-		
-	    System.out.println("done");
-	}
+        for (File file : files) {
+            if (file.isDirectory() || !file.getName().endsWith("PNG")) {
+                continue;
+            }
+            String name = file.getName();
+            BufferedImage fr = ImageIO.read(file);
+            BufferedImage sub = fr.getSubimage(11, 11, 32, 32);
+            imgMap.put(name, sub);
+        }
 
-	
+        for (File file : files2) {
+            if (file.isDirectory() || !file.getName().endsWith("png")) {
+                continue;
+            }
+            String name = file.getName();
+            BufferedImage fr = ImageIO.read(file);
+            imgMap.put(name, fr);
+        }
 
+        System.out.println("Writing: number of images: " + imgMap.size());
 
-	
+        Settings settings = new Settings();
+        settings.maxWidth = 1440;
+        settings.maxHeight = 2048;
+        settings.paddingX = 0;
+        settings.paddingY = 0;
+        settings.fast = true;
+        settings.pot = false;
+        settings.grid = true;
+
+        TexturePacker tp = new TexturePacker(settings);
+        for (String name : imgMap.keySet()) {
+            BufferedImage image = imgMap.get(name);
+            tp.addImage(image, name);
+        }
+        tp.pack(new File("."), "monsters");
+
+        java.awt.Color[] col = {java.awt.Color.MAGENTA};
+        ImageTransparency.convert("monsters.png", "monsters-trans.png", col);
+
+        System.out.println("done");
+
+    }
+
+    public static void main(String[] argv) throws Exception {
+
+        String dir = "D:\\xu4-source\\u4\\graphics\\png\\";
+        File[] files = new File[9];
+        for (int i = 0; i < 9; i++) {
+            files[i] = new File(dir + "rune" + i + ".png");
+        }
+
+        Map<String, BufferedImage> imgMap = new TreeMap<String, BufferedImage>();
+
+        for (File file : files) {
+            String name = file.getName();
+            BufferedImage fr = ImageIO.read(file);
+            BufferedImage sub = fr.getSubimage(8, 8, 176, 176);
+            imgMap.put(name, sub);
+        }
+
+        System.out.println("Writing: number of images: " + imgMap.size());
+
+        Settings settings = new Settings();
+        settings.maxWidth = 176;
+        settings.maxHeight = 2048;
+        settings.paddingX = 0;
+        settings.paddingY = 0;
+        settings.fast = true;
+        settings.pot = false;
+        settings.grid = true;
+
+        TexturePacker tp = new TexturePacker(settings);
+        for (String name : imgMap.keySet()) {
+            BufferedImage image = imgMap.get(name);
+            tp.addImage(image, name);
+        }
+        tp.pack(new File("."), "runes-visions");
+
+        System.out.println("done");
+    }
+
 }
