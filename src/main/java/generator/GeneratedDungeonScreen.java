@@ -470,7 +470,7 @@ public class GeneratedDungeonScreen extends BaseScreen {
         }
         Maps contextMap = Maps.get(dngMap.getId());
         DungeonTile tile = dungeonTiles[currentLevel][x][y];
-        TiledMap tmap = new UltimaTiledMapLoader(tile.getCombatMap(), GameScreen.standardAtlas, 11, 11, 16, 16).load();
+        TiledMap tmap = new UltimaTiledMapLoader(tile.getCombatMap(), GameScreen.standardAtlas, 11, 11, GameScreen.TILE_DIM, GameScreen.TILE_DIM).load();
         GameScreen.context.setCurrentTiledMap(tmap);
         CombatScreen sc = new CombatScreen(this, GameScreen.context, contextMap, tile.getCombatMap().getMap(), tmap, cr.getTile(), GameScreen.creatures, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
         mainGame.setScreen(sc);

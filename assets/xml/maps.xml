@@ -37,7 +37,13 @@
 		<portal x="81" y="207" destmapid="30" startx="0" starty="0"  condition="shrine" savelocation="true" transport="footorhorse" />
 		<portal x="231" y="216" destmapid="32" startx="0" starty="0"  condition="shrine" savelocation="true" transport="footorhorse" />
 
-		<portal x="21" y="64" destmapid="56" startx="1" starty="1"  savelocation="false" transport="foot" />
+		<portal x="139" y="89" destmapid="56" startx="1" starty="1"  savelocation="false" transport="foot" />
+		<portal x="145" y="81" destmapid="56" startx="1" starty="1"  savelocation="true" transport="foot" />
+
+		<portal x="155" y="188" destmapid="57" startx="14" starty="27"  savelocation="true" transport="footorhorse" />
+		<portal x="170" y="236" destmapid="59" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
+		<portal x="89" y="106" destmapid="60" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
+		<portal x="141" y="84" destmapid="61" startx="1" starty="15"  savelocation="true" transport="footorhorse" />
 		
 		<moongate name="moonglow" phase="0" x="224" y="133" d1="moonglow" d2="britain" d3="jhelom" dm1="0" dm2="1" dm3="2" />
 		<moongate name="britain" phase="1" x="96" y="102" d1="yew" d2="minoc" d3="trinsic" dm1="3" dm2="4" dm3="5" />
@@ -61,11 +67,14 @@
 		<label name="skull" x="197" y="245" />
 		<label name="blackstone" x="224" y="133" />
 		<label name="whitestone" x="64" y="80" />
+		<label name="blackironore" x="241" y="164" />
+		<label name="ironrunemold" x="162" y="246" />
+
 	</map>
 
 	<!-- castles -->
 	<map id="1" type="city" fname="lcb_1.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="9" tileset="base" tilemap="base">
-		<city name="Britannia" type="castle" tlk_fname="lcb.tlk">
+		<city name="Britannia" type="castle" tlk_fname="lcb_1.tlk">
 			<personrole type="HEALER" role="healer" id="28" />
 			<personrole role="hawkwind" id="29" />
 		</city>
@@ -76,13 +85,23 @@
 		</portal>
 		<label name="spiritualityrune" x="17" y="8" />
 	</map>
+	
 	<map id="100" type="city" fname="lcb_2.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="9" tileset="base" tilemap="base">
-		<city name="Britannia" type="castle" tlk_fname="lcb.tlk">
+		<city name="Britannia" type="castle" tlk_fname="lcb_2.tlk">
 			<personrole role="lordbritish" id="31" />
 		</city>
 		<portal x="3" y="3" destmapid="1" startx="3" starty="3"  savelocation="false" message="Descend to first floor!" transport="foot" />
 		<portal x="27" y="3" destmapid="1" startx="27" starty="3"  savelocation="false" message="Descend to first floor!" transport="foot" />
+		<portal x="27" y="28" destmapid="101" startx="15" starty="27"  savelocation="false" message="Descend into the shaft!" transport="foot" />
 	</map>
+	
+	<map id="101" type="city" fname="lcb_3.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="9" tileset="base" tilemap="base">
+		<city name="Lord's Hold" type="castle" tlk_fname="lcb_3.tlk">
+		</city>
+		<portal x="18" y="2" destmapid="100" startx="27" starty="28"  savelocation="false" message="Klimb back to second level!" transport="foot" />
+		<label name="magicparchment" x="18" y="2" />
+	</map>
+	
 	<map id="2" type="city" fname="lycaeum.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="9" tileset="base" tilemap="base">
 		<city name="Lycaeum" type="castle" tlk_fname="lycaeum.tlk">
 			<personrole type="HEALER" role="healer" id="22" />
@@ -190,7 +209,7 @@
 			<personrole type="REAGENT" role="reagentsvendor" id="27" />
 			<personrole type="HORSE" role="horsevendor" id="17" />
 		</city>
-		<label name="humilityrune" x="29" y="29" />
+		<label name="greedrune" x="29" y="29" />
 	</map>
 	<map id="14" type="city" fname="den.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Buccaneers Den" type="village" tlk_fname="den.tlk">
@@ -200,6 +219,7 @@
 			<personrole type="REAGENT" role="reagentsvendor" id="29" />
 			<personrole type="GUILDITEM" role="guildvendor" id="28" />
 		</city>
+		<label name="songhumility" x="28" y="18" />
 	</map>
 	<map id="15" type="city" fname="vesper.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Vesper" type="village" tlk_fname="vesper.tlk">
@@ -496,6 +516,37 @@
 		<dungeon name="The Delve of Sorrows" />
 		<label name="maskofminax" x="1" y="17" z="1"/>
 		<label name="rageofgod" x="6" y="28" z="2"/>
+	</map>
+	
+	<map id="57" type="city" fname="aquaria_l1.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
+		<city name="Aquaria" type="towne" tlk_fname="aquaria_l1.tlk">
+		</city>
+		<portal x="27" y="28" destmapid="57" startx="24" starty="10"  savelocation="false" message="a portal through the ankh!" transport="foot" />
+		<portal x="26" y="10" destmapid="57" startx="3" starty="5"  savelocation="false" message="a portal through the ankh!" transport="foot" />
+		<portal x="3" y="30" destmapid="58" startx="11" starty="29"  savelocation="false" message="Descend beneath Aquaria!" transport="foot" />
+	</map>
+	<map id="58" type="city" fname="aquaria_l2.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
+		<city name="Aquaria" type="towne" tlk_fname="aquaria_l2.tlk">
+		</city>
+		<portal x="11" y="29" destmapid="57" startx="3" starty="30"  savelocation="false" message="Klimb up!" transport="foot" />
+	</map>
+	<map id="59" type="city" fname="black_rock.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
+		<city name="Black Rock" type="towne" tlk_fname="black_rock.tlk">
+		</city>
+	</map>
+	<map id="60" type="city" fname="bodania.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
+		<city name="Bodania" type="towne" tlk_fname="bodania.tlk">
+		</city>
+	</map>
+	<map id="61" type="city" fname="thoranguard.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
+		<city name="Thoranguard" type="towne" tlk_fname="thoranguard.tlk">
+		</city>
+		<portal x="25" y="4" destmapid="62" startx="16" starty="20"  savelocation="false" message="Descend to the dungeon!" transport="foot" />
+	</map>
+	<map id="62" type="city" fname="thoranguard_2.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
+		<city name="Dungeon" type="towne" tlk_fname="thoranguard_2.tlk">
+		</city>
+		<portal x="16" y="20" destmapid="61" startx="25" starty="4"  savelocation="false" message="Klimb up!" transport="foot" />
 	</map>
 	
 </maps>

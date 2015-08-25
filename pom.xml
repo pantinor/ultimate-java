@@ -45,17 +45,17 @@
         <dependency>
             <groupId>com.badlogicgames.gdx</groupId>
             <artifactId>gdx</artifactId>
-            <version>1.6.2</version>
+            <version>1.6.4</version>
         </dependency>
         <dependency>
             <groupId>com.badlogicgames.gdx</groupId>
             <artifactId>gdx-backend-lwjgl</artifactId>
-            <version>1.6.2</version>
+            <version>1.6.4</version>
         </dependency>
         <dependency>
             <groupId>com.badlogicgames.gdx</groupId>
             <artifactId>gdx-platform</artifactId>
-            <version>1.6.2</version>
+            <version>1.6.4</version>
             <classifier>natives-desktop</classifier>
         </dependency>
         <dependency>
@@ -139,4 +139,8 @@
         </plugins>
 
     </build>
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 </project>

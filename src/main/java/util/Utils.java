@@ -965,6 +965,9 @@ public class Utils implements Constants {
 
             if (ts != null) {
                 Tile t = ts.getTileByIndex(index);
+                if (t == null) {
+                    System.err.printf("tile index %s could not be found.\n", index);
+                }
                 p.setTile(t);
             }
 

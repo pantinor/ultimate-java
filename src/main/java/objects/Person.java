@@ -75,6 +75,7 @@ public class Person implements Constants {
 		
 		String template = "<object name=\"%s\" type=\"person\" x=\"%s\" y=\"%s\" width=\"16\" height=\"16\">\n"+
 							"<properties>\n"+
+							"<property name=\"name\" value=\"%s\"/>\n"+
 							"<property name=\"tileType\" value=\"%s\"/>\n"+
 							"<property name=\"movement\" value=\"%s\"/>\n"+
 							"<property name=\"startX\" value=\"%s\"/>\n"+
@@ -84,14 +85,16 @@ public class Person implements Constants {
 							"</object>\n";
 		
 		return String.format(template, 
-				id, start_x*16, start_y*16, tile.getName(), movement, start_x, start_y, dialogId);
+				id, start_x*16, start_y*16, 
+                                (conversation != null ? conversation.getName(): ""),
+                                tile.getName(), movement, start_x, start_y, dialogId);
 	}
 	
 	
 	
 	@Override
 	public String toString() {
-		return String.format("Person [id=%s, start_x=%s, start_y=%s, dialogId=%s, role=%s conv: %s]", id, start_x, start_y, dialogId, role, conversation);
+		return String.format("Person [id=%s, start_x=%s, start_y=%s, dialogId=%s, role=%s tileIndex=%s conv: %s]", id, start_x, start_y, dialogId, role, tileIndex, conversation);
 	}
 	
 	public int getTileIndex() {

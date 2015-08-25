@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="32" height="32" tilewidth="16" tileheight="16" backgroundcolor="#000000">
+<tileset firstgid="1" name="paws.ult" tilewidth="16" tileheight="16">
+<image source="tiles-vga.png" width="256" height="256"/>
+</tileset>
+<layer name="Map Layer" width="32" height="32">
+<data encoding="csv">
+58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,
+58,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6,6,6,6,58,
+58,5,5,5,128,128,128,128,128,128,128,128,5,5,5,5,5,5,5,5,128,128,128,128,128,128,128,128,6,6,6,58,
+58,5,5,128,128,63,63,63,63,63,63,128,128,128,128,128,128,128,128,128,128,102,111,108,108,101,121,128,128,6,6,58,
+58,5,5,128,128,97,114,109,111,117,114,128,128,72,70,125,124,70,72,128,63,63,63,63,63,63,63,63,128,6,6,58,
+58,5,5,128,126,63,63,63,63,63,63,126,128,69,63,63,63,63,69,128,123,116,97,118,101,114,110,123,128,6,6,58,
+58,5,5,128,63,63,63,63,63,63,63,63,74,63,63,63,63,63,63,128,63,63,63,63,63,63,63,63,128,6,5,58,
+58,5,5,128,123,124,63,63,63,63,125,123,128,109,97,103,105,99,115,128,123,124,63,63,63,63,125,123,128,6,5,58,
+58,5,5,128,128,63,63,63,63,63,63,128,128,63,63,63,63,63,63,128,63,63,63,63,63,63,63,63,128,5,5,58,
+58,5,5,128,128,128,63,63,63,63,128,128,128,128,128,128,128,128,128,128,123,124,63,63,63,63,125,123,128,5,5,58,
+58,5,5,5,6,6,63,63,63,63,6,6,5,5,5,5,6,6,6,128,128,128,128,63,63,128,128,128,128,5,5,58,
+58,5,5,5,5,6,6,63,63,6,6,5,5,5,5,5,5,5,6,6,6,6,6,63,63,6,6,6,5,5,5,58,
+58,5,5,5,5,6,6,63,63,6,6,5,5,5,5,5,5,5,5,5,6,6,6,63,63,6,6,5,5,5,5,58,
+58,5,5,5,6,6,6,63,63,6,6,6,5,5,5,5,5,5,5,5,5,5,6,63,63,6,5,5,5,5,5,58,
+63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,
+63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,
+63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,
+58,5,5,5,6,6,6,63,63,6,6,6,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,58,
+58,5,5,5,5,6,6,63,63,6,6,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,58,
+58,5,5,5,5,5,6,5,5,6,5,5,5,5,5,128,128,128,128,128,128,58,58,58,58,58,58,58,58,58,58,58,
+58,5,5,5,5,5,6,5,5,6,5,5,5,5,5,128,126,126,63,126,128,5,5,5,5,58,5,5,5,5,5,58,
+58,5,5,5,5,6,6,5,5,6,6,5,5,5,5,60,63,63,63,63,59,5,5,5,5,58,5,5,5,5,5,58,
+58,5,5,58,58,58,58,5,5,58,58,58,58,5,5,128,63,63,63,126,128,5,5,5,5,58,5,5,5,5,5,58,
+58,5,5,58,3,5,5,5,5,5,5,3,58,6,5,128,126,63,63,126,128,5,5,5,5,58,5,5,5,5,5,58,
+58,5,5,58,124,5,5,5,5,5,5,125,58,6,6,128,123,123,123,123,128,5,5,5,5,60,5,5,5,5,58,58,
+58,5,6,58,5,5,5,5,5,5,5,5,58,6,6,128,63,63,63,63,128,126,5,5,3,58,126,5,3,58,58,8,
+58,5,6,58,123,109,97,114,107,101,116,123,58,6,6,128,128,128,128,128,128,58,58,58,58,58,58,58,58,58,8,8,
+58,6,6,58,5,5,5,5,5,5,5,5,58,6,6,5,5,5,5,5,5,5,6,6,8,8,8,8,8,8,8,9,
+58,6,6,58,58,58,58,58,58,58,58,58,58,6,5,5,5,5,5,5,5,5,8,8,8,8,8,8,8,8,9,9,
+58,6,6,6,6,6,6,6,5,5,5,5,5,5,5,5,5,5,5,8,8,8,8,8,8,9,9,9,8,8,9,9,
+58,6,6,6,6,6,5,5,5,5,5,5,5,5,5,5,5,5,8,8,8,9,9,9,9,9,9,9,9,9,9,9,
+58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,58,8,8,8,9,9,9,9,9,9,9,9,9
+</data>
+</layer>
+<layer name="People Layer" width="32" height="32">
+<data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,83,0,0,83,0,0,0,0,0,0,
+0,0,0,0,0,37,0,0,0,37,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,37,0,0,0,0,0,0,0,0,0,0,0,0,0,0,33,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,83,0,0,0,37,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,91,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,81,0,0,0,0,0,0,0,0,0,0,0,0,81,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,87,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,81,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,81,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,85,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,21,0,0,21,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,93,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,93,0,0,21,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,39,0,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,83,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,45,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,47,0,0,0,0,0,0,0,0,0
+</data>
+</layer>
+<objectgroup name="Person Properties" width="32" height="32">
+<object name="0" type="person" x="272" y="400" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="villager"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="17"/>
+<property name="startY" value="25"/>
+<property name="dialogId" value="100"/>
+</properties>
+</object>
+<object name="3" type="person" x="16" y="320" width="16" height="16">
+<properties>
+<property name="name" value="Little Jon"/>
+<property name="tileType" value="bard_singing"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="1"/>
+<property name="startY" value="20"/>
+<property name="dialogId" value="15"/>
+</properties>
+</object>
+<object name="4" type="person" x="128" y="240" width="16" height="16">
+<properties>
+<property name="name" value="Asemly"/>
+<property name="tileType" value="jester"/>
+<property name="movement" value="WANDER"/>
+<property name="startX" value="8"/>
+<property name="startY" value="15"/>
+<property name="dialogId" value="14"/>
+</properties>
+</object>
+<object name="5" type="person" x="80" y="96" width="16" height="16">
+<properties>
+<property name="name" value="Lady Tessa"/>
+<property name="tileType" value="fighter"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="5"/>
+<property name="startY" value="6"/>
+<property name="dialogId" value="13"/>
+</properties>
+</object>
+<object name="6" type="person" x="80" y="80" width="16" height="16">
+<properties>
+<property name="name" value="Sir Simon"/>
+<property name="tileType" value="fighter"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="5"/>
+<property name="startY" value="5"/>
+<property name="dialogId" value="12"/>
+</properties>
+</object>
+<object name="7" type="person" x="224" y="176" width="16" height="16">
+<properties>
+<property name="name" value="Pix"/>
+<property name="tileType" value="child"/>
+<property name="movement" value="WANDER"/>
+<property name="startX" value="14"/>
+<property name="startY" value="11"/>
+<property name="dialogId" value="11"/>
+</properties>
+</object>
+<object name="8" type="person" x="16" y="480" width="16" height="16">
+<properties>
+<property name="name" value="Barren"/>
+<property name="tileType" value="ranger"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="1"/>
+<property name="startY" value="30"/>
+<property name="dialogId" value="10"/>
+</properties>
+</object>
+<object name="9" type="person" x="352" y="496" width="16" height="16">
+<properties>
+<property name="name" value="Wheatpin"/>
+<property name="tileType" value="shepherd"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="22"/>
+<property name="startY" value="31"/>
+<property name="dialogId" value="9"/>
+</properties>
+</object>
+<object name="10" type="person" x="96" y="400" width="16" height="16">
+<properties>
+<property name="name" value="Damsel"/>
+<property name="tileType" value="druid"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="6"/>
+<property name="startY" value="25"/>
+<property name="dialogId" value="8"/>
+</properties>
+</object>
+<object name="11" type="person" x="144" y="80" width="16" height="16">
+<properties>
+<property name="name" value="Sir Hobie"/>
+<property name="tileType" value="fighter"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="9"/>
+<property name="startY" value="5"/>
+<property name="dialogId" value="7"/>
+</properties>
+</object>
+<object name="12" type="person" x="192" y="32" width="16" height="16">
+<properties>
+<property name="name" value="Jingles"/>
+<property name="tileType" value="mage"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="12"/>
+<property name="startY" value="2"/>
+<property name="dialogId" value="6"/>
+</properties>
+</object>
+<object name="13" type="person" x="368" y="128" width="16" height="16">
+<properties>
+<property name="name" value="Sal"/>
+<property name="tileType" value="villager"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="23"/>
+<property name="startY" value="8"/>
+<property name="dialogId" value="5"/>
+</properties>
+</object>
+<object name="14" type="person" x="320" y="96" width="16" height="16">
+<properties>
+<property name="name" value="Zair the Wise"/>
+<property name="tileType" value="mage"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="20"/>
+<property name="startY" value="6"/>
+<property name="dialogId" value="4"/>
+</properties>
+</object>
+<object name="15" type="person" x="432" y="128" width="16" height="16">
+<properties>
+<property name="name" value="Sven"/>
+<property name="tileType" value="fighter"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="27"/>
+<property name="startY" value="8"/>
+<property name="dialogId" value="3"/>
+</properties>
+</object>
+<object name="16" type="person" x="432" y="400" width="16" height="16">
+<properties>
+<property name="name" value="Francesca"/>
+<property name="tileType" value="villager"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="27"/>
+<property name="startY" value="25"/>
+<property name="dialogId" value="2"/>
+</properties>
+</object>
+<object name="18" type="person" x="144" y="208" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="guard"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="9"/>
+<property name="startY" value="13"/>
+<property name="dialogId" value="0"/>
+</properties>
+</object>
+<object name="19" type="person" x="368" y="352" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="bull"/>
+<property name="movement" value="WANDER"/>
+<property name="startX" value="23"/>
+<property name="startY" value="22"/>
+<property name="dialogId" value="0"/>
+</properties>
+</object>
+<object name="20" type="person" x="432" y="320" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="horse"/>
+<property name="movement" value="WANDER"/>
+<property name="startX" value="27"/>
+<property name="startY" value="20"/>
+<property name="dialogId" value="0"/>
+</properties>
+</object>
+<object name="21" type="person" x="416" y="352" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="horse"/>
+<property name="movement" value="WANDER"/>
+<property name="startX" value="26"/>
+<property name="startY" value="22"/>
+<property name="dialogId" value="0"/>
+</properties>
+</object>
+<object name="22" type="person" x="240" y="272" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="guard"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="15"/>
+<property name="startY" value="17"/>
+<property name="dialogId" value="0"/>
+</properties>
+</object>
+<object name="23" type="person" x="352" y="208" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="guard"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="22"/>
+<property name="startY" value="13"/>
+<property name="dialogId" value="0"/>
+</properties>
+</object>
+<object name="24" type="person" x="352" y="336" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="bull"/>
+<property name="movement" value="ATTACK_AVATAR"/>
+<property name="startX" value="22"/>
+<property name="startY" value="21"/>
+<property name="dialogId" value="0"/>
+</properties>
+</object>
+<object name="25" type="person" x="480" y="320" width="16" height="16">
+<properties>
+<property name="name" value="Smith"/>
+<property name="tileType" value="horse"/>
+<property name="movement" value="WANDER"/>
+<property name="startX" value="30"/>
+<property name="startY" value="20"/>
+<property name="dialogId" value="16"/>
+</properties>
+</object>
+<object name="26" type="person" x="96" y="48" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="villager"/>
+<property name="movement" value="FOLLOW_AVATAR"/>
+<property name="startX" value="6"/>
+<property name="startY" value="3"/>
+<property name="dialogId" value="46"/>
+</properties>
+</object>
+<object name="27" type="person" x="240" y="128" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="villager"/>
+<property name="movement" value="FOLLOW_AVATAR"/>
+<property name="startX" value="15"/>
+<property name="startY" value="8"/>
+<property name="dialogId" value="47"/>
+</properties>
+</object>
+<object name="28" type="person" x="400" y="64" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="villager"/>
+<property name="movement" value="WANDER"/>
+<property name="startX" value="25"/>
+<property name="startY" value="4"/>
+<property name="dialogId" value="64"/>
+</properties>
+</object>
+<object name="29" type="person" x="352" y="64" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="villager"/>
+<property name="movement" value="WANDER"/>
+<property name="startX" value="22"/>
+<property name="startY" value="4"/>
+<property name="dialogId" value="48"/>
+</properties>
+</object>
+<object name="30" type="person" x="112" y="432" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="villager"/>
+<property name="movement" value="FOLLOW_AVATAR"/>
+<property name="startX" value="7"/>
+<property name="startY" value="27"/>
+<property name="dialogId" value="49"/>
+</properties>
+</object>
+<object name="31" type="person" x="64" y="256" width="16" height="16">
+<properties>
+<property name="name" value="Wilmoore"/>
+<property name="tileType" value="guard"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="4"/>
+<property name="startY" value="16"/>
+<property name="dialogId" value="1"/>
+</properties>
+</object>
+
+</objectgroup>
+</map>

@@ -3,8 +3,6 @@ package ultima;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import generator.StaticGeneratedDungeonScreen;
 
-import java.util.Random;
-
 import objects.ArmorSet;
 import objects.BaseMap;
 import objects.Creature;
@@ -70,6 +68,7 @@ public class GameScreen extends BaseScreen {
     public static VendorClassSet vendorClassSet;
     public static TextureAtlas standardAtlas;
     public static TextureAtlas enhancedAtlas;
+    public static int TILE_DIM = 32;
 
     MapSet maps;
     TextureAtlas moonAtlas;
@@ -89,11 +88,10 @@ public class GameScreen extends BaseScreen {
     public Stage mapObjectsStage;
     public Stage projectilesStage;
 
-    Array<AtlasRegion> moongateTextures = new Array<AtlasRegion>();
+    Array<AtlasRegion> moongateTextures = new Array<>();
     public static int phase = 0, trammelphase = 0, trammelSubphase = 0, feluccaphase = 0;
 
     public SecondaryInputProcessor sip;
-    Random rand = new Random();
 
     GameTimer gameTimer = new GameTimer();
 
@@ -108,9 +106,9 @@ public class GameScreen extends BaseScreen {
             
             //use this to see the original tile set
             //standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-ega-atlas.txt"));
-            standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-vga-atlas.txt"));
+            standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-enhanced-vga-atlas.txt"));
             //set this to the standardAtlas variable to use all of the original tiles
-            enhancedAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/monsters-u4.atlas"));
+            enhancedAtlas = standardAtlas;//new TextureAtlas(Gdx.files.internal("assets/tilemaps/monsters-u4.atlas"));
 
             baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);
             baseTileSet.setMaps();
@@ -170,24 +168,24 @@ public class GameScreen extends BaseScreen {
 
     private void initTransportAnimations() {
         Array<AtlasRegion> avatar = enhancedAtlas.findRegions("avatar");
-        Array<AtlasRegion> corpse = enhancedAtlas.findRegions("corpse");
+        Array<AtlasRegion> corps = enhancedAtlas.findRegions("corpse");
         Array<AtlasRegion> horse = enhancedAtlas.findRegions("horse");
         Array<AtlasRegion> ship = standardAtlas.findRegions("ship");
         Array<AtlasRegion> balloon = standardAtlas.findRegions("balloon");
 
-        Array<AtlasRegion> tmp = new Array<AtlasRegion>(4);
+        Array<AtlasRegion> tmp = new Array<>(4);
         for (int i = 0; i < 4; i++) {
             tmp.add(avatar.get(0));
         }
         avatarAnim = new Animation(0.25f, tmp);
 
-        Array<AtlasRegion> tmp2 = new Array<AtlasRegion>(4);
+        Array<AtlasRegion> tmp2 = new Array<>(4);
         for (int i = 0; i < 4; i++) {
-            tmp2.add(corpse.get(0));
+            tmp2.add(corps.get(0));
         }
         corpseAnim = new Animation(0.25f, tmp2);
 
-        tmp = new Array<AtlasRegion>(4);
+        tmp = new Array<>(4);
         AtlasRegion ar = new AtlasRegion(horse.get(1));
         ar.flip(true, false);
         tmp.add(ar);
@@ -198,7 +196,7 @@ public class GameScreen extends BaseScreen {
 
         shipAnim = new Animation(0.25f, ship);
 
-        tmp = new Array<AtlasRegion>(4);
+        tmp = new Array<>(4);
         for (int i = 0; i < 4; i++) {
             tmp.add(balloon.get(0));
         }
@@ -239,7 +237,7 @@ public class GameScreen extends BaseScreen {
             Party party = new Party(sg);
             context.setParty(party);
 
-//            party.getMember(0).getPlayer().hp = 999;
+//            party.getMember(0).getPlayer().hp = 40;
 //            party.getMember(0).getPlayer().hpMax = 999;
 //            party.getMember(0).getPlayer().intel = 99;
 //            party.getMember(0).getPlayer().mp = 999;
@@ -279,18 +277,19 @@ public class GameScreen extends BaseScreen {
 //                party.getSaveGame().armor[i] = 2;
 //            }
 //            party.getSaveGame().sextants = 1;
-//            mainAvatar = shipAnim;
-//            sg.transport = 21;
+            //mainAvatar = shipAnim;
+            //sg.transport = 0x10;
+
             
             //load the surface world first
             loadNextMap(Maps.WORLD, sg.x, sg.y);
-            //loadNextMap(Maps.WORLD, 22, 64);
+            //loadNextMap(Maps.WORLD, 145, 81);
 
             //load the dungeon if save game starts in dungeon
             if (Maps.get(sg.location) != Maps.WORLD) {
                 loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation + 1), true);
                 //loadNextMap(Maps.ABYSS, 0, 0, 5, 5, 0, Direction.SOUTH, true);
-                //loadNextMap(Maps.DESPISE, 0, 0, 5, 5, 0, Direction.NORTH, true);
+                //loadNextMap(Maps.DESTARD, 0, 0, 5, 5, 0, Direction.NORTH, true);
             }
 
             party.setTransport(baseTileSet.getTileByIndex(sg.transport));
@@ -353,7 +352,7 @@ public class GameScreen extends BaseScreen {
 
         } else if (m.getMap().getType() == MapType.shrine) {
             BaseMap sm = m.getMap();
-            map = new UltimaTiledMapLoader(m, standardAtlas, sm.getWidth(), sm.getHeight(), 16, 16).load();
+            map = new UltimaTiledMapLoader(m, standardAtlas, sm.getWidth(), sm.getHeight(), TILE_DIM, TILE_DIM).load();
             context.setCurrentTiledMap(map);
             Virtue virtue = Virtue.get(sm.getId() - 25);
             ShrineScreen sc = new ShrineScreen(this, virtue, map, enhancedAtlas, standardAtlas);
@@ -365,13 +364,13 @@ public class GameScreen extends BaseScreen {
 
             bm.removeJoinedPartyMemberFromPeopleList(context.getParty());
 
-            map = new UltimaTiledMapLoader(m, standardAtlas, m.getMap().getWidth(), m.getMap().getHeight(), 16, 16).load();
+            map = new UltimaTiledMapLoader(m, standardAtlas, m.getMap().getWidth(), m.getMap().getHeight(), TILE_DIM, TILE_DIM).load();
             context.setCurrentTiledMap(map);
 
             if (renderer != null) {
                 renderer.dispose();
             }
-            renderer = new UltimaMapRenderer(standardAtlas, bm, map, 2f);
+            renderer = new UltimaMapRenderer(standardAtlas, bm, map, 1f);//2f);
 
             mapBatch = renderer.getBatch();
 
@@ -397,7 +396,7 @@ public class GameScreen extends BaseScreen {
         Maps contextMap = Maps.get(context.getCurrentMap().getId());
         BaseMap combatMap = combat.getMap();
 
-        TiledMap tmap = new UltimaTiledMapLoader(combat, standardAtlas, combat.getMap().getWidth(), combat.getMap().getHeight(), 16, 16).load();
+        TiledMap tmap = new UltimaTiledMapLoader(combat, standardAtlas, combat.getMap().getWidth(), combat.getMap().getHeight(), GameScreen.TILE_DIM, GameScreen.TILE_DIM).load();
 
         CombatScreen sc = new CombatScreen(this, context, contextMap, combatMap, tmap, cr.getTile(), creatures, enhancedAtlas, standardAtlas);
         mainGame.setScreen(sc);
@@ -463,10 +462,13 @@ public class GameScreen extends BaseScreen {
         }
     }
 
+    @Override
     public void partyDeath() {
         //death scene
         mainGame.setScreen(new DeathScreen(this, context.getParty()));
         loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
+        
+        throw new RuntimeException("Party Death");
     }
 
     @Override
@@ -889,44 +891,50 @@ public class GameScreen extends BaseScreen {
     }
 
     public void finishTurn(int currentX, int currentY) {
+        
+        try {
+            
+            checkHullIntegrity(context.getCurrentMap(), currentX, currentY);
+        
+            boolean checkSleeping = false;
+            if (context.getParty().getMember(0).getPlayer().status == StatusType.SLEEPING) {
+                checkSleeping = true;
+            }
 
-        boolean checkSleeping = false;
-        if (context.getParty().getMember(0).getPlayer().status == StatusType.SLEEPING) {
-            checkSleeping = true;
-        }
+            context.getParty().endTurn(context.getCurrentMap().getType());
 
-        context.getParty().endTurn(context.getCurrentMap().getType());
+            if (checkSleeping && context.getParty().getMember(0).getPlayer().status != StatusType.SLEEPING) {
+                mainAvatar = avatarAnim;
+            }
+            
+            context.getAura().passTurn();
 
-        if (checkSleeping && context.getParty().getMember(0).getPlayer().status != StatusType.SLEEPING) {
-            mainAvatar = avatarAnim;
-        }
+            if (context.getTransportContext() != TransportContext.BALLOON) {
 
-        context.getAura().passTurn();
-
-        checkHullIntegrity(context.getCurrentMap(), currentX, currentY);
-
-        if (context.getTransportContext() != TransportContext.BALLOON) {
-
-            TileEffect effect = context.getCurrentMap().getTile(currentX, currentY).getRule().getEffect();
-            context.getParty().applyEffect(effect);
-            if (effect == TileEffect.FIRE) {
-                Sounds.play(Sound.ACID);
-            } else if (effect == TileEffect.POISON) {
-                Sounds.play(Sound.POISON_EFFECT);
-            } else if (effect == TileEffect.SLEEP) {
-                Sounds.play(Sound.SLEEP);
-                if (context.getParty().getMember(0).getPlayer().status == StatusType.SLEEPING) {
-                    mainAvatar = corpseAnim;
+                TileEffect effect = context.getCurrentMap().getTile(currentX, currentY).getRule().getEffect();
+                context.getParty().applyEffect(effect);
+                if (effect == TileEffect.FIRE) {
+                    Sounds.play(Sound.ACID);
+                } else if (effect == TileEffect.POISON) {
+                    Sounds.play(Sound.POISON_EFFECT);
+                } else if (effect == TileEffect.SLEEP) {
+                    Sounds.play(Sound.SLEEP);
+                    if (context.getParty().getMember(0).getPlayer().status == StatusType.SLEEPING) {
+                        mainAvatar = corpseAnim;
+                    }
+                } else if (effect == TileEffect.LAVA) {
+                    Sounds.play(Sound.BOOM);
                 }
-            } else if (effect == TileEffect.LAVA) {
-                Sounds.play(Sound.BOOM);
-            }
 
-            if (checkRandomCreatures()) {
-                spawnCreature(null, currentX, currentY);
-            }
+                if (checkRandomCreatures()) {
+                    spawnCreature(null, currentX, currentY);
+                }
 
-            context.getCurrentMap().moveObjects(this, currentX, currentY);
+                context.getCurrentMap().moveObjects(this, currentX, currentY);
+            }
+        
+        } catch (Throwable t) {
+            System.err.printf("finish Turn: %s\n", t.getMessage());
         }
 
     }
@@ -1637,10 +1645,14 @@ public class GameScreen extends BaseScreen {
     private void checkHullIntegrity(BaseMap bm, int x, int y) {
 
         boolean killAll = false;
-        if (context.getTransportContext() == TransportContext.SHIP && context.getParty().getSaveGame().shiphull <= 0) {
+        if (context.getTransportContext() == TransportContext.SHIP && 
+                context.getParty().getSaveGame().shiphull <= 0) {
             log("Thy ship sinks!");
             killAll = true;
-        } else if (context.getTransportContext() == TransportContext.FOOT && bm.getTile(x, y).getRule().has(TileAttrib.sailable)) {
+            
+        } else if (context.getTransportContext() == TransportContext.FOOT && 
+                bm.getTile(x, y).getRule() != null &&
+                bm.getTile(x, y).getRule().has(TileAttrib.sailable)) {
             log("Trapped at sea without thy ship, thou dost drown!");
             killAll = true;
         }

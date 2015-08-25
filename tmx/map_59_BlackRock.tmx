@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="32" height="32" tilewidth="16" tileheight="16" backgroundcolor="#000000">
+<tileset firstgid="1" name="black_rock.ult" tilewidth="16" tileheight="16">
+<image source="tiles-vga.png" width="256" height="256"/>
+</tileset>
+<layer name="Map Layer" width="32" height="32">
+<data encoding="csv">
+5,5,5,5,5,5,5,5,5,5,5,5,128,128,128,128,128,128,128,128,3,3,128,128,128,2,3,3,3,3,3,2,
+5,5,5,5,5,5,5,5,5,5,5,5,128,3,3,3,3,3,3,3,3,3,3,3,128,3,2,2,3,137,2,2,
+5,3,3,3,3,3,3,3,3,3,3,3,128,119,101,97,112,111,110,114,121,128,128,128,128,3,3,2,2,3,2,137,
+5,3,3,3,3,3,3,3,3,3,3,3,128,63,63,63,63,63,63,63,63,63,63,63,128,3,3,3,2,2,2,1,
+5,3,3,3,3,3,3,3,3,3,3,3,128,63,63,63,63,63,63,63,63,63,63,63,128,128,128,2,2,2,137,1,
+5,3,3,3,3,3,3,3,3,3,3,3,128,63,63,63,63,63,63,63,63,63,63,63,59,63,63,24,2,3,1,1,
+5,3,3,3,3,3,3,3,3,3,3,3,128,63,63,63,63,63,63,63,63,63,63,63,128,128,128,2,2,2,139,1,
+128,128,128,128,128,128,128,3,3,3,3,3,128,63,63,63,63,63,63,63,63,63,63,63,128,128,3,3,2,2,3,3,
+128,3,112,63,63,49,128,3,3,3,3,3,128,128,128,128,63,63,63,128,128,128,128,63,128,3,2,2,2,2,137,2,
+3,3,117,63,63,63,128,3,3,3,3,128,128,63,63,63,63,63,63,63,63,63,128,128,128,3,3,3,3,3,3,3,
+128,3,98,63,63,49,128,3,3,2,3,128,63,63,63,63,63,63,63,63,63,63,63,128,128,128,128,128,128,128,128,128,
+128,128,128,63,63,63,128,128,128,128,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,128,63,63,63,97,3,128,
+128,63,63,63,63,49,128,128,63,63,63,63,63,7,7,7,7,7,7,7,7,63,63,63,63,128,63,63,63,114,3,128,
+128,63,63,63,63,63,128,63,63,63,63,7,7,7,3,2,2,2,2,2,7,7,7,63,63,63,63,63,63,109,3,128,
+128,63,63,63,63,63,63,63,63,63,7,7,3,2,2,62,139,2,3,3,2,2,7,63,63,63,63,63,63,111,3,3,
+128,128,128,63,63,63,63,63,63,7,7,2,3,2,133,2,2,133,2,3,3,7,7,63,63,128,63,63,63,117,3,128,
+128,3,102,63,49,128,63,63,63,7,2,2,2,3,2,2,3,3,2,7,7,7,63,63,63,128,63,63,63,114,3,128,
+3,3,111,63,63,128,63,63,63,7,7,3,3,3,2,3,2,3,3,7,63,63,63,128,128,128,63,63,63,121,3,128,
+128,3,111,63,63,128,128,63,63,63,7,7,2,3,3,3,2,7,7,7,63,63,63,128,128,128,128,128,128,128,128,128,
+128,3,100,63,49,128,128,128,63,63,63,7,7,3,2,2,7,7,63,63,63,2,3,128,3,3,3,5,5,5,5,5,
+128,128,128,128,128,128,5,128,128,63,63,63,7,7,3,7,7,63,63,63,128,2,3,3,3,3,3,3,3,3,5,5,
+5,5,5,5,5,5,5,5,128,128,63,63,63,7,7,7,63,63,63,63,128,3,3,2,2,2,2,2,2,2,3,5,
+5,5,5,5,5,5,5,5,5,128,128,63,63,63,63,63,63,63,128,128,128,3,3,2,3,3,3,2,2,2,3,5,
+5,5,5,5,2,2,2,2,2,2,128,128,63,63,63,63,63,63,128,128,2,3,2,2,2,2,2,2,2,3,3,5,
+5,5,5,2,3,2,2,3,2,2,2,128,128,63,63,63,63,128,128,2,2,3,3,2,2,3,2,3,3,3,5,5,
+5,5,5,2,3,2,2,3,3,2,2,128,128,128,63,63,128,128,2,2,3,3,2,2,2,3,3,3,5,5,5,5,
+5,5,5,3,3,2,2,2,3,3,3,3,3,128,63,63,128,2,2,3,2,2,2,3,3,3,2,5,5,5,5,5,
+5,5,2,3,3,3,3,3,3,3,2,3,3,128,63,63,128,2,135,3,3,3,3,3,3,3,2,5,5,5,5,5,
+5,5,2,3,3,3,3,3,2,3,137,3,2,126,63,63,126,3,3,2,2,2,3,3,2,3,3,5,5,5,5,5,
+5,5,3,3,3,2,2,3,3,2,3,3,2,128,63,63,128,3,2,3,3,2,2,2,2,2,3,2,5,5,5,5,
+5,5,2,3,3,2,3,3,3,3,3,3,2,128,63,63,128,3,2,2,2,3,3,3,3,3,3,2,5,5,5,5,
+5,5,5,2,2,2,2,2,2,2,3,2,2,128,63,63,128,2,2,3,3,3,3,3,2,2,2,2,5,5,5,5
+</data>
+</layer>
+<layer name="People Layer" width="32" height="32">
+<data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,139,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,139,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,139,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,139,0,0,0,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,0,0,139,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,139,0,0,0,0,0,0,0,0,0,0,0,0,139,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,139,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,91,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+</layer>
+<objectgroup name="Person Properties" width="32" height="32">
+<object name="0" type="person" x="224" y="272" width="16" height="16">
+<properties>
+<property name="name" value="Magesty Arfandil"/>
+<property name="tileType" value="sea_horse"/>
+<property name="movement" value="FOLLOW_AVATAR"/>
+<property name="startX" value="14"/>
+<property name="startY" value="17"/>
+<property name="dialogId" value="1"/>
+</properties>
+</object>
+<object name="1" type="person" x="464" y="48" width="16" height="16">
+<properties>
+<property name="name" value="Eress?a"/>
+<property name="tileType" value="sea_horse"/>
+<property name="movement" value="FOLLOW_AVATAR"/>
+<property name="startX" value="29"/>
+<property name="startY" value="3"/>
+<property name="dialogId" value="2"/>
+</properties>
+</object>
+<object name="2" type="person" x="16" y="144" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="sea_horse"/>
+<property name="movement" value="FOLLOW_AVATAR"/>
+<property name="startX" value="1"/>
+<property name="startY" value="9"/>
+<property name="dialogId" value="109"/>
+</properties>
+</object>
+<object name="3" type="person" x="16" y="272" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="sea_horse"/>
+<property name="movement" value="FOLLOW_AVATAR"/>
+<property name="startX" value="1"/>
+<property name="startY" value="17"/>
+<property name="dialogId" value="108"/>
+</properties>
+</object>
+<object name="4" type="person" x="480" y="224" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="sea_horse"/>
+<property name="movement" value="FOLLOW_AVATAR"/>
+<property name="startX" value="30"/>
+<property name="startY" value="14"/>
+<property name="dialogId" value="106"/>
+</properties>
+</object>
+<object name="5" type="person" x="288" y="16" width="16" height="16">
+<properties>
+<property name="name" value=""/>
+<property name="tileType" value="sea_horse"/>
+<property name="movement" value="FOLLOW_AVATAR"/>
+<property name="startX" value="18"/>
+<property name="startY" value="1"/>
+<property name="dialogId" value="107"/>
+</properties>
+</object>
+<object name="6" type="person" x="160" y="128" width="16" height="16">
+<properties>
+<property name="name" value="Maress?a"/>
+<property name="tileType" value="sea_horse"/>
+<property name="movement" value="FOLLOW_AVATAR"/>
+<property name="startX" value="10"/>
+<property name="startY" value="8"/>
+<property name="dialogId" value="3"/>
+</properties>
+</object>
+<object name="7" type="person" x="352" y="336" width="16" height="16">
+<properties>
+<property name="name" value="Materrin"/>
+<property name="tileType" value="sea_horse"/>
+<property name="movement" value="FOLLOW_AVATAR"/>
+<property name="startX" value="22"/>
+<property name="startY" value="21"/>
+<property name="dialogId" value="4"/>
+</properties>
+</object>
+<object name="8" type="person" x="80" y="144" width="16" height="16">
+<properties>
+<property name="name" value="Sir Yar"/>
+<property name="tileType" value="lord_british"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="5"/>
+<property name="startY" value="9"/>
+<property name="dialogId" value="5"/>
+</properties>
+</object>
+<object name="9" type="person" x="240" y="384" width="16" height="16">
+<properties>
+<property name="name" value="Lamph"/>
+<property name="tileType" value="child"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="15"/>
+<property name="startY" value="24"/>
+<property name="dialogId" value="6"/>
+</properties>
+</object>
+<object name="10" type="person" x="432" y="224" width="16" height="16">
+<properties>
+<property name="name" value="Shugrul"/>
+<property name="tileType" value="fighter"/>
+<property name="movement" value="WANDER"/>
+<property name="startX" value="27"/>
+<property name="startY" value="14"/>
+<property name="dialogId" value="7"/>
+</properties>
+</object>
+<object name="11" type="person" x="304" y="64" width="16" height="16">
+<properties>
+<property name="name" value="Henison"/>
+<property name="tileType" value="fighter"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="19"/>
+<property name="startY" value="4"/>
+<property name="dialogId" value="8"/>
+</properties>
+</object>
+<object name="12" type="person" x="48" y="176" width="16" height="16">
+<properties>
+<property name="name" value="Claelin"/>
+<property name="tileType" value="mage"/>
+<property name="movement" value="WANDER"/>
+<property name="startX" value="3"/>
+<property name="startY" value="11"/>
+<property name="dialogId" value="9"/>
+</properties>
+</object>
+<object name="13" type="person" x="112" y="224" width="16" height="16">
+<properties>
+<property name="name" value="Afrudil"/>
+<property name="tileType" value="lord_british"/>
+<property name="movement" value="FIXED"/>
+<property name="startX" value="7"/>
+<property name="startY" value="14"/>
+<property name="dialogId" value="10"/>
+</properties>
+</object>
+<object name="14" type="person" x="208" y="48" width="16" height="16">
+<properties>
+<property name="name" value="Henison"/>
+<property name="tileType" value="lord_british"/>
+<property name="movement" value="WANDER"/>
+<property name="startX" value="13"/>
+<property name="startY" value="3"/>
+<property name="dialogId" value="11"/>
+</properties>
+</object>
+
+</objectgroup>
+</map>
