@@ -1663,32 +1663,53 @@ sea
   index: 7
 sea_horse
   rotate: false
-  xy: 256, 576
+  xy: 352, 576
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 0
 sea_horse
   rotate: false
-  xy: 288, 576
+  xy: 320, 576
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 sea_horse
   rotate: false
-  xy: 320, 576
+  xy: 288, 576
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 sea_horse
   rotate: false
-  xy: 352, 576
+  xy: 256, 576
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 3
+sea_serpent
+  rotate: false
+  xy: 512, 576
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 0
+sea_serpent
+  rotate: false
+  xy: 544, 576
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+sea_serpent
+  rotate: false
+  xy: 576, 576
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
 secret_door
   rotate: false
   xy: 128, 416

@@ -447,20 +447,22 @@ public class BaseMap implements Constants {
                 }
                 String tname = p.getTile().getName();
 
-                AtlasRegion ar = atlas1.findRegion(tname);
-                if (ar == null) {
-                    ar = atlas2.findRegion(tname);
+                Array<AtlasRegion> arr = atlas1.findRegions(tname);
+                if (arr == null || arr.size == 0) {
+                    arr = atlas2.findRegions(tname);
                 }
-                p.setTextureRegion(ar);
-
-                Array<AtlasRegion> tr = atlas1.findRegions(tname);
-                if (tr == null || tr.size == 0) {
-                    tr = atlas2.findRegions(tname);
+                
+                if (arr.size == 0) {
+                    System.err.printf("%s - tname is empty %s",p, tname);
                 }
+                
+                p.setTextureRegion(arr.first());
 
-                //random rate between 1 and 4
-                int frameRate = Utils.getRandomBetween(1, 4);
-                p.setAnim(new Animation(frameRate, tr));
+                if (arr.size > 1) {
+                    //random rate between 1 and 4
+                    int frameRate = Utils.getRandomBetween(1, 4);
+                    p.setAnim(new Animation(frameRate, arr));
+                }
 
                 Vector3 pixelPos = screen.getMapPixelCoords(p.getStart_x(), p.getStart_y());
                 p.setCurrentPos(pixelPos);

@@ -536,6 +536,10 @@
 	</map>
 	<map id="60" type="city" fname="bodania.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Bodania" type="towne" tlk_fname="bodania.tlk">
+			<personrole type="TAVERN" role="tavernkeeper" id="7" />
+			<personrole type="TAVERN" role="tavernkeeper" id="18" />
+			<personrole type="TAVERN" role="tavernkeeper" id="2" />
+			<personrole type="GUILDITEM" role="guildvendor" id="3" />
 		</city>
 	</map>
 	<map id="61" type="city" fname="thoranguard.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">

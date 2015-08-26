@@ -183,6 +183,22 @@
 			<item type="FOOD" name="Green Granukit" price="2" />
 			<item type="TAVERNINFO" choice="nightshade" price="25" description="%s says: Of Nightshade I know but this... Seek out Virgil or thou shalt miss! Try in Trinsic!" />
 		</vendor>
+		
+		<vendor id="BODANIA" name="More Ale" owner="Grizzle" genericField1="Hell or High Watermelon" type="TAVERN" personId="7">
+			<item type="FOOD" name="ale" price="2" />
+			<item type="FOOD" name="Hell or High Watermelon" price="4" />
+			<item type="TAVERNINFO" choice="rune" price="15" description="%s says: I heard the Rune of Humility was stolen. Talk to Glarand about the Rune. He may also know about GREED." />
+		</vendor>
+		<vendor id="BODANIA" name="Traders Tavern" owner="Grazzle" genericField1="Pigs Feet" type="TAVERN" personId="18">
+			<item type="FOOD" name="ale" price="2" />
+			<item type="FOOD" name="Pigs Feet" price="2" />
+			<item type="TAVERNINFO" choice="greed" price="15" description="%s says: If though must know, I hear Glorthiel herself placed a Rune of Greed in place of the original Rune!" />
+		</vendor>
+		<vendor id="BODANIA" name="Tinkers Tavern" owner="Lingard" genericField1="Humble Pie" type="TAVERN" personId="2">
+			<item type="FOOD" name="ale" price="2" />
+			<item type="FOOD" name="Humble Pie" price="2" />
+			<item type="TAVERNINFO" choice="greed" price="15" description="%s says: If though must know, I hear Glorthiel herself placed a Rune of Greed in place of the original Rune!" />
+		</vendor>
 	</vendorClass>
 
 	<vendorClass type="HEALER" music="SHOPPING">
@@ -297,6 +313,12 @@
 			<item type="GUILDITEM" choice="c" name="Magic Keys" price="60" quant="6" guildItemType="key" description="Magical Keys, 1 use each, a fair price at 60gp for 6." />
 			<item type="GUILDITEM" choice="d" hidden="true" name="Sextant" price="900" quant="1" guildItemType="sextant" description="So...Ya want a Sextant...Well I gots one which I might part with fer 900 gold!" />
 		</vendor>
+		
+		<vendor id="BODANIA" name="Guild" owner="Baldur" personId="3">
+			<item type="GUILDITEM" choice="a" name="Torches" price="50" quant="5" guildItemType="torch" description="I can give ya 5 long lasting Torches for a mere 50gp." />
+			<item type="GUILDITEM" choice="b" name="Magic Gems" price="60" quant="5" guildItemType="gem" description="I've got magical mapping Gems, 5 for only 60gp." />
+			<item type="GUILDITEM" choice="c" name="Magic Keys" price="60" quant="6" guildItemType="key" description="Magical Keys, 1 use each, a fair price at 60gp for 6." />
+		</vendor>
 	</vendorClass>
 
 	<vendorClass type="HORSE" music="SHOPPING">
@@ -342,5 +364,5 @@
 			<item type="REAGENT" choice="f" name="Black Pearl" reagentType="PEARL" price="1" />
 		</vendor>
 	</vendorClass>
-
+	
 </vendorSet>

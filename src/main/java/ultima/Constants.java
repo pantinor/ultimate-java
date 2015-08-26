@@ -1351,6 +1351,7 @@ public interface Constants {
         TAVERN,
         HEALER,
         TAVERNINFO,
+        TINKER,
         HORSE;
     }
 

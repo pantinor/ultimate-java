@@ -195,7 +195,7 @@ public class TestJaxb {
 
     }
 
-    //@Test
+    @Test
     public void parseTlkFiles() throws Exception {
         Person[] people = Utils.getPeople("bodania.ult", null);
         List<Conversation> cons = Utils.getDialogs("bodania.tlk");

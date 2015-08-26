@@ -218,8 +218,11 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
                     continue;
                 }
 
-                //draw(p.getTextureRegion(), p.getCurrentPos().x, p.getCurrentPos().y, p.getX(), p.getY());
-                draw(p.getAnim().getKeyFrame(stateTime, true), p.getCurrentPos().x, p.getCurrentPos().y, p.getX(), p.getY());
+                if (p.getAnim() != null) {
+                    draw(p.getAnim().getKeyFrame(stateTime, true), p.getCurrentPos().x, p.getCurrentPos().y, p.getX(), p.getY());
+                } else {
+                    draw(p.getTextureRegion(), p.getCurrentPos().x, p.getCurrentPos().y, p.getX(), p.getY());
+                }
             }
 
         }
