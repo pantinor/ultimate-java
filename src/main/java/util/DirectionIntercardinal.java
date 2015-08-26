@@ -1,6 +1,5 @@
 package util;
 
-
 /**
  * Represents the eight grid directions and the deltaX, deltaY values associated
  * with those directions.

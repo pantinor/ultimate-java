@@ -963,8 +963,10 @@ public class CombatScreen extends BaseScreen {
         if (nearestPartyMember(cr.currentX, cr.currentY, dist, false) != null) {
             if ((dist.getVal() < 5) && !cr.getVisible()) {
                 cr.setVisible(true); /* show yourself */
+
             } else if (dist.getVal() >= 5) {
                 cr.setVisible(false); /* hide and take no action! */
+
             }
         }
 

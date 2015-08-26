@@ -93,7 +93,7 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
         stage = new Stage();
 
         readAtlas();
-        
+
         final List<MyListItem> list = new List<>(skin);
         try {
             TileSet ts = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);
@@ -106,7 +106,7 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
             list.setItems(tileNames);
         } catch (Exception ex) {
         }
-        
+
         list.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -143,7 +143,7 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
     public void render() {
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        
+
         batch.begin();
 
         batch.draw(sprBg, 0, screenHeight - sprBg.getHeight());
@@ -188,7 +188,7 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
             selectedMapCoords = new MyVector(x, y);
 
             if (selectedTileName != null) {
-                
+
                 MyListItem it = null;
                 for (MyListItem temp : gridItems) {
                     if (temp.x == x && temp.y == y) {
@@ -303,7 +303,7 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
             Rect rect = new Rect(it.x * dim, it.y * dim, dim, dim);
             rect.name = it.name;
             if (rect.name.equals(last)) {
-                idx ++;
+                idx++;
             } else {
                 idx = 0;
             }

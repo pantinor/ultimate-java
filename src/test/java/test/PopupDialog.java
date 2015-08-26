@@ -95,7 +95,7 @@ public class PopupDialog extends Window {
                 gridNames.remove(selectedItem);
             }
         });
-        
+
         internalTable.row();
         internalTable.add(deleteBtn).expandX().left().width(150);
 

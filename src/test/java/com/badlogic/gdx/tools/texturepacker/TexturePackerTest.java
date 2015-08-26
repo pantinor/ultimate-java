@@ -1,19 +1,20 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************/
-
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ *****************************************************************************
+ */
 package com.badlogic.gdx.tools.texturepacker;
 
 import java.util.Random;
@@ -31,83 +32,86 @@ import com.badlogic.gdx.tools.texturepacker.TexturePacker.Rect;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 import com.badlogic.gdx.utils.Array;
 
-/** @author Nathan Sweet */
+/**
+ * @author Nathan Sweet
+ */
 public class TexturePackerTest extends ApplicationAdapter {
-	ShapeRenderer renderer;
-	Array<Page> pages;
 
-	public void create () {
-		renderer = new ShapeRenderer();
-	}
+    ShapeRenderer renderer;
+    Array<Page> pages;
 
-	public void render () {
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    public void create() {
+        renderer = new ShapeRenderer();
+    }
 
-		Settings settings = new Settings();
-		settings.fast = false;
-		settings.pot = false;
-		settings.maxWidth = 1024;
-		settings.maxHeight = 1024;
-		settings.rotation = false;
-		settings.paddingX = 0;
+    public void render() {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		if (pages == null) {
-			Random random = new Random(1243);
-			Array<Rect> inputRects = new Array();
-			for (int i = 0; i < 240; i++) {
-				Rect rect = new Rect();
-				rect.name = "rect" + i;
-				rect.height = 16 + random.nextInt(120);
-				rect.width = 16 + random.nextInt(240);
-				inputRects.add(rect);
-			}
-			for (int i = 0; i < 10; i++) {
-				Rect rect = new Rect();
-				rect.name = "rect" + (40 + i);
-				rect.height = 400 + random.nextInt(340);
-				rect.width = 1 + random.nextInt(10);
-				inputRects.add(rect);
-			}
+        Settings settings = new Settings();
+        settings.fast = false;
+        settings.pot = false;
+        settings.maxWidth = 1024;
+        settings.maxHeight = 1024;
+        settings.rotation = false;
+        settings.paddingX = 0;
 
-			long s = System.nanoTime();
+        if (pages == null) {
+            Random random = new Random(1243);
+            Array<Rect> inputRects = new Array();
+            for (int i = 0; i < 240; i++) {
+                Rect rect = new Rect();
+                rect.name = "rect" + i;
+                rect.height = 16 + random.nextInt(120);
+                rect.width = 16 + random.nextInt(240);
+                inputRects.add(rect);
+            }
+            for (int i = 0; i < 10; i++) {
+                Rect rect = new Rect();
+                rect.name = "rect" + (40 + i);
+                rect.height = 400 + random.nextInt(340);
+                rect.width = 1 + random.nextInt(10);
+                inputRects.add(rect);
+            }
 
-			pages = new MaxRectsPacker(settings).pack(inputRects);
+            long s = System.nanoTime();
 
-			long e = System.nanoTime();
-			System.out.println("fast: " + settings.fast);
-			System.out.println((e - s) / 1e6f + " ms");
-			System.out.println();
-		}
+            pages = new MaxRectsPacker(settings).pack(inputRects);
 
-		int x = 20, y = 20;
-		for (Page page : pages) {
-			renderer.setColor(Color.GRAY);
-			renderer.begin(ShapeType.Filled);
-			for (int i = 0; i < page.outputRects.size; i++) {
-				Rect rect = page.outputRects.get(i);
-				renderer.rect(x + rect.x + settings.paddingX, y + rect.y + settings.paddingY, rect.width - settings.paddingX,
-					rect.height - settings.paddingY);
-			}
-			renderer.end();
-			renderer.setColor(Color.RED);
-			renderer.begin(ShapeType.Line);
-			for (int i = 0; i < page.outputRects.size; i++) {
-				Rect rect = page.outputRects.get(i);
-				renderer.rect(x + rect.x + settings.paddingX, y + rect.y + settings.paddingY, rect.width - settings.paddingX,
-					rect.height - settings.paddingY);
-			}
-			renderer.setColor(Color.GREEN);
-			renderer.rect(x, y, page.width + settings.paddingX * 2, page.height + settings.paddingY * 2);
-			renderer.end();
-			x += page.width + 20;
-		}
-	}
+            long e = System.nanoTime();
+            System.out.println("fast: " + settings.fast);
+            System.out.println((e - s) / 1e6f + " ms");
+            System.out.println();
+        }
 
-	public void resize (int width, int height) {
-		renderer.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-	}
+        int x = 20, y = 20;
+        for (Page page : pages) {
+            renderer.setColor(Color.GRAY);
+            renderer.begin(ShapeType.Filled);
+            for (int i = 0; i < page.outputRects.size; i++) {
+                Rect rect = page.outputRects.get(i);
+                renderer.rect(x + rect.x + settings.paddingX, y + rect.y + settings.paddingY, rect.width - settings.paddingX,
+                        rect.height - settings.paddingY);
+            }
+            renderer.end();
+            renderer.setColor(Color.RED);
+            renderer.begin(ShapeType.Line);
+            for (int i = 0; i < page.outputRects.size; i++) {
+                Rect rect = page.outputRects.get(i);
+                renderer.rect(x + rect.x + settings.paddingX, y + rect.y + settings.paddingY, rect.width - settings.paddingX,
+                        rect.height - settings.paddingY);
+            }
+            renderer.setColor(Color.GREEN);
+            renderer.rect(x, y, page.width + settings.paddingX * 2, page.height + settings.paddingY * 2);
+            renderer.end();
+            x += page.width + 20;
+        }
+    }
 
-	public static void main (String[] args) throws Exception {
-		new LwjglApplication(new TexturePackerTest(), "", 640, 480);
-	}
+    public void resize(int width, int height) {
+        renderer.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+    }
+
+    public static void main(String[] args) throws Exception {
+        new LwjglApplication(new TexturePackerTest(), "", 640, 480);
+    }
 }

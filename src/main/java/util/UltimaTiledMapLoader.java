@@ -64,20 +64,20 @@ public class UltimaTiledMapLoader implements Constants {
             for (int x = 0; x < mapWidth; x++) {
                 Tile ct = gameMap.getMap().getTile(x, y);
                 Cell cell = new Cell();
-                
+
                 Array<TextureAtlas.AtlasRegion> tileRegions = atlas.findRegions(ct.getName());
                 Array<StaticTiledMapTile> ar = new Array<>();
                 for (TextureAtlas.AtlasRegion r : tileRegions) {
                     ar.add(new StaticTiledMapTile(r));
                 }
-                
+
                 TiledMapTile tmt = null;
                 if (tileRegions.size > 1) {
                     tmt = new AnimatedTiledMapTile(.7f, ar);
                 } else {
                     tmt = ar.first();
                 }
-                
+
                 tmt.setId(y * mapWidth + x);
                 cell.setTile(tmt);
                 layer.setCell(x, mapHeight - 1 - y, cell);

@@ -155,7 +155,7 @@ public class DungeonScreen extends BaseScreen {
         assets.load("assets/graphics/rock.png", Texture.class);
 
         assets.update(2000);
-	
+
         //convert the collada dae format to the g3db format (do not use the obj format)
         //C:\Users\Paul\Desktop\blender>fbx-conv-win32.exe -o G3DB ./Chess/pawn.dae ./pawn.g3db
         ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader(), new ClasspathFileHandleResolver());
@@ -164,7 +164,7 @@ public class DungeonScreen extends BaseScreen {
         chestModel = gloader.loadModel(Gdx.files.internal("assets/graphics/chest.g3db"));
         orbModel = gloader.loadModel(Gdx.files.internal("assets/graphics/orb.g3db"));
         altarModel = gloader.loadModel(Gdx.files.internal("assets/graphics/altar.g3db"));
-	//blocksModel = gloader.loadModel(Gdx.files.internal("assets/graphics/box.g3db"));
+        //blocksModel = gloader.loadModel(Gdx.files.internal("assets/graphics/box.g3db"));
 
         Pixmap pixmap = new Pixmap(MM_BKGRND_DIM, MM_BKGRND_DIM, Format.RGBA8888);
         pixmap.setColor(0.8f, 0.7f, 0.5f, .8f);
@@ -258,7 +258,7 @@ public class DungeonScreen extends BaseScreen {
                                 }
                             }
 
-			    //System.out.println(dngMap.name() + " " + tile.toString() + " " + x + "," + y + ", " + i);
+                            //System.out.println(dngMap.name() + " " + tile.toString() + " " + x + "," + y + ", " + i);
                             //for (int j=0;j<4;j++) if (room.triggers[j].tile.getIndex() != 0) System.out.println(room.triggers[j].toString());
                             if (room.hasAltar) {
                                 if (x == 1) {
@@ -288,7 +288,7 @@ public class DungeonScreen extends BaseScreen {
             cam.position.set(currentPos);
             cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
 
-	    //duplicate some of the outer edge tiles around the outside 
+            //duplicate some of the outer edge tiles around the outside 
             //so that the wrapping is not so black hole on the sides
             //i went 2 layers duplicated on each edges + the corners
             for (int i = 0; i < DUNGEON_MAP; i++) {

@@ -62,7 +62,6 @@ public class Utils implements Constants {
     }
 
     //This gives you a random number in between low (inclusive) and high (exclusive)
-
     public static int getRandomBetween(int low, int high) {
         return rand.nextInt(high - low) + low;
     }
@@ -820,7 +819,7 @@ public class Utils implements Constants {
             indexY++;
         }
 
-		//add avatar in the middle
+        //add avatar in the middle
         //canvas.getGraphics().setColor(java.awt.Color.WHITE);
         canvas.getGraphics().fillRect((16 * 64) / 2, (16 * 64) / 2, 16, 16);
 

@@ -183,7 +183,7 @@ public class TestJaxb {
         }
 
     }
-    
+
     //@Test
     public void renametolowercase() throws Exception {
         File dir = new File("assets/data/test");
@@ -263,12 +263,12 @@ public class TestJaxb {
 //		sg.write(Constants.PARTY_SAV_BASE_FILENAME);
         Party p = new Party(sg);
 
-		//for (int i=0;i<8;i++) 
+        //for (int i=0;i<8;i++) 
         //System.err.println(Virtue.get(i) + " " + sg.karma[i]);
         //System.err.println("---------------");
         p.adjustKarma(KarmaAction.ATTACKED_GOOD);
 
-		//for (int i=0;i<8;i++) 
+        //for (int i=0;i<8;i++) 
         //System.err.println(Virtue.get(i) + " " + sg.karma[i]);
         for (int i = 0; i < 8; i++) {
             Virtue v = Constants.Virtue.get(i);
@@ -329,7 +329,7 @@ public class TestJaxb {
         float[][] vt = new float[dim][dim];
         for (int x = 0; x < dim; x++) {
             for (int y = 0; y < dim; y++) {
-				//vt[x][y] = new Tile();
+                //vt[x][y] = new Tile();
                 //vt[x][y].setOpaque(true);
             }
         }
@@ -552,10 +552,10 @@ public class TestJaxb {
         }
 
     }
-    
-    @Test
+
+    //@Test
     public void findStartsForDungeons() throws Exception {
-        
+
         TileSet baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);
         baseTileSet.setMaps();
 
@@ -582,7 +582,6 @@ public class TestJaxb {
                 }
             }
         }
-            
 
     }
 
@@ -624,7 +623,7 @@ public class TestJaxb {
             StartScreen.questionRound = 0;
             StartScreen.initQuestionTree();
 
-	//		System.out.println("INIT\n");
+            //		System.out.println("INIT\n");
             //		for (int i = 0; i < 15; i++) {
             //			System.out.println(i + ") " + Virtue.get(StartScreen.questionTree[i]));
             //		}
@@ -632,7 +631,7 @@ public class TestJaxb {
                 //printQuestionDesc(StartScreen.questionRound);
             }
 
-	//		System.out.println("\nANSWERS\n");
+            //		System.out.println("\nANSWERS\n");
             //		for (int i = 0; i < 15; i++) {
             //			System.out.println(i + ") " +Virtue.get(StartScreen.questionTree[i]));
             //		}
@@ -644,7 +643,7 @@ public class TestJaxb {
 
             int[] questionTree = StartScreen.questionTree;
 
-			//System.out.println(avatar.klass);
+            //System.out.println(avatar.klass);
             dist.put(avatar.klass, dist.get(avatar.klass) + 1);
         }
 

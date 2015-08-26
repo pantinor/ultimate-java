@@ -32,306 +32,319 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 
 public class ConversationDialog extends Window implements Constants {
-	
-	private Skin skin;
-	boolean cancelHide;
-	Actor previousKeyboardFocus, previousScrollFocus;
-	FocusListener focusListener;
-	BaseScreen screen;
-	Person person;
-	BaseVendor vendor;
-	Stage stage;
-	
-	public static int width = 300;
-	public static int height = 400;
-	static BitmapFont font = new BitmapFont(Gdx.files.internal("assets/fonts/corsiva-20.fnt"), false);
-	
-	Table internalTable;
-	TextField input;
-	LogScrollPane scrollPane;
-	Topic previousTopic;
 
-	public ConversationDialog(Person p, BaseScreen screen, Stage stage, Skin skin) {
-		super("", skin.get("dialog", WindowStyle.class));
-		setSkin(skin);
-		this.skin = skin;
-		this.stage = stage;
-		this.screen = screen;
-		this.person = p;
-		initialize();
-	}
+    private Skin skin;
+    boolean cancelHide;
+    Actor previousKeyboardFocus, previousScrollFocus;
+    FocusListener focusListener;
+    BaseScreen screen;
+    Person person;
+    BaseVendor vendor;
+    Stage stage;
 
-	private void initialize() {
-		setModal(true);
-		
-		defaults().space(10);
-		add(internalTable = new Table(skin)).expand().fill();
-		row();
+    public static int width = 300;
+    public static int height = 400;
+    static BitmapFont font = new BitmapFont(Gdx.files.internal("assets/fonts/corsiva-20.fnt"), false);
 
-		internalTable.defaults().pad(1);
-		
-		scrollPane = new LogScrollPane(skin, width, "logs");
-		scrollPane.setHeight(height);
-		
-		input = new TextField("",skin);
-		input.setTextFieldListener(new TextFieldListener() {
-			public void keyTyped (TextField tf, char key) {
-				
-				if (key == '\r') {
-					
-					if (tf.getText().length() == 0) {
-						if (!cancelHide) {
-							hide();
-						}
-						cancelHide = false;
-					}
-					
-					Conversation conversation = person.getConversation();
-					
-					if (conversation != null) {
-						
-						if (conversation instanceof CustomInputConversation) {
-							((CustomInputConversation)conversation).setParty(GameScreen.context.getParty());
-						}
-						
-						String query = tf.getText();
-						Topic t = conversation.matchTopic(query);
-						if (t != null) {
-														
-							if (t.getQuery() != null && t.getQuery().equals("join")) {
-								String name = conversation.getName();
-								Virtue virtue = GameScreen.context.getParty().getVirtueForJoinable(name);
-								if (virtue != null) {
-									CannotJoinError join = GameScreen.context.getParty().join(name);
-									if (join == CannotJoinError.JOIN_SUCCEEDED) {
-										scrollPane.add("I am honored to join thee!");
-										GameScreen.context.getCurrentMap().removeJoinedPartyMemberFromPeopleList(GameScreen.context.getParty());
-									} else {
-										scrollPane.add("Thou art not " + (join == CannotJoinError.JOIN_NOT_VIRTUOUS ? virtue.getDescription() : "experienced") + " enough for me to join thee.");
-									}
-								}
-																
-							} else {
-							
-								scrollPane.add(t.getPhrase());
-								if (t.getQuestion() != null) {
-									scrollPane.add(t.getQuestion());
-								}
-							}
-							
-							previousTopic = t;
-						} else {
-							
-							if (previousTopic != null && previousTopic.getQuestion() != null) {
-								if (query.toLowerCase().contains("y")) {
-									scrollPane.add(previousTopic.getYesResponse());
-									
-									if (conversation.getRespAffectsHumility() > 0) {
-										GameScreen.context.getParty().adjustKarma(KarmaAction.BRAGGED);
-									}
-								} else {
-									scrollPane.add(previousTopic.getNoResponse());
-									if (previousTopic.isLbHeal()) {
-										for (PartyMember pm : GameScreen.context.getParty().getMembers()) {
-											pm.heal(HealType.CURE);
-											pm.heal(HealType.FULLHEAL);
-										}
-										Sounds.play(Sound.HEALING);
-									}
-									if (conversation.getRespAffectsHumility() > 0) {
-										GameScreen.context.getParty().adjustKarma(KarmaAction.HUMBLE);
-									}
-								}
+    Table internalTable;
+    TextField input;
+    LogScrollPane scrollPane;
+    Topic previousTopic;
 
-							} else {
-								scrollPane.add("That I cannot help thee with.");
-							}
-							previousTopic = null;
-						}
-						
-					} else if (person.getRole() != null && vendor != null) {
+    public ConversationDialog(Person p, BaseScreen screen, Stage stage, Skin skin) {
+        super("", skin.get("dialog", WindowStyle.class));
+        setSkin(skin);
+        this.skin = skin;
+        this.stage = stage;
+        this.screen = screen;
+        this.person = p;
+        initialize();
+    }
 
-						String input = tf.getText();
-						vendor.setResponse(input);
-						vendor.nextDialog();
+    private void initialize() {
+        setModal(true);
 
-					}
-					
-					tf.setText("");
-				}
-			}
-		});
-		
-		defaults().pad(5);
-		
-		internalTable.add(scrollPane).maxWidth(width).width(width);
-		internalTable.row();
-		internalTable.add(input).maxWidth(width).width(width);
+        defaults().space(10);
+        add(internalTable = new Table(skin)).expand().fill();
+        row();
 
-		focusListener = new FocusListener() {
-			public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
-				if (!focused)
-					focusChanged(event);
-			}
+        internalTable.defaults().pad(1);
 
-			public void scrollFocusChanged(FocusEvent event, Actor actor, boolean focused) {
-				if (!focused)
-					focusChanged(event);
-			}
+        scrollPane = new LogScrollPane(skin, width, "logs");
+        scrollPane.setHeight(height);
 
-			private void focusChanged(FocusEvent event) {
-				Stage stage = getStage();
-				if (isModal() && stage != null && stage.getRoot().getChildren().size > 0 && stage.getRoot().getChildren().peek() == ConversationDialog.this) {
-					Actor newFocusedActor = event.getRelatedActor();
-					if (newFocusedActor != null && !newFocusedActor.isDescendantOf(ConversationDialog.this) && !(newFocusedActor.equals(previousKeyboardFocus) || newFocusedActor.equals(previousScrollFocus)))
-						event.cancel();
-				}
-			}
-		};
-		
-		
-		person.setTalking(true);
-		
-		if (person.getConversation() != null) {
-			
-			if (person.getRole() != null && person.getRole().getRole().equals("lordbritish")) {
-				
-				LordBritishConversation conv = (LordBritishConversation)person.getConversation();
-				scrollPane.add(conv.intro());
-				
-				SequenceAction seq = Actions.action(SequenceAction.class);
-				Party party = GameScreen.context.getParty();
-				if (party.getMember(0).getPlayer().status == StatusType.DEAD) {
-					party.getMember(0).heal(HealType.RESURRECT);
-					party.getMember(0).heal(HealType.FULLHEAL);
-					seq.addAction(Actions.run(new LBAction(Sound.HEALING, "I resurrect thee.")));
-					seq.addAction(Actions.delay(3f));
-				}
-				
-				for (int i = 0; i < party.getMembers().size(); i++) {
-					PartyMember pm = party.getMember(i);
-					if (pm.getPlayer().advanceLevel()) {
-						seq.addAction(Actions.run(new LBAction(Sound.MAGIC, pm.getPlayer().name + " thou art now level "+pm.getPlayer().getLevel())));
-						seq.addAction(Actions.delay(3f));
-					}
-				}
-				
-				stage.addAction(seq);
-				
-			} else if (person.getRole() != null && person.getRole().getRole().equals("hawkwind")) {
-				
-				HawkwindConversation conv = (HawkwindConversation)person.getConversation();
-				conv.setParty(GameScreen.context.getParty());
-				scrollPane.add(conv.intro());
+        input = new TextField("", skin);
+        input.setTextFieldListener(new TextFieldListener() {
+            public void keyTyped(TextField tf, char key) {
 
-			} else {
-				scrollPane.add("You meet " + person.getConversation().getDescription().toLowerCase() + ".");
-			}
-			
-		} else if (person.getRole() != null && person.getRole().getInventoryType() != null) {
-			
-			vendor = GameScreen.vendorClassSet.getVendorImpl(person.getRole().getInventoryType(), 
-					Maps.get(GameScreen.context.getCurrentMap().getId()), GameScreen.context.getParty());
-			vendor.setScreen(screen);
-			vendor.setScrollPane(scrollPane);
-			vendor.nextDialog();
-		}
+                if (key == '\r') {
 
-	}
-	
-	class LBAction implements Runnable {
-		private Sound sound;
-		private String message;
-		public LBAction(Sound sound, String message) {
-			this.sound = sound;
-			this.message = message;
-		}
-		@Override
-		public void run() {
-			Sounds.play(sound);
-			scrollPane.add(message);
-		}
-	}
+                    if (tf.getText().length() == 0) {
+                        if (!cancelHide) {
+                            hide();
+                        }
+                        cancelHide = false;
+                    }
 
-	protected void workspace(Stage stage) {
-		if (stage == null)
-			addListener(focusListener);
-		else
-			removeListener(focusListener);
-		super.setStage(stage);
-	}
+                    Conversation conversation = person.getConversation();
 
+                    if (conversation != null) {
 
-	public ConversationDialog show(Stage stage, Action action) {
-		clearActions();
-		removeCaptureListener(ignoreTouchDown);
+                        if (conversation instanceof CustomInputConversation) {
+                            ((CustomInputConversation) conversation).setParty(GameScreen.context.getParty());
+                        }
 
-		previousKeyboardFocus = null;
-		Actor actor = stage.getKeyboardFocus();
-		if (actor != null && !actor.isDescendantOf(this))
-			previousKeyboardFocus = actor;
+                        String query = tf.getText();
+                        Topic t = conversation.matchTopic(query);
+                        if (t != null) {
 
-		previousScrollFocus = null;
-		actor = stage.getScrollFocus();
-		if (actor != null && !actor.isDescendantOf(this))
-			previousScrollFocus = actor;
+                            if (t.getQuery() != null && t.getQuery().equals("join")) {
+                                String name = conversation.getName();
+                                Virtue virtue = GameScreen.context.getParty().getVirtueForJoinable(name);
+                                if (virtue != null) {
+                                    CannotJoinError join = GameScreen.context.getParty().join(name);
+                                    if (join == CannotJoinError.JOIN_SUCCEEDED) {
+                                        scrollPane.add("I am honored to join thee!");
+                                        GameScreen.context.getCurrentMap().removeJoinedPartyMemberFromPeopleList(GameScreen.context.getParty());
+                                    } else {
+                                        scrollPane.add("Thou art not " + (join == CannotJoinError.JOIN_NOT_VIRTUOUS ? virtue.getDescription() : "experienced") + " enough for me to join thee.");
+                                    }
+                                }
 
-		pack();
-		stage.addActor(this);
-		stage.setKeyboardFocus(input);
-		stage.setScrollFocus(this);
-		
-		if (action != null)
-			addAction(action);
+                            } else {
 
-		return this;
-	}
+                                scrollPane.add(t.getPhrase());
+                                if (t.getQuestion() != null) {
+                                    scrollPane.add(t.getQuestion());
+                                }
+                            }
 
-	public ConversationDialog show(Stage stage) {
-		show(stage, sequence(Actions.alpha(0), Actions.fadeIn(0.4f, Interpolation.fade)));
-		setPosition(Math.round((stage.getWidth() - getWidth()) / 2), Math.round((stage.getHeight() - getHeight()) / 2));
-		return this;
-	}
+                            previousTopic = t;
+                        } else {
 
-	public void hide(Action action) {
-		
-		Stage stage = getStage();
-		if (stage != null) {
-			removeListener(focusListener);
-			if (previousKeyboardFocus != null && previousKeyboardFocus.getStage() == null)
-				previousKeyboardFocus = null;
-			Actor actor = stage.getKeyboardFocus();
-			if (actor == null || actor.isDescendantOf(this))
-				stage.setKeyboardFocus(previousKeyboardFocus);
+                            if (previousTopic != null && previousTopic.getQuestion() != null) {
+                                if (query.toLowerCase().contains("y")) {
+                                    scrollPane.add(previousTopic.getYesResponse());
 
-			if (previousScrollFocus != null && previousScrollFocus.getStage() == null)
-				previousScrollFocus = null;
-			actor = stage.getScrollFocus();
-			if (actor == null || actor.isDescendantOf(this))
-				stage.setScrollFocus(previousScrollFocus);
-		}
-		if (action != null) {
-			addCaptureListener(ignoreTouchDown);
-			addAction(sequence(action, Actions.removeListener(ignoreTouchDown, true), Actions.removeActor()));
-		} else {
-			remove();
-		}
-		
-		Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
-		
-		if (GameScreen.context.getCurrentMap().getCity()!=null) 
-			GameScreen.context.getCurrentMap().getCity().resetTalkingFlags();
+                                    if (conversation.getRespAffectsHumility() > 0) {
+                                        GameScreen.context.getParty().adjustKarma(KarmaAction.BRAGGED);
+                                    }
+                                } else {
+                                    scrollPane.add(previousTopic.getNoResponse());
+                                    if (previousTopic.isLbHeal()) {
+                                        for (PartyMember pm : GameScreen.context.getParty().getMembers()) {
+                                            pm.heal(HealType.CURE);
+                                            pm.heal(HealType.FULLHEAL);
+                                        }
+                                        Sounds.play(Sound.HEALING);
+                                    }
+                                    if (conversation.getRespAffectsHumility() > 0) {
+                                        GameScreen.context.getParty().adjustKarma(KarmaAction.HUMBLE);
+                                    }
+                                }
 
-	}
+                            } else {
+                                scrollPane.add("That I cannot help thee with.");
+                            }
+                            previousTopic = null;
+                        }
 
-	public void hide() {
-		hide(sequence(fadeOut(0.4f, Interpolation.fade), Actions.removeListener(ignoreTouchDown, true), Actions.removeActor()));
-	}
-	
-	protected InputListener ignoreTouchDown = new InputListener() {
-		public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-			event.cancel();
-			return false;
-		}
-	};
+                    } else if (person.getRole() != null && vendor != null) {
+
+                        String input = tf.getText();
+                        vendor.setResponse(input);
+                        vendor.nextDialog();
+
+                    }
+
+                    tf.setText("");
+                }
+            }
+        });
+
+        defaults().pad(5);
+
+        internalTable.add(scrollPane).maxWidth(width).width(width);
+        internalTable.row();
+        internalTable.add(input).maxWidth(width).width(width);
+
+        focusListener = new FocusListener() {
+            public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
+                if (!focused) {
+                    focusChanged(event);
+                }
+            }
+
+            public void scrollFocusChanged(FocusEvent event, Actor actor, boolean focused) {
+                if (!focused) {
+                    focusChanged(event);
+                }
+            }
+
+            private void focusChanged(FocusEvent event) {
+                Stage stage = getStage();
+                if (isModal() && stage != null && stage.getRoot().getChildren().size > 0 && stage.getRoot().getChildren().peek() == ConversationDialog.this) {
+                    Actor newFocusedActor = event.getRelatedActor();
+                    if (newFocusedActor != null && !newFocusedActor.isDescendantOf(ConversationDialog.this) && !(newFocusedActor.equals(previousKeyboardFocus) || newFocusedActor.equals(previousScrollFocus))) {
+                        event.cancel();
+                    }
+                }
+            }
+        };
+
+        person.setTalking(true);
+
+        if (person.getConversation() != null) {
+
+            if (person.getRole() != null && person.getRole().getRole().equals("lordbritish")) {
+
+                LordBritishConversation conv = (LordBritishConversation) person.getConversation();
+                scrollPane.add(conv.intro());
+
+                SequenceAction seq = Actions.action(SequenceAction.class);
+                Party party = GameScreen.context.getParty();
+                if (party.getMember(0).getPlayer().status == StatusType.DEAD) {
+                    party.getMember(0).heal(HealType.RESURRECT);
+                    party.getMember(0).heal(HealType.FULLHEAL);
+                    seq.addAction(Actions.run(new LBAction(Sound.HEALING, "I resurrect thee.")));
+                    seq.addAction(Actions.delay(3f));
+                }
+
+                for (int i = 0; i < party.getMembers().size(); i++) {
+                    PartyMember pm = party.getMember(i);
+                    if (pm.getPlayer().advanceLevel()) {
+                        seq.addAction(Actions.run(new LBAction(Sound.MAGIC, pm.getPlayer().name + " thou art now level " + pm.getPlayer().getLevel())));
+                        seq.addAction(Actions.delay(3f));
+                    }
+                }
+
+                stage.addAction(seq);
+
+            } else if (person.getRole() != null && person.getRole().getRole().equals("hawkwind")) {
+
+                HawkwindConversation conv = (HawkwindConversation) person.getConversation();
+                conv.setParty(GameScreen.context.getParty());
+                scrollPane.add(conv.intro());
+
+            } else {
+                scrollPane.add("You meet " + person.getConversation().getDescription().toLowerCase() + ".");
+            }
+
+        } else if (person.getRole() != null && person.getRole().getInventoryType() != null) {
+
+            vendor = GameScreen.vendorClassSet.getVendorImpl(person.getRole().getInventoryType(),
+                    Maps.get(GameScreen.context.getCurrentMap().getId()), GameScreen.context.getParty());
+            vendor.setScreen(screen);
+            vendor.setScrollPane(scrollPane);
+            vendor.nextDialog();
+        }
+
+    }
+
+    class LBAction implements Runnable {
+
+        private Sound sound;
+        private String message;
+
+        public LBAction(Sound sound, String message) {
+            this.sound = sound;
+            this.message = message;
+        }
+
+        @Override
+        public void run() {
+            Sounds.play(sound);
+            scrollPane.add(message);
+        }
+    }
+
+    protected void workspace(Stage stage) {
+        if (stage == null) {
+            addListener(focusListener);
+        } else {
+            removeListener(focusListener);
+        }
+        super.setStage(stage);
+    }
+
+    public ConversationDialog show(Stage stage, Action action) {
+        clearActions();
+        removeCaptureListener(ignoreTouchDown);
+
+        previousKeyboardFocus = null;
+        Actor actor = stage.getKeyboardFocus();
+        if (actor != null && !actor.isDescendantOf(this)) {
+            previousKeyboardFocus = actor;
+        }
+
+        previousScrollFocus = null;
+        actor = stage.getScrollFocus();
+        if (actor != null && !actor.isDescendantOf(this)) {
+            previousScrollFocus = actor;
+        }
+
+        pack();
+        stage.addActor(this);
+        stage.setKeyboardFocus(input);
+        stage.setScrollFocus(this);
+
+        if (action != null) {
+            addAction(action);
+        }
+
+        return this;
+    }
+
+    public ConversationDialog show(Stage stage) {
+        show(stage, sequence(Actions.alpha(0), Actions.fadeIn(0.4f, Interpolation.fade)));
+        setPosition(Math.round((stage.getWidth() - getWidth()) / 2), Math.round((stage.getHeight() - getHeight()) / 2));
+        return this;
+    }
+
+    public void hide(Action action) {
+
+        Stage stage = getStage();
+        if (stage != null) {
+            removeListener(focusListener);
+            if (previousKeyboardFocus != null && previousKeyboardFocus.getStage() == null) {
+                previousKeyboardFocus = null;
+            }
+            Actor actor = stage.getKeyboardFocus();
+            if (actor == null || actor.isDescendantOf(this)) {
+                stage.setKeyboardFocus(previousKeyboardFocus);
+            }
+
+            if (previousScrollFocus != null && previousScrollFocus.getStage() == null) {
+                previousScrollFocus = null;
+            }
+            actor = stage.getScrollFocus();
+            if (actor == null || actor.isDescendantOf(this)) {
+                stage.setScrollFocus(previousScrollFocus);
+            }
+        }
+        if (action != null) {
+            addCaptureListener(ignoreTouchDown);
+            addAction(sequence(action, Actions.removeListener(ignoreTouchDown, true), Actions.removeActor()));
+        } else {
+            remove();
+        }
+
+        Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
+
+        if (GameScreen.context.getCurrentMap().getCity() != null) {
+            GameScreen.context.getCurrentMap().getCity().resetTalkingFlags();
+        }
+
+    }
+
+    public void hide() {
+        hide(sequence(fadeOut(0.4f, Interpolation.fade), Actions.removeListener(ignoreTouchDown, true), Actions.removeActor()));
+    }
+
+    protected InputListener ignoreTouchDown = new InputListener() {
+        public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+            event.cancel();
+            return false;
+        }
+    };
 }

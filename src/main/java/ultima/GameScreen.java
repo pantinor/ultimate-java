@@ -103,7 +103,7 @@ public class GameScreen extends BaseScreen {
         GameScreen.skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
 
         try {
-            
+
             //use this to see the original tile set
             //standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-ega-atlas.txt"));
             standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-enhanced-vga-atlas.txt"));
@@ -279,8 +279,6 @@ public class GameScreen extends BaseScreen {
 //            party.getSaveGame().sextants = 1;
             //mainAvatar = shipAnim;
             //sg.transport = 0x10;
-
-            
             //load the surface world first
             loadNextMap(Maps.WORLD, sg.x, sg.y);
             //loadNextMap(Maps.WORLD, 145, 81);
@@ -467,7 +465,7 @@ public class GameScreen extends BaseScreen {
         //death scene
         mainGame.setScreen(new DeathScreen(this, context.getParty()));
         loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
-        
+
         throw new RuntimeException("Party Death");
     }
 
@@ -891,11 +889,11 @@ public class GameScreen extends BaseScreen {
     }
 
     public void finishTurn(int currentX, int currentY) {
-        
+
         try {
-            
+
             checkHullIntegrity(context.getCurrentMap(), currentX, currentY);
-        
+
             boolean checkSleeping = false;
             if (context.getParty().getMember(0).getPlayer().status == StatusType.SLEEPING) {
                 checkSleeping = true;
@@ -906,7 +904,7 @@ public class GameScreen extends BaseScreen {
             if (checkSleeping && context.getParty().getMember(0).getPlayer().status != StatusType.SLEEPING) {
                 mainAvatar = avatarAnim;
             }
-            
+
             context.getAura().passTurn();
 
             if (context.getTransportContext() != TransportContext.BALLOON) {
@@ -932,7 +930,7 @@ public class GameScreen extends BaseScreen {
 
                 context.getCurrentMap().moveObjects(this, currentX, currentY);
             }
-        
+
         } catch (Throwable t) {
             System.err.printf("finish Turn: %s\n", t.getMessage());
         }
@@ -1408,9 +1406,9 @@ public class GameScreen extends BaseScreen {
         log("You select:");
         Gdx.input.setInputProcessor(new PeerTelescopeInputAdapter());
     }
-    
+
     @Override
-    public InputProcessor getPeerGemInputProcessor()  {
+    public InputProcessor getPeerGemInputProcessor() {
         return new GameScreen.PeerGemInputAdapter();
     }
 
@@ -1645,14 +1643,14 @@ public class GameScreen extends BaseScreen {
     private void checkHullIntegrity(BaseMap bm, int x, int y) {
 
         boolean killAll = false;
-        if (context.getTransportContext() == TransportContext.SHIP && 
-                context.getParty().getSaveGame().shiphull <= 0) {
+        if (context.getTransportContext() == TransportContext.SHIP
+                && context.getParty().getSaveGame().shiphull <= 0) {
             log("Thy ship sinks!");
             killAll = true;
-            
-        } else if (context.getTransportContext() == TransportContext.FOOT && 
-                bm.getTile(x, y).getRule() != null &&
-                bm.getTile(x, y).getRule().has(TileAttrib.sailable)) {
+
+        } else if (context.getTransportContext() == TransportContext.FOOT
+                && bm.getTile(x, y).getRule() != null
+                && bm.getTile(x, y).getRule().has(TileAttrib.sailable)) {
             log("Trapped at sea without thy ship, thou dost drown!");
             killAll = true;
         }

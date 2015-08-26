@@ -1,6 +1,5 @@
 package util;
 
-
 /**
  * Recursive shadowcasting FOV. Uses force * decay for the radius calculation
  * and treats all translucent cells as fully transparent.
@@ -50,10 +49,10 @@ public class ShadowFOV implements FOVSolver {
         for (int distance = row; distance <= radius && !blocked; distance++) {
             int deltaY = -distance;
             for (int deltaX = -distance; deltaX <= 0; deltaX++) {
-            	
+
                 int currentX = startx + deltaX * xx + deltaY * xy;
                 int currentY = starty + deltaX * yx + deltaY * yy;
-                
+
                 float leftSlope = (deltaX - 0.5f) / (deltaY + 0.5f);
                 float rightSlope = (deltaX + 0.5f) / (deltaY - 0.5f);
 

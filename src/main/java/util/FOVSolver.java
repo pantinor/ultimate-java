@@ -1,6 +1,5 @@
 package util;
 
-
 /**
  * An interface for Field of View algorithms.
  *

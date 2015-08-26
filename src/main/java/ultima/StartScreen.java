@@ -236,7 +236,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
                 Gdx.input.setInputProcessor(qia);
 
             } else {
-               
+
                 GlyphLayout layout = new GlyphLayout(font, gypsyText[storyInd], Color.WHITE, width, Align.left, true);
                 x += width / 2 - layout.width / 2;
                 y += height / 2 + layout.height / 2;

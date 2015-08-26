@@ -1,19 +1,20 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************/
-
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ *****************************************************************************
+ */
 package com.badlogic.gdx.tools.texturepacker;
 
 import com.badlogic.gdx.tools.texturepacker.ColorBleedEffect.Mask.MaskIterator;
@@ -21,161 +22,175 @@ import com.badlogic.gdx.tools.texturepacker.ColorBleedEffect.Mask.MaskIterator;
 import java.awt.image.BufferedImage;
 import java.util.NoSuchElementException;
 
-/** @author Ruben Garat
+/**
+ * @author Ruben Garat
  * @author Ariel Coppes
- * @author Nathan Sweet */
+ * @author Nathan Sweet
+ */
 public class ColorBleedEffect {
-	static int TO_PROCESS = 0;
-	static int IN_PROCESS = 1;
-	static int REALDATA = 2;
-	static int[][] offsets = { {-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}};
 
-	ARGBColor color = new ARGBColor();
+    static int TO_PROCESS = 0;
+    static int IN_PROCESS = 1;
+    static int REALDATA = 2;
+    static int[][] offsets = {{-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}};
 
-	public BufferedImage processImage (BufferedImage image, int maxIterations) {
-		int width = image.getWidth();
-		int height = image.getHeight();
+    ARGBColor color = new ARGBColor();
 
-		BufferedImage processedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		int[] rgb = image.getRGB(0, 0, width, height, null, 0, width);
-		Mask mask = new Mask(rgb);
+    public BufferedImage processImage(BufferedImage image, int maxIterations) {
+        int width = image.getWidth();
+        int height = image.getHeight();
 
-		int iterations = 0;
-		int lastPending = -1;
-		while (mask.pendingSize > 0 && mask.pendingSize != lastPending && iterations < maxIterations) {
-			lastPending = mask.pendingSize;
-			executeIteration(rgb, mask, width, height);
-			iterations++;
-		}
+        BufferedImage processedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        int[] rgb = image.getRGB(0, 0, width, height, null, 0, width);
+        Mask mask = new Mask(rgb);
 
-		processedImage.setRGB(0, 0, width, height, rgb, 0, width);
-		return processedImage;
-	}
+        int iterations = 0;
+        int lastPending = -1;
+        while (mask.pendingSize > 0 && mask.pendingSize != lastPending && iterations < maxIterations) {
+            lastPending = mask.pendingSize;
+            executeIteration(rgb, mask, width, height);
+            iterations++;
+        }
 
-	private void executeIteration (int[] rgb, Mask mask, int width, int height) {
-		MaskIterator iterator = mask.new MaskIterator();
-		while (iterator.hasNext()) {
-			int pixelIndex = iterator.next();
-			int x = pixelIndex % width;
-			int y = pixelIndex / width;
-			int r = 0, g = 0, b = 0;
-			int count = 0;
+        processedImage.setRGB(0, 0, width, height, rgb, 0, width);
+        return processedImage;
+    }
 
-			for (int i = 0, n = offsets.length; i < n; i++) {
-				int[] offset = offsets[i];
-				int column = x + offset[0];
-				int row = y + offset[1];
+    private void executeIteration(int[] rgb, Mask mask, int width, int height) {
+        MaskIterator iterator = mask.new MaskIterator();
+        while (iterator.hasNext()) {
+            int pixelIndex = iterator.next();
+            int x = pixelIndex % width;
+            int y = pixelIndex / width;
+            int r = 0, g = 0, b = 0;
+            int count = 0;
 
-				if (column < 0 || column >= width || row < 0 || row >= height) continue;
+            for (int i = 0, n = offsets.length; i < n; i++) {
+                int[] offset = offsets[i];
+                int column = x + offset[0];
+                int row = y + offset[1];
 
-				int currentPixelIndex = getPixelIndex(width, column, row);
-				if (mask.getMask(currentPixelIndex) == REALDATA) {
-					color.argb = rgb[currentPixelIndex];
-					r += color.red();
-					g += color.green();
-					b += color.blue();
-					count++;
-				}
-			}
+                if (column < 0 || column >= width || row < 0 || row >= height) {
+                    continue;
+                }
 
-			if (count != 0) {
-				color.setARGBA(0, r / count, g / count, b / count);
-				rgb[pixelIndex] = color.argb;
-				iterator.markAsInProgress();
-			}
-		}
+                int currentPixelIndex = getPixelIndex(width, column, row);
+                if (mask.getMask(currentPixelIndex) == REALDATA) {
+                    color.argb = rgb[currentPixelIndex];
+                    r += color.red();
+                    g += color.green();
+                    b += color.blue();
+                    count++;
+                }
+            }
 
-		iterator.reset();
-	}
+            if (count != 0) {
+                color.setARGBA(0, r / count, g / count, b / count);
+                rgb[pixelIndex] = color.argb;
+                iterator.markAsInProgress();
+            }
+        }
 
-	private int getPixelIndex (int width, int x, int y) {
-		return y * width + x;
-	}
+        iterator.reset();
+    }
 
-	static class Mask {
-		int[] data, pending, changing;
-		int pendingSize, changingSize;
+    private int getPixelIndex(int width, int x, int y) {
+        return y * width + x;
+    }
 
-		Mask (int[] rgb) {
-			data = new int[rgb.length];
-			pending = new int[rgb.length];
-			changing = new int[rgb.length];
-			ARGBColor color = new ARGBColor();
-			for (int i = 0; i < rgb.length; i++) {
-				color.argb = rgb[i];
-				if (color.alpha() == 0) {
-					data[i] = TO_PROCESS;
-					pending[pendingSize] = i;
-					pendingSize++;
-				} else
-					data[i] = REALDATA;
-			}
-		}
+    static class Mask {
 
-		int getMask (int index) {
-			return data[index];
-		}
+        int[] data, pending, changing;
+        int pendingSize, changingSize;
 
-		int removeIndex (int index) {
-			if (index >= pendingSize) throw new IndexOutOfBoundsException(String.valueOf(index));
-			int value = pending[index];
-			pendingSize--;
-			pending[index] = pending[pendingSize];
-			return value;
-		}
+        Mask(int[] rgb) {
+            data = new int[rgb.length];
+            pending = new int[rgb.length];
+            changing = new int[rgb.length];
+            ARGBColor color = new ARGBColor();
+            for (int i = 0; i < rgb.length; i++) {
+                color.argb = rgb[i];
+                if (color.alpha() == 0) {
+                    data[i] = TO_PROCESS;
+                    pending[pendingSize] = i;
+                    pendingSize++;
+                } else {
+                    data[i] = REALDATA;
+                }
+            }
+        }
 
-		class MaskIterator {
-			private int index;
+        int getMask(int index) {
+            return data[index];
+        }
 
-			boolean hasNext () {
-				return index < pendingSize;
-			}
+        int removeIndex(int index) {
+            if (index >= pendingSize) {
+                throw new IndexOutOfBoundsException(String.valueOf(index));
+            }
+            int value = pending[index];
+            pendingSize--;
+            pending[index] = pending[pendingSize];
+            return value;
+        }
 
-			int next () {
-				if (index >= pendingSize) throw new NoSuchElementException(String.valueOf(index));
-				return pending[index++];
-			}
+        class MaskIterator {
 
-			void markAsInProgress () {
-				index--;
-				changing[changingSize] = removeIndex(index);
-				changingSize++;
-			}
+            private int index;
 
-			void reset () {
-				index = 0;
-				for (int i = 0; i < changingSize; i++) {
-					int index = changing[i];
-					data[index] = REALDATA;
-				}
-				changingSize = 0;
-			}
-		}
-	}
+            boolean hasNext() {
+                return index < pendingSize;
+            }
 
-	static class ARGBColor {
-		int argb = 0xff000000;
+            int next() {
+                if (index >= pendingSize) {
+                    throw new NoSuchElementException(String.valueOf(index));
+                }
+                return pending[index++];
+            }
 
-		public int red () {
-			return (argb >> 16) & 0xFF;
-		}
+            void markAsInProgress() {
+                index--;
+                changing[changingSize] = removeIndex(index);
+                changingSize++;
+            }
 
-		public int green () {
-			return (argb >> 8) & 0xFF;
-		}
+            void reset() {
+                index = 0;
+                for (int i = 0; i < changingSize; i++) {
+                    int index = changing[i];
+                    data[index] = REALDATA;
+                }
+                changingSize = 0;
+            }
+        }
+    }
 
-		public int blue () {
-			return (argb >> 0) & 0xFF;
-		}
+    static class ARGBColor {
 
-		public int alpha () {
-			return (argb >> 24) & 0xff;
-		}
+        int argb = 0xff000000;
 
-		public void setARGBA (int a, int r, int g, int b) {
-			if (a < 0 || a > 255 || r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255)
-				throw new IllegalArgumentException("Invalid RGBA: " + r + ", " + g + "," + b + "," + a);
-			argb = ((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | ((b & 0xFF) << 0);
-		}
-	}
+        public int red() {
+            return (argb >> 16) & 0xFF;
+        }
+
+        public int green() {
+            return (argb >> 8) & 0xFF;
+        }
+
+        public int blue() {
+            return (argb >> 0) & 0xFF;
+        }
+
+        public int alpha() {
+            return (argb >> 24) & 0xff;
+        }
+
+        public void setARGBA(int a, int r, int g, int b) {
+            if (a < 0 || a > 255 || r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+                throw new IllegalArgumentException("Invalid RGBA: " + r + ", " + g + "," + b + "," + a);
+            }
+            argb = ((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | ((b & 0xFF) << 0);
+        }
+    }
 }

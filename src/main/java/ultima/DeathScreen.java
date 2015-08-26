@@ -33,7 +33,7 @@ public class DeathScreen extends BaseScreen implements Constants {
 
         party.reviveAll();
 
-		//You will keep EQUIPPED weapons and armor, 
+        //You will keep EQUIPPED weapons and armor, 
         //as well as QUEST items, and spells that you have mixed. 
         //Everything else will be gone.
         for (int i = 0; i < 8; i++) {
@@ -70,12 +70,12 @@ public class DeathScreen extends BaseScreen implements Constants {
             float y = 300;
             float width = 640;
             float height = 50;
-            
+
             GlyphLayout layout = new GlyphLayout(font, s, Color.WHITE, width, Align.left, true);
             x += width / 2 - layout.width / 2;
             y += height / 2 + layout.height / 2;
             font.draw(batch, layout, x, y);
-                    
+
             batch.end();
 
         }
@@ -88,7 +88,7 @@ public class DeathScreen extends BaseScreen implements Constants {
 
     @Override
     public void finishTurn(int currentX, int currentY) {
-		// TODO Auto-generated method stub
+        // TODO Auto-generated method stub
 
     }
 

@@ -90,7 +90,7 @@ public class Dungeon {
         /**
          * *****************************************************************************
          * And now the code of the random-map-generation-algorithm begins!
-		 ******************************************************************************
+         * *****************************************************************************
          */
         // start with making a room in the middle, which we can start building upon
         makeRoom(xsize / 2, ysize / 2, 8, 6, getRand(0, 3));
@@ -138,7 +138,7 @@ public class Dungeon {
                         ymod = 0;
                     }
 
-					// check that we haven't got another door nearby, so we
+                    // check that we haven't got another door nearby, so we
                     // won't get alot of openings besides each other
                     if (validTile > -1) {
                         if (getCell(newx, newy + 1) == tileDoor) // north
@@ -156,7 +156,7 @@ public class Dungeon {
                         }
                     }
 
-					// if we can, jump out of the loop and continue with the
+                    // if we can, jump out of the loop and continue with the
                     // rest
                     if (validTile > -1) {
                         break;
@@ -166,7 +166,7 @@ public class Dungeon {
 
             if (validTile > -1) {
 
-				// choose what to build now at our newly found place, and at
+                // choose what to build now at our newly found place, and at
                 // what direction
                 int feature = getRand(0, 100);
                 if (feature <= chanceRoom) { // a new room
@@ -376,7 +376,7 @@ public class Dungeon {
 
     private boolean makeRoom(int x, int y, int xlength, int ylength, int direction) {
 
-		// define the dimensions of the room, it should be at least 4x4 tiles
+        // define the dimensions of the room, it should be at least 4x4 tiles
         // (2x2 for walking on, the rest is walls)
         int xlen = getRand(4, xlength);
         int ylen = getRand(4, ylength);

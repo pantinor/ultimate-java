@@ -339,7 +339,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         Material mat = new Material(TextureAttribute.createDiffuse(t));
         //mat.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 1f));
         return mat;
-		//return new Material(TextureAttribute.createNormal(t), TextureAttribute.createDiffuse(t), TextureAttribute.createSpecular(t));
+        //return new Material(TextureAttribute.createNormal(t), TextureAttribute.createDiffuse(t), TextureAttribute.createSpecular(t));
         //return new Material(TextureAttribute.createDiffuse(t), TextureAttribute.createSpecular(t));
     }
 
@@ -1128,9 +1128,9 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         }
         return mask;
     }
-    
+
     @Override
-    public InputProcessor getPeerGemInputProcessor()  {
+    public InputProcessor getPeerGemInputProcessor() {
         return new StaticGeneratedDungeonScreen.PeerGemInputAdapter();
     }
 

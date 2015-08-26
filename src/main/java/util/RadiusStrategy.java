@@ -1,8 +1,8 @@
 package util;
 
 /**
- * Defines a set of methods for determining the distance between points in various
- * geometries.
+ * Defines a set of methods for determining the distance between points in
+ * various geometries.
  *
  * @author Eben Howard - http://squidpony.com - howard@squidpony.com
  */

@@ -219,8 +219,8 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
     @Override
     public void resume() {
     }
-    
-    public InputProcessor getPeerGemInputProcessor()  {
+
+    public InputProcessor getPeerGemInputProcessor() {
         return null;
     }
 

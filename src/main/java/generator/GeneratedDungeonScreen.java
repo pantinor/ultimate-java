@@ -63,7 +63,7 @@ import com.badlogic.gdx.utils.UBJsonReader;
 
 /**
  * a randomly generated Dungeon level for this game.
- * 
+ *
  * @author Paul
  */
 public class GeneratedDungeonScreen extends BaseScreen {
@@ -150,7 +150,7 @@ public class GeneratedDungeonScreen extends BaseScreen {
         assets.load("assets/graphics/rock.png", Texture.class);
 
         assets.update(2000);
-		//convert the collada dae format to the g3db format (do not use the obj format)
+        //convert the collada dae format to the g3db format (do not use the obj format)
         //C:\Users\Paul\Desktop\blender>fbx-conv-win32.exe -o G3DB ./Chess/pawn.dae ./pawn.g3db
         ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader(), new ClasspathFileHandleResolver());
         fountainModel = gloader.loadModel(Gdx.files.internal("assets/graphics/fountain2.g3db"));
@@ -158,7 +158,7 @@ public class GeneratedDungeonScreen extends BaseScreen {
         chestModel = gloader.loadModel(Gdx.files.internal("assets/graphics/chest.g3db"));
         orbModel = gloader.loadModel(Gdx.files.internal("assets/graphics/orb.g3db"));
         altarModel = gloader.loadModel(Gdx.files.internal("assets/graphics/altar.g3db"));
-		//blocksModel = gloader.loadModel(Gdx.files.internal("assets/graphics/box.g3db"));
+        //blocksModel = gloader.loadModel(Gdx.files.internal("assets/graphics/box.g3db"));
 
         font = new BitmapFont();
         font.setColor(Color.WHITE);
@@ -248,7 +248,7 @@ public class GeneratedDungeonScreen extends BaseScreen {
                 }
             }
 
-			//System.out.println(dungeons[0].showDungeon());
+            //System.out.println(dungeons[0].showDungeon());
             setStartPosition();
 
             cam.position.set(currentPos);

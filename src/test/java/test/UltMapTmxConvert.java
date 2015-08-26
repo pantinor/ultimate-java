@@ -51,8 +51,7 @@ public class UltMapTmxConvert {
         int TILE_SIZE = 16;
 
         //BaseMap map = Maps.BUCCANEERS_DEN.getMap();
-        for (BaseMap map : ms.getMaps()) 
-        {
+        for (BaseMap map : ms.getMaps()) {
 
             if (!map.getFname().endsWith("ult")) {
                 continue;
@@ -145,7 +144,7 @@ public class UltMapTmxConvert {
 
             UltMapTmxConvert c = new UltMapTmxConvert(map.getFname(), "tiles-vga.png", map.getWidth(), map.getHeight(),
                     TILE_SIZE, TILE_SIZE, d, p, map.getCity().getPeople());
-            String tmxFName = String.format("assets/tilemaps/map_%s_%s.tmx", map.getId(), map.getCity().getName().replace(" ",""));
+            String tmxFName = String.format("assets/tilemaps/map_%s_%s.tmx", map.getId(), map.getCity().getName().replace(" ", ""));
             FileUtils.writeStringToFile(new File(tmxFName), c.toString());
         }
 

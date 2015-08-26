@@ -168,7 +168,7 @@ public class ShrineScreen extends BaseScreen {
 
     @Override
     public void finishTurn(int currentX, int currentY) {
-		// TODO Auto-generated method stub
+        // TODO Auto-generated method stub
 
     }
 

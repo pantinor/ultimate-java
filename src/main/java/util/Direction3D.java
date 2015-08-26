@@ -1,6 +1,5 @@
 package util;
 
-
 /**
  * Represents the eight grid directions and the deltaX, deltaY, and deltaZ
  * values associated with those directions.
@@ -14,7 +13,6 @@ package util;
  *
  * @author Eben Howard - http://squidpony.com - howard@squidpony.com
  */
-
 public enum Direction3D {
 
     NONE(0, 0, 0),

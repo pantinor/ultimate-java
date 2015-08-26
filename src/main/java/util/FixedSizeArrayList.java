@@ -3,9 +3,9 @@ package util;
 import java.util.ArrayList;
 
 public class FixedSizeArrayList<T> extends ArrayList<T> {
-	
+
     private final int maxSize;
-    
+
     public FixedSizeArrayList(int maxSize) {
         super();
         this.maxSize = maxSize;

@@ -88,9 +88,7 @@ public interface Constants {
         SHORE_CON(53, ""),
         SHORSHIP_CON(54, ""),
         CAMP_DNG(55, ""),
-        
         DELVE_SORROWS(56, "The Delve of Sorrows!"),
-                
         CASTLE_OF_LORD_BRITISH_3(101, "Basement in Castle of Lord British"),
         AQUARIA_1(57, "Aquaria"),
         AQUARIA_2(58, "Aquaria"),
@@ -1240,14 +1238,12 @@ public interface Constants {
         greenstone("the Green Stone", 0),
         orangestone("the Orange Stone", 0),
         purplestone("the Purple Stone", 0),
-        
         //extras
         ironrunemold("Iron Rune Mold", 0),
         blackironore("Black Iron Ore", 0),
         magicparchment("Magic Parchment", 0),
         greedrune("the Rune of Greed", 0),
         songhumility("the Song of Humility", 0),
-        
         maskofminax("the Mask of Minax", 0),
         rageofgod("the Rage of God", 0);
 

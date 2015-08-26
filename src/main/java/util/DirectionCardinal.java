@@ -1,9 +1,7 @@
 package util;
 
-
 /**
- * Represents the four primary edges are represented, along
- * with NONE.
+ * Represents the four primary edges are represented, along with NONE.
  *
  * The grid referenced has x positive to the right and y positive downwards on
  * screen.
