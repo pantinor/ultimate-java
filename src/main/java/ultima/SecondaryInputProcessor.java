@@ -14,6 +14,8 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import vendor.TinkerDialog;
 
 public class SecondaryInputProcessor extends InputAdapter implements Constants {
 
@@ -97,7 +99,7 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
 
         if (screen.scType == ScreenType.MAIN) {
 
-            ConversationDialog dialog = null;
+            Window dialog = null;
 
             if (initialKeyCode == Keys.T) {
 
@@ -127,15 +129,17 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
                     Person p = city.getPersonAt(x, y);
                     if (p != null && (p.getConversation() != null || p.getRole() != null)) {
                         Gdx.input.setInputProcessor(stage);
-                        dialog = new ConversationDialog(p, screen, stage, BaseScreen.skin).show(stage);
+                        if (p.getRole() != null && p.getRole().getInventoryType() != null && p.getRole().getInventoryType() == InventoryType.TINKER) {
+                            dialog = new TinkerDialog(GameScreen.context.getParty(), screen, stage, BaseScreen.skin).show();
+                        } else {
+                            dialog = new ConversationDialog(p, screen, stage, BaseScreen.skin).show(stage);
+                        }
                     } else {
                         screen.log("Funny, no response! ");
                     }
                 } else {
                     screen.log("Funny, no response! ");
                 }
-
-                return false;
 
             } else if (initialKeyCode == Keys.O) {
 

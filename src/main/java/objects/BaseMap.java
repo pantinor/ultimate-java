@@ -1225,10 +1225,10 @@ public class BaseMap implements Constants {
                 break;
 
             case maskofminax:
-                if (sg.maskofminax > 0) {
+                if ((sg.items & Item.MASK_MINAX.getLoc()) > 0) {
                     break;
                 }
-                sg.maskofminax = 1;
+                sg.items |= Item.MASK_MINAX.getLoc();
                 p.adjustKarma(KarmaAction.FOUND_ITEM);
                 expPoints = 200;
                 sg.lastreagent = sg.moves & 0xF0;
@@ -1236,10 +1236,65 @@ public class BaseMap implements Constants {
                 break;
 
             case rageofgod:
-                if (sg.rageofgod > 0) {
+                if ((sg.items & Item.RAGE_GOD.getLoc()) > 0) {
                     break;
                 }
-                sg.rageofgod = 1;
+                sg.items |= Item.RAGE_GOD.getLoc();
+                p.adjustKarma(KarmaAction.FOUND_ITEM);
+                expPoints = 400;
+                sg.lastreagent = sg.moves & 0xF0;
+                added = true;
+                break;
+                
+            case ironrunemold:
+                if ((sg.items & Item.RUNE_MOLD.getLoc()) > 0) {
+                    break;
+                }
+                sg.items |= Item.RUNE_MOLD.getLoc();
+                p.adjustKarma(KarmaAction.FOUND_ITEM);
+                expPoints = 200;
+                sg.lastreagent = sg.moves & 0xF0;
+                added = true;
+                break;
+
+            case blackironore:
+                if ((sg.items & Item.IRON_ORE.getLoc()) > 0) {
+                    break;
+                }
+                sg.items |= Item.IRON_ORE.getLoc();
+                p.adjustKarma(KarmaAction.FOUND_ITEM);
+                expPoints = 200;
+                sg.lastreagent = sg.moves & 0xF0;
+                added = true;
+                break;
+                
+            case magicparchment:
+                if ((sg.items & Item.PARCH.getLoc()) > 0) {
+                    break;
+                }
+                sg.items |= Item.PARCH.getLoc();
+                p.adjustKarma(KarmaAction.FOUND_ITEM);
+                expPoints = 200;
+                sg.lastreagent = sg.moves & 0xF0;
+                added = true;
+                break;
+
+            case greedrune:
+                if ((sg.items & Item.GREED_RUNE.getLoc()) > 0) {
+                    break;
+                }
+                sg.items |= Item.GREED_RUNE.getLoc();
+                p.adjustKarma(KarmaAction.FOUND_ITEM);
+                expPoints = 200;
+                sg.lastreagent = sg.moves & 0xF0;
+                added = true;
+                break;
+                
+            case songhumility:
+                if ((sg.items & Item.SONG_HUM.getLoc()) > 0) {
+                    break;
+                }
+                sg.items |= Item.SONG_HUM.getLoc();
                 p.adjustKarma(KarmaAction.FOUND_ITEM);
                 expPoints = 400;
                 sg.lastreagent = sg.moves & 0xF0;

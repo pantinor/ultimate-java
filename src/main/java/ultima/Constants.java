@@ -1153,19 +1153,27 @@ public interface Constants {
 
     public enum Item {
 
-        SKULL("Skull of Mondain", true, 0x01),
-        SKULL_DESTROYED("Skull Destroyed", false, 0x02),
-        CANDLE("Candle of Love", true, 0x04),
-        BOOK("Book of Truth", true, 0x08),
-        BELL("Bell of Courage", true, 0x10),
-        KEY_C("Key of Courage", true, 0x20),
-        KEY_L("Key of Love", true, 0x40),
-        KEY_T("Key of Truth", true, 0x80),
-        HORN("Silver Horn", true, 0x100),
-        WHEEL("Wheel of HMS Cape", true, 0x200),
-        CANDLE_USED("Candle Used", false, 0x400),
-        BOOK_USED("Book Used", false, 0x800),
-        BELL_USED("Bell Used", false, 0x1000);
+        SKULL("Skull of Mondain", true, 0x000001),
+        SKULL_DESTROYED("Skull Destroyed", false, 0x000002),
+        CANDLE("Candle of Love", true, 0x000004),
+        BOOK("Book of Truth", true, 0x000008),
+        BELL("Bell of Courage", true, 0x000010),
+        KEY_C("Key of Courage", true, 0x000020),
+        KEY_L("Key of Love", true, 0x000040),
+        KEY_T("Key of Truth", true, 0x000080),
+        HORN("Silver Horn", true, 0x000100),
+        WHEEL("Wheel of HMS Cape", true, 0x000200),
+        CANDLE_USED("Candle Used", false, 0x000400),
+        BOOK_USED("Book Used", false, 0x000800),
+        BELL_USED("Bell Used", false, 0x001000),
+        MASK_MINAX("Mask of Minax", true, 0x002000),
+        RAGE_GOD("Rage of God", true, 0x004000),
+        IRON_ORE("Iron Ore", true, 0x008000),
+        RUNE_MOLD("Rune Mold", true, 0x010000),
+        IRON_RUNE("Iron Rune", true, 0x020000),
+        SONG_HUM("Song of Humility", true, 0x040000),
+        PARCH("Magic Parchment", true, 0x080000),
+        GREED_RUNE("Rune of Greed", true, 0x100000);
 
         private boolean visible;
         private String desc;

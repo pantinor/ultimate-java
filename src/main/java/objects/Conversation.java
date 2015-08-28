@@ -118,7 +118,8 @@ public class Conversation {
 
     @Override
     public String toString() {
-        return String.format("Conversation [index=%s, name=%s, pronoun=%s, turnAwayProb=%s, description=%s, respAffectsHumility=%s, topics=%s]", index, name, pronoun, turnAwayProb, description, respAffectsHumility, topics);
+        return String.format("\n\tConversation [index=%s, name=%s, pronoun=%s, turnAwayProb=%s, description=%s, respAffectsHumility=%s, topics=%s]", 
+                index, name, pronoun, turnAwayProb, description, respAffectsHumility, topics);
     }
 
     public class Topic {
@@ -205,7 +206,7 @@ public class Conversation {
 
         @Override
         public String toString() {
-            return String.format("Topic %s [query=%s, phrase=%s, question=%s, yesResponse=%s, noResponse=%s]", name, query, phrase, question, yesResponse, noResponse, lbHeal);
+            return String.format("\n\t\tTopic %s [query=%s, phrase=%s, question=%s, yesResponse=%s, noResponse=%s]", name, query, phrase, question, yesResponse, noResponse, lbHeal);
         }
 
     }

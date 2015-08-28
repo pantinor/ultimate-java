@@ -276,12 +276,17 @@ public class GameScreen extends BaseScreen {
 //            for (int i = 1; i < 8; i++) {
 //                party.getSaveGame().armor[i] = 2;
 //            }
-//            party.getSaveGame().sextants = 1;
+            //party.getSaveGame().sextants = 1;
             //mainAvatar = shipAnim;
             //sg.transport = 0x10;
+            
+            //sg.items |= Constants.Item.IRON_ORE.getLoc();
+            //sg.items |= Constants.Item.RUNE_MOLD.getLoc();
+            //sg.items |= Constants.Item.BOOK.getLoc();
+            
             //load the surface world first
             loadNextMap(Maps.WORLD, sg.x, sg.y);
-            //loadNextMap(Maps.WORLD, 145, 81);
+            //loadNextMap(Maps.WORLD, 162, 247);
 
             //load the dungeon if save game starts in dungeon
             if (Maps.get(sg.location) != Maps.WORLD) {

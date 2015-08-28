@@ -195,10 +195,10 @@ public class TestJaxb {
 
     }
 
-    @Test
+    //@Test
     public void parseTlkFiles() throws Exception {
-        Person[] people = Utils.getPeople("bodania.ult", null);
-        List<Conversation> cons = Utils.getDialogs("bodania.tlk");
+        Person[] people = Utils.getPeople("aquaria_l1.ult", null);
+        List<Conversation> cons = Utils.getDialogs("aquaria_l1.tlk");
 
         for (Person p : people) {
             if (p != null) {
@@ -212,6 +212,9 @@ public class TestJaxb {
         for (Person p : people) {
             System.out.println(p);
         }
+        
+        System.out.printf("Latitude [%s' %s]", (char) ((int) 54 / 16 + 'A'), (char) ((int) 54 % 16 + 'A'));
+        System.out.printf(" Longitude [%s' %s]\n", (char) ((int) 182 / 16 + 'A'), (char) ((int) 182 % 16 + 'A'));
 
     }
 
@@ -288,22 +291,18 @@ public class TestJaxb {
         }
 
         sg.items |= Item.BELL.getLoc();
-
         for (Item item : Constants.Item.values()) {
-            if (!item.isVisible()) {
-                continue;
-            }
             //System.err.println((sg.items & (1 << item.ordinal())) > 0 ? item.getDesc() : "") ;
         }
 
-        sg.items |= Item.HORN.getLoc();
-
+        sg.items |= Item.PARCH.getLoc();
         for (Item item : Constants.Item.values()) {
-            if (!item.isVisible()) {
-                continue;
-            }
-            //System.err.println((sg.items & (1 << item.ordinal())) > 0 ? item.getDesc() : "") ;
+            System.err.println((sg.items & item.getLoc()) > 0 ? item.getDesc() : "") ;
         }
+ 
+        sg.lastrage = 1;
+
+        sg.write("test.sav");
 
     }
 
@@ -334,10 +333,10 @@ public class TestJaxb {
             }
         }
 
-//		vt[1][1] = 1f;
-//		vt[1][6] = 1f;
-//		vt[6][6] = 1f;
-//		vt[6][1] = 1f;
+		vt[1][1] = 1f;
+		vt[1][6] = 1f;
+		vt[6][6] = 1f;
+		vt[6][1] = 1f;
         SpreadFOV fov = new SpreadFOV(dim, dim, true);
 
         float[][] los = fov.calculateFOV(vt, startx, starty, 10);

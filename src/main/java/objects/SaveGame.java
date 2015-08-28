@@ -40,10 +40,8 @@ public class SaveGame implements Constants {
     public int[] reagents = {0, 3, 4, 0, 0, 0, 0, 0};
     public int[] mixtures = new int[SPELL_MAX];
 
-    public int maskofminax = 0;
-    public int rageofgod = 0;
     public int lastrage = 0;
-
+    
     public int items = 0;
     public int x = 0;
     public int y = 0;
@@ -146,11 +144,7 @@ public class SaveGame implements Constants {
         dos.writeShort(balloonfound);
         dos.writeShort(balloonx);
         dos.writeShort(balloony);
-
-        dos.writeShort(maskofminax);
-        dos.writeShort(rageofgod);
-        dos.writeShort(lastrage);
-
+        dos.writeByte(lastrage);
         dos.close();
 
     }
@@ -232,11 +226,7 @@ public class SaveGame implements Constants {
         balloonfound = dis.readShort() & 0xff;
         balloonx = dis.readShort() & 0xff;
         balloony = dis.readShort() & 0xff;
-
-        maskofminax = dis.readShort() & 0xff;
-        rageofgod = dis.readShort() & 0xff;
-        lastrage = dis.readShort() & 0xff;
-
+        lastrage = dis.readByte() & 0xff;
         /* workaround of U4DOS bug to retain savegame compatibility */
         if (location == 0 && dnglevel == 0) {
             dnglevel = (short) 0xFFFF;
@@ -569,7 +559,7 @@ public class SaveGame implements Constants {
 
     public String[] getZstats() {
 
-        StringBuffer sb1 = new StringBuffer();
+        StringBuilder sb1 = new StringBuilder();
         for (int i = 0; i < members; i++) {
             SaveGamePlayerRecord p = players[i];
 
@@ -592,7 +582,7 @@ public class SaveGame implements Constants {
 
         }
 
-        StringBuffer sb2 = new StringBuffer();
+        StringBuilder sb2 = new StringBuilder();
         for (int i = 0; i < 16; i++) {
             int count = weapons[i];
             if (count == 0) {
@@ -601,7 +591,7 @@ public class SaveGame implements Constants {
             sb2.append(count + " - " + pc(WeaponType.get(i).toString()) + "|");
         }
 
-        StringBuffer sb3 = new StringBuffer();
+        StringBuilder sb3 = new StringBuilder();
         for (int i = 0; i < 8; i++) {
             int count = armor[i];
             if (count == 0) {
@@ -610,7 +600,7 @@ public class SaveGame implements Constants {
             sb3.append(count + " - " + pc(ArmorType.get(i).toString()) + "|");
         }
 
-        StringBuffer sb4 = new StringBuffer();
+        StringBuilder sb4 = new StringBuilder();
         sb4.append(torches + " - Torches|");
         sb4.append(gems + " - Gems|");
         if (sextants > 0) {
@@ -626,18 +616,11 @@ public class SaveGame implements Constants {
         }
 
         for (Item item : Constants.Item.values()) {
-            //if (!item.isVisible()) continue;
+            if (!item.isVisible()) continue;
             sb4.append((this.items & (1 << item.ordinal())) > 0 ? item.getDesc() + "|" : "");
         }
 
-        if (maskofminax > 0) {
-            sb4.append("|" + maskofminax + " - Mask of Minax");
-        }
-        if (rageofgod > 0) {
-            sb4.append("|" + rageofgod + " - Rage of God");
-        }
-
-        StringBuffer sb5 = new StringBuffer();
+        StringBuilder sb5 = new StringBuilder();
         for (int i = 0; i < 8; i++) {
             int count = reagents[i];
             if (count == 0) {
@@ -646,7 +629,7 @@ public class SaveGame implements Constants {
             sb5.append(count + " - " + pc(Reagent.get(i).toString()) + "|");
         }
 
-        StringBuffer sb6 = new StringBuffer();
+        StringBuilder sb6 = new StringBuilder();
         for (int i = 0; i < SPELL_MAX; i++) {
             int count = mixtures[i];
             if (count == 0) {

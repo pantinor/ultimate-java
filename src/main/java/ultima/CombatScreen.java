@@ -401,7 +401,7 @@ public class CombatScreen extends BaseScreen {
             return false;
         } else if (keycode == Keys.U) {
             Tile tile = combatMap.getTile(active.currentX, active.currentY);
-            if (tile.getIndex() == 74 || party.getSaveGame().rageofgod > 0) { //altar or rage of god
+            if (tile.getIndex() == 74 || (party.getSaveGame().items & Item.RAGE_GOD.getLoc()) > 0) { //altar or rage of god
                 log("Use which item: ");
                 log("");
                 Gdx.input.setInputProcessor(sip);

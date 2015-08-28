@@ -59,6 +59,13 @@
 			<item choice="h" type="WEAPON" name="Bow" weaponType="BOW" price="250" description="Our bows are made of finest yew, and the arrows willow, a steal at %dgp." />
 			<item choice="j" type="WEAPON" name="Flaming Oil" weaponType="OIL" price="5" description="Flasks of oil make great weapons and creates a wall of flame too. %dgp each." />
 		</vendor>
+		
+		<vendor id="BLACK_ROCK" name="Nalpalion's Arms" owner="Nalpalion" type="WEAPON" personId="5">
+			<item choice="i" type="WEAPON" name="Crossbow" weaponType="CROSSBOW" price="450" description="Crossbows made by Iolo the Bard are the finest in the world, your for %dgp." />
+			<item choice="d" type="WEAPON" name="Sling" weaponType="SLING" price="20" description="Our slings are made from only the finest guy and leather. 'Tis yours for %dgp." />
+			<item choice="n" type="WEAPON" name="Magic Bow" weaponType="MAGICBOW" price="1850" description="A magical bow will keep thy enemies far away or dead! A must for %dgp!" />
+			<item choice="o" type="WEAPON" name="Magic Wand" weaponType="MAGICWAND" price="4500" description="This magic wand casts mighty blue bolts to strike down thy foes, %dgp." />
+		</vendor>
 
 	</vendorClass>
 
@@ -101,6 +108,13 @@
 			<item choice="c" type="ARMOR" name="Leather" armorType="LEATHER" price="200" description="Leather Armour is both supple and strong, and costs a mere %dgp. A Bargain!" />
 			<item choice="d" type="ARMOR" name="Chain Mail" armorType="CHAIN" price="600" description="Chail Mail is the armour used by more warriors than all others. Ours costs %dgp." />
 		</vendor>
+		
+		<vendor id="BLACK_ROCK" name="Alderána's Armour" owner="Alderána" type="ARMOR" personId="4">
+			<item choice="d" type="ARMOR" name="Chain Mail" armorType="CHAIN" price="999" description="Chail Mail is the armour used by more warriors than all others. Ours costs %dgp." />
+			<item choice="e" type="ARMOR" name="Plate Mail" armorType="PLATE" price="2650" description="Full Plate armour is the ultimate in non-magical armour. Get yours for %dgp." />
+			<item choice="f" type="ARMOR" name="Magic Chain" armorType="MAGICCHAIN" price="3500" description="Magic Armour is rare and expensive. This chain sells for %dgp." />
+			<item choice="g" type="ARMOR" name="Magic Plate" armorType="MAGICPLATE" price="5700" description="Magic Plate Armour is the best known protection. Only we have it. Cost: %dgp." />
+		</vendor>
 
 	</vendorClass>
 
@@ -121,7 +135,9 @@
 		<vendor id="PAWS" name="The Market" owner="Max" type="FOOD" personId="30">
 			<item type="FOOD" price="30" quant="25" />
 		</vendor>
-
+		<vendor id="BLACK_ROCK" name="Not Sea Food" owner="Arfandil" type="FOOD" personId="3">
+			<item type="FOOD" price="30" quant="25" />
+		</vendor>
 	</vendorClass>
 
 	<vendorClass type="TAVERN" music="SHOPPING">
@@ -194,10 +210,11 @@
 			<item type="FOOD" name="Pigs Feet" price="2" />
 			<item type="TAVERNINFO" choice="greed" price="15" description="%s says: If though must know, I hear Glorthiel herself placed a Rune of Greed in place of the original Rune!" />
 		</vendor>
-		<vendor id="BODANIA" name="Tinkers Tavern" owner="Lingard" genericField1="Humble Pie" type="TAVERN" personId="2">
-			<item type="FOOD" name="ale" price="2" />
-			<item type="FOOD" name="Humble Pie" price="2" />
-			<item type="TAVERNINFO" choice="greed" price="15" description="%s says: If though must know, I hear Glorthiel herself placed a Rune of Greed in place of the original Rune!" />
+		<vendor id="BLACK_ROCK" name="Traders Tavern" owner="Varuhtar" genericField1="Varuhtar's Water" type="TAVERN" personId="2">
+			<item type="FOOD" name="Tofu Cakes" price="2" />
+			<item type="FOOD" name="Varuhtar's Water" price="2" />
+			<item type="TAVERNINFO" choice="harvest" price="25" description="%s says: So ye seek Black Iron. T'was found once at Latitude [K'E&quot;] Longitude [P'B&quot;]. It's a rare item found in the deep! Set sail and search to find the Ore." />
+			<item type="TAVERNINFO" choice="mold" price="25" description="%s says: Blasted Pirates! Thou hast better get a shovel and the lighter than air device and set off for Latitude [P'H&quot;] Longitude [K'C&quot;]!." />
 		</vendor>
 	</vendorClass>
 
@@ -258,6 +275,11 @@
 			<item type="HEALER" choice="c" name="Resurrection" description="Resurrection" price="300" healType="RESURRECT" />
 		</vendor>
 		<vendor id="COVE" name="The Healer Shop" owner="Quat" healType="HEALER" personId="30">
+			<item type="HEALER" choice="a" name="Curing" description="A curing" price="100" healType="CURE" />
+			<item type="HEALER" choice="b" name="Healing" description="A healing" price="200" healType="FULLHEAL" />
+			<item type="HEALER" choice="c" name="Resurrection" description="Resurrection" price="300" healType="RESURRECT" />
+		</vendor>
+		<vendor id="THORANGUARD_1" name="Healer" owner="Bones" healType="HEALER" personId="12">
 			<item type="HEALER" choice="a" name="Curing" description="A curing" price="100" healType="CURE" />
 			<item type="HEALER" choice="b" name="Healing" description="A healing" price="200" healType="FULLHEAL" />
 			<item type="HEALER" choice="c" name="Resurrection" description="Resurrection" price="300" healType="RESURRECT" />
@@ -364,5 +386,5 @@
 			<item type="REAGENT" choice="f" name="Black Pearl" reagentType="PEARL" price="1" />
 		</vendor>
 	</vendorClass>
-	
+
 </vendorSet>

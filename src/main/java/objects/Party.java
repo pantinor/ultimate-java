@@ -67,9 +67,14 @@ public class Party extends Observable implements Constants {
     }
 
     /**
-     * 0x10-ship facing west 0x11-ship facing north 0x12-ship facing east
-     * 0x13-ship facing south 0x14-horse facing west 0x15-horse facing east
-     * 0x18-balloon 0x1f-on foot
+     * 0x10-ship facing west 
+     * 0x11-ship facing north 
+     * 0x12-ship facing east
+     * 0x13-ship facing south 
+     * 0x14-horse facing west 
+     * 0x15-horse facing east
+     * 0x18-balloon 
+     * 0x1f-on foot
      *
      * @param transport
      */

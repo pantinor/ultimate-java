@@ -108,20 +108,25 @@ public class SpreadFOV implements FOVSolver {
      * @return
      */
     private float getNearLight(int x, int y) {
-        int x2 = x - (int) Math.signum(x - startx);
-        int y2 = y - (int) Math.signum(y - starty);
+        float light = 0;
+        try {
+            int x2 = x - (int) Math.signum(x - startx);
+            int y2 = y - (int) Math.signum(y - starty);
 
-        //clamp x2 and y2 to bound within map
-        x2 = Math.max(0, x2);
-        x2 = Math.min(width - 1, x2);
-        y2 = Math.max(0, y2);
-        y2 = Math.min(height - 1, y2);
+            //clamp x2 and y2 to bound within map
+            x2 = Math.max(0, x2);
+            x2 = Math.min(width - 1, x2);
+            y2 = Math.max(0, y2);
+            y2 = Math.min(height - 1, y2);
 
-        //find largest emmitted light in direction of source
-        float light = Math.max(Math.max(lightMap[x2][y] - map[x2][y], lightMap[x][y2] - map[x][y2]), lightMap[x2][y2] - map[x2][y2]);
+            //find largest emmitted light in direction of source
+            light = Math.max(Math.max(lightMap[x2][y] - map[x2][y], lightMap[x][y2] - map[x][y2]), lightMap[x2][y2] - map[x2][y2]);
 
-        float distance = rStrat.radius(x, y, x2, y2);
-        light -= decay * distance;
+            float distance = rStrat.radius(x, y, x2, y2);
+            light -= decay * distance;
+        } catch (Exception e) {
+            //none
+        }
         return light;
     }
 
