@@ -10,11 +10,9 @@ import objects.SaveGame;
 import objects.TileSet;
 import objects.WeaponSet;
 import ultima.Constants;
-import ultima.Constants.Maps;
 import ultima.Constants.NpcDefaults;
 import ultima.Constants.WeaponType;
 import ultima.Context;
-import ultima.StartScreen;
 import util.Utils;
 
 import com.badlogic.gdx.Game;
@@ -28,20 +26,17 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Region;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.utils.Array;
 
 public class TestMain extends Game {
 
     TextureAtlas atlas;
-    Animation beast1;
-    Animation beast2;
+    Animation a1,a2,a3;
     Texture tr;
 
     float time = 0;
@@ -107,58 +102,62 @@ public class TestMain extends Game {
 
             sg.players[0].weapon = WeaponType.SLING;
 
-            TextureAtlas a1 = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-vga-atlas.txt"));
-            TextureAtlas a2 = new TextureAtlas(Gdx.files.internal("assets/tilemaps/monsters-u4.atlas"));
-
-			//TiledMap tmap = new UltimaTiledMapLoader(Maps.GRASS_CON, a1, Maps.GRASS_CON.getMap().getWidth(), Maps.GRASS_CON.getMap().getHeight(), 16, 16).load();
+            //TextureAtlas a1 = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-vga-atlas.txt"));
+            //TextureAtlas a2 = new TextureAtlas(Gdx.files.internal("assets/tilemaps/monsters-u4.atlas"));
+            //TiledMap tmap = new UltimaTiledMapLoader(Maps.GRASS_CON, a1, Maps.GRASS_CON.getMap().getWidth(), Maps.GRASS_CON.getMap().getHeight(), 16, 16).load();
             //CombatScreen sc = new CombatScreen(null, null, context, Maps.WORLD, Maps.GRASS_CON.getMap(), tmap, CreatureType.skeleton, cs, a2, a1);
-			//sc.logs = new LogDisplay(new BitmapFont());
-			//setScreen(sc);
-            atlas = a1;
-            tr = Utils.peerGem(Maps.LYCAEUM, a1);
+            //sc.logs = new LogDisplay(new BitmapFont());
+            //setScreen(sc);
+            //atlas = a1;
+            //tr = Utils.peerGem(Maps.LYCAEUM, a1);
 
             batch2 = new SpriteBatch();
+            
+            atlas = new TextureAtlas(Gdx.files.internal("sprites-atlas.txt"));
 
+            a1 = new Animation(0.45f, atlas.findRegions("shallows"));
+            a2 = new Animation(0.45f, atlas.findRegions("water"));
+            a3 = new Animation(0.45f, atlas.findRegions("sea"));
+        
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    public void init() {
-
-        atlas = new TextureAtlas(Gdx.files.classpath("graphics/beasties-atlas.txt"));
-
-        Array<AtlasRegion> anim1 = atlas.findRegions("beast");
-        Array<AtlasRegion> anim2 = atlas.findRegions("dragon");
-
-        Array<AtlasRegion> tmp1 = new Array<AtlasRegion>(StartScreen.beast1FrameIndexes.length);
-        Array<AtlasRegion> tmp2 = new Array<AtlasRegion>(StartScreen.beast2FrameIndexes.length);
-
-        for (int i = 0; i < StartScreen.beast1FrameIndexes.length; i++) {
-            tmp1.add(anim1.get(StartScreen.beast1FrameIndexes[i]));
-        }
-        for (int i = 0; i < StartScreen.beast2FrameIndexes.length; i++) {
-            tmp2.add(anim2.get(StartScreen.beast2FrameIndexes[i]));
-        }
-
-        beast1 = new Animation(0.25f, tmp1);
-        beast2 = new Animation(0.25f, tmp2);
-
-        batch2 = new SpriteBatch();
-
-    }
-
+    @Override
     public void render() {
         time += Gdx.graphics.getDeltaTime();
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch2.begin();
-		//batch2.draw(beast1.getKeyFrame(time, true), 100, 100, 48*2, 31*2);
-        //batch2.draw(beast2.getKeyFrame(time, true), 200, 200, 48*2, 31*2);
-
-        batch2.draw(tr, 5, 5);
+        
+        int dim = 32;
+        
+        for (int x=0;x<3;x++) {
+            for (int y=0;y<3;y++) {
+                int dx = dim*x + 100;
+                int dy = dim*y + 200;
+                batch2.draw(a1.getKeyFrame(time, true),dx,dy);
+            }
+        }
+        
+        for (int x=0;x<3;x++) {
+            for (int y=0;y<3;y++) {
+                int dx = dim*x + 300;
+                int dy = dim*y + 200;
+                batch2.draw(a2.getKeyFrame(time, true),dx,dy);
+            }
+        }
+                
+        for (int x=0;x<3;x++) {
+            for (int y=0;y<3;y++) {
+                int dx = dim*x + 600;
+                int dy = dim*y + 200;
+                batch2.draw(a3.getKeyFrame(time, true),dx,dy);
+            }
+        }
 
         batch2.end();
 

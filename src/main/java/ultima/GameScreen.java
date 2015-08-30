@@ -67,7 +67,7 @@ public class GameScreen extends BaseScreen {
     public static CreatureSet creatures;
     public static VendorClassSet vendorClassSet;
     public static TextureAtlas standardAtlas;
-    public static TextureAtlas enhancedAtlas;
+    //public static TextureAtlas standardAtlas;
     public static int TILE_DIM = 32;
 
     MapSet maps;
@@ -107,15 +107,13 @@ public class GameScreen extends BaseScreen {
             //use this to see the original tile set
             //standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-ega-atlas.txt"));
             standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-enhanced-vga-atlas.txt"));
-            //set this to the standardAtlas variable to use all of the original tiles
-            enhancedAtlas = standardAtlas;//new TextureAtlas(Gdx.files.internal("assets/tilemaps/monsters-u4.atlas"));
 
             baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);
             baseTileSet.setMaps();
 
             hitTile = standardAtlas.findRegion("hit_flash");
             missTile = standardAtlas.findRegion("miss_flash");
-            corpse = enhancedAtlas.findRegion("corpse");
+            corpse = standardAtlas.findRegion("corpse");
 
             maps = (MapSet) Utils.loadXml("maps.xml", MapSet.class);
             maps.init(baseTileSet);
@@ -167,9 +165,9 @@ public class GameScreen extends BaseScreen {
     }
 
     private void initTransportAnimations() {
-        Array<AtlasRegion> avatar = enhancedAtlas.findRegions("avatar");
-        Array<AtlasRegion> corps = enhancedAtlas.findRegions("corpse");
-        Array<AtlasRegion> horse = enhancedAtlas.findRegions("horse");
+        Array<AtlasRegion> avatar = standardAtlas.findRegions("avatar");
+        Array<AtlasRegion> corps = standardAtlas.findRegions("corpse");
+        Array<AtlasRegion> horse = standardAtlas.findRegions("horse");
         Array<AtlasRegion> ship = standardAtlas.findRegions("ship");
         Array<AtlasRegion> balloon = standardAtlas.findRegions("balloon");
 
@@ -358,7 +356,7 @@ public class GameScreen extends BaseScreen {
             map = new UltimaTiledMapLoader(m, standardAtlas, sm.getWidth(), sm.getHeight(), TILE_DIM, TILE_DIM).load();
             context.setCurrentTiledMap(map);
             Virtue virtue = Virtue.get(sm.getId() - 25);
-            ShrineScreen sc = new ShrineScreen(this, virtue, map, enhancedAtlas, standardAtlas);
+            ShrineScreen sc = new ShrineScreen(this, virtue, map, standardAtlas, standardAtlas);
             mainGame.setScreen(sc);
         } else {
 
@@ -380,7 +378,7 @@ public class GameScreen extends BaseScreen {
             MapProperties prop = map.getProperties();
             mapPixelHeight = prop.get("height", Integer.class) * tilePixelWidth;
 
-            bm.initObjects(this, enhancedAtlas, standardAtlas);
+            bm.initObjects(this, standardAtlas, standardAtlas);
 
             renderer.getFOV().calculateFOV(bm.getShadownMap(), x, y, 17f);
 
@@ -401,7 +399,7 @@ public class GameScreen extends BaseScreen {
 
         TiledMap tmap = new UltimaTiledMapLoader(combat, standardAtlas, combat.getMap().getWidth(), combat.getMap().getHeight(), GameScreen.TILE_DIM, GameScreen.TILE_DIM).load();
 
-        CombatScreen sc = new CombatScreen(this, context, contextMap, combatMap, tmap, cr.getTile(), creatures, enhancedAtlas, standardAtlas);
+        CombatScreen sc = new CombatScreen(this, context, contextMap, combatMap, tmap, cr.getTile(), creatures, standardAtlas);
         mainGame.setScreen(sc);
 
         currentEncounter = cr;
@@ -635,7 +633,7 @@ public class GameScreen extends BaseScreen {
 
         } else if (keycode == Keys.H) {
 
-            CombatScreen.holeUp(Maps.WORLD, (int) v.x, (int) v.y, this, context, creatures, standardAtlas, enhancedAtlas);
+            CombatScreen.holeUp(Maps.WORLD, (int) v.x, (int) v.y, this, context, creatures, standardAtlas);
             return false;
 
         } else if (keycode == Keys.K || keycode == Keys.D) {
@@ -744,7 +742,7 @@ public class GameScreen extends BaseScreen {
                 ship.setY(mapCamera.position.y);
                 mapObjectsStage.addActor(ship);
             } else if (context.getTransportContext() == TransportContext.HORSE) {
-                Creature cr = GameScreen.creatures.getInstance(CreatureType.horse, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+                Creature cr = GameScreen.creatures.getInstance(CreatureType.horse, GameScreen.standardAtlas);
                 cr.currentX = (int) v.x;
                 cr.currentY = (int) v.y;
                 context.getCurrentMap().addCreature(cr);
@@ -1047,12 +1045,12 @@ public class GameScreen extends BaseScreen {
         if (tile.getRule().has(TileAttrib.sailable)) {
             randId = CreatureType.pirate_ship.getValue();
             randId += rand.nextInt(7);
-            Creature cr = creatures.getInstance(CreatureType.get(randId), enhancedAtlas, standardAtlas);
+            Creature cr = creatures.getInstance(CreatureType.get(randId), standardAtlas);
             return cr;
         } else if (tile.getRule().has(TileAttrib.swimmable)) {
             randId = CreatureType.nixie.getValue();
             randId += rand.nextInt(5);
-            Creature cr = creatures.getInstance(CreatureType.get(randId), enhancedAtlas, standardAtlas);
+            Creature cr = creatures.getInstance(CreatureType.get(randId), standardAtlas);
             return cr;
         }
 
@@ -1066,7 +1064,7 @@ public class GameScreen extends BaseScreen {
 
         randId = CreatureType.orc.getValue();
         randId += era & rand.nextInt(16) & rand.nextInt(16);
-        Creature cr = creatures.getInstance(CreatureType.get(randId), enhancedAtlas, standardAtlas);
+        Creature cr = creatures.getInstance(CreatureType.get(randId), standardAtlas);
 
         return cr;
     }
@@ -1173,7 +1171,7 @@ public class GameScreen extends BaseScreen {
          */
         if (dir == Direction.EAST && x == 0xdd && y == 0xe0) {
             for (PirateCoveInfo pci : PirateCoveInfo.values()) {
-                Creature pirate = creatures.getInstance(CreatureType.pirate_ship, enhancedAtlas, standardAtlas);
+                Creature pirate = creatures.getInstance(CreatureType.pirate_ship, standardAtlas);
                 pirate.currentX = pci.getX();
                 pirate.currentY = pci.getY();
                 pirate.currentPos = getMapPixelCoords(pci.getX(), pci.getY());
@@ -1188,7 +1186,7 @@ public class GameScreen extends BaseScreen {
          */
         if (dir == Direction.SOUTH && x >= 229 && x < 234 && y >= 212 && y < 217 && context.getAura().getType() != AuraType.HORN) {
             for (int i = 0; i < 8; i++) {
-                Creature daemon = creatures.getInstance(CreatureType.daemon, enhancedAtlas, standardAtlas);
+                Creature daemon = creatures.getInstance(CreatureType.daemon, standardAtlas);
                 daemon.currentX = 231;
                 daemon.currentY = y + 1;
                 daemon.currentPos = getMapPixelCoords(231, y + 1);
@@ -1210,7 +1208,7 @@ public class GameScreen extends BaseScreen {
 
         log("Bridge Trolls!");
 
-        Creature troll = creatures.getInstance(CreatureType.troll, enhancedAtlas, standardAtlas);
+        Creature troll = creatures.getInstance(CreatureType.troll, standardAtlas);
         troll.currentX = x;
         troll.currentY = y;
         troll.currentPos = getMapPixelCoords(x, y);

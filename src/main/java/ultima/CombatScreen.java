@@ -83,7 +83,7 @@ public class CombatScreen extends BaseScreen {
     private Random rand = new Random();
 
     public CombatScreen(BaseScreen returnScreen, Context context, Maps contextMap,
-            BaseMap combatMap, TiledMap tmap, CreatureType cr, CreatureSet cs, TextureAtlas a1, TextureAtlas a2) {
+            BaseMap combatMap, TiledMap tmap, CreatureType cr, CreatureSet cs, TextureAtlas a1) {
 
         scType = ScreenType.COMBAT;
 
@@ -138,7 +138,7 @@ public class CombatScreen extends BaseScreen {
                 continue;
             }
 
-            Creature c = creatureSet.getInstance(crSlots[index], a1, a2);
+            Creature c = creatureSet.getInstance(crSlots[index], a1);
 
             c.currentX = startX;
             c.currentY = startY;
@@ -159,7 +159,7 @@ public class CombatScreen extends BaseScreen {
                 continue;
             }
 
-            Creature c = creatureSet.getInstance(CreatureType.get(party.getMember(index).getPlayer().klass.toString().toLowerCase()), a1, a2);
+            Creature c = creatureSet.getInstance(CreatureType.get(party.getMember(index).getPlayer().klass.toString().toLowerCase()), a1);
             c.currentX = startX;
             c.currentY = startY;
             c.currentPos = getMapPixelCoords(startX, startY);
@@ -267,7 +267,7 @@ public class CombatScreen extends BaseScreen {
         return ncreatures;
     }
 
-    public void setAmbushingMonsters(BaseScreen returnScreen, int x, int y, TextureAtlas a1, TextureAtlas a2) {
+    public void setAmbushingMonsters(BaseScreen returnScreen, int x, int y, TextureAtlas a1) {
 
         CreatureType ct = GameScreen.creatures.getRandomAmbushing();
         fillCreatureTable(ct);
@@ -284,7 +284,7 @@ public class CombatScreen extends BaseScreen {
                 continue;
             }
 
-            Creature c = creatureSet.getInstance(crSlots[index], a1, a2);
+            Creature c = creatureSet.getInstance(crSlots[index], a1);
 
             c.currentX = startX;
             c.currentY = startY;
@@ -294,7 +294,7 @@ public class CombatScreen extends BaseScreen {
         }
 
         //for the chest when returning after combat
-        returnScreen.currentEncounter = creatureSet.getInstance(ct, a1, a2);
+        returnScreen.currentEncounter = creatureSet.getInstance(ct, a1);
         returnScreen.currentEncounter.currentX = x;
         returnScreen.currentEncounter.currentY = y;
         returnScreen.currentEncounter.currentPos = returnScreen.getMapPixelCoords(x, y);
@@ -807,12 +807,12 @@ public class CombatScreen extends BaseScreen {
                     if (target != null) {
                         if (creature.stealsFood() && rand.nextInt(4) == 0) {
                             Sounds.play(Sound.NEGATIVE_EFFECT);
-                            party.adjustGold(-(rand.nextInt(0x3f)));
+                            party.adjustFood(-(rand.nextInt(25)*1000));
                         }
 
-                        if (creature.stealsGold()) {
+                        if (creature.stealsGold() && rand.nextInt(4) == 0) {
                             Sounds.play(Sound.NEGATIVE_EFFECT);
-                            party.adjustFood(-2500);
+                            party.adjustGold(-(rand.nextInt(0x3f)));
                         }
                     }
                 }
@@ -1196,7 +1196,7 @@ public class CombatScreen extends BaseScreen {
         }
     }
 
-    public static void holeUp(Maps contextMap, final int x, final int y, final BaseScreen rs, final Context context, CreatureSet cs, final TextureAtlas sa, final TextureAtlas ea) {
+    public static void holeUp(Maps contextMap, final int x, final int y, final BaseScreen rs, final Context context, CreatureSet cs, final TextureAtlas sa) {
 
         Ultima4.hud.add("Hole up & Camp!");
 
@@ -1229,7 +1229,7 @@ public class CombatScreen extends BaseScreen {
 
         context.setCurrentTiledMap(tmap);
 
-        final CombatScreen sc = new CombatScreen(rs, context, contextMap, campMap, tmap, null, cs, ea, sa);
+        final CombatScreen sc = new CombatScreen(rs, context, contextMap, campMap, tmap, null, cs, sa);
 
         mainGame.setScreen(sc);
 
@@ -1251,7 +1251,7 @@ public class CombatScreen extends BaseScreen {
             seq.addAction(Actions.run(new Runnable() {
                 public void run() {
                     Ultima4.hud.add("Ambushed!");
-                    sc.setAmbushingMonsters(rs, x, y, ea, sa);
+                    sc.setAmbushingMonsters(rs, x, y, sa);
                 }
             }));
 

@@ -104,7 +104,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
         ta = new TextureAtlas(Gdx.files.internal("assets/graphics/initial-atlas.txt"));
         title = ta.createSprite("title");
 
-        TextureAtlas ua = new TextureAtlas(Gdx.files.internal("assets/tilemaps/ultima5-atlas.txt"));
+        TextureAtlas ua = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-enhanced-vga-atlas.txt"));
         whirlpool = new Animation(0.50f, ua.findRegions("whirlpool"));
 
         font = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_24.fnt"));

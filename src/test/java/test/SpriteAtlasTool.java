@@ -156,8 +156,8 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 
             String n = (String) (it.name.length() > 1 ? it.name.subSequence(0, 2) : it.name);
 
-            batch.draw(box, it.x * dim, screenHeight - (it.y * dim) - 32);
-            font.draw(batch, n, it.x * dim + 5, screenHeight - (it.y * dim) - 32 + 16);
+            batch.draw(box, it.x * dim, screenHeight - (it.y * dim) - dim);
+            font.draw(batch, n, it.x * dim + 5, screenHeight - (it.y * dim) - dim + (dim/2));
         }
 
         batch.end();
@@ -211,7 +211,7 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
     @Override
     public boolean keyUp(int keycode) {
         if (keycode == Keys.SPACE) {
-            new PopupDialog(this.skin, this.gridItems).show(stage);
+            //new PopupDialog(this.skin, this.gridItems).show(stage);
         }
         return false;
     }
@@ -315,7 +315,7 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
         System.out.println("Writing: number of sprites: " + packedRects.size());
 
         try {
-            mrp.writePackFileWithRects(new File("."), "sprites-atlas.txt", packedRects, "sprites.png");
+            mrp.writePackFileWithRects(new File("."), "sprites-atlas.txt", packedRects, "assets/tilemaps/tiles-enhanced-vga.png");
         } catch (IOException e) {
             e.printStackTrace();
         }

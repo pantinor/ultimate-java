@@ -1710,6 +1710,13 @@ sea_serpent
   orig: 32, 32
   offset: 0, 0
   index: 2
+sea_serpent
+  rotate: false
+  xy: 608, 576
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 3
 secret_door
   rotate: false
   xy: 128, 416
@@ -2195,18 +2202,32 @@ water
   index: 7
 whirlpool
   rotate: false
-  xy: 288, 160
+  xy: 256, 544
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 0
 whirlpool
   rotate: false
-  xy: 288, 192
+  xy: 288, 544
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
+whirlpool
+  rotate: false
+  xy: 320, 544
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+whirlpool
+  rotate: false
+  xy: 352, 544
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 3
 wisp
   rotate: false
   xy: 448, 320

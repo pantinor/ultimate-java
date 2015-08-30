@@ -472,7 +472,7 @@ public class GeneratedDungeonScreen extends BaseScreen {
         DungeonTile tile = dungeonTiles[currentLevel][x][y];
         TiledMap tmap = new UltimaTiledMapLoader(tile.getCombatMap(), GameScreen.standardAtlas, 11, 11, GameScreen.TILE_DIM, GameScreen.TILE_DIM).load();
         GameScreen.context.setCurrentTiledMap(tmap);
-        CombatScreen sc = new CombatScreen(this, GameScreen.context, contextMap, tile.getCombatMap().getMap(), tmap, cr.getTile(), GameScreen.creatures, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+        CombatScreen sc = new CombatScreen(this, GameScreen.context, contextMap, tile.getCombatMap().getMap(), tmap, cr.getTile(), GameScreen.creatures, GameScreen.standardAtlas);
         mainGame.setScreen(sc);
         currentEncounter = cr;
     }
@@ -679,7 +679,7 @@ public class GeneratedDungeonScreen extends BaseScreen {
             sip.setinitialKeyCode(keycode, tile, x, y);
 
         } else if (keycode == Keys.H) {
-            CombatScreen.holeUp(this.dngMap, x, y, this, GameScreen.context, GameScreen.creatures, GameScreen.standardAtlas, GameScreen.enhancedAtlas);
+            CombatScreen.holeUp(this.dngMap, x, y, this, GameScreen.context, GameScreen.creatures, GameScreen.standardAtlas);
             return false;
 
         } else if (keycode == Keys.V) {
@@ -936,7 +936,7 @@ public class GeneratedDungeonScreen extends BaseScreen {
                 }
             }
 
-            creature = GameScreen.creatures.getInstance(monster, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+            creature = GameScreen.creatures.getInstance(monster, GameScreen.standardAtlas);
         }
 
         if (creature != null) {

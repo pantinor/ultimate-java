@@ -845,6 +845,7 @@ public class Party extends Observable implements Constants {
         }
 
         if ((saveGame.food == 0)) {
+            members.get(0).applyDamage(1, false);
             setChanged();
             notifyObservers(PartyEvent.STARVING);
         }

@@ -513,7 +513,7 @@ public class BaseMap implements Constants {
                         int dist = Utils.movementDistance(borderbehavior, width, height, p.getX(), p.getY(), avatarX, avatarY);
                         if (dist <= 1) {
                             Maps cm = GameScreen.context.getCombatMap(p.getEmulatingCreature(), this, p.getX(), p.getY(), avatarX, avatarY);
-                            Creature attacker = GameScreen.creatures.getInstance(p.getEmulatingCreature().getTile(), GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+                            Creature attacker = GameScreen.creatures.getInstance(p.getEmulatingCreature().getTile(), GameScreen.standardAtlas);
                             attacker.currentX = p.getX();
                             attacker.currentY = p.getY();
                             attacker.currentPos = screen.getMapPixelCoords(p.getX(), p.getY());

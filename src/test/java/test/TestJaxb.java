@@ -52,6 +52,10 @@ import vendor.VendorClassSet;
 
 import com.badlogic.gdx.math.Vector3;
 import com.google.common.io.LittleEndianDataInputStream;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import org.testng.annotations.Test;
 import ultima.Constants.MapType;
 import static ultima.DungeonScreen.DUNGEON_MAP;
@@ -212,7 +216,7 @@ public class TestJaxb {
         for (Person p : people) {
             System.out.println(p);
         }
-        
+
         System.out.printf("Latitude [%s' %s]", (char) ((int) 54 / 16 + 'A'), (char) ((int) 54 % 16 + 'A'));
         System.out.printf(" Longitude [%s' %s]\n", (char) ((int) 182 / 16 + 'A'), (char) ((int) 182 % 16 + 'A'));
 
@@ -297,9 +301,9 @@ public class TestJaxb {
 
         sg.items |= Item.PARCH.getLoc();
         for (Item item : Constants.Item.values()) {
-            System.err.println((sg.items & item.getLoc()) > 0 ? item.getDesc() : "") ;
+            System.err.println((sg.items & item.getLoc()) > 0 ? item.getDesc() : "");
         }
- 
+
         sg.lastrage = 1;
 
         sg.write("test.sav");
@@ -333,10 +337,10 @@ public class TestJaxb {
             }
         }
 
-		vt[1][1] = 1f;
-		vt[1][6] = 1f;
-		vt[6][6] = 1f;
-		vt[6][1] = 1f;
+        vt[1][1] = 1f;
+        vt[1][6] = 1f;
+        vt[6][6] = 1f;
+        vt[6][1] = 1f;
         SpreadFOV fov = new SpreadFOV(dim, dim, true);
 
         float[][] los = fov.calculateFOV(vt, startx, starty, 10);
@@ -687,5 +691,17 @@ public class TestJaxb {
 
         return v;
     }
+
+    //@Test
+    public void testUnrar() throws Exception {
+
+        File filename = new File("C:\\Users\\Paul\\Desktop\\water\\Ocean_ice_stones_desert.rar");
+        File outDir = new File("C:\\Users\\Paul\\Desktop\\water");
+
+        ExtractRARArchive.extractArchive(filename, outDir);
+        
+    }
+    
+
 
 }

@@ -34,7 +34,7 @@ public class HorseService extends BaseVendor {
                 party.adjustGold(-currentSelectedItem.getPrice());
                 displayToScreen("Here, a better breed thou shalt not find ever!");
                 if (screen != null) {
-                    Creature cr = GameScreen.creatures.getInstance(CreatureType.horse, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+                    Creature cr = GameScreen.creatures.getInstance(CreatureType.horse, GameScreen.standardAtlas);
                     Vector3 v = screen.getCurrentMapCoords();
                     cr.currentX = (int) v.x;
                     cr.currentY = (int) v.y;

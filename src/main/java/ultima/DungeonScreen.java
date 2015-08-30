@@ -63,7 +63,7 @@ import com.badlogic.gdx.utils.UBJsonReader;
 public class DungeonScreen extends BaseScreen {
 
     public Maps dngMap;
-    private String dungeonFileName;
+    private final String dungeonFileName;
     public GameScreen gameScreen;
 
     public Environment environment;
@@ -732,7 +732,7 @@ public class DungeonScreen extends BaseScreen {
         baseMap.setType(MapType.dungeon);
         baseMap.setPortals(dngMap.getMap().getPortals(loc.x, loc.y, loc.z));
 
-        CombatScreen sc = new CombatScreen(this, GameScreen.context, contextMap, baseMap, tiledMap, null, GameScreen.creatures, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+        CombatScreen sc = new CombatScreen(this, GameScreen.context, contextMap, baseMap, tiledMap, null, GameScreen.creatures, GameScreen.standardAtlas);
 
         if (loc.room.hasAltar) {
             sc.log("The Altar Room of " + loc.room.altarRoomVirtue.toString());
@@ -752,7 +752,7 @@ public class DungeonScreen extends BaseScreen {
 
             Tile t = GameScreen.baseTileSet.getTileByIndex(tile);
 
-            Creature c = GameScreen.creatures.getInstance(CreatureType.get(t.getName()), GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+            Creature c = GameScreen.creatures.getInstance(CreatureType.get(t.getName()), GameScreen.standardAtlas);
 
             c.currentX = startX;
             c.currentY = startY;
@@ -773,7 +773,7 @@ public class DungeonScreen extends BaseScreen {
         DungeonTile tile = dungeonTiles[currentLevel][x][y];
         TiledMap tmap = new UltimaTiledMapLoader(tile.getCombatMap(), GameScreen.standardAtlas, 11, 11, GameScreen.TILE_DIM, GameScreen.TILE_DIM).load();
         GameScreen.context.setCurrentTiledMap(tmap);
-        CombatScreen sc = new CombatScreen(this, GameScreen.context, contextMap, tile.getCombatMap().getMap(), tmap, cr.getTile(), GameScreen.creatures, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+        CombatScreen sc = new CombatScreen(this, GameScreen.context, contextMap, tile.getCombatMap().getMap(), tmap, cr.getTile(), GameScreen.creatures, GameScreen.standardAtlas);
         mainGame.setScreen(sc);
         currentEncounter = cr;
     }
@@ -1116,7 +1116,7 @@ public class DungeonScreen extends BaseScreen {
             sip.setinitialKeyCode(keycode, tile, x, y);
 
         } else if (keycode == Keys.H) {
-            CombatScreen.holeUp(this.dngMap, x, y, this, GameScreen.context, GameScreen.creatures, GameScreen.standardAtlas, GameScreen.enhancedAtlas);
+            CombatScreen.holeUp(this.dngMap, x, y, this, GameScreen.context, GameScreen.creatures, GameScreen.standardAtlas);
             return false;
 
         } else if (keycode == Keys.V) {
@@ -1462,7 +1462,7 @@ public class DungeonScreen extends BaseScreen {
                 }
             }
 
-            creature = GameScreen.creatures.getInstance(monster, GameScreen.enhancedAtlas, GameScreen.standardAtlas);
+            creature = GameScreen.creatures.getInstance(monster, GameScreen.standardAtlas);
         }
 
         if (creature != null) {

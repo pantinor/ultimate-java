@@ -40,30 +40,28 @@ public class CreatureSet {
         }
     }
 
-    public Creature getInstance(CreatureType type, TextureAtlas atlas1, TextureAtlas atlas2) {
+    public Creature getInstance(CreatureType type, TextureAtlas atlas1) {
         for (Creature cr : creatures) {
             if (cr.getTile() == type) {
 
                 Creature newCr = new Creature(cr);
 
                 Array<AtlasRegion> tr = atlas1.findRegions(cr.getTile().toString());
-                if (tr == null || tr.size == 0) {
-                    tr = atlas2.findRegions(cr.getTile().toString());
-                }
 
                 int frameRate = Utils.getRandomBetween(1, 3);
 
                 int fr = Utils.getRandomBetween(0, tr.size);
                 TextureRegion reg = tr.get(fr);
 
-                newCr.setAnim(new Animation(frameRate, reg));
+                //newCr.setAnim(new Animation(frameRate, reg));
+                newCr.setAnim(new Animation(frameRate, tr));
 
                 Decal d = Decal.newDecal(reg, true);
                 d.setScale(.018f);
                 newCr.setDecal(d);
 
                 if (type == CreatureType.pirate_ship) {
-                    newCr.setAnim(new Animation(frameRate, tr));
+                    //newCr.setAnim(new Animation(frameRate, tr));
                 }
 
                 return newCr;
