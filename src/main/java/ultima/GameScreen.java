@@ -48,6 +48,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -57,6 +58,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class GameScreen extends BaseScreen {
 
@@ -67,12 +69,11 @@ public class GameScreen extends BaseScreen {
     public static CreatureSet creatures;
     public static VendorClassSet vendorClassSet;
     public static TextureAtlas standardAtlas;
-    //public static TextureAtlas standardAtlas;
-    public static int TILE_DIM = 32;
 
     MapSet maps;
     TextureAtlas moonAtlas;
-
+    Texture backGround;
+    
     public static Animation mainAvatar;
     public static Animation avatarAnim;
     public static Animation corpseAnim;
@@ -87,7 +88,9 @@ public class GameScreen extends BaseScreen {
 
     public Stage mapObjectsStage;
     public Stage projectilesStage;
-
+    
+    private Viewport mapViewPort;
+    
     Array<AtlasRegion> moongateTextures = new Array<>();
     public static int phase = 0, trammelphase = 0, trammelSubphase = 0, feluccaphase = 0;
 
@@ -135,21 +138,23 @@ public class GameScreen extends BaseScreen {
             moongateTextures = standardAtlas.findRegions("moongate");
             //textures for the phases of  the moon
             moonAtlas = new TextureAtlas(Gdx.files.internal("assets/graphics/moon-atlas.txt"));
+            backGround = new Texture(Gdx.files.internal("assets/graphics/frame.png"));
 
-            //font = new BitmapFont(Gdx.files.classpath("fonts/Calisto_18.fnt"));
-            font = new BitmapFont();
-
+            font = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_18.fnt"));
             font.setColor(Color.WHITE);
+            
             batch = new SpriteBatch();
             batch.enableBlending();
+            
+            stage = new Stage(viewport);
 
-            mapCamera = new OrthographicCamera();
-            mapCamera.setToOrtho(false);
+            mapCamera = new OrthographicCamera(Ultima4.MAP_WIDTH, Ultima4.MAP_HEIGHT);
+            
+            mapViewPort = new ScreenViewport(mapCamera);
 
-            stage = new Stage(new ScreenViewport());
-            mapObjectsStage = new Stage(new ScreenViewport(mapCamera));
+            mapObjectsStage = new Stage(mapViewPort);
             Maps.WORLD.getMap().setSurfaceMapStage(mapObjectsStage);
-            projectilesStage = new Stage(new ScreenViewport(mapCamera));
+            projectilesStage = new Stage(mapViewPort);
 
             sip = new SecondaryInputProcessor(this, stage);
 
@@ -258,12 +263,13 @@ public class GameScreen extends BaseScreen {
 //            sg.food = 30000;
 //            sg.gold = 999;
 //            sg.keys = 20;
-//            sg.gems = 15;
+              sg.gems = 15;
 //            sg.moves = 2800;
 //            sg.stones = 0xff;
 //            sg.runes = 0xff;
 //            sg.items = 0xff;
-//
+              sg.sextants = 1;
+              
 //            party.getMember(0).getPlayer().status = StatusType.GOOD;
 //            party.getMember(0).getPlayer().xp = 899;
 //            party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
@@ -274,7 +280,6 @@ public class GameScreen extends BaseScreen {
 //            for (int i = 1; i < 8; i++) {
 //                party.getSaveGame().armor[i] = 2;
 //            }
-            //party.getSaveGame().sextants = 1;
             //mainAvatar = shipAnim;
             //sg.transport = 0x10;
             
@@ -283,8 +288,8 @@ public class GameScreen extends BaseScreen {
             //sg.items |= Constants.Item.BOOK.getLoc();
             
             //load the surface world first
-            loadNextMap(Maps.WORLD, sg.x, sg.y);
-            //loadNextMap(Maps.WORLD, 162, 247);
+            //loadNextMap(Maps.WORLD, sg.x, sg.y);
+            loadNextMap(Maps.WORLD, 128, 93);
 
             //load the dungeon if save game starts in dungeon
             if (Maps.get(sg.location) != Maps.WORLD) {
@@ -353,7 +358,7 @@ public class GameScreen extends BaseScreen {
 
         } else if (m.getMap().getType() == MapType.shrine) {
             BaseMap sm = m.getMap();
-            map = new UltimaTiledMapLoader(m, standardAtlas, sm.getWidth(), sm.getHeight(), TILE_DIM, TILE_DIM).load();
+            map = new UltimaTiledMapLoader(m, standardAtlas, sm.getWidth(), sm.getHeight(), tilePixelWidth, tilePixelHeight).load();
             context.setCurrentTiledMap(map);
             Virtue virtue = Virtue.get(sm.getId() - 25);
             ShrineScreen sc = new ShrineScreen(this, virtue, map, standardAtlas, standardAtlas);
@@ -365,25 +370,24 @@ public class GameScreen extends BaseScreen {
 
             bm.removeJoinedPartyMemberFromPeopleList(context.getParty());
 
-            map = new UltimaTiledMapLoader(m, standardAtlas, m.getMap().getWidth(), m.getMap().getHeight(), TILE_DIM, TILE_DIM).load();
+            map = new UltimaTiledMapLoader(m, standardAtlas, m.getMap().getWidth(), m.getMap().getHeight(), tilePixelWidth, tilePixelHeight).load();
             context.setCurrentTiledMap(map);
 
             if (renderer != null) {
                 renderer.dispose();
             }
-            renderer = new UltimaMapRenderer(standardAtlas, bm, map, 1f);//2f);
+            renderer = new UltimaMapRenderer(standardAtlas, bm, map, 1f);
 
             mapBatch = renderer.getBatch();
 
             MapProperties prop = map.getProperties();
-            mapPixelHeight = prop.get("height", Integer.class) * tilePixelWidth;
+            mapPixelHeight = prop.get("height", Integer.class) * tilePixelHeight;
 
             bm.initObjects(this, standardAtlas, standardAtlas);
 
             renderer.getFOV().calculateFOV(bm.getShadownMap(), x, y, 17f);
 
             newMapPixelCoords = getMapPixelCoords(x, y);
-            changeMapPosition = true;
         }
 
     }
@@ -397,7 +401,7 @@ public class GameScreen extends BaseScreen {
         Maps contextMap = Maps.get(context.getCurrentMap().getId());
         BaseMap combatMap = combat.getMap();
 
-        TiledMap tmap = new UltimaTiledMapLoader(combat, standardAtlas, combat.getMap().getWidth(), combat.getMap().getHeight(), GameScreen.TILE_DIM, GameScreen.TILE_DIM).load();
+        TiledMap tmap = new UltimaTiledMapLoader(combat, standardAtlas, combat.getMap().getWidth(), combat.getMap().getHeight(), tilePixelWidth, tilePixelHeight).load();
 
         CombatScreen sc = new CombatScreen(this, context, contextMap, combatMap, tmap, cr.getTile(), creatures, standardAtlas);
         mainGame.setScreen(sc);
@@ -471,7 +475,19 @@ public class GameScreen extends BaseScreen {
 
         throw new RuntimeException("Party Death");
     }
+    
+    @Override
+    public Vector3 getMapPixelCoords(int x, int y) {
+        Vector3 v = new Vector3(x * tilePixelWidth, mapPixelHeight - y*tilePixelHeight - tilePixelHeight, 0);
+        return v;
+    }
 
+    @Override
+    public Vector3 getCurrentMapCoords() {
+        Vector3 v = mapCamera.unproject(new Vector3(tilePixelWidth*12, tilePixelHeight*12, 0), 32, 64, Ultima4.MAP_WIDTH, Ultima4.MAP_HEIGHT);
+        return new Vector3(Math.round(v.x / tilePixelWidth)-6, (mapPixelHeight - Math.round(v.y) - tilePixelHeight) / tilePixelHeight, 0);
+    }
+    
     @Override
     public void render(float delta) {
 
@@ -482,26 +498,31 @@ public class GameScreen extends BaseScreen {
         if (renderer == null) {
             return;
         }
+        
+        batch.begin();
+        batch.draw(backGround, 0, 0);
+        batch.end();
 
-        if (changeMapPosition) {
-            mapCamera.position.set(newMapPixelCoords);
-            changeMapPosition = false;
-        }
+        mapCamera.position.set(newMapPixelCoords.x+5*tilePixelWidth,newMapPixelCoords.y,0);
 
         mapCamera.update();
-        renderer.setView(mapCamera);
-
-        Vector3 avatarCoord = getCurrentMapCoords();
-        renderer.render((int) avatarCoord.x, (int) avatarCoord.y);
+        
+        renderer.setView(mapCamera.combined, 
+                mapCamera.position.x - tilePixelWidth*15, //this is voodoo
+                mapCamera.position.y - tilePixelHeight*10, 
+                Ultima4.MAP_WIDTH-32, 
+                Ultima4.MAP_HEIGHT-64);
+        
+        renderer.render();
 
         mapBatch.begin();
-
+        
         if (context.getCurrentMap().getMoongates() != null) {
             for (Moongate g : context.getCurrentMap().getMoongates()) {
                 TextureRegion t = g.getCurrentTexture();
                 if (t != null) {
                     Vector3 v = getMapPixelCoords(g.getX(), g.getY());
-                    mapBatch.draw(t, v.x, v.y, tilePixelWidth, tilePixelHeight);
+                    mapBatch.draw(t, v.x, v.y);
                 }
             }
         }
@@ -512,11 +533,14 @@ public class GameScreen extends BaseScreen {
         mapObjectsStage.draw();
 
         batch.begin();
+        
+        batch.draw(mainAvatar.getKeyFrames()[avatarDirection], tilePixelWidth * 11, tilePixelHeight * 12);
 
         //Vector3 v = getCurrentMapCoords();
-        //font.draw(batch, "map coords: " + v, 10, 500);
-        //font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 0, 20);
-        //font.draw(batch, "mouse: " + currentMousePos, 10, 70);
+        //font.draw(batch, String.format("newMapPixelCoords: %d, %d", (int)newMapPixelCoords.x, (int)newMapPixelCoords.y), 10, 500);
+        //font.draw(batch, String.format("current map coords: %d, %d", (int)v.x, (int)v.y), 10, 480);
+        //font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 10, 460);
+        
         Ultima4.hud.render(batch, context.getParty());
 
         font.setColor(Color.WHITE);
@@ -525,20 +549,16 @@ public class GameScreen extends BaseScreen {
         }
 
         if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
-            batch.draw(moonAtlas.findRegion("phase_" + trammelphase), 375, Ultima4.SCREEN_HEIGHT - 25, 25, 25);
-            batch.draw(moonAtlas.findRegion("phase_" + feluccaphase), 400, Ultima4.SCREEN_HEIGHT - 25, 25, 25);
-            font.draw(batch, "Wind " + context.getWindDirection().toString(), 375, 15);
+            batch.draw(moonAtlas.findRegion("phase_" + trammelphase), 352, Ultima4.SCREEN_HEIGHT - 30, 25, 25);
+            batch.draw(moonAtlas.findRegion("phase_" + feluccaphase), 384, Ultima4.SCREEN_HEIGHT - 30, 25, 25);
+            font.draw(batch, "Wind  " + context.getWindDirection().toString(), 305, 36);
         }
 
         if (context.getAura().getType() != AuraType.NONE) {
-            font.draw(batch, context.getAura().getType().toString(), 430, Ultima4.SCREEN_HEIGHT - 7);
+            font.draw(batch, context.getAura().getType().toString(), 200, Ultima4.SCREEN_HEIGHT - 32);
         }
 
         batch.end();
-
-        mapBatch.begin();
-        mapBatch.draw(mainAvatar.getKeyFrames()[avatarDirection], mapCamera.position.x, mapCamera.position.y, tilePixelWidth, tilePixelHeight);
-        mapBatch.end();
 
         projectilesStage.act();
         projectilesStage.draw();
@@ -548,6 +568,12 @@ public class GameScreen extends BaseScreen {
 
     }
 
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, false);
+        mapViewPort.update(width, height, false);
+    }
+    
     @Override
     public boolean keyUp(int keycode) {
 
@@ -565,11 +591,11 @@ public class GameScreen extends BaseScreen {
             if (!preMove(v, Direction.NORTH)) {
                 return false;
             }
-            if (mapCamera.position.y + tilePixelHeight > context.getCurrentMap().getHeight() * tilePixelHeight) {
-                mapCamera.position.y = 0;
-                postMove(Direction.NORTH, (int) v.x, context.getCurrentMap().getHeight());
+            if (newMapPixelCoords.y + tilePixelHeight >= context.getCurrentMap().getHeight() * tilePixelHeight) {
+                newMapPixelCoords.y = 0;
+                postMove(Direction.NORTH, (int) v.x, context.getCurrentMap().getHeight()-1);
             } else {
-                mapCamera.position.y = mapCamera.position.y + tilePixelHeight;
+                newMapPixelCoords.y = newMapPixelCoords.y + tilePixelHeight;
                 postMove(Direction.NORTH, (int) v.x, (int) v.y - 1);
             }
             avatarDirection = Direction.NORTH.getVal() - 1;
@@ -582,11 +608,11 @@ public class GameScreen extends BaseScreen {
             if (!preMove(v, Direction.EAST)) {
                 return false;
             }
-            if (mapCamera.position.x + tilePixelWidth > context.getCurrentMap().getWidth() * tilePixelWidth) {
-                mapCamera.position.x = 0;
+            if (newMapPixelCoords.x + tilePixelWidth >= context.getCurrentMap().getWidth() * tilePixelWidth) {
+                newMapPixelCoords.x = 0;
                 postMove(Direction.EAST, 0, (int) v.y);
             } else {
-                mapCamera.position.x = mapCamera.position.x + tilePixelWidth;
+                newMapPixelCoords.x = newMapPixelCoords.x + tilePixelWidth;
                 postMove(Direction.EAST, (int) v.x + 1, (int) v.y);
             }
             avatarDirection = Direction.EAST.getVal() - 1;
@@ -599,11 +625,11 @@ public class GameScreen extends BaseScreen {
             if (!preMove(v, Direction.WEST)) {
                 return false;
             }
-            if (mapCamera.position.x - tilePixelWidth < 0) {
-                mapCamera.position.x = context.getCurrentMap().getWidth() * tilePixelWidth;
-                postMove(Direction.WEST, context.getCurrentMap().getWidth(), (int) v.y);
+            if (newMapPixelCoords.x - tilePixelWidth < 0) {
+                newMapPixelCoords.x = (context.getCurrentMap().getWidth()-1) * tilePixelWidth;
+                postMove(Direction.WEST, context.getCurrentMap().getWidth()-1, (int) v.y);
             } else {
-                mapCamera.position.x = mapCamera.position.x - tilePixelWidth;
+                newMapPixelCoords.x = newMapPixelCoords.x - tilePixelWidth;
                 postMove(Direction.WEST, (int) v.x - 1, (int) v.y);
             }
             avatarDirection = Direction.WEST.getVal() - 1;
@@ -616,11 +642,11 @@ public class GameScreen extends BaseScreen {
             if (!preMove(v, Direction.SOUTH)) {
                 return false;
             }
-            if (mapCamera.position.y - tilePixelHeight < 0) {
-                mapCamera.position.y = context.getCurrentMap().getHeight() * tilePixelHeight;
+            if (newMapPixelCoords.y - tilePixelHeight < 0) {
+                newMapPixelCoords.y = (context.getCurrentMap().getHeight()-1) * tilePixelHeight;
                 postMove(Direction.SOUTH, (int) v.x, 0);
             } else {
-                mapCamera.position.y = mapCamera.position.y - tilePixelHeight;
+                newMapPixelCoords.y = newMapPixelCoords.y - tilePixelHeight;
                 postMove(Direction.SOUTH, (int) v.x, (int) v.y + 1);
             }
             avatarDirection = Direction.SOUTH.getVal() - 1;
@@ -738,8 +764,8 @@ public class GameScreen extends BaseScreen {
             if (context.getTransportContext() == TransportContext.SHIP) {
                 Tile st = baseTileSet.getTileByName("ship");
                 Drawable ship = new Drawable(context.getCurrentMap(), (int) v.x, (int) v.y, st, standardAtlas);
-                ship.setX(mapCamera.position.x);
-                ship.setY(mapCamera.position.y);
+                ship.setX(newMapPixelCoords.x);
+                ship.setY(newMapPixelCoords.y);
                 mapObjectsStage.addActor(ship);
             } else if (context.getTransportContext() == TransportContext.HORSE) {
                 Creature cr = GameScreen.creatures.getInstance(CreatureType.horse, GameScreen.standardAtlas);
@@ -874,7 +900,6 @@ public class GameScreen extends BaseScreen {
                     Vector3 d = getDestinationForMoongate(g);
                     if (d != null) {
                         newMapPixelCoords = getMapPixelCoords((int) d.x, (int) d.y);
-                        changeMapPosition = true;
                     }
                 }
             }
@@ -891,6 +916,7 @@ public class GameScreen extends BaseScreen {
         log(dir.toString());
     }
 
+    @Override
     public void finishTurn(int currentX, int currentY) {
 
         try {

@@ -14,7 +14,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import ultima.GameScreen;
 
 public class DungeonRoomTiledMapLoader implements Constants {
 
@@ -32,8 +31,8 @@ public class DungeonRoomTiledMapLoader implements Constants {
         this.room = room;
         this.mapWidth = 11;
         this.mapHeight = 11;
-        this.tileWidth = GameScreen.TILE_DIM;
-        this.tileHeight = GameScreen.TILE_DIM;
+        this.tileWidth = tilePixelWidth;
+        this.tileHeight = tilePixelHeight;
         this.entryDir = entryDir;
     }
 

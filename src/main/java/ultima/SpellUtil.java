@@ -284,7 +284,6 @@ public class SpellUtil implements Constants {
                 }
 
                 gameScreen.newMapPixelCoords = gameScreen.getMapPixelCoords(x, y);
-                gameScreen.changeMapPosition = true;
                 gameScreen.recalcFOV(bm, x, y);
 
             } else {
@@ -401,7 +400,6 @@ public class SpellUtil implements Constants {
                 if (g.getPhase() == phase) {
                     Vector3 dest = new Vector3(g.getX(), g.getY(), 0);
                     gameScreen.newMapPixelCoords = gameScreen.getMapPixelCoords((int) dest.x, (int) dest.y);
-                    gameScreen.changeMapPosition = true;
                     break;
                 }
             }

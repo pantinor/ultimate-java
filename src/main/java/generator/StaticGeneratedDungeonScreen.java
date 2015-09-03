@@ -505,7 +505,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         }
         Maps contextMap = Maps.get(dngMap.getId());
         DungeonTile tile = dungeonTiles[currentLevel][x][y];
-        TiledMap tmap = new UltimaTiledMapLoader(tile.getCombatMap(), GameScreen.standardAtlas, 11, 11, GameScreen.TILE_DIM, GameScreen.TILE_DIM).load();
+        TiledMap tmap = new UltimaTiledMapLoader(tile.getCombatMap(), GameScreen.standardAtlas, 11, 11, tilePixelWidth, tilePixelHeight).load();
         GameScreen.context.setCurrentTiledMap(tmap);
         CombatScreen sc = new CombatScreen(this, GameScreen.context, contextMap, tile.getCombatMap().getMap(), tmap, cr.getTile(), GameScreen.creatures, GameScreen.standardAtlas);
         mainGame.setScreen(sc);
@@ -1161,6 +1161,16 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
             Gdx.input.setInputProcessor(new InputMultiplexer(StaticGeneratedDungeonScreen.this, stage));
             return false;
         }
+    }
+    
+    @Override
+    public Vector3 getMapPixelCoords(int x, int y) {
+        return null;
+    }
+
+    @Override
+    public Vector3 getCurrentMapCoords() {
+        return null;
     }
 
 }

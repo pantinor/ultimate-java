@@ -416,6 +416,16 @@ public class DungeonScreen extends BaseScreen {
         }
         font.dispose();
     }
+    
+    @Override
+    public Vector3 getMapPixelCoords(int x, int y) {
+        return null;
+    }
+
+    @Override
+    public Vector3 getCurrentMapCoords() {
+        return null;
+    }
 
     @Override
     public void render(float delta) {
@@ -771,7 +781,7 @@ public class DungeonScreen extends BaseScreen {
         }
         Maps contextMap = Maps.get(dngMap.getId());
         DungeonTile tile = dungeonTiles[currentLevel][x][y];
-        TiledMap tmap = new UltimaTiledMapLoader(tile.getCombatMap(), GameScreen.standardAtlas, 11, 11, GameScreen.TILE_DIM, GameScreen.TILE_DIM).load();
+        TiledMap tmap = new UltimaTiledMapLoader(tile.getCombatMap(), GameScreen.standardAtlas, 11, 11, tilePixelWidth, tilePixelHeight).load();
         GameScreen.context.setCurrentTiledMap(tmap);
         CombatScreen sc = new CombatScreen(this, GameScreen.context, contextMap, tile.getCombatMap().getMap(), tmap, cr.getTile(), GameScreen.creatures, GameScreen.standardAtlas);
         mainGame.setScreen(sc);
@@ -844,7 +854,6 @@ public class DungeonScreen extends BaseScreen {
                         sc.restoreSaveGameLocation(p.getStartx(), p.getStarty(), p.getStartlevel(), currentDir);
                         mainGame.setScreen(sc);
                         this.gameScreen.newMapPixelCoords = this.gameScreen.getMapPixelCoords(p.getRetroActiveDest().getX(), p.getRetroActiveDest().getY());
-                        this.gameScreen.changeMapPosition = true;
                         return;
                     }
                 }

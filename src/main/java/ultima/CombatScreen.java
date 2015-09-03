@@ -50,6 +50,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -57,6 +58,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class CombatScreen extends BaseScreen {
 
@@ -79,8 +81,9 @@ public class CombatScreen extends BaseScreen {
     private OrthogonalTiledMapRenderer renderer;
     private SpriteBatch batch;
     private SecondaryInputProcessor sip;
+    private Texture backGround;
 
-    private Random rand = new Random();
+    private Viewport mapViewPort;
 
     public CombatScreen(BaseScreen returnScreen, Context context, Maps contextMap,
             BaseMap combatMap, TiledMap tmap, CreatureType cr, CreatureSet cs, TextureAtlas a1) {
@@ -102,18 +105,21 @@ public class CombatScreen extends BaseScreen {
         renderer = new OrthogonalTiledMapRenderer(tmap, 1f);
 
         MapProperties prop = tmap.getProperties();
-        mapPixelHeight = prop.get("height", Integer.class) * tilePixelWidth;
+        mapPixelHeight = prop.get("height", Integer.class) * tilePixelHeight;
 
-        mapCamera = new OrthographicCamera();
-        mapCamera.setToOrtho(false);
+        mapCamera = new OrthographicCamera(11*tilePixelWidth, 11*tilePixelHeight);
+        
+        mapViewPort = new ScreenViewport(mapCamera);
+        
         stage = new Stage();
-        stage.setViewport(new ScreenViewport(mapCamera));
+        stage.setViewport(mapViewPort);
 
         cursor = new CursorActor();
         stage.addActor(cursor);
         cursor.addAction(forever(sequence(fadeOut(1), fadeIn(1))));
 
         batch = new SpriteBatch();
+        backGround = new Texture(Gdx.files.internal("assets/graphics/frame.png"));
 
         font = new BitmapFont();
         font.setColor(Color.WHITE);
@@ -174,7 +180,6 @@ public class CombatScreen extends BaseScreen {
         combatMap.setCombatPlayers(party.getMembers());
 
         newMapPixelCoords = getMapPixelCoords(5, 5);
-        changeMapPosition = true;
     }
 
     @Override
@@ -300,6 +305,17 @@ public class CombatScreen extends BaseScreen {
         returnScreen.currentEncounter.currentPos = returnScreen.getMapPixelCoords(x, y);
 
     }
+    
+    @Override
+    public Vector3 getMapPixelCoords(int x, int y) {
+        Vector3 v = new Vector3(x * tilePixelWidth, mapPixelHeight - y * tilePixelHeight - tilePixelHeight, 0);
+        return v;
+    }
+
+    @Override
+    public Vector3 getCurrentMapCoords() {
+        return null;
+    }
 
     @Override
     public void render(float delta) {
@@ -307,14 +323,21 @@ public class CombatScreen extends BaseScreen {
         time += delta;
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        
+        batch.begin();
+        batch.draw(backGround, 0, 0);
+        batch.end();
 
-        if (changeMapPosition) {
-            mapCamera.position.set(newMapPixelCoords);
-            changeMapPosition = false;
-        }
+        mapCamera.position.set(newMapPixelCoords.x+5*tilePixelWidth,newMapPixelCoords.y,0);
 
         mapCamera.update();
-        renderer.setView(mapCamera);
+        
+        renderer.setView(mapCamera.combined, 
+                mapCamera.position.x - tilePixelWidth*10, //this is voodoo
+                mapCamera.position.y - tilePixelHeight*10, 
+                Ultima4.MAP_WIDTH-32, 
+                Ultima4.MAP_HEIGHT-64);
+        
         renderer.render();
 
         renderer.getBatch().begin();
@@ -322,24 +345,25 @@ public class CombatScreen extends BaseScreen {
             if (cr.currentPos == null || !cr.getVisible()) {
                 continue;
             }
-            renderer.getBatch().draw(cr.getAnim().getKeyFrame(time, true), cr.currentPos.x, cr.currentPos.y, tilePixelWidth, tilePixelHeight);
+            renderer.getBatch().draw(cr.getAnim().getKeyFrame(time, true), cr.currentPos.x, cr.currentPos.y);
         }
 
         for (PartyMember p : party.getMembers()) {
             if (p.combatCr == null || p.combatCr.currentPos == null || p.fled) {
                 continue;
             }
+            
             if (p.getPlayer().status != StatusType.DEAD && p.getPlayer().status != StatusType.SLEEPING) {
-                renderer.getBatch().draw(p.combatCr.getAnim().getKeyFrame(time, true), p.combatCr.currentPos.x, p.combatCr.currentPos.y, tilePixelWidth, tilePixelHeight);
+                renderer.getBatch().draw(p.combatCr.getAnim().getKeyFrame(time, true), p.combatCr.currentPos.x, p.combatCr.currentPos.y);
             } else {
-                renderer.getBatch().draw(corpse, p.combatCr.currentPos.x, p.combatCr.currentPos.y, tilePixelWidth, tilePixelHeight);
+                renderer.getBatch().draw(corpse, p.combatCr.currentPos.x, p.combatCr.currentPos.y);
             }
         }
 
         renderer.getBatch().end();
 
         batch.begin();
-
+        
         Ultima4.hud.render(batch, party);
 
         font.setColor(Color.WHITE);
@@ -356,6 +380,11 @@ public class CombatScreen extends BaseScreen {
         stage.act();
         stage.draw();
 
+    }
+    
+    @Override
+    public void resize(int width, int height) {
+        mapViewPort.update(width, height, false);
     }
 
     @Override
@@ -1221,10 +1250,10 @@ public class CombatScreen extends BaseScreen {
         TiledMap tmap;
         if (contextMap == Maps.WORLD) {
             campMap = Maps.CAMP_CON.getMap();
-            tmap = new UltimaTiledMapLoader(Maps.CAMP_CON, sa, campMap.getWidth(), campMap.getHeight(), GameScreen.TILE_DIM, GameScreen.TILE_DIM).load();
+            tmap = new UltimaTiledMapLoader(Maps.CAMP_CON, sa, campMap.getWidth(), campMap.getHeight(), tilePixelWidth, tilePixelHeight).load();
         } else {
             campMap = Maps.CAMP_DNG.getMap();
-            tmap = new UltimaTiledMapLoader(Maps.CAMP_DNG, sa, campMap.getWidth(), campMap.getHeight(), GameScreen.TILE_DIM, GameScreen.TILE_DIM).load();
+            tmap = new UltimaTiledMapLoader(Maps.CAMP_DNG, sa, campMap.getWidth(), campMap.getHeight(), tilePixelWidth, tilePixelHeight).load();
         }
 
         context.setCurrentTiledMap(tmap);

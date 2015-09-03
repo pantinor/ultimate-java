@@ -92,7 +92,7 @@ public class SpreadFOV implements FOVSolver {
                 if (distance <= radius) {
                     float surroundingLight = getNearLight(x, y);
                     if (lightMap[col][row] < surroundingLight) {
-                        lightMap[col][row] = surroundingLight;
+                        lightMap[col][row] = 1;//surroundingLight;
                         lightSurroundings(col, row);
                     }
                 }

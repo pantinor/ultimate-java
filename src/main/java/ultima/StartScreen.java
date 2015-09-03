@@ -56,8 +56,8 @@ public class StartScreen implements Screen, InputProcessor, Constants {
     String currentQuestion = null;
     public static int[] questionTree = new int[15];
 
-    static List<Sprite> whiteBeads = new ArrayList<Sprite>();
-    static List<Sprite> blackBeads = new ArrayList<Sprite>();
+    static List<Sprite> whiteBeads = new ArrayList<>();
+    static List<Sprite> blackBeads = new ArrayList<>();
 
     int GYP_PLACES_FIRST = 0;
     int GYP_PLACES_TWOMORE = 1;
@@ -90,8 +90,8 @@ public class StartScreen implements Screen, InputProcessor, Constants {
         TextureAtlas ba = new TextureAtlas(Gdx.files.internal("assets/graphics/beasties-atlas.txt"));
         Array<AtlasRegion> anim1 = ba.findRegions("beast");
         Array<AtlasRegion> anim2 = ba.findRegions("dragon");
-        Array<AtlasRegion> tmp1 = new Array<AtlasRegion>(beast1FrameIndexes.length);
-        Array<AtlasRegion> tmp2 = new Array<AtlasRegion>(beast2FrameIndexes.length);
+        Array<AtlasRegion> tmp1 = new Array<>(beast1FrameIndexes.length);
+        Array<AtlasRegion> tmp2 = new Array<>(beast2FrameIndexes.length);
         for (int i = 0; i < beast1FrameIndexes.length; i++) {
             tmp1.add(anim1.get(beast1FrameIndexes[i]));
         }

@@ -40,6 +40,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 
 public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constants {
 
@@ -74,11 +75,12 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
         return this.fov;
     }
 
-    public void render(int avatarX, int avatarY) {
+    @Override
+    public void render() {
         beginRender();
         for (MapLayer layer : map.getLayers()) {
             if (layer.isVisible()) {
-                renderTileLayer((TiledMapTileLayer) layer, avatarX, avatarY);
+                renderTileLayer((TiledMapTileLayer) layer);
             }
         }
         endRender();
@@ -86,15 +88,11 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 
     @Override
     public void renderTileLayer(TiledMapTileLayer layer) {
-        //nothing
-    }
-
-    public void renderTileLayer(TiledMapTileLayer layer, int avatarX, int avatarY) {
 
         stateTime += Gdx.graphics.getDeltaTime();
 
         Color batchColor = batch.getColor();
-        float color = Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, batchColor.a * layer.getOpacity());
+        float color = 0;//Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, batchColor.a * layer.getOpacity());
 
         int layerWidth = layer.getWidth();
         int layerHeight = layer.getHeight();
@@ -246,9 +244,9 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
         }
     }
 
-    public float getColor(Color batchColor, int x, int y) {
+    private float getColor(Color batchColor, int x, int y) {
 
-        if (GameScreen.context.getParty().getSaveGame().balloonstate == 1) {
+        if (GameScreen.context != null && GameScreen.context.getTransportContext() == TransportContext.BALLOON) {
             return Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, 1f);
         }
 
@@ -267,15 +265,24 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
             val = val > .85f ? 1f : val;
             return Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, val);
         }
+        
+        //return Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, 1f);
 
     }
 
-    public void draw(TextureRegion region, float x, float y, int locX, int locY) {
+    private void draw(TextureRegion region, float x, float y, int locX, int locY) {
 
         float x1 = x;
         float y1 = y;
-        float x2 = x1 + 32;
-        float y2 = y1 + 32;
+        float x2 = x1 + tilePixelWidth;
+        float y2 = y1 + tilePixelHeight;
+        
+        Rectangle bounds = new Rectangle();
+
+        bounds.set(x1, y1, tilePixelWidth, tilePixelHeight);
+        if (!viewBounds.contains(bounds)) {
+            return;
+        }
 
         float u1 = region.getU();
         float v1 = region.getV2();

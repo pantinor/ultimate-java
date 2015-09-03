@@ -32,7 +32,6 @@ public class InnService extends BaseVendor {
                 party.adjustGold(-currentSelectedItem.getPrice());
                 if (screen != null) {
                     ((GameScreen) screen).newMapPixelCoords = screen.getMapPixelCoords(currentSelectedItem.getRoomX(), currentSelectedItem.getRoomY());
-                    ((GameScreen) screen).changeMapPosition = true;
                 }
                 displayToScreen("Very good. Have a pleasant night.");
                 if (Utils.rand.nextInt(4) == 0) {

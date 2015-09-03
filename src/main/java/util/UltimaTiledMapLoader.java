@@ -70,6 +70,9 @@ public class UltimaTiledMapLoader implements Constants {
                 for (TextureAtlas.AtlasRegion r : tileRegions) {
                     ar.add(new StaticTiledMapTile(r));
                 }
+                if (ar.size == 0) {
+                    System.out.println(ct.getName());
+                }
 
                 TiledMapTile tmt = null;
                 if (tileRegions.size > 1) {

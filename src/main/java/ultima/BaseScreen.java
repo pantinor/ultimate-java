@@ -20,6 +20,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public abstract class BaseScreen implements Screen, InputProcessor, Constants, Observer {
 
@@ -41,9 +43,11 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 
     protected int mapPixelHeight;
     public Vector3 newMapPixelCoords;
-    public boolean changeMapPosition = false;
+    
+    protected Viewport viewport = new ScreenViewport();
 
     protected OrthographicCamera mapCamera;
+    
     protected int showZstats = 0;
 
     protected BitmapFont font;
@@ -51,36 +55,16 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
     protected Vector2 currentMousePos;
 
     protected Creature currentEncounter;
-
-    public int yDownPixel(float y) {
-        return mapPixelHeight - Math.round(y) - tilePixelHeight;
-    }
-
+    
     /**
      * translate map tile coords to world pixel coords
      */
-    public Vector3 getMapPixelCoords(int x, int y) {
-
-        Vector3 v = new Vector3(
-                x * tilePixelWidth,
-                yDownPixel((y) * tilePixelHeight),
-                0);
-
-        return v;
-    }
+    public abstract Vector3 getMapPixelCoords(int x, int y) ;
 
     /**
      * get the map coords at the camera center
      */
-    public Vector3 getCurrentMapCoords() {
-
-        Vector3 v = mapCamera.unproject(new Vector3(Ultima4.SCREEN_WIDTH / 2, Ultima4.SCREEN_HEIGHT / 2, 0));
-
-        return new Vector3(
-                Math.round((v.x) / tilePixelWidth),
-                Math.round(yDownPixel(v.y) / tilePixelHeight),
-                0);
-    }
+    public abstract Vector3 getCurrentMapCoords() ;
 
     @Override
     public void dispose() {
@@ -107,6 +91,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
     public void endCombat(boolean isWon, BaseMap combatMap) {
     }
 
+    @Override
     public void update(Observable obs, Object obj) {
         if (obj instanceof PartyEvent) {
             PartyEvent ev = (PartyEvent) obj;
@@ -167,6 +152,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 
     @Override
     public void resize(int width, int height) {
+        viewport.update(width, height, false);
     }
 
     @Override

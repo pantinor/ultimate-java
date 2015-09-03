@@ -19,6 +19,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -34,14 +35,13 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class ShrineScreen extends BaseScreen {
 
     private AvatarActor avatar;
     public Party party;
-    private Stage stage;
     private Virtue virtue;
-    private TiledMap tmap;
     private OrthogonalTiledMapRenderer renderer;
     private SpriteBatch batch;
     private SecondaryInputProcessor sip;
@@ -52,13 +52,15 @@ public class ShrineScreen extends BaseScreen {
     private String mantra;
     private StringBuilder buffer;
 
-    private Random rand = new Random();
-
     public static final int SHRINE_MEDITATION_INTERVAL = 100;
     public static final int MEDITATION_MANTRAS_PER_CYCLE = 16;
 
     private int completedCycles;
     private int cycles;
+    
+    private Texture backGround;
+
+    private Viewport mapViewPort;
 
     public ShrineScreen(BaseScreen returnScreen, Virtue virtue, TiledMap tmap, TextureAtlas a1, TextureAtlas a2) {
 
@@ -66,7 +68,6 @@ public class ShrineScreen extends BaseScreen {
 
         this.returnScreen = returnScreen;
         this.party = GameScreen.context.getParty();
-        this.tmap = tmap;
         this.virtue = virtue;
 
         renderer = new OrthogonalTiledMapRenderer(tmap, 1f);
@@ -74,11 +75,13 @@ public class ShrineScreen extends BaseScreen {
         MapProperties prop = tmap.getProperties();
         mapPixelHeight = prop.get("height", Integer.class) * tilePixelWidth;
 
-        mapCamera = new OrthographicCamera();
-        mapCamera.setToOrtho(false);
+        mapCamera = new OrthographicCamera(11*tilePixelWidth, 11*tilePixelHeight);
+        
+        mapViewPort = new ScreenViewport(mapCamera);
+        
         stage = new Stage();
-        stage.setViewport(new ScreenViewport(mapCamera));
-
+        stage.setViewport(mapViewPort);
+        backGround = new Texture(Gdx.files.internal("assets/graphics/frame.png"));
         runeVisionAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/runes-visions.atlas"));
 
         Vector3 v1 = getMapPixelCoords(5, 10);
@@ -112,7 +115,6 @@ public class ShrineScreen extends BaseScreen {
         sip = new SecondaryInputProcessor(this, stage);
 
         newMapPixelCoords = getMapPixelCoords(5, 5);
-        changeMapPosition = true;
 
         log("You enter the ancient shrine and sit before the altar...");
 
@@ -138,13 +140,20 @@ public class ShrineScreen extends BaseScreen {
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if (changeMapPosition) {
-            mapCamera.position.set(newMapPixelCoords);
-            changeMapPosition = false;
-        }
+        batch.begin();
+        batch.draw(backGround, 0, 0);
+        batch.end();
+
+        mapCamera.position.set(newMapPixelCoords.x+5*tilePixelWidth,newMapPixelCoords.y,0);
 
         mapCamera.update();
-        renderer.setView(mapCamera);
+        
+        renderer.setView(mapCamera.combined, 
+                mapCamera.position.x - tilePixelWidth*10, //this is voodoo
+                mapCamera.position.y - tilePixelHeight*10, 
+                Ultima4.MAP_WIDTH-32, 
+                Ultima4.MAP_HEIGHT-64);
+        
         renderer.render();
 
         batch.begin();
@@ -159,6 +168,11 @@ public class ShrineScreen extends BaseScreen {
         stage.act();
         stage.draw();
 
+    }
+    
+    @Override
+    public void resize(int width, int height) {
+        mapViewPort.update(width, height, false);
     }
 
     @Override
@@ -361,6 +375,17 @@ public class ShrineScreen extends BaseScreen {
             }
             return false;
         }
+    }
+    
+    @Override
+    public Vector3 getMapPixelCoords(int x, int y) {
+        Vector3 v = new Vector3(x * tilePixelWidth, mapPixelHeight - y * tilePixelHeight - tilePixelHeight, 0);
+        return v;
+    }
+
+    @Override
+    public Vector3 getCurrentMapCoords() {
+        return null;
     }
 
 }

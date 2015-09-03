@@ -617,7 +617,6 @@ public class BaseMap implements Constants {
                         GameScreen.context.damageShip(-1, 10);
                         //teleport to lock lake
                         screen.newMapPixelCoords = screen.getMapPixelCoords(127, 78);
-                        screen.changeMapPosition = true;
                         i.remove();
                         continue;
                     } else if (cr.getTile() == CreatureType.twister) {

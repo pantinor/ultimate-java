@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 
 public class DeathScreen extends BaseScreen implements Constants {
@@ -90,6 +91,16 @@ public class DeathScreen extends BaseScreen implements Constants {
     public void finishTurn(int currentX, int currentY) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public Vector3 getMapPixelCoords(int x, int y) {
+        return null;
+    }
+
+    @Override
+    public Vector3 getCurrentMapCoords() {
+        return null;
     }
 
 }

@@ -12,9 +12,6 @@ import ultima.Constants.TransportContext;
 import ultima.Ultima4;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -22,32 +19,21 @@ import com.badlogic.gdx.utils.Align;
 
 public class LogDisplay {
 
-    Texture logbkgrnd, playbkgrnd;
-    List<String> logs = new FixedSizeArrayList<String>(7);
-    BitmapFont font;
+    final List<String> logs = new FixedSizeArrayList<>(21);
+    final BitmapFont font;
 
-    int width = 180;
-    int height = 18 * 7;
+    static final int LOG_AREA_WIDTH = 256;
+    static final int LOG_AREA_TOP = 408;
 
-    int pbh = 170;
-    int pbw = 142;
-
+    static final int LOG_X = 736;
+    
     public LogDisplay(BitmapFont font) {
-
         this.font = font;
-
-        Pixmap pixmap = getPixmapRoundedRectangle(width, height, 10, new Color(0.16f, 0.26f, 0.75f, 1f));//a blue color
-        logbkgrnd = new Texture(pixmap);
-        pixmap.dispose();
-
-        pixmap = getPixmapRoundedRectangle(pbw, pbh, 10, new Color(0.16f, 0.26f, 0.75f, 1f));//a blue color
-        playbkgrnd = new Texture(pixmap);
-        pixmap.dispose();
     }
 
     public void append(String s) {
         synchronized (logs) {
-            if (logs.size() == 0) {
+            if (logs.isEmpty()) {
                 logs.add("");
             }
             String l = logs.get(logs.size() - 1);
@@ -59,7 +45,7 @@ public class LogDisplay {
 
     public void logDeleteLastChar() {
         synchronized (logs) {
-            if (logs.size() == 0) {
+            if (logs.isEmpty()) {
                 return;
             }
             String l = logs.get(logs.size() - 1);
@@ -77,19 +63,18 @@ public class LogDisplay {
 
     public void render(Batch batch, Party party) {
 
-        batch.draw(playbkgrnd, Ultima4.SCREEN_WIDTH - pbw - 10, Ultima4.SCREEN_HEIGHT - pbh - 10);
 
         int food = party.getSaveGame().food / 100;
         font.setColor(food < 5 ? Color.RED : Color.WHITE);
-        font.draw(batch, "Food " + food, Ultima4.SCREEN_WIDTH - 140, Ultima4.SCREEN_HEIGHT - 10);
+        font.draw(batch, "Food  " + food, LOG_X + 8, 450);
         font.setColor(Color.WHITE);
         if (party.getContext().getTransportContext() == TransportContext.SHIP) {
-            font.draw(batch, "Hull " + party.getSaveGame().shiphull, Ultima4.SCREEN_WIDTH - 73, Ultima4.SCREEN_HEIGHT - 10);
+            font.draw(batch, "Hull  " + party.getSaveGame().shiphull, LOG_X + 8 + 120, 450);
         } else {
-            font.draw(batch, "Gold " + party.getSaveGame().gold, Ultima4.SCREEN_WIDTH - 73, Ultima4.SCREEN_HEIGHT - 10);
+            font.draw(batch, "Gold  " + party.getSaveGame().gold, LOG_X + 8 + 140, 450);
         }
 
-        float y = Ultima4.SCREEN_HEIGHT - 30;
+        float y = Ultima4.SCREEN_HEIGHT - 48;
         for (int i = 0; i < party.getMembers().size(); i++) {
             PartyMember pm = party.getMember(i);
 
@@ -107,63 +92,27 @@ public class LogDisplay {
                 font.setColor(Color.GRAY);
             }
 
-            font.draw(batch, s, Ultima4.SCREEN_WIDTH - 140, y);
-            font.draw(batch, d, Ultima4.SCREEN_WIDTH - 45, y);
+            font.draw(batch, s, LOG_X + 8, y);
+            font.draw(batch, d, LOG_X + 8 + 110, y);
 
-            y = y - 18;
+            y = y - 24;
 
         }
 
-        batch.draw(logbkgrnd, 0, 0);
-
         font.setColor(Color.WHITE);
-        int h = 18;
-        y = 5;
+        y = 24;
 
         synchronized (logs) {
             ReverseListIterator iter = new ReverseListIterator(logs);
             while (iter.hasNext()) {
                 String next = (String) iter.next();
-                GlyphLayout layout = new GlyphLayout(font, next, Color.WHITE, width - 8, Align.left, true);
-                y = y + layout.height + 4;
-                h += layout.height + 4;
-                if (h > height + 18) {
+                GlyphLayout layout = new GlyphLayout(font, next, Color.WHITE, LOG_AREA_WIDTH - 8, Align.left, true);
+                y += layout.height + 10;
+                if (y > LOG_AREA_TOP) {
                     break;
                 }
-                font.draw(batch, layout, 10, y);
+                font.draw(batch, layout, LOG_X + 8, y);
             }
         }
     }
-
-    public Pixmap getPixmapRoundedRectangle(int width, int height, int radius, Color color) {
-        int os = 5;
-        Pixmap base = new Pixmap(width + os * 2, height + os * 2, Format.RGBA8888);
-        base.setColor(Color.GRAY);
-
-        base.fillRectangle(0, radius, base.getWidth(), base.getHeight() - 2 * radius);
-        base.fillRectangle(radius, 0, base.getWidth() - 2 * radius, base.getHeight());
-
-        base.fillCircle(radius, radius, radius);
-        base.fillCircle(radius, base.getHeight() - radius, radius);
-        base.fillCircle(base.getWidth() - radius, radius, radius);
-        base.fillCircle(base.getWidth() - radius, base.getHeight() - radius, radius);
-
-        Pixmap pixmap = new Pixmap(width, height, Format.RGBA8888);
-        pixmap.setColor(color);
-
-        pixmap.fillRectangle(0, radius, pixmap.getWidth(), pixmap.getHeight() - 2 * radius);
-        pixmap.fillRectangle(radius, 0, pixmap.getWidth() - 2 * radius, pixmap.getHeight());
-
-        pixmap.fillCircle(radius, radius, radius);
-        pixmap.fillCircle(radius, pixmap.getHeight() - radius, radius);
-        pixmap.fillCircle(pixmap.getWidth() - radius, radius, radius);
-        pixmap.fillCircle(pixmap.getWidth() - radius, pixmap.getHeight() - radius, radius);
-
-        base.drawPixmap(pixmap, os, os);
-
-        pixmap.dispose();
-
-        return base;
-    }
-
 }

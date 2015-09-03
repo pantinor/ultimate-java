@@ -147,28 +147,11 @@ public class PackImagesUtil {
 
     }
 
-    public static void main3(String[] argv) throws Exception {
-
-        String dir = "D:\\xu4-source\\u4\\graphics\\png\\";
-        File[] files = new File[9];
-        for (int i = 0; i < 9; i++) {
-            files[i] = new File(dir + "rune" + i + ".png");
-        }
-
-        Map<String, BufferedImage> imgMap = new TreeMap<String, BufferedImage>();
-
-        for (File file : files) {
-            String name = file.getName();
-            BufferedImage fr = ImageIO.read(file);
-            BufferedImage sub = fr.getSubimage(8, 8, 176, 176);
-            imgMap.put(name, sub);
-        }
-
-        System.out.println("Writing: number of images: " + imgMap.size());
-
+    public static void main(String[] argv) throws Exception {
+        
         Settings settings = new Settings();
-        settings.maxWidth = 176;
-        settings.maxHeight = 2048;
+        settings.maxWidth = 32*24;
+        settings.maxHeight = 32*48;
         settings.paddingX = 0;
         settings.paddingY = 0;
         settings.fast = true;
@@ -176,16 +159,21 @@ public class PackImagesUtil {
         settings.grid = true;
 
         TexturePacker tp = new TexturePacker(settings);
-        for (String name : imgMap.keySet()) {
-            BufferedImage image = imgMap.get(name);
-            tp.addImage(image, name);
+
+        File file = new File("assets\\tilemaps\\hires.png");
+
+        BufferedImage fr = ImageIO.read(file);
+        for (int y=0;y<fr.getHeight();y+=32) {
+            BufferedImage sub = fr.getSubimage(0, y, 32, 32);
+            tp.addImage(sub, "im_"+y);
         }
-        tp.pack(new File("."), "runes-visions");
+
+        tp.pack(new File("."), "hires");
 
         System.out.println("done");
     }
 
-    public static void main(String[] argv) throws Exception {
+    public static void main4(String[] argv) throws Exception {
         
         ImageFrame[] frames = readGif(new File("C:\\Users\\Paul\\Desktop\\water\\lava.gif"));
 

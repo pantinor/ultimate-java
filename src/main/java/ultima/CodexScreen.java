@@ -613,5 +613,15 @@ public class CodexScreen extends BaseScreen {
     public void partyDeath() {
 
     }
+    
+    @Override
+    public Vector3 getMapPixelCoords(int x, int y) {
+        return null;
+    }
+
+    @Override
+    public Vector3 getCurrentMapCoords() {
+        return null;
+    }
 
 }

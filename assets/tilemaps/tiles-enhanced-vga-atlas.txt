@@ -65,6 +65,13 @@ I
   orig: 32, 32
   offset: 0, 0
   index: 0
+J
+  rotate: false
+  xy: 224, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 0
 K
   rotate: false
   xy: 224, 32
