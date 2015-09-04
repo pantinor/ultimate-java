@@ -46,6 +46,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.glutils.FileTextureData;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
@@ -713,7 +714,8 @@ public class Utils implements Constants {
     }
 
     public static Texture peerGem(TiledMapTileLayer layer, String[] ids, TextureAtlas atlas, int cx, int cy) throws Exception {
-        BufferedImage sheet = ImageIO.read(new File("assets/tilemaps/tiles-vga.png"));
+        FileTextureData d = (FileTextureData)(atlas.getRegions().first().getTexture().getTextureData());
+        BufferedImage sheet = ImageIO.read(d.getFileHandle().file());
         BufferedImage canvas = new BufferedImage(16 * layer.getWidth(), 16 * layer.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
         for (int y = 0; y < layer.getHeight(); y++) {
@@ -746,8 +748,8 @@ public class Utils implements Constants {
         Texture t = null;
 
         if (map.getMap().getType() == MapType.city) {
-
-            BufferedImage sheet = ImageIO.read(new File("assets/tilemaps/tiles-vga.png"));
+            FileTextureData d = (FileTextureData)(atlas.getRegions().first().getTexture().getTextureData());
+            BufferedImage sheet = ImageIO.read(d.getFileHandle().file());
             BufferedImage canvas = new BufferedImage(16 * 32, 16 * 32, BufferedImage.TYPE_INT_ARGB);
 
             for (int y = 0; y < 32; y++) {
@@ -779,7 +781,8 @@ public class Utils implements Constants {
 
     //used for view gem on the world map only
     public static Texture peerGem(BaseMap worldMap, int avatarX, int avatarY, TextureAtlas atlas) throws Exception {
-        BufferedImage sheet = ImageIO.read(new File("assets/tilemaps/tiles-vga.png"));
+        FileTextureData d = (FileTextureData)(atlas.getRegions().first().getTexture().getTextureData());
+        BufferedImage sheet = ImageIO.read(d.getFileHandle().file());
         BufferedImage canvas = new BufferedImage(16 * 64, 16 * 64, BufferedImage.TYPE_INT_ARGB);
 
         int startX = avatarX - 32;
@@ -809,7 +812,6 @@ public class Utils implements Constants {
 
                 Creature cr = worldMap.getCreatureAt(cx, cy);
                 if (cr != null) {
-                    //canvas.getGraphics().setColor(java.awt.Color.RED);
                     canvas.getGraphics().fillRect(indexX * 16, indexY * 16, 16, 16);
                 }
 
@@ -820,7 +822,6 @@ public class Utils implements Constants {
         }
 
         //add avatar in the middle
-        //canvas.getGraphics().setColor(java.awt.Color.WHITE);
         canvas.getGraphics().fillRect((16 * 64) / 2, (16 * 64) / 2, 16, 16);
 
         java.awt.Image tmp = canvas.getScaledInstance(16 * 32, 16 * 32, Image.SCALE_AREA_AVERAGING);
@@ -846,7 +847,7 @@ public class Utils implements Constants {
         int imgHeight = image.getHeight();
 
         Pixmap pix = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pix.setColor(0f, 0f, 0f, .45f);
+        pix.setColor(0f, 0f, 0f, .85f);
         pix.fillRectangle(0, 0, width, height);
 
         int[] pixels = image.getRGB(0, 0, imgWidth, imgHeight, null, 0, width);
@@ -861,7 +862,7 @@ public class Utils implements Constants {
         return pix;
     }
 
-    public static int getRGBA(int rgb) {
+    private static int getRGBA(int rgb) {
         int a = rgb >> 24;
         a &= 0x000000ff;
         int rest = rgb & 0x00ffffff;

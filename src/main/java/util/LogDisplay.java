@@ -19,11 +19,11 @@ import com.badlogic.gdx.utils.Align;
 
 public class LogDisplay {
 
-    final List<String> logs = new FixedSizeArrayList<>(21);
+    final List<String> logs = new FixedSizeArrayList<>(20);
     final BitmapFont font;
 
     static final int LOG_AREA_WIDTH = 256;
-    static final int LOG_AREA_TOP = 408;
+    static final int LOG_AREA_TOP = 384;
 
     static final int LOG_X = 736;
     
@@ -66,12 +66,12 @@ public class LogDisplay {
 
         int food = party.getSaveGame().food / 100;
         font.setColor(food < 5 ? Color.RED : Color.WHITE);
-        font.draw(batch, "Food  " + food, LOG_X + 8, 450);
+        font.draw(batch, "Food  " + food, LOG_X + 8, 438);
         font.setColor(Color.WHITE);
         if (party.getContext().getTransportContext() == TransportContext.SHIP) {
-            font.draw(batch, "Hull  " + party.getSaveGame().shiphull, LOG_X + 8 + 120, 450);
+            font.draw(batch, "Hull  " + party.getSaveGame().shiphull, LOG_X + 8 + 120, 438);
         } else {
-            font.draw(batch, "Gold  " + party.getSaveGame().gold, LOG_X + 8 + 140, 450);
+            font.draw(batch, "Gold  " + party.getSaveGame().gold, LOG_X + 8 + 140, 438);
         }
 
         float y = Ultima4.SCREEN_HEIGHT - 48;
@@ -100,7 +100,7 @@ public class LogDisplay {
         }
 
         font.setColor(Color.WHITE);
-        y = 24;
+        y = 32;
 
         synchronized (logs) {
             ReverseListIterator iter = new ReverseListIterator(logs);

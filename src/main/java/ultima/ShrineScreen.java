@@ -58,8 +58,6 @@ public class ShrineScreen extends BaseScreen {
     private int completedCycles;
     private int cycles;
     
-    private Texture backGround;
-
     private Viewport mapViewPort;
 
     public ShrineScreen(BaseScreen returnScreen, Virtue virtue, TiledMap tmap, TextureAtlas a1, TextureAtlas a2) {
@@ -75,13 +73,12 @@ public class ShrineScreen extends BaseScreen {
         MapProperties prop = tmap.getProperties();
         mapPixelHeight = prop.get("height", Integer.class) * tilePixelWidth;
 
-        mapCamera = new OrthographicCamera(11*tilePixelWidth, 11*tilePixelHeight);
+        camera = new OrthographicCamera(11*tilePixelWidth, 11*tilePixelHeight);
         
-        mapViewPort = new ScreenViewport(mapCamera);
+        mapViewPort = new ScreenViewport(camera);
         
         stage = new Stage();
         stage.setViewport(mapViewPort);
-        backGround = new Texture(Gdx.files.internal("assets/graphics/frame.png"));
         runeVisionAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/runes-visions.atlas"));
 
         Vector3 v1 = getMapPixelCoords(5, 10);
@@ -140,23 +137,21 @@ public class ShrineScreen extends BaseScreen {
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        batch.begin();
-        batch.draw(backGround, 0, 0);
-        batch.end();
+        camera.position.set(newMapPixelCoords.x+5*tilePixelWidth,newMapPixelCoords.y,0);
 
-        mapCamera.position.set(newMapPixelCoords.x+5*tilePixelWidth,newMapPixelCoords.y,0);
-
-        mapCamera.update();
+        camera.update();
         
-        renderer.setView(mapCamera.combined, 
-                mapCamera.position.x - tilePixelWidth*10, //this is voodoo
-                mapCamera.position.y - tilePixelHeight*10, 
+        renderer.setView(camera.combined, 
+                camera.position.x - tilePixelWidth*10, //this is voodoo
+                camera.position.y - tilePixelHeight*10, 
                 Ultima4.MAP_WIDTH-32, 
                 Ultima4.MAP_HEIGHT-64);
         
         renderer.render();
 
         batch.begin();
+        batch.draw(Ultima4.backGround, 0, 0);
+
 //		font.draw(batch, "moves: " + party.getSaveGame().moves, 5, 360);
 //		font.draw(batch, "lastmeditation: " + party.getSaveGame().lastmeditation, 5, 340);
 //		font.draw(batch, "divisor moves: " + party.getSaveGame().moves / SHRINE_MEDITATION_INTERVAL, 5, 320);

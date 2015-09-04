@@ -48,7 +48,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -72,7 +71,6 @@ public class GameScreen extends BaseScreen {
 
     MapSet maps;
     TextureAtlas moonAtlas;
-    Texture backGround;
     
     public static Animation mainAvatar;
     public static Animation avatarAnim;
@@ -138,19 +136,18 @@ public class GameScreen extends BaseScreen {
             moongateTextures = standardAtlas.findRegions("moongate");
             //textures for the phases of  the moon
             moonAtlas = new TextureAtlas(Gdx.files.internal("assets/graphics/moon-atlas.txt"));
-            backGround = new Texture(Gdx.files.internal("assets/graphics/frame.png"));
 
             font = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_18.fnt"));
             font.setColor(Color.WHITE);
             
             batch = new SpriteBatch();
-            batch.enableBlending();
+            //batch.enableBlending();
             
             stage = new Stage(viewport);
 
-            mapCamera = new OrthographicCamera(Ultima4.MAP_WIDTH, Ultima4.MAP_HEIGHT);
+            camera = new OrthographicCamera(Ultima4.MAP_WIDTH, Ultima4.MAP_HEIGHT);
             
-            mapViewPort = new ScreenViewport(mapCamera);
+            mapViewPort = new ScreenViewport(camera);
 
             mapObjectsStage = new Stage(mapViewPort);
             Maps.WORLD.getMap().setSurfaceMapStage(mapObjectsStage);
@@ -288,8 +285,8 @@ public class GameScreen extends BaseScreen {
             //sg.items |= Constants.Item.BOOK.getLoc();
             
             //load the surface world first
-            //loadNextMap(Maps.WORLD, sg.x, sg.y);
-            loadNextMap(Maps.WORLD, 128, 93);
+            loadNextMap(Maps.WORLD, sg.x, sg.y);
+            //loadNextMap(Maps.WORLD, 128, 93);
 
             //load the dungeon if save game starts in dungeon
             if (Maps.get(sg.location) != Maps.WORLD) {
@@ -484,7 +481,7 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public Vector3 getCurrentMapCoords() {
-        Vector3 v = mapCamera.unproject(new Vector3(tilePixelWidth*12, tilePixelHeight*12, 0), 32, 64, Ultima4.MAP_WIDTH, Ultima4.MAP_HEIGHT);
+        Vector3 v = camera.unproject(new Vector3(tilePixelWidth*12, tilePixelHeight*12, 0), 32, 64, Ultima4.MAP_WIDTH, Ultima4.MAP_HEIGHT);
         return new Vector3(Math.round(v.x / tilePixelWidth)-6, (mapPixelHeight - Math.round(v.y) - tilePixelHeight) / tilePixelHeight, 0);
     }
     
@@ -499,17 +496,13 @@ public class GameScreen extends BaseScreen {
             return;
         }
         
-        batch.begin();
-        batch.draw(backGround, 0, 0);
-        batch.end();
+        camera.position.set(newMapPixelCoords.x+5*tilePixelWidth,newMapPixelCoords.y,0);
 
-        mapCamera.position.set(newMapPixelCoords.x+5*tilePixelWidth,newMapPixelCoords.y,0);
-
-        mapCamera.update();
+        camera.update();
         
-        renderer.setView(mapCamera.combined, 
-                mapCamera.position.x - tilePixelWidth*15, //this is voodoo
-                mapCamera.position.y - tilePixelHeight*10, 
+        renderer.setView(camera.combined, 
+                camera.position.x - tilePixelWidth*15, //this is voodoo
+                camera.position.y - tilePixelHeight*10, 
                 Ultima4.MAP_WIDTH-32, 
                 Ultima4.MAP_HEIGHT-64);
         
@@ -534,6 +527,8 @@ public class GameScreen extends BaseScreen {
 
         batch.begin();
         
+        batch.draw(Ultima4.backGround, 0, 0);
+
         batch.draw(mainAvatar.getKeyFrames()[avatarDirection], tilePixelWidth * 11, tilePixelHeight * 12);
 
         //Vector3 v = getCurrentMapCoords();
@@ -1704,28 +1699,28 @@ public class GameScreen extends BaseScreen {
     private void driftBalloon(Direction dir) {
 
         if (dir == Direction.NORTH) {
-            if (mapCamera.position.y + tilePixelHeight > context.getCurrentMap().getHeight() * tilePixelHeight) {
-                mapCamera.position.y = 0;
+            if (camera.position.y + tilePixelHeight > context.getCurrentMap().getHeight() * tilePixelHeight) {
+                camera.position.y = 0;
             } else {
-                mapCamera.position.y = mapCamera.position.y + tilePixelHeight;
+                camera.position.y = camera.position.y + tilePixelHeight;
             }
         } else if (dir == Direction.SOUTH) {
-            if (mapCamera.position.y - tilePixelHeight < 0) {
-                mapCamera.position.y = context.getCurrentMap().getHeight() * tilePixelHeight;
+            if (camera.position.y - tilePixelHeight < 0) {
+                camera.position.y = context.getCurrentMap().getHeight() * tilePixelHeight;
             } else {
-                mapCamera.position.y = mapCamera.position.y - tilePixelHeight;
+                camera.position.y = camera.position.y - tilePixelHeight;
             }
         } else if (dir == Direction.EAST) {
-            if (mapCamera.position.x + tilePixelWidth > context.getCurrentMap().getWidth() * tilePixelWidth) {
-                mapCamera.position.x = 0;
+            if (camera.position.x + tilePixelWidth > context.getCurrentMap().getWidth() * tilePixelWidth) {
+                camera.position.x = 0;
             } else {
-                mapCamera.position.x = mapCamera.position.x + tilePixelWidth;
+                camera.position.x = camera.position.x + tilePixelWidth;
             }
         } else if (dir == Direction.WEST) {
-            if (mapCamera.position.x - tilePixelWidth < 0) {
-                mapCamera.position.x = context.getCurrentMap().getWidth() * tilePixelWidth;
+            if (camera.position.x - tilePixelWidth < 0) {
+                camera.position.x = context.getCurrentMap().getWidth() * tilePixelWidth;
             } else {
-                mapCamera.position.x = mapCamera.position.x - tilePixelWidth;
+                camera.position.x = camera.position.x - tilePixelWidth;
             }
         }
 

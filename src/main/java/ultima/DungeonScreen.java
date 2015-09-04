@@ -73,9 +73,7 @@ public class DungeonScreen extends BaseScreen {
 
     public CameraInputController inputController;
 
-    public PerspectiveCamera cam;
     public AssetManager assets;
-    BitmapFont font;
 
     //3d models
     public Model fountainModel;
@@ -110,7 +108,7 @@ public class DungeonScreen extends BaseScreen {
     public static final int DIM = 11;
     public static final int OFST = DIM;
     public static final int MM_BKGRND_DIM = DIM * 8 + OFST * 2;
-    public static final int xalignMM = Ultima4.SCREEN_WIDTH - MM_BKGRND_DIM - 10;
+    public static final int xalignMM = 10;
     public static final int yalignMM = 10;
 
     public int currentLevel = 0;
@@ -172,8 +170,7 @@ public class DungeonScreen extends BaseScreen {
         MINI_MAP_TEXTURE = new Texture(pixmap);
         pixmap.dispose();
 
-        font = new BitmapFont();
-        font.setColor(Color.WHITE);
+        font = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_18.fnt"));
 
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.05f, 0.05f, 0.05f, 1f));
@@ -184,15 +181,15 @@ public class DungeonScreen extends BaseScreen {
 
         modelBatch = new ModelBatch();
         batch = new SpriteBatch();
+        
+        camera = new PerspectiveCamera(67, Ultima4.MAP_WIDTH, Ultima4.MAP_HEIGHT);
+        
+        camera.near = 0.1f;
+        camera.far = 1000f;
 
-        cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.near = 0.1f;
-        cam.far = 1000f;
-        cam.update();
+        decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
 
-        decalBatch = new DecalBatch(new CameraGroupStrategy(cam));
-
-        inputController = new CameraInputController(cam);
+        inputController = new CameraInputController(camera);
         inputController.rotateLeftKey = inputController.rotateRightKey = inputController.forwardKey = inputController.backwardKey = 0;
         inputController.translateUnits = 30f;
 
@@ -285,8 +282,8 @@ public class DungeonScreen extends BaseScreen {
 
             setStartPosition();
 
-            cam.position.set(currentPos);
-            cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+            camera.position.set(currentPos);
+            camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
 
             //duplicate some of the outer edge tiles around the outside 
             //so that the wrapping is not so black hole on the sides
@@ -382,18 +379,18 @@ public class DungeonScreen extends BaseScreen {
     public void restoreSaveGameLocation(int x, int y, int z, Direction orientation) {
 
         currentPos = new Vector3(x + .5f, .5f, y + .5f);
-        cam.position.set(currentPos);
+        camera.position.set(currentPos);
         currentDir = orientation;
         currentLevel = z;
 
         if (currentDir == Direction.EAST) {
-            cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+            camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
         } else if (currentDir == Direction.WEST) {
-            cam.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
+            camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
         } else if (currentDir == Direction.NORTH) {
-            cam.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
+            camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
         } else if (currentDir == Direction.SOUTH) {
-            cam.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
+            camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
         }
 
         createMiniMap();
@@ -430,12 +427,9 @@ public class DungeonScreen extends BaseScreen {
     @Override
     public void render(float delta) {
 
-        cam.update();
-
-        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
-
+        
         lightFactor += Gdx.graphics.getDeltaTime();
         float lightSize = 4.75f + 0.25f * (float) Math.sin(lightFactor) + .2f * MathUtils.random();
 
@@ -444,8 +438,12 @@ public class DungeonScreen extends BaseScreen {
         fixedLight.set(ll.x, ll.y, ll.z, currentPos.x, currentPos.y + .35f, currentPos.z, lightSize);
         ((ColorAttribute) pLight.material.get(ColorAttribute.Diffuse)).color.set(fixedLight.color);
         pLight.worldTransform.setTranslation(fixedLight.position);
+        
+        Gdx.gl.glViewport(32, 64, Ultima4.MAP_WIDTH, Ultima4.MAP_HEIGHT);
 
-        modelBatch.begin(cam);
+        camera.update();
+
+        modelBatch.begin(camera);
 
         modelBatch.render(pLight);
 
@@ -469,13 +467,26 @@ public class DungeonScreen extends BaseScreen {
         }
         decalBatch.flush();
 
-        drawHUD();
-
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        
+        batch.begin();
+        batch.draw(Ultima4.backGround, 0, 0);
+        if (showMiniMap) {
+            batch.draw(MINI_MAP_TEXTURE, xalignMM, yalignMM);
+            batch.draw(miniMap, xalignMM, yalignMM);
+        }
+        Ultima4.hud.render(batch, GameScreen.context.getParty());
+        font.draw(batch, "Level " + (currentLevel + 1), 305, 36);
+        if (showZstats > 0) {
+            GameScreen.context.getParty().getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);
+        }
+        batch.end();
+        
         stage.act();
         stage.draw();
 
     }
-
+    
     public void addBlock(int level, DungeonTile tile, float tx, float ty, float tz) {
         ModelBuilder builder = new ModelBuilder();
         if (tile == DungeonTile.WALL) {
@@ -657,7 +668,7 @@ public class DungeonScreen extends BaseScreen {
         return texture;
     }
 
-    public class MiniMapIcon extends Actor {
+    private class MiniMapIcon extends Actor {
 
         Texture north;
         Texture south;
@@ -704,26 +715,6 @@ public class DungeonScreen extends BaseScreen {
     public void moveMiniMapIcon() {
         miniMapIcon.setX(xalignMM + OFST + (Math.round(currentPos.x) - 1) * DIM);
         miniMapIcon.setY(yalignMM + MM_BKGRND_DIM - OFST - (Math.round(currentPos.z)) * DIM);
-    }
-
-    public void drawHUD() {
-
-        batch.begin();
-
-        if (showMiniMap) {
-            batch.draw(MINI_MAP_TEXTURE, xalignMM, yalignMM);
-            batch.draw(miniMap, xalignMM, yalignMM);
-        }
-
-        Ultima4.hud.render(batch, GameScreen.context.getParty());
-
-        font.draw(batch, "Level " + (currentLevel + 1), Ultima4.SCREEN_WIDTH / 2 - 20, Ultima4.SCREEN_HEIGHT - 3);
-
-        if (showZstats > 0) {
-            GameScreen.context.getParty().getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);
-        }
-
-        batch.end();
     }
 
     public void enterRoom(RoomLocater loc, Direction entryDir) {
@@ -883,15 +874,15 @@ public class DungeonScreen extends BaseScreen {
                 DungeonTile tile = dungeonTiles[currentLevel][x][y];
                 if (tile != DungeonTile.WALL) {
                     currentPos = new Vector3(x + .5f, .5f, y + .5f);
-                    cam.position.set(currentPos);
+                    camera.position.set(currentPos);
                     if (currentDir == Direction.EAST) {
-                        cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+                        camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
                     } else if (currentDir == Direction.WEST) {
-                        cam.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
+                        camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
                     } else if (currentDir == Direction.NORTH) {
-                        cam.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
+                        camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
                     } else if (currentDir == Direction.SOUTH) {
-                        cam.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
+                        camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
                     }
                     checkTrap(tile, x, y);
                     moveMiniMapIcon();
@@ -924,16 +915,16 @@ public class DungeonScreen extends BaseScreen {
         if (keycode == Keys.LEFT) {
 
             if (currentDir == Direction.EAST) {
-                cam.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
+                camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
                 currentDir = Direction.NORTH;
             } else if (currentDir == Direction.WEST) {
-                cam.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
+                camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
                 currentDir = Direction.SOUTH;
             } else if (currentDir == Direction.NORTH) {
-                cam.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
+                camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
                 currentDir = Direction.WEST;
             } else if (currentDir == Direction.SOUTH) {
-                cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+                camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
                 currentDir = Direction.EAST;
             }
             setCreatureRotations();
@@ -942,16 +933,16 @@ public class DungeonScreen extends BaseScreen {
         } else if (keycode == Keys.RIGHT) {
 
             if (currentDir == Direction.EAST) {
-                cam.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
+                camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
                 currentDir = Direction.SOUTH;
             } else if (currentDir == Direction.WEST) {
-                cam.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
+                camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
                 currentDir = Direction.NORTH;
             } else if (currentDir == Direction.NORTH) {
-                cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+                camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
                 currentDir = Direction.EAST;
             } else if (currentDir == Direction.SOUTH) {
-                cam.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
+                camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
                 currentDir = Direction.WEST;
             }
             setCreatureRotations();
@@ -985,15 +976,15 @@ public class DungeonScreen extends BaseScreen {
             tile = dungeonTiles[currentLevel][x][y];
             if (tile != DungeonTile.WALL) {
                 currentPos = new Vector3(x + .5f, .5f, y + .5f);
-                cam.position.set(currentPos);
+                camera.position.set(currentPos);
                 if (currentDir == Direction.EAST) {
-                    cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+                    camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
                 } else if (currentDir == Direction.WEST) {
-                    cam.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
+                    camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
                 } else if (currentDir == Direction.NORTH) {
-                    cam.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
+                    camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
                 } else if (currentDir == Direction.SOUTH) {
-                    cam.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
+                    camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
                 }
                 moveMiniMapIcon();
                 checkTrap(tile, x, y);
@@ -1038,15 +1029,15 @@ public class DungeonScreen extends BaseScreen {
             tile = dungeonTiles[currentLevel][x][y];
             if (tile != DungeonTile.WALL) {
                 currentPos = new Vector3(x + .5f, .5f, y + .5f);
-                cam.position.set(currentPos);
+                camera.position.set(currentPos);
                 if (currentDir == Direction.EAST) {
-                    cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+                    camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
                 } else if (currentDir == Direction.WEST) {
-                    cam.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
+                    camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
                 } else if (currentDir == Direction.NORTH) {
-                    cam.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
+                    camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
                 } else if (currentDir == Direction.SOUTH) {
-                    cam.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
+                    camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
                 }
                 moveMiniMapIcon();
                 checkTrap(tile, x, y);

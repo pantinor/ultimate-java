@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 public class Ultima4 extends Game {
@@ -19,7 +20,8 @@ public class Ultima4 extends Game {
     public static int MAP_HEIGHT = 672;
     
     public static LogDisplay hud;
-
+    public static Texture backGround;
+    
     public static StartScreen startScreen;
 
     public static void main(String[] args) {
@@ -39,6 +41,8 @@ public class Ultima4 extends Game {
         BitmapFont logFont = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_18.fnt"));
         logFont.setColor(Color.WHITE);
         hud = new LogDisplay(logFont);
+        
+        backGround = new Texture(Gdx.files.internal("assets/graphics/frame.png"));
 
         startScreen = new StartScreen(this);
         setScreen(startScreen);

@@ -16,7 +16,7 @@ public class DeathScreen extends BaseScreen implements Constants {
 
     Batch batch;
     long initTime;
-
+    
     public DeathScreen(BaseScreen retScreen, Party party) {
 
         this.returnScreen = retScreen;
@@ -25,7 +25,6 @@ public class DeathScreen extends BaseScreen implements Constants {
 
         font = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_24.fnt"));
         font.setColor(Color.WHITE);
-
         batch = new SpriteBatch();
 
         Gdx.input.setInputProcessor(null);

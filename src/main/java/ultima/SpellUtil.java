@@ -609,15 +609,15 @@ public class SpellUtil implements Constants {
                     int y = Utils.rand.nextInt(8);
                     if (dngScreen.validTeleportLocation(x, y, dngScreen.currentLevel)) {
                         dngScreen.currentPos = new Vector3(x + .5f, .5f, y + .5f);
-                        dngScreen.cam.position.set(dngScreen.currentPos);
+                        dngScreen.camera.position.set(dngScreen.currentPos);
                         if (dngScreen.currentDir == Direction.EAST) {
-                            dngScreen.cam.lookAt(dngScreen.currentPos.x + 1, dngScreen.currentPos.y, dngScreen.currentPos.z);
+                            dngScreen.camera.lookAt(dngScreen.currentPos.x + 1, dngScreen.currentPos.y, dngScreen.currentPos.z);
                         } else if (dngScreen.currentDir == Direction.WEST) {
-                            dngScreen.cam.lookAt(dngScreen.currentPos.x - 1, dngScreen.currentPos.y, dngScreen.currentPos.z);
+                            dngScreen.camera.lookAt(dngScreen.currentPos.x - 1, dngScreen.currentPos.y, dngScreen.currentPos.z);
                         } else if (dngScreen.currentDir == Direction.NORTH) {
-                            dngScreen.cam.lookAt(dngScreen.currentPos.x, dngScreen.currentPos.y, dngScreen.currentPos.z - 1);
+                            dngScreen.camera.lookAt(dngScreen.currentPos.x, dngScreen.currentPos.y, dngScreen.currentPos.z - 1);
                         } else if (dngScreen.currentDir == Direction.SOUTH) {
-                            dngScreen.cam.lookAt(dngScreen.currentPos.x, dngScreen.currentPos.y, dngScreen.currentPos.z + 1);
+                            dngScreen.camera.lookAt(dngScreen.currentPos.x, dngScreen.currentPos.y, dngScreen.currentPos.z + 1);
                         }
                         dngScreen.moveMiniMapIcon();
                         break;
@@ -651,15 +651,15 @@ public class SpellUtil implements Constants {
                     int y = Utils.rand.nextInt(8);
                     if (dngScreen.validTeleportLocation(x, y, dngScreen.currentLevel)) {
                         dngScreen.currentPos = new Vector3(x + .5f, .5f, y + .5f);
-                        dngScreen.cam.position.set(dngScreen.currentPos);
+                        dngScreen.camera.position.set(dngScreen.currentPos);
                         if (dngScreen.currentDir == Direction.EAST) {
-                            dngScreen.cam.lookAt(dngScreen.currentPos.x + 1, dngScreen.currentPos.y, dngScreen.currentPos.z);
+                            dngScreen.camera.lookAt(dngScreen.currentPos.x + 1, dngScreen.currentPos.y, dngScreen.currentPos.z);
                         } else if (dngScreen.currentDir == Direction.WEST) {
-                            dngScreen.cam.lookAt(dngScreen.currentPos.x - 1, dngScreen.currentPos.y, dngScreen.currentPos.z);
+                            dngScreen.camera.lookAt(dngScreen.currentPos.x - 1, dngScreen.currentPos.y, dngScreen.currentPos.z);
                         } else if (dngScreen.currentDir == Direction.NORTH) {
-                            dngScreen.cam.lookAt(dngScreen.currentPos.x, dngScreen.currentPos.y, dngScreen.currentPos.z - 1);
+                            dngScreen.camera.lookAt(dngScreen.currentPos.x, dngScreen.currentPos.y, dngScreen.currentPos.z - 1);
                         } else if (dngScreen.currentDir == Direction.SOUTH) {
-                            dngScreen.cam.lookAt(dngScreen.currentPos.x, dngScreen.currentPos.y, dngScreen.currentPos.z + 1);
+                            dngScreen.camera.lookAt(dngScreen.currentPos.x, dngScreen.currentPos.y, dngScreen.currentPos.z + 1);
                         }
                         dngScreen.moveMiniMapIcon();
                         break;

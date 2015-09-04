@@ -13,7 +13,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -37,7 +37,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
     public static TextureRegion hitTile;
     public static TextureRegion missTile;
     public static TextureRegion corpse;
-
+    
     protected float time = 0;
     protected Random rand = new Random();
 
@@ -46,7 +46,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
     
     protected Viewport viewport = new ScreenViewport();
 
-    protected OrthographicCamera mapCamera;
+    protected Camera camera;
     
     protected int showZstats = 0;
 

@@ -50,7 +50,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -81,7 +80,6 @@ public class CombatScreen extends BaseScreen {
     private OrthogonalTiledMapRenderer renderer;
     private SpriteBatch batch;
     private SecondaryInputProcessor sip;
-    private Texture backGround;
 
     private Viewport mapViewPort;
 
@@ -107,9 +105,9 @@ public class CombatScreen extends BaseScreen {
         MapProperties prop = tmap.getProperties();
         mapPixelHeight = prop.get("height", Integer.class) * tilePixelHeight;
 
-        mapCamera = new OrthographicCamera(11*tilePixelWidth, 11*tilePixelHeight);
+        camera = new OrthographicCamera(11*tilePixelWidth, 11*tilePixelHeight);
         
-        mapViewPort = new ScreenViewport(mapCamera);
+        mapViewPort = new ScreenViewport(camera);
         
         stage = new Stage();
         stage.setViewport(mapViewPort);
@@ -119,7 +117,6 @@ public class CombatScreen extends BaseScreen {
         cursor.addAction(forever(sequence(fadeOut(1), fadeIn(1))));
 
         batch = new SpriteBatch();
-        backGround = new Texture(Gdx.files.internal("assets/graphics/frame.png"));
 
         font = new BitmapFont();
         font.setColor(Color.WHITE);
@@ -324,17 +321,13 @@ public class CombatScreen extends BaseScreen {
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
-        batch.begin();
-        batch.draw(backGround, 0, 0);
-        batch.end();
+        camera.position.set(newMapPixelCoords.x+5*tilePixelWidth,newMapPixelCoords.y,0);
 
-        mapCamera.position.set(newMapPixelCoords.x+5*tilePixelWidth,newMapPixelCoords.y,0);
-
-        mapCamera.update();
+        camera.update();
         
-        renderer.setView(mapCamera.combined, 
-                mapCamera.position.x - tilePixelWidth*10, //this is voodoo
-                mapCamera.position.y - tilePixelHeight*10, 
+        renderer.setView(camera.combined, 
+                camera.position.x - tilePixelWidth*10, //this is voodoo
+                camera.position.y - tilePixelHeight*10, 
                 Ultima4.MAP_WIDTH-32, 
                 Ultima4.MAP_HEIGHT-64);
         
@@ -363,7 +356,8 @@ public class CombatScreen extends BaseScreen {
         renderer.getBatch().end();
 
         batch.begin();
-        
+        batch.draw(Ultima4.backGround, 0, 0);
+
         Ultima4.hud.render(batch, party);
 
         font.setColor(Color.WHITE);
