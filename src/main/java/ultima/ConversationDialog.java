@@ -113,7 +113,9 @@ public class ConversationDialog extends Window implements Constants {
 
                             } else {
                                 
-                                GameScreen.context.addEntry(conversation.getName(), conversation.getMap(), t.getPhrase());
+                                if (!conversation.isStandardQuery(query)) {
+                                    GameScreen.context.addEntry(conversation.getName(), conversation.getMap(), t.getPhrase());
+                                }
                                 
                                 scrollPane.add(t.getPhrase());
                                 if (t.getQuestion() != null) {

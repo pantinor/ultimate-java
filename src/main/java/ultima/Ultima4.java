@@ -10,6 +10,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class Ultima4 extends Game {
 
@@ -21,7 +22,7 @@ public class Ultima4 extends Game {
     
     public static LogDisplay hud;
     public static Texture backGround;
-    
+    public static BitmapFont font;
     public static StartScreen startScreen;
 
     public static void main(String[] args) {
@@ -38,9 +39,13 @@ public class Ultima4 extends Game {
     @Override
     public void create() {
         
-        BitmapFont logFont = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_18.fnt"));
-        logFont.setColor(Color.WHITE);
-        hud = new LogDisplay(logFont);
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/fonts/lindberg.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 16;
+        font = generator.generateFont(parameter);
+        generator.dispose();
+        
+        hud = new LogDisplay(font);
         
         backGround = new Texture(Gdx.files.internal("assets/graphics/frame.png"));
 

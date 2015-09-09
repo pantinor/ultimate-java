@@ -13,7 +13,9 @@ public class Conversation {
     protected int turnAwayProb;
     protected String description;
     protected int respAffectsHumility;
-    protected List<Topic> topics = new ArrayList<Topic>();
+    protected List<Topic> topics = new ArrayList<>();
+    
+    public static final String[] standardQuery = {"job", "health", "look", "name","give", "join"};
 
     public Conversation() {
 
@@ -28,12 +30,12 @@ public class Conversation {
         this.pronoun = strings[1];
         this.description = strings[2];
 
-        topics.add(new Topic("job", strings[3], null, null, null));
-        topics.add(new Topic("health", strings[4], null, null, null));
-        topics.add(new Topic("look", description, null, null, null));
-        topics.add(new Topic("name", pronoun + " says: I am " + name, null, null, null));
-        topics.add(new Topic("give", pronoun + " says: I do not need thy gold.  Keep it!", null, null, null));
-        topics.add(new Topic("join", pronoun + " says: I cannot join thee.", null, null, null));
+        topics.add(new Topic(standardQuery[0], strings[3], null, null, null));
+        topics.add(new Topic(standardQuery[1], strings[4], null, null, null));
+        topics.add(new Topic(standardQuery[2], description, null, null, null));
+        topics.add(new Topic(standardQuery[3], pronoun + " says: I am " + name, null, null, null));
+        topics.add(new Topic(standardQuery[4], pronoun + " says: I do not need thy gold.  Keep it!", null, null, null));
+        topics.add(new Topic(standardQuery[5], pronoun + " says: I cannot join thee.", null, null, null));
 
         String query1 = strings[10];
         String query2 = strings[11];
@@ -51,6 +53,15 @@ public class Conversation {
             topics.add(new Topic(query2, strings[6], null, null, null));
         }
 
+    }
+    
+    public boolean isStandardQuery(String query) {
+        for (String st : standardQuery) {
+            if (query.toLowerCase().contains(st)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Topic matchTopic(String query) {

@@ -5,8 +5,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
@@ -33,33 +31,27 @@ public class JournalScreen implements Screen, InputProcessor, Constants {
         this.entries = entries;
         this.stage = new Stage();
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/fonts/lindberg.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 16;
-        BitmapFont font = generator.generateFont(parameter);
-        generator.dispose();
-
         Skin skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
 
         LabelStyle ls = skin.get(LabelStyle.class);
-        ls.font = font;
+        ls.font = Ultima4.font;
         Label filterLabel = new Label("Filter:", ls);
         filterLabel.setX(16);
         filterLabel.setY(Gdx.graphics.getHeight() - 32);
 
         TextFieldStyle tfs = skin.get(TextFieldStyle.class);
-        tfs.font = font;
+        tfs.font = Ultima4.font;
         TextField filterField = new TextField("", tfs);
         filterField.setX(56);
         filterField.setY(Gdx.graphics.getHeight() - 32);
         
         CheckBoxStyle cbs = skin.get("journal", CheckBoxStyle.class);
-        cbs.font = font;
+        cbs.font = Ultima4.font;
         CheckBox cb = new CheckBox("Show Active", cbs);
         cb.setX(256);
         cb.setY(Gdx.graphics.getHeight() - 32);
         
-        list = new JournalList(skin, font, filterField, cb, this.entries.toArray(skin));
+        list = new JournalList(skin, Ultima4.font, filterField, cb, this.entries.toArray(skin));
 
         ScrollPane sp = new ScrollPane(list, skin, "logs");
         sp.setX(16);
