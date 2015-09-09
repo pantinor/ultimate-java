@@ -56,8 +56,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
     String currentQuestion = null;
     public static int[] questionTree = new int[15];
 
-    static List<Sprite> whiteBeads = new ArrayList<>();
-    static List<Sprite> blackBeads = new ArrayList<>();
+    static List<Sprite> beads = new ArrayList<>();
 
     int GYP_PLACES_FIRST = 0;
     int GYP_PLACES_TWOMORE = 1;
@@ -191,11 +190,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
             batch.draw(storyTexture, Ultima4.SCREEN_WIDTH / 2 - 320, 200, 640, 304);
 
-            for (Sprite b : whiteBeads) {
-                batch.draw(b, b.getX(), b.getY(), 16, 24);
-            }
-
-            for (Sprite b : blackBeads) {
+            for (Sprite b : beads) {
                 batch.draw(b, b.getX(), b.getY(), 16, 24);
             }
 
@@ -205,8 +200,8 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
             String v1 = Virtue.get(questionTree[questionRound * 2]).toString().toLowerCase();
             String v2 = Virtue.get(questionTree[questionRound * 2 + 1]).toString().toLowerCase();
-            batch.draw(ta.findRegion(v1), 110, 232, 178, 244);
-            batch.draw(ta.findRegion(v2), 515, 232, 178, 244);
+            batch.draw(ta.findRegion(v1), 225, 232, 178, 244);
+            batch.draw(ta.findRegion(v2), 625, 232, 178, 244);
 
             if (state == State.ASK_QUESTIONS) {
 
@@ -485,12 +480,12 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
         if (ta != null) {
             Sprite wb = ta.createSprite("white-bead");
-            wb.setBounds(360 + (selectedVirtue * 11), Ultima4.SCREEN_HEIGHT - 166 - (row * 29), 16, 24);
-            whiteBeads.add(wb);
+            wb.setBounds(450 + (selectedVirtue * 11), Ultima4.SCREEN_HEIGHT - 335 - (row * 29), 16, 24);
+            beads.add(wb);
 
             Sprite bb = ta.createSprite("black-bead");
-            bb.setBounds(360 + (rejectedVirtue * 11), Ultima4.SCREEN_HEIGHT - 166 - (row * 29), 16, 24);
-            whiteBeads.add(bb);
+            bb.setBounds(450 + (rejectedVirtue * 11), Ultima4.SCREEN_HEIGHT - 335 - (row * 29), 16, 24);
+            beads.add(bb);
         }
 
     }
