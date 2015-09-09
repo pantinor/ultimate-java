@@ -33,9 +33,9 @@ public class JournalScreen implements Screen, InputProcessor, Constants {
         this.entries = entries;
         this.stage = new Stage();
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/fonts/ultima.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/fonts/lindberg.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 14;
+        parameter.size = 16;
         BitmapFont font = generator.generateFont(parameter);
         generator.dispose();
 
@@ -64,7 +64,7 @@ public class JournalScreen implements Screen, InputProcessor, Constants {
         ScrollPane sp = new ScrollPane(list, skin, "logs");
         sp.setX(16);
         sp.setY(16);
-        sp.setWidth(Gdx.graphics.getWidth() - 16);
+        sp.setWidth(Gdx.graphics.getWidth() - 32);
         sp.setHeight(Gdx.graphics.getHeight() - 64);
 
         stage.addActor(filterLabel);
@@ -81,7 +81,7 @@ public class JournalScreen implements Screen, InputProcessor, Constants {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
+        Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         stage.act();
