@@ -112,7 +112,9 @@ public class ConversationDialog extends Window implements Constants {
                                 }
 
                             } else {
-
+                                
+                                GameScreen.context.addEntry(conversation.getName(), conversation.getMap(), t.getPhrase());
+                                
                                 scrollPane.add(t.getPhrase());
                                 if (t.getQuestion() != null) {
                                     scrollPane.add(t.getQuestion());
@@ -124,13 +126,18 @@ public class ConversationDialog extends Window implements Constants {
 
                             if (previousTopic != null && previousTopic.getQuestion() != null) {
                                 if (query.toLowerCase().contains("y")) {
+                                    
+                                    GameScreen.context.addEntry(conversation.getName(), conversation.getMap(), previousTopic.getYesResponse());
                                     scrollPane.add(previousTopic.getYesResponse());
 
                                     if (conversation.getRespAffectsHumility() > 0) {
                                         GameScreen.context.getParty().adjustKarma(KarmaAction.BRAGGED);
                                     }
                                 } else {
+                                    
+                                    GameScreen.context.addEntry(conversation.getName(), conversation.getMap(), previousTopic.getNoResponse());
                                     scrollPane.add(previousTopic.getNoResponse());
+                                    
                                     if (previousTopic.isLbHeal()) {
                                         for (PartyMember pm : GameScreen.context.getParty().getMembers()) {
                                             pm.heal(HealType.CURE);

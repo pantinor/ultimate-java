@@ -236,6 +236,7 @@ public class GameScreen extends BaseScreen {
 
             Party party = new Party(sg);
             context.setParty(party);
+            context.loadJournalEntries();
 
 //            party.getMember(0).getPlayer().hp = 40;
 //            party.getMember(0).getPlayer().hpMax = 999;
@@ -535,7 +536,7 @@ public class GameScreen extends BaseScreen {
         //font.draw(batch, String.format("newMapPixelCoords: %d, %d", (int)newMapPixelCoords.x, (int)newMapPixelCoords.y), 10, 500);
         //font.draw(batch, String.format("current map coords: %d, %d", (int)v.x, (int)v.y), 10, 480);
         //font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 10, 460);
-        
+
         Ultima4.hud.render(batch, context.getParty());
 
         font.setColor(Color.WHITE);
@@ -567,6 +568,14 @@ public class GameScreen extends BaseScreen {
     public void resize(int width, int height) {
         viewport.update(width, height, false);
         mapViewPort.update(width, height, false);
+    }
+    
+    @Override
+    public boolean touchDown(int x, int y, int pointer, int button) {
+        if (x >=32 && x <= 64 && y >= Ultima4.SCREEN_HEIGHT - 48 && y <= Ultima4.SCREEN_HEIGHT - 16) {
+            mainGame.setScreen(new JournalScreen(mainGame, this, context.getJournal()));
+        }
+        return false;
     }
     
     @Override

@@ -73,7 +73,7 @@ public class SaveGame implements Constants {
     //see Constants.Maps enum for locations
     public int location = 0;
 
-    private Random rand = new Random();
+    private final Random rand = new Random();
 
     Texture zstatsBox;
 

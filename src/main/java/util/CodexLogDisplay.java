@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.Align;
 public class CodexLogDisplay {
 
     Texture logbkgrnd;
-    List<String> logs = new FixedSizeArrayList<String>(5);
+    List<String> logs = new FixedSizeArrayList<>(5);
     BitmapFont font;
 
     int width = 400;

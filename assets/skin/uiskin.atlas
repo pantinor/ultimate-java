@@ -212,3 +212,17 @@ white
   orig: 1, 1
   offset: 0, 0
   index: -1
+journal-off
+  rotate: false
+  xy: 68, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+journal-on
+  rotate: false
+  xy: 90, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1

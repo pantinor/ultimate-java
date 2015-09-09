@@ -12,6 +12,13 @@ import objects.Portal;
 import objects.Tile;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import java.io.File;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import objects.JournalEntries;
+import objects.JournalEntry;
+import static ultima.GameScreen.context;
 
 public class Context implements Constants {
 
@@ -19,7 +26,7 @@ public class Context implements Constants {
     private BaseMap currentMap;
     private TiledMap currentTiledMap;
     private int locationMask;
-
+    private JournalEntries journalEntries;
     private int line, col;
     private int moonPhase = 0;
     private Direction windDirection = Direction.NORTH;
@@ -34,7 +41,7 @@ public class Context implements Constants {
 
     private long lastCommandTime = System.currentTimeMillis();
 
-    private Random rand = new Random();
+    private final Random rand = new Random();
 
     public int getLine() {
         return line;
@@ -133,6 +140,24 @@ public class Context implements Constants {
         party.setContext(this);
     }
 
+    public void loadJournalEntries() {
+        
+        try {
+            File file = new File("journal.save");
+            JAXBContext jaxbContext = JAXBContext.newInstance(JournalEntries.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            this.journalEntries = (JournalEntries) jaxbUnmarshaller.unmarshal(file);
+        } catch (Exception e) {
+            this.journalEntries = new JournalEntries();
+        }
+        
+    }
+    
+    public void addEntry(String name, Maps map, String text) {
+        JournalEntry je = new JournalEntry(name, map.getLabel(), false, text);
+        this.journalEntries.add(je);
+    }
+
     public void saveGame(float x, float y, float z, Direction orientation, Maps map) {
 
         if (map == Maps.WORLD) {
@@ -159,6 +184,20 @@ public class Context implements Constants {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        try {
+            File file = new File("journal.save");
+            JAXBContext jaxbContext = JAXBContext.newInstance(JournalEntries.class);
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
+            marshaller.marshal(this.journalEntries, file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public JournalEntries getJournal() {
+        return this.journalEntries;
     }
 
     public int getLocationMask() {

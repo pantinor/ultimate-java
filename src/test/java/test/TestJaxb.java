@@ -52,10 +52,9 @@ import vendor.VendorClassSet;
 
 import com.badlogic.gdx.math.Vector3;
 import com.google.common.io.LittleEndianDataInputStream;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
+import javax.xml.bind.Marshaller;
+import objects.JournalEntries;
+import objects.JournalEntry;
 import org.testng.annotations.Test;
 import ultima.Constants.MapType;
 import static ultima.DungeonScreen.DUNGEON_MAP;
@@ -91,6 +90,27 @@ public class TestJaxb {
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         TileSet ts = (TileSet) jaxbUnmarshaller.unmarshal(file);
         for (Tile t : ts.getTiles()) {
+            System.out.println(t);
+        }
+    }
+    
+    //@Test
+    public void testJournal() throws Exception {
+        File file = new File("journal.save.test");
+        JAXBContext jaxbContext = JAXBContext.newInstance(JournalEntries.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
+        
+        JournalEntries entries = new JournalEntries();
+        entries.add(new JournalEntry("john", "yew", true, "whatever"));
+        marshaller.marshal(entries, file);
+        
+        entries.add(new JournalEntry("fred", "minoc", false, "whatever"));
+        marshaller.marshal(entries, file);
+        
+        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        JournalEntries entries2 = (JournalEntries) jaxbUnmarshaller.unmarshal(file);
+        for (JournalEntry t : entries2.getEntries()) {
             System.out.println(t);
         }
     }

@@ -45,7 +45,29 @@ public class Ultima4 extends Game {
         backGround = new Texture(Gdx.files.internal("assets/graphics/frame.png"));
 
         startScreen = new StartScreen(this);
-        setScreen(startScreen);
+        
+//        SaveGame sg = new SaveGame();
+//        sg.items |= Constants.Item.KEY_C.getLoc();
+//        sg.items |= Constants.Item.KEY_L.getLoc();
+//        sg.items |= Constants.Item.KEY_T.getLoc();
+//                SaveGame.SaveGamePlayerRecord rec = sg.new SaveGamePlayerRecord();
+//        rec.name = "avatar";
+//        rec.hp = 200;
+//
+//        Party p = new Party(sg);
+//        for (int i = 0; i < 8; i++) {
+//            sg.karma[i] = 0;
+//        }
+//        for (int i = 0; i < 7; i++) {
+//            try {
+//                p.addMember(rec);
+//            } catch (Exception ex) {
+//            }
+//        }
+
+//        setScreen(new CodexScreen(startScreen, p));
+        
+          setScreen(startScreen);
 
     }
 

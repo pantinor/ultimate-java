@@ -1784,7 +1784,7 @@ public class DungeonScreen extends BaseScreen {
                     if (input.startsWith(Stone.get(currentLevel).toString().toLowerCase())) {
                         Sounds.play(Sound.POSITIVE_EFFECT);
                         if (currentLevel == 7) {
-                            CodexScreen sc = new CodexScreen(DungeonScreen.this);
+                            CodexScreen sc = new CodexScreen(DungeonScreen.this, GameScreen.context.getParty());
                             mainGame.setScreen(sc);
                         } else {
                             log("The altar changes before thyne eyes!");

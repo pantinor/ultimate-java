@@ -42,6 +42,7 @@ public class MapSet {
                     if (p != null) {
 
                         for (Conversation c : conv) {
+                            c.setMap(map);
                             if (c.getIndex() == p.getDialogId()) {
                                 p.setConversation(c);
                             }

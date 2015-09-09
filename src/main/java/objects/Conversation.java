@@ -2,9 +2,11 @@ package objects;
 
 import java.util.ArrayList;
 import java.util.List;
+import ultima.Constants.Maps;
 
 public class Conversation {
 
+    protected Maps map;
     protected int index;
     protected String name;
     protected String pronoun;
@@ -58,6 +60,14 @@ public class Conversation {
             }
         }
         return null;
+    }
+    
+    public void setMap(Maps m) {
+        this.map = m;
+    }
+    
+    public Maps getMap() {
+        return map;
     }
 
     public int getIndex() {

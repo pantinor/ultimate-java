@@ -26,6 +26,7 @@ public class CustomInputConversation extends Conversation {
         this.pronoun = orig.pronoun;
         this.description = orig.description;
         this.topics = orig.topics;
+        this.map = orig.map;
     }
 
     public String getCustomInputQuery() {

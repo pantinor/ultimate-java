@@ -10,6 +10,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.graphics.Color;
@@ -40,11 +41,13 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.UBJsonReader;
+import objects.Party;
+import objects.SaveGame;
 
 public class CodexScreen extends BaseScreen {
 
-    public final DungeonScreen returnScreen;
-
+    private final Screen returnScreen;
+    private final Party party;
     public Environment environment;
     public ModelBatch modelBatch;
     private SpriteBatch batch;
@@ -53,7 +56,6 @@ public class CodexScreen extends BaseScreen {
 
     public Vector3 currentPos;
 
-    public PerspectiveCamera cam;
     public AssetManager assets;
     BitmapFont font;
 
@@ -61,8 +63,8 @@ public class CodexScreen extends BaseScreen {
     public Model altarModel;
     public Model avatarModel;
 
-    public List<ModelInstance> modelInstances = new ArrayList<ModelInstance>();
-    public List<ModelInstance> floor = new ArrayList<ModelInstance>();
+    public List<ModelInstance> modelInstances = new ArrayList<>();
+    public List<ModelInstance> floor = new ArrayList<>();
 
     private Vector3 nll2 = new Vector3(1f, 0.8f, 0.6f);
     private Vector3 center = new Vector3(5.5f, 0, 5.5f);
@@ -134,25 +136,11 @@ public class CodexScreen extends BaseScreen {
         done;
     }
 
-    public CodexScreen(DungeonScreen returnScreen) {
+    public CodexScreen(Screen returnScreen, Party party) {
 
-        scType = ScreenType.CODEX;
+        this.scType = ScreenType.CODEX;
         this.returnScreen = returnScreen;
-        init();
-    }
-
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(new InputMultiplexer(this, stage, inputController));
-    }
-
-    @Override
-    public void hide() {
-        dispose();
-    }
-
-    public void init() {
-
+        this.party = party;
         this.stage = new Stage();
 
         assets = new AssetManager();
@@ -183,12 +171,11 @@ public class CodexScreen extends BaseScreen {
 
         batch = new SpriteBatch();
 
-        cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.near = 0.1f;
-        cam.far = 1000f;
-        cam.update();
+        camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.near = 0.1f;
+        camera.far = 1000f;
 
-        inputController = new CameraInputController(cam);
+        inputController = new CameraInputController(camera);
         inputController.rotateLeftKey = inputController.rotateRightKey = inputController.forwardKey = inputController.backwardKey = 0;
         inputController.translateUnits = 30f;
 
@@ -227,13 +214,13 @@ public class CodexScreen extends BaseScreen {
 //		modelInstances.add(getFigure(7.2f, 0.528f, 2.8f, -40));
 
         currentPos = new Vector3(5.5f, 2f, 0f);
-        cam.position.set(currentPos);
-        cam.lookAt(5.5f, 0.2f, 5.5f);
+        camera.position.set(currentPos);
+        camera.lookAt(5.5f, 0.2f, 5.5f);
 
         logs = new CodexLogDisplay(font);
         logs.add("There is a sudden darkness, and you find yourself alone in an empty chamber.");
-
-        int haveKeys = (GameScreen.context.getParty().getSaveGame().items & (Item.KEY_C.getLoc() | Item.KEY_L.getLoc() | Item.KEY_T.getLoc()));
+        SaveGame saveGame = this.party.getSaveGame();
+        int haveKeys = (saveGame.items & (Item.KEY_C.getLoc() | Item.KEY_L.getLoc() | Item.KEY_T.getLoc()));
         int keys = (Item.KEY_C.getLoc() | Item.KEY_L.getLoc() | Item.KEY_T.getLoc());
         if (haveKeys != keys) {
             codexEject("Thou dost not have the Key of Three Parts.");
@@ -261,6 +248,16 @@ public class CodexScreen extends BaseScreen {
         }
 
 		//createAxes();
+    }
+    
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(new InputMultiplexer(this, stage, inputController));
+    }
+
+    @Override
+    public void hide() {
+        dispose();
     }
 
     @Override
@@ -347,7 +344,7 @@ public class CodexScreen extends BaseScreen {
     @Override
     public void render(float delta) {
 
-        cam.update();
+        camera.update();
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -358,7 +355,7 @@ public class CodexScreen extends BaseScreen {
 
         fixedLight.set(nll2.x, nll2.y, nll2.z, 5.5f, 2, 5.5f, lightSize);
 
-        modelBatch.begin(cam);
+        modelBatch.begin(camera);
 
         for (ModelInstance i : floor) {
             modelBatch.render(i, environment);
@@ -399,13 +396,13 @@ public class CodexScreen extends BaseScreen {
                 if (state == State.wordOfPassage) {
                     if (input.startsWith("veramocor")) {
 
-                        if (GameScreen.context.getParty().getMembers().size() != 8) {
+                        if (party.getMembers().size() != 8) {
                             codexEject("Thou art not ready.");
                             return false;
                         }
 
                         for (int i = 0; i < 8; i++) {
-                            if (GameScreen.context.getParty().getSaveGame().karma[i] != 0) {
+                            if (party.getSaveGame().karma[i] != 0) {
                                 codexEject("Thou hast not proved thy leadership in all eight virtues.");
                                 return false;
                             }
