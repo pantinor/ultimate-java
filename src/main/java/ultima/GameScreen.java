@@ -36,7 +36,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -54,7 +53,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -101,7 +99,6 @@ public class GameScreen extends BaseScreen {
         scType = ScreenType.MAIN;
 
         GameScreen.mainGame = mainGame;
-        GameScreen.skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
 
         try {
 
@@ -137,9 +134,6 @@ public class GameScreen extends BaseScreen {
             //textures for the phases of  the moon
             moonAtlas = new TextureAtlas(Gdx.files.internal("assets/graphics/moon-atlas.txt"));
 
-            font = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_18.fnt"));
-            font.setColor(Color.WHITE);
-            
             batch = new SpriteBatch();
             //batch.enableBlending();
             
@@ -287,7 +281,7 @@ public class GameScreen extends BaseScreen {
             
             //load the surface world first
             loadNextMap(Maps.WORLD, sg.x, sg.y);
-            //loadNextMap(Maps.WORLD, 128, 93);
+            //loadNextMap(Maps.WORLD, 136, 159);
 
             //load the dungeon if save game starts in dungeon
             if (Maps.get(sg.location) != Maps.WORLD) {
@@ -540,19 +534,19 @@ public class GameScreen extends BaseScreen {
 
         Ultima4.hud.render(batch, context.getParty());
 
-        font.setColor(Color.WHITE);
+        Ultima4.font.setColor(Color.WHITE);
         if (showZstats > 0) {
-            context.getParty().getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);
+            context.getParty().getSaveGame().renderZstats(showZstats, Ultima4.font, batch, Ultima4.SCREEN_HEIGHT);
         }
 
         if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
             batch.draw(moonAtlas.findRegion("phase_" + trammelphase), 352, Ultima4.SCREEN_HEIGHT - 30, 25, 25);
             batch.draw(moonAtlas.findRegion("phase_" + feluccaphase), 384, Ultima4.SCREEN_HEIGHT - 30, 25, 25);
-            font.draw(batch, "Wind  " + context.getWindDirection().toString(), 305, 36);
+            Ultima4.font.draw(batch, "Wind  " + context.getWindDirection().toString(), 305, 36);
         }
 
         if (context.getAura().getType() != AuraType.NONE) {
-            font.draw(batch, context.getAura().getType().toString(), 200, Ultima4.SCREEN_HEIGHT - 32);
+            Ultima4.font.draw(batch, context.getAura().getType().toString(), 200, Ultima4.SCREEN_HEIGHT - 32);
         }
 
         batch.end();
@@ -761,7 +755,7 @@ public class GameScreen extends BaseScreen {
             }
         } else if (keycode == Keys.M) {
 
-            new MixtureDialog(context.getParty(), this, stage, skin).show();
+            new MixtureDialog(context.getParty(), this, stage).show();
 
         } else if (keycode == Keys.B) {
             board((int) v.x, (int) v.y);
@@ -824,7 +818,7 @@ public class GameScreen extends BaseScreen {
 
         } else if (keycode == Keys.ESCAPE) {
 
-            new DocumentationDialog(this, stage, skin).show();
+            new DocumentationDialog(this, stage).show();
 
         } else if (keycode == Keys.SPACE) {
             log("Pass");

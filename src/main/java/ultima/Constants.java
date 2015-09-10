@@ -32,8 +32,8 @@ public interface Constants {
 
         NONE(255, "None"),
         WORLD(0, "Brittania"),
-        CASTLE_OF_LORD_BRITISH_1(1, "Castle of Lord British"),
-        CASTLE_OF_LORD_BRITISH_2(100, "Castle of Lord British"),
+        CASTLE_OF_LORD_BRITISH_1(1, "Castle"),
+        CASTLE_OF_LORD_BRITISH_2(100, "Castle"),
         LYCAEUM(2, "Lycaeum"),
         EMPATH_ABBEY(3, "Empath Abbey"),
         SERPENTS_HOLD(4, "Serpents Hold"),
@@ -89,13 +89,13 @@ public interface Constants {
         SHORSHIP_CON(54, ""),
         CAMP_DNG(55, ""),
         DELVE_SORROWS(56, "The Delve of Sorrows!"),
-        CASTLE_OF_LORD_BRITISH_3(101, "Basement in Castle of Lord British"),
+        CASTLE_OF_LORD_BRITISH_3(101, "Castle"),
         AQUARIA_1(57, "Aquaria"),
         AQUARIA_2(58, "Aquaria"),
         BLACK_ROCK(59, "Black Rock"),
         BODANIA(60, "Bodania"),
-        THORANGUARD_1(61, "Thoranguard Keep"),
-        THORANGUARD_2(62, "Dungeon Basement");
+        THORANGUARD_1(61, "Thoranguard"),
+        THORANGUARD_2(62, "Thoranguard");
 
         private int id;
         private String label;
@@ -1117,6 +1117,7 @@ public interface Constants {
             return mp;
         }
 
+        @Override
         public String toString() {
             return this.desc;
         }

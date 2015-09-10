@@ -170,8 +170,6 @@ public class DungeonScreen extends BaseScreen {
         MINI_MAP_TEXTURE = new Texture(pixmap);
         pixmap.dispose();
 
-        font = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_18.fnt"));
-
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.05f, 0.05f, 0.05f, 1f));
         //environment.set(new ColorAttribute(ColorAttribute.Fog, 0.13f, 0.13f, 0.13f, 1f));
@@ -411,7 +409,6 @@ public class DungeonScreen extends BaseScreen {
         for (ModelInstance mi : ceiling) {
             mi.model.dispose();
         }
-        font.dispose();
     }
     
     @Override
@@ -476,9 +473,9 @@ public class DungeonScreen extends BaseScreen {
             batch.draw(miniMap, xalignMM, yalignMM);
         }
         Ultima4.hud.render(batch, GameScreen.context.getParty());
-        font.draw(batch, "Level " + (currentLevel + 1), 305, 36);
+        Ultima4.font.draw(batch, "Level " + (currentLevel + 1), 305, 36);
         if (showZstats > 0) {
-            GameScreen.context.getParty().getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);
+            GameScreen.context.getParty().getSaveGame().renderZstats(showZstats, Ultima4.font, batch, Ultima4.SCREEN_HEIGHT);
         }
         batch.end();
         
@@ -1123,7 +1120,7 @@ public class DungeonScreen extends BaseScreen {
             showMiniMap = !showMiniMap;
         } else if (keycode == Keys.M) {
 
-            new MixtureDialog(GameScreen.context.getParty(), this, stage, skin).show();
+            new MixtureDialog(GameScreen.context.getParty(), this, stage).show();
 
         } else if (keycode == Keys.S) {
             if (tile == DungeonTile.ALTAR) {

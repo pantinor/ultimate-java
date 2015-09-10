@@ -11,6 +11,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 public class Ultima4 extends Game {
 
@@ -24,7 +31,8 @@ public class Ultima4 extends Game {
     public static Texture backGround;
     public static BitmapFont font;
     public static StartScreen startScreen;
-
+    public static Skin skin;
+    
     public static void main(String[] args) {
 
         LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
@@ -45,6 +53,25 @@ public class Ultima4 extends Game {
         font = generator.generateFont(parameter);
         generator.dispose();
         
+        skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
+        skin.remove("default-font", BitmapFont.class);
+        skin.add("default-font", font, BitmapFont.class);
+        skin.add("journal", font, BitmapFont.class);
+        
+        Label.LabelStyle ls = Ultima4.skin.get("default", Label.LabelStyle.class);
+        ls.font = font;
+        TextButton.TextButtonStyle tbs = Ultima4.skin.get("default", TextButton.TextButtonStyle.class);
+        tbs.font = font;
+        SelectBox.SelectBoxStyle sbs = Ultima4.skin.get("default", SelectBox.SelectBoxStyle.class);
+        sbs.font = font;
+        sbs.listStyle.font = font;
+        CheckBox.CheckBoxStyle cbs = Ultima4.skin.get("default", CheckBox.CheckBoxStyle.class);
+        cbs.font = font;
+        List.ListStyle lis = Ultima4.skin.get("default", List.ListStyle.class);
+        lis.font = font;
+        TextField.TextFieldStyle tfs = Ultima4.skin.get("default", TextField.TextFieldStyle.class);
+        tfs.font = font;
+
         hud = new LogDisplay(font);
         
         backGround = new Texture(Gdx.files.internal("assets/graphics/frame.png"));

@@ -711,7 +711,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
         } else if (keycode == Keys.M) {
 
-            new MixtureDialog(GameScreen.context.getParty(), this, stage, skin).show();
+            new MixtureDialog(GameScreen.context.getParty(), this, stage).show();
 
         } else if (keycode == Keys.S) {
             if (tile == DungeonTile.ALTAR) {

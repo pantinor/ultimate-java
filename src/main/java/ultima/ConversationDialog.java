@@ -15,7 +15,6 @@ import vendor.BaseVendor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -24,7 +23,6 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldListener;
@@ -33,7 +31,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 
 public class ConversationDialog extends Window implements Constants {
 
-    private Skin skin;
     boolean cancelHide;
     Actor previousKeyboardFocus, previousScrollFocus;
     FocusListener focusListener;
@@ -44,17 +41,15 @@ public class ConversationDialog extends Window implements Constants {
 
     public static int width = 300;
     public static int height = 400;
-    static BitmapFont font = new BitmapFont(Gdx.files.internal("assets/fonts/corsiva-20.fnt"), false);
 
     Table internalTable;
     TextField input;
     LogScrollPane scrollPane;
     Topic previousTopic;
 
-    public ConversationDialog(Person p, BaseScreen screen, Stage stage, Skin skin) {
-        super("", skin.get("dialog", WindowStyle.class));
-        setSkin(skin);
-        this.skin = skin;
+    public ConversationDialog(Person p, BaseScreen screen, Stage stage) {
+        super("", Ultima4.skin.get("dialog", WindowStyle.class));
+        setSkin(Ultima4.skin);
         this.stage = stage;
         this.screen = screen;
         this.person = p;
@@ -65,16 +60,17 @@ public class ConversationDialog extends Window implements Constants {
         setModal(true);
 
         defaults().space(10);
-        add(internalTable = new Table(skin)).expand().fill();
+        add(internalTable = new Table(Ultima4.skin)).expand().fill();
         row();
 
         internalTable.defaults().pad(1);
 
-        scrollPane = new LogScrollPane(skin, width, "logs");
+        scrollPane = new LogScrollPane(Ultima4.skin, width);
         scrollPane.setHeight(height);
 
-        input = new TextField("", skin);
+        input = new TextField("", Ultima4.skin);
         input.setTextFieldListener(new TextFieldListener() {
+            @Override
             public void keyTyped(TextField tf, char key) {
 
                 if (key == '\r') {
@@ -178,12 +174,14 @@ public class ConversationDialog extends Window implements Constants {
         internalTable.add(input).maxWidth(width).width(width);
 
         focusListener = new FocusListener() {
+            @Override
             public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
                 if (!focused) {
                     focusChanged(event);
                 }
             }
 
+            @Override
             public void scrollFocusChanged(FocusEvent event, Actor actor, boolean focused) {
                 if (!focused) {
                     focusChanged(event);

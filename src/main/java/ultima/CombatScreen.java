@@ -118,9 +118,6 @@ public class CombatScreen extends BaseScreen {
 
         batch = new SpriteBatch();
 
-        font = new BitmapFont();
-        font.setColor(Color.WHITE);
-
         sip = new SecondaryInputProcessor(this, stage);
 
         crSlots = new CreatureType[AREA_CREATURES];
@@ -195,7 +192,6 @@ public class CombatScreen extends BaseScreen {
         stage.dispose();
         renderer.dispose();
         batch.dispose();
-        font.dispose();
     }
 
     private void fillCreatureTable(CreatureType ct) {
@@ -360,13 +356,13 @@ public class CombatScreen extends BaseScreen {
 
         Ultima4.hud.render(batch, party);
 
-        font.setColor(Color.WHITE);
+        Ultima4.font.setColor(Color.WHITE);
         if (showZstats > 0) {
-            party.getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);
+            party.getSaveGame().renderZstats(showZstats, Ultima4.font, batch, Ultima4.SCREEN_HEIGHT);
         }
 
         if (context.getAura().getType() != AuraType.NONE) {
-            font.draw(batch, context.getAura().getType().toString(), 430, Ultima4.SCREEN_HEIGHT - 7);
+            Ultima4.font.draw(batch, context.getAura().getType().toString(), 430, Ultima4.SCREEN_HEIGHT - 7);
         }
 
         batch.end();

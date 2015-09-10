@@ -1,6 +1,9 @@
 package util;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -8,18 +11,19 @@ import com.badlogic.gdx.utils.Align;
 
 public class LogScrollPane extends ScrollPane {
 
-    private static Table internalTable = new Table();
+    private static final Table internalTable = new Table();
 
-    private int width;
-    private Skin skin;
-    private String styleName;
+    private final int width;
+    private final Skin skin;
+    private final LabelStyle ls;
 
-    public LogScrollPane(Skin skin, int width, String styleName) {
+    public LogScrollPane(Skin skin, int width) {
 
-        super(internalTable, skin, styleName);
+        super(internalTable, skin);
         this.skin = skin;
         this.width = width;
-        this.styleName = styleName;
+        
+        this.ls = new LabelStyle(this.skin.get("default-font", BitmapFont.class), Color.WHITE);
 
         clear();
         setScrollingDisabled(true, false);
@@ -37,7 +41,7 @@ public class LogScrollPane extends ScrollPane {
             return;
         }
 
-        Label label = new Label(text, skin, styleName);
+        Label label = new Label(text, ls);
         label.setWrap(true);
         label.setAlignment(Align.topLeft, Align.left);
 
@@ -51,6 +55,7 @@ public class LogScrollPane extends ScrollPane {
 
     }
 
+    @Override
     public void clear() {
         internalTable.clear();
         pack();

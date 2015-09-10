@@ -10,7 +10,6 @@ import objects.Party;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -21,7 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
@@ -31,7 +29,6 @@ import com.badlogic.gdx.utils.Align;
 
 public class MixtureDialog extends Window implements Constants {
 
-    private Skin skin;
     boolean cancelHide;
     Actor previousKeyboardFocus, previousScrollFocus;
     FocusListener focusListener;
@@ -57,18 +54,17 @@ public class MixtureDialog extends Window implements Constants {
 
     public static int width = 400;
     public static int height = 300;
-    static BitmapFont font = new BitmapFont(Gdx.files.internal("assets/fonts/corsiva-20.fnt"), false);
 
     Table internalTable;
     Table buttonTable;
 
-    public MixtureDialog(Party party, BaseScreen screen, Stage stage, Skin skin) {
-        super("", skin.get("dialog", WindowStyle.class));
-        setSkin(skin);
-        this.skin = skin;
+    public MixtureDialog(Party party, BaseScreen screen, Stage stage) {
+        super("", Ultima4.skin.get("dialog", WindowStyle.class));
+        setSkin(Ultima4.skin);
         this.stage = stage;
         this.screen = screen;
         this.party = party;
+
         initialize();
     }
 
@@ -82,6 +78,7 @@ public class MixtureDialog extends Window implements Constants {
             this.count = count;
         }
 
+        @Override
         public String toString() {
             return rgnt.getDesc() + " (" + count + ")";
         }
@@ -97,6 +94,7 @@ public class MixtureDialog extends Window implements Constants {
             this.count = count;
         }
 
+        @Override
         public String toString() {
             return spell.getDesc() + " (" + count + ")";
         }
@@ -105,30 +103,30 @@ public class MixtureDialog extends Window implements Constants {
     private void initialize() {
         setModal(true);
 
-        internalTable = new Table(skin);
+        internalTable = new Table(Ultima4.skin);
         internalTable.defaults().pad(5);
 
         defaults().space(10).pad(2);
         add(internalTable).expand().fill();
         row();
 
-        spellSelect = new SelectBox<Spell>(skin);
+        spellSelect = new SelectBox<>(Ultima4.skin);
         spellSelect.setItems(Spell.values());
         spellSelect.setSelected(Spell.AWAKEN);
 
         internalTable.add();
-        internalTable.add(new Label("Spell:", skin, "logs")).align(Align.right);
+        internalTable.add(new Label("Spell:", Ultima4.skin)).align(Align.right);
         internalTable.add(spellSelect);
         internalTable.add();
         internalTable.row();
 
-        internalTable.add(new Label("Reagents", skin, "logs")).align(Align.left);
+        internalTable.add(new Label("Reagents", Ultima4.skin)).align(Align.left);
         internalTable.add();
-        internalTable.add(new Label("Current Batch", skin, "logs")).align(Align.left);
-        internalTable.add(new Label("Mixtures", skin, "logs")).align(Align.left);
+        internalTable.add(new Label("Current Batch", Ultima4.skin)).align(Align.left);
+        internalTable.add(new Label("Mixtures", Ultima4.skin)).align(Align.left);
         internalTable.row();
 
-        ArrayList<ReagentCount> tmp = new ArrayList<ReagentCount>();
+        ArrayList<ReagentCount> tmp = new ArrayList<>();
         for (Reagent r : Reagent.values()) {
             if (party.getSaveGame().reagents[r.ordinal()] > 0) {
                 tmp.add(new ReagentCount(r, party.getSaveGame().reagents[r.ordinal()]));
@@ -136,7 +134,7 @@ public class MixtureDialog extends Window implements Constants {
         }
         owned = (ReagentCount[]) tmp.toArray(new ReagentCount[tmp.size()]);
 
-        ArrayList<MixtureCount> tmp2 = new ArrayList<MixtureCount>();
+        ArrayList<MixtureCount> tmp2 = new ArrayList<>();
         for (int i = 0; i < Spell.values().length; i++) {
             int count = party.getSaveGame().mixtures[i];
             if (count > 0) {
@@ -145,19 +143,20 @@ public class MixtureDialog extends Window implements Constants {
         }
         mixtures = (MixtureCount[]) tmp2.toArray(new MixtureCount[tmp2.size()]);
 
-        ownedList = new List<ReagentCount>(skin);
+        ownedList = new List<>(Ultima4.skin);
         ownedList.setItems(owned);
 
-        mixedList = new List<ReagentCount>(skin);
+        mixedList = new List<>(Ultima4.skin);
 
-        mixtureList = new List<MixtureCount>(skin);
+        mixtureList = new List<>(Ultima4.skin);
         mixtureList.setItems(mixtures);
 
-        buttonTable = new Table(skin);
+        buttonTable = new Table(Ultima4.skin);
         buttonTable.defaults().padLeft(20).padRight(20).padTop(5);
 
-        add = new TextButton("Add", skin, "default");
+        add = new TextButton("Add", Ultima4.skin);
         add.addListener(new ChangeListener() {
+            @Override
             public void changed(ChangeEvent event, Actor actor) {
 
                 ReagentCount sel = ownedList.getSelected();
@@ -177,7 +176,7 @@ public class MixtureDialog extends Window implements Constants {
 
                 sel.count--;
 
-                ArrayList<ReagentCount> tmp = new ArrayList<ReagentCount>();
+                ArrayList<ReagentCount> tmp = new ArrayList<>();
                 tmp.add(rc);
                 if (mixing != null) {
                     for (int i = 0; i < mixing.length; i++) {
@@ -194,14 +193,15 @@ public class MixtureDialog extends Window implements Constants {
         });
         buttonTable.add(add).expandX().left().width(100);
 
-        clear = new TextButton("Clear", skin, "default");
+        clear = new TextButton("Clear", Ultima4.skin);
         clear.addListener(new ChangeListener() {
+            @Override
             public void changed(ChangeEvent event, Actor actor) {
 
                 mixedList.clearItems();
                 mixing = null;
 
-                ArrayList<ReagentCount> tmp = new ArrayList<ReagentCount>();
+                ArrayList<ReagentCount> tmp = new ArrayList<>();
                 for (Reagent r : Reagent.values()) {
                     if (party.getSaveGame().reagents[r.ordinal()] > 0) {
                         tmp.add(new ReagentCount(r, party.getSaveGame().reagents[r.ordinal()]));
@@ -214,8 +214,9 @@ public class MixtureDialog extends Window implements Constants {
         buttonTable.row();
         buttonTable.add(clear).expandX().left().width(100).padBottom(30);
 
-        mix = new TextButton("Mix", skin, "default");
+        mix = new TextButton("Mix", Ultima4.skin);
         mix.addListener(new ChangeListener() {
+            @Override
             public void changed(ChangeEvent event, Actor actor) {
 
                 if (mixing == null) {
@@ -241,7 +242,7 @@ public class MixtureDialog extends Window implements Constants {
 
                     party.getSaveGame().mixtures[sp.ordinal()]++;
 
-                    ArrayList<MixtureCount> tmp2 = new ArrayList<MixtureCount>();
+                    ArrayList<MixtureCount> tmp2 = new ArrayList<>();
                     for (int i = 0; i < Spell.values().length; i++) {
                         int count = party.getSaveGame().mixtures[i];
                         if (count > 0) {
@@ -268,8 +269,9 @@ public class MixtureDialog extends Window implements Constants {
         buttonTable.row();
         buttonTable.add(mix).expandX().left().width(100);
 
-        exit = new TextButton("Quit", skin, "default");
+        exit = new TextButton("Quit", Ultima4.skin);
         exit.addListener(new ChangeListener() {
+            @Override
             public void changed(ChangeEvent event, Actor actor) {
                 hide();
             }
@@ -284,12 +286,14 @@ public class MixtureDialog extends Window implements Constants {
         internalTable.row();
 
         focusListener = new FocusListener() {
+            @Override
             public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
                 if (!focused) {
                     focusChanged(event);
                 }
             }
 
+            @Override
             public void scrollFocusChanged(FocusEvent event, Actor actor, boolean focused) {
                 if (!focused) {
                     focusChanged(event);
@@ -310,7 +314,7 @@ public class MixtureDialog extends Window implements Constants {
     }
 
     private void animateText(String text, Color color, float sx, float sy, float dx, float dy) {
-        Label label = new Label(text, skin, "larger");
+        Label label = new Label(text, Ultima4.skin);
         label.setPosition(sx, sy);
         label.setColor(color);
         stage.addActor(label);
@@ -396,6 +400,7 @@ public class MixtureDialog extends Window implements Constants {
     }
 
     protected InputListener ignoreTouchDown = new InputListener() {
+        @Override
         public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
             event.cancel();
             return false;

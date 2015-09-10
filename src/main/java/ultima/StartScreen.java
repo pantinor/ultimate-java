@@ -24,6 +24,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import java.io.File;
 
 public class StartScreen implements Screen, InputProcessor, Constants {
 
@@ -394,6 +395,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
                     try {
                         sg.write(PARTY_SAV_BASE_FILENAME);
+                        new File("journal.save").delete();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

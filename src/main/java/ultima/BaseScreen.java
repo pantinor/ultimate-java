@@ -14,12 +14,10 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -28,7 +26,6 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
     public ScreenType scType;
 
     public static Ultima4 mainGame;
-    public static Skin skin;
 
     protected BaseScreen returnScreen;
 
@@ -49,8 +46,6 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
     protected Camera camera;
     
     protected int showZstats = 0;
-
-    protected BitmapFont font;
 
     protected Vector2 currentMousePos;
 

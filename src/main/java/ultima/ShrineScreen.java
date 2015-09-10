@@ -6,8 +6,6 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
-import java.util.Random;
-
 import objects.Party;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +17,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -105,9 +102,6 @@ public class ShrineScreen extends BaseScreen {
         ));
 
         batch = new SpriteBatch();
-
-        font = new BitmapFont();
-        font.setColor(Color.WHITE);
 
         sip = new SecondaryInputProcessor(this, stage);
 

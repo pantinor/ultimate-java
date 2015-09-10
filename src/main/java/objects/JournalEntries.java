@@ -32,7 +32,7 @@ public class JournalEntries {
 
     public static final EntryComparator entryCompare = new EntryComparator();
 
-    private List<JournalEntry> entries = new ArrayList<>();
+    private final List<JournalEntry> entries = new ArrayList<>();
 
     @XmlElement(name = "entry")
     public List<JournalEntry> getEntries() {
@@ -50,7 +50,7 @@ public class JournalEntries {
         Array<JournalEntry> ar = new Array<>();
 
         for (JournalEntry e : entries) {
-            CheckBox cb = new CheckBox("", skin, "journal");
+            CheckBox cb = new CheckBox("", skin);
             cb.setChecked(e.getFinished());
             e.setCheckbox(cb);
             ar.add(e);

@@ -130,9 +130,9 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
                     if (p != null && (p.getConversation() != null || p.getRole() != null)) {
                         Gdx.input.setInputProcessor(stage);
                         if (p.getRole() != null && p.getRole().getInventoryType() != null && p.getRole().getInventoryType() == InventoryType.TINKER) {
-                            dialog = new TinkerDialog(GameScreen.context.getParty(), screen, stage, BaseScreen.skin).show();
+                            dialog = new TinkerDialog(GameScreen.context.getParty(), screen, stage, Ultima4.skin).show();
                         } else {
-                            dialog = new ConversationDialog(p, screen, stage, BaseScreen.skin).show(stage);
+                            dialog = new ConversationDialog(p, screen, stage).show(stage);
                         }
                     } else {
                         screen.log("Funny, no response! ");

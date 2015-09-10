@@ -147,7 +147,7 @@ public class JournalList extends Widget implements Cullable {
         int count = 0;
         for (int i = 0; i < items.size; i++) {
             JournalEntry item = items.get(i);
-            String f = this.filterField.getText().toLowerCase();
+            String f = this.filterField.getText().toLowerCase().trim();
             if (f != null && f.length() > 0) {
                 if (item.getLocation().toLowerCase().contains(f)
                         || item.getName().toLowerCase().contains(f)
@@ -188,8 +188,12 @@ public class JournalList extends Widget implements Cullable {
                 item.getCheckbox().draw(batch, font.getColor().a);
 
                 font.draw(batch, item.getLocation(), x + 30 + textOffsetX, y + itemY - textOffsetY);
-                font.draw(batch, item.getName(), x + 30 + 75 + textOffsetX, y + itemY - textOffsetY);
-                font.draw(batch, item.getText(), x + 90 + 75 + textOffsetX, y + itemY - textOffsetY);
+                
+                font.setColor(Color.YELLOW);
+                font.draw(batch, item.getName(), x + 30 + 100 + textOffsetX, y + itemY - textOffsetY);
+                font.setColor(Color.WHITE);
+
+                font.draw(batch, item.getText(), x + 30 + 200 + textOffsetX, y + itemY - textOffsetY);
 
                 if (selected) {
                     font.setColor(fontColorUnselected.r, fontColorUnselected.g, fontColorUnselected.b, fontColorUnselected.a * parentAlpha);

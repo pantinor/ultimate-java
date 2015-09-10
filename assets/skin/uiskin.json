@@ -1,8 +1,6 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: { 
-	default-font: { file: assets/fonts/Arial_12.fnt },
-	corsiva-font: { file: assets/fonts/corsiva.fnt },
-	corsiva-20-font: { file: assets/fonts/Calisto_18.fnt } 
+	default-font: { file: assets/fonts/Arial_12.fnt }
 },
 com.badlogic.gdx.graphics.Color: {
 	green: { a: 1, b: 0, g: 1, r: 0 },
@@ -19,18 +17,17 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 	toggle: { down: default-round-down, checked: default-round-down, up: default-round }
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
-	default: { down: default-round-down, up: default-round, font: corsiva-20-font, fontColor: white },
-	toggle: { down: default-round-down, up: default-round, checked: default-round-down, font: corsiva-20-font, fontColor: white, downFontColor: blue }
+	default: { down: default-round-down, up: default-round, font: default-font, fontColor: white },
+	toggle: { down: default-round-down, up: default-round, checked: default-round-down, font: default-font, fontColor: white, downFontColor: blue }
 },
 com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
-	default: { vScroll: default-scroll, hScrollKnob: default-round-large, background: default-rect, hScroll: default-scroll, vScrollKnob: default-round-large },
-	logs: { vScroll: default-scroll, hScrollKnob: default-round-large, background: bluefield2, hScroll: default-scroll, vScrollKnob: default-round-large }
+	default: { vScroll: default-scroll, hScrollKnob: default-round-large, background: bluefield2, hScroll: default-scroll, vScrollKnob: default-round-large }
 },
 com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
 	default: {
-		font: corsiva-20-font, fontColor: white, background: bluefield,
+		font: default-font, fontColor: white, background: bluefield,
 		scrollStyle: default,
-		listStyle: { font: corsiva-20-font, selection: default-select-selection }
+		listStyle: { fontColorUnselected: white, selection: bluefield, fontColorSelected: white, font: default-font, background: bluefield2 }
 	}
 },
 com.badlogic.gdx.scenes.scene2d.ui.SplitPane$SplitPaneStyle: {
@@ -40,7 +37,7 @@ com.badlogic.gdx.scenes.scene2d.ui.SplitPane$SplitPaneStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
 	default: { titleFont: default-font, background: default-window, titleFontColor: white },
 	custom: { titleFont: default-font, background: default-window, titleFontColor: white },
-	dialog: { titleFont: corsiva-20-font, background: default-window, titleFontColor: white, stageBackground: dialogDim }
+	dialog: { titleFont: default-font, background: default-window, titleFontColor: white, stageBackground: dialogDim }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
 	default-horizontal: { background: default-slider, knob: default-slider-knob }
@@ -48,21 +45,18 @@ com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: { font: default-font, fontColor: white },
 	black-font: { font: default-font, fontColor: black },
-	stats: { font: corsiva-20-font, fontColor: white, background: textfield },
-	larger: { font: corsiva-font, fontColor: white },
-	logs: { font: corsiva-20-font, fontColor: white }
-	
+	stats: { font: default-font, fontColor: white, background: textfield },
+	larger: { font: default-font, fontColor: white }	
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
-	default: { selection: selection, background: bluefield, font: corsiva-20-font, fontColor: white, cursor: cursor }
+	default: { selection: selection, background: bluefield, font: default-font, fontColor: white, cursor: cursor }
 },
 com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
-	default: { checkboxOn: check-on, checkboxOff: check-off, font: default-font, fontColor: white }
-	journal: { checkboxOn: journal-on, checkboxOff: journal-off, font: default-font, fontColor: white }
+	default: { checkboxOn: journal-on, checkboxOff: journal-off, font: default-font, fontColor: white }
 },
 com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
-	default: { fontColorUnselected: white, selection: bluefield, fontColorSelected: white, font: corsiva-20-font, background: bluefield2 },
-        journal: { fontColorUnselected: white, selection: bluefield, fontColorSelected: white, font: corsiva-20-font }
+	default: { fontColorUnselected: white, selection: bluefield, fontColorSelected: white, font: default-font, background: bluefield2 },
+	journal: { fontColorUnselected: white, selection: bluefield, fontColorSelected: white, font: default-font }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Touchpad$TouchpadStyle: {
 	default: { background: default-pane, knob: default-round-large }

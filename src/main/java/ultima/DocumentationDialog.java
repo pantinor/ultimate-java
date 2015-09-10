@@ -20,7 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
@@ -29,7 +28,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 
 public class DocumentationDialog extends Window implements Constants {
 
-    private Skin skin;
     boolean cancelHide;
     Actor previousKeyboardFocus, previousScrollFocus;
     FocusListener focusListener;
@@ -42,12 +40,9 @@ public class DocumentationDialog extends Window implements Constants {
 
     public static int width = 600;
     public static int height = 500;
-    static BitmapFont font = new BitmapFont(Gdx.files.internal("assets/fonts/corsiva-20.fnt"), false);
 
-    public DocumentationDialog(BaseScreen screen, Stage stage, Skin skin) {
-        super("", skin.get("dialog", WindowStyle.class));
-        setSkin(skin);
-        this.skin = skin;
+    public DocumentationDialog(BaseScreen screen, Stage stage) {
+        super("", Ultima4.skin.get("dialog", WindowStyle.class));
         this.stage = stage;
         this.screen = screen;
         initialize();
@@ -56,10 +51,10 @@ public class DocumentationDialog extends Window implements Constants {
     private void initialize() {
         setModal(true);
 
-        internalTable = new Table(skin);
+        internalTable = new Table(Ultima4.skin);
         internalTable.defaults().pad(5);
 
-        TextButton tb = new TextButton("X", skin);
+        TextButton tb = new TextButton("X", Ultima4.skin);
         getTitleTable().add(tb).height(getPadTop());
         tb.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
@@ -74,7 +69,7 @@ public class DocumentationDialog extends Window implements Constants {
         add(internalTable).expand().fill();
         row();
 
-        scrollPane = new LogScrollPane(skin, width, "logs");
+        scrollPane = new LogScrollPane(Ultima4.skin, width);
         scrollPane.setHeight(height);
         scrollPane.setSmoothScrolling(true);
         scrollPane.setFlickScroll(false);

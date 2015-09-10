@@ -5,15 +5,14 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import objects.JournalEntries;
 import util.JournalList;
 
@@ -31,37 +30,46 @@ public class JournalScreen implements Screen, InputProcessor, Constants {
         this.entries = entries;
         this.stage = new Stage();
 
-        Skin skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
-
-        LabelStyle ls = skin.get(LabelStyle.class);
-        ls.font = Ultima4.font;
-        Label filterLabel = new Label("Filter:", ls);
+        Label filterLabel = new Label("Filter:", Ultima4.skin);
         filterLabel.setX(16);
         filterLabel.setY(Gdx.graphics.getHeight() - 32);
 
-        TextFieldStyle tfs = skin.get(TextFieldStyle.class);
-        tfs.font = Ultima4.font;
-        TextField filterField = new TextField("", tfs);
+        TextField filterField = new TextField("", Ultima4.skin);
         filterField.setX(56);
         filterField.setY(Gdx.graphics.getHeight() - 32);
-        
-        CheckBoxStyle cbs = skin.get("journal", CheckBoxStyle.class);
-        cbs.font = Ultima4.font;
-        CheckBox cb = new CheckBox("Show Active", cbs);
+
+        CheckBox cb = new CheckBox("Show Active", Ultima4.skin);
         cb.setX(256);
         cb.setY(Gdx.graphics.getHeight() - 32);
-        
-        list = new JournalList(skin, Ultima4.font, filterField, cb, this.entries.toArray(skin));
 
-        ScrollPane sp = new ScrollPane(list, skin, "logs");
+        list = new JournalList(Ultima4.skin, Ultima4.font, filterField, cb, this.entries.toArray(Ultima4.skin));
+
+        ScrollPane sp = new ScrollPane(list, Ultima4.skin);
         sp.setX(16);
         sp.setY(16);
         sp.setWidth(Gdx.graphics.getWidth() - 32);
         sp.setHeight(Gdx.graphics.getHeight() - 64);
 
+        TextButton exit = new TextButton("Exit", Ultima4.skin);
+        exit.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                if (JournalScreen.this.mainGame != null) {
+                    JournalScreen.this.entries.fromArray(JournalScreen.this.list.getItems());
+                    JournalScreen.this.mainGame.setScreen(JournalScreen.this.returnScreen);
+                    JournalScreen.this.dispose();
+                }
+            }
+        });
+        exit.setX(Gdx.graphics.getWidth() - 100);
+        exit.setY(Gdx.graphics.getHeight() - 36);
+        exit.setWidth(75);
+        exit.setHeight(25);
+
         stage.addActor(filterLabel);
         stage.addActor(filterField);
         stage.addActor(cb);
+        stage.addActor(exit);
         stage.addActor(sp);
 
     }

@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Align;
 
 public class DeathScreen extends BaseScreen implements Constants {
 
+    BitmapFont font;
     Batch batch;
     long initTime;
     

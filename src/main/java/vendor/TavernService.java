@@ -79,7 +79,9 @@ public class TavernService extends BaseVendor {
 
             case TAVERN_INFO:
                 party.adjustGold(-(youPay + tip));
-                displayToScreen(String.format(currentSelectedItem.getDescription(), vendor.getOwner()));
+                String text = String.format(currentSelectedItem.getDescription(), vendor.getOwner());
+                GameScreen.context.addEntry(vendor.getOwner(), this.vendor.getMapId(), text);
+                displayToScreen(text);
                 displayToScreen("Somethin' else?");
                 state = ConvState.ANYTHING_ELSE;
                 break;
