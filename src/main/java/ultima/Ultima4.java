@@ -51,12 +51,17 @@ public class Ultima4 extends Game {
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 16;
         font = generator.generateFont(parameter);
+        
+        parameter.size = 24;
+        BitmapFont fontLarger = generator.generateFont(parameter);
+        
         generator.dispose();
         
         skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
         skin.remove("default-font", BitmapFont.class);
         skin.add("default-font", font, BitmapFont.class);
         skin.add("journal", font, BitmapFont.class);
+        skin.add("death-screen", fontLarger, BitmapFont.class);
         
         Label.LabelStyle ls = Ultima4.skin.get("default", Label.LabelStyle.class);
         ls.font = font;

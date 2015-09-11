@@ -24,7 +24,7 @@ public class DeathScreen extends BaseScreen implements Constants {
 
         deathMsgs[5] = String.format(deathMsgs[5], party.getMember(0).getPlayer().name);
 
-        font = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_24.fnt"));
+        font = Ultima4.skin.get("death-screen", BitmapFont.class);
         font.setColor(Color.WHITE);
         batch = new SpriteBatch();
 

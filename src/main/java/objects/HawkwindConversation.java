@@ -27,6 +27,8 @@ public class HawkwindConversation extends Conversation implements Constants {
 
         this.name = "Hawkwind";
         this.pronoun = "He";
+        this.map = Maps.CASTLE_OF_LORD_BRITISH_1;
+
     }
 
     public void setParty(Party p) {

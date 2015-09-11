@@ -13,6 +13,8 @@ import objects.Tile;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -154,8 +156,23 @@ public class Context implements Constants {
     }
     
     public void addEntry(String name, Maps map, String text) {
-        JournalEntry je = new JournalEntry(name, map.getLabel(), false, text);
-        this.journalEntries.add(je);
+        
+        String[] words = text.split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        List<StringBuilder> texts = new ArrayList<>();
+        for (String w : words) {
+            sb.append(w).append(" ");
+            if (sb.length() > 90) {
+                texts.add(sb);
+                sb = new StringBuilder();
+            }
+        }
+        texts.add(sb);
+
+        for (StringBuilder b : texts) {
+            JournalEntry je = new JournalEntry(name, map.getLabel(), false, b.toString().trim());
+            this.journalEntries.add(je);
+        }
     }
 
     public void saveGame(float x, float y, float z, Direction orientation, Maps map) {

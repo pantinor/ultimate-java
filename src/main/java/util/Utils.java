@@ -716,7 +716,7 @@ public class Utils implements Constants {
     public static Texture peerGem(TiledMapTileLayer layer, String[] ids, TextureAtlas atlas, int cx, int cy) throws Exception {
         FileTextureData d = (FileTextureData)(atlas.getRegions().first().getTexture().getTextureData());
         BufferedImage sheet = ImageIO.read(d.getFileHandle().file());
-        BufferedImage canvas = new BufferedImage(16 * layer.getWidth(), 16 * layer.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage canvas = new BufferedImage(32 * layer.getWidth(), 32 * layer.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
         for (int y = 0; y < layer.getHeight(); y++) {
             for (int x = 0; x < layer.getWidth(); x++) {
@@ -729,12 +729,16 @@ public class Utils implements Constants {
                     val = "avatar";
                 }
                 AtlasRegion ar = (AtlasRegion) atlas.findRegion(val);
-                BufferedImage sub = sheet.getSubimage(ar.getRegionX(), ar.getRegionY(), 16, 16);
-                canvas.getGraphics().drawImage(sub, x * 16, y * 16, 16, 16, null);
+                BufferedImage sub = sheet.getSubimage(ar.getRegionX(), ar.getRegionY(), 32, 32);
+                canvas.getGraphics().drawImage(sub, x * 32, y * 32, 32, 32, null);
             }
         }
 
-        Pixmap p = Utils.createPixmap(canvas.getWidth(), canvas.getHeight(), canvas, 0, 0);
+        java.awt.Image tmp = canvas.getScaledInstance(16 * 32, 16 * 32, Image.SCALE_AREA_AVERAGING);
+        BufferedImage scaledCanvas = new BufferedImage(16 * 32, 16 * 32, BufferedImage.TYPE_INT_ARGB);
+        scaledCanvas.getGraphics().drawImage(tmp, 0, 0, null);
+
+        Pixmap p = Utils.createPixmap(scaledCanvas.getWidth(), scaledCanvas.getHeight(), scaledCanvas, 0, 0);
 
         Texture t = new Texture(p);
         p.dispose();
@@ -750,23 +754,27 @@ public class Utils implements Constants {
         if (map.getMap().getType() == MapType.city) {
             FileTextureData d = (FileTextureData)(atlas.getRegions().first().getTexture().getTextureData());
             BufferedImage sheet = ImageIO.read(d.getFileHandle().file());
-            BufferedImage canvas = new BufferedImage(16 * 32, 16 * 32, BufferedImage.TYPE_INT_ARGB);
+            BufferedImage canvas = new BufferedImage(32 * 32, 32 * 32, BufferedImage.TYPE_INT_ARGB);
 
             for (int y = 0; y < 32; y++) {
                 for (int x = 0; x < 32; x++) {
                     Tile ct = map.getMap().getTile(x, y);
                     AtlasRegion ar = (AtlasRegion) atlas.findRegion(ct.getName());
-                    BufferedImage sub = sheet.getSubimage(ar.getRegionX(), ar.getRegionY(), 16, 16);
-                    canvas.getGraphics().drawImage(sub, x * 16, y * 16, 16, 16, null);
+                    BufferedImage sub = sheet.getSubimage(ar.getRegionX(), ar.getRegionY(), 32, 32);
+                    canvas.getGraphics().drawImage(sub, x * 32, y * 32, 32, 32, null);
                 }
             }
+            
+            java.awt.Image tmp = canvas.getScaledInstance(16 * 32, 16 * 32, Image.SCALE_AREA_AVERAGING);
+            BufferedImage scaledCanvas = new BufferedImage(16 * 32, 16 * 32, BufferedImage.TYPE_INT_ARGB);
+            scaledCanvas.getGraphics().drawImage(tmp, 0, 0, null);
 
             Pixmap p = createPixmap(
                     Ultima4.SCREEN_WIDTH,
                     Ultima4.SCREEN_HEIGHT,
-                    canvas,
-                    (Ultima4.SCREEN_WIDTH - canvas.getWidth()) / 2,
-                    (Ultima4.SCREEN_HEIGHT - canvas.getHeight()) / 2);
+                    scaledCanvas,
+                    (Ultima4.SCREEN_WIDTH - scaledCanvas.getWidth()) / 2,
+                    (Ultima4.SCREEN_HEIGHT - scaledCanvas.getHeight()) / 2);
 
             t = new Texture(p);
             p.dispose();
@@ -783,7 +791,7 @@ public class Utils implements Constants {
     public static Texture peerGem(BaseMap worldMap, int avatarX, int avatarY, TextureAtlas atlas) throws Exception {
         FileTextureData d = (FileTextureData)(atlas.getRegions().first().getTexture().getTextureData());
         BufferedImage sheet = ImageIO.read(d.getFileHandle().file());
-        BufferedImage canvas = new BufferedImage(16 * 64, 16 * 64, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage canvas = new BufferedImage(32 * 64, 32 * 64, BufferedImage.TYPE_INT_ARGB);
 
         int startX = avatarX - 32;
         int startY = avatarY - 32;
@@ -807,12 +815,12 @@ public class Utils implements Constants {
                 }
                 Tile ct = worldMap.getTile(cx, cy);
                 AtlasRegion ar = (AtlasRegion) atlas.findRegion(ct.getName());
-                BufferedImage sub = sheet.getSubimage(ar.getRegionX(), ar.getRegionY(), 16, 16);
-                canvas.getGraphics().drawImage(sub, indexX * 16, indexY * 16, 16, 16, null);
+                BufferedImage sub = sheet.getSubimage(ar.getRegionX(), ar.getRegionY(), 32, 32);
+                canvas.getGraphics().drawImage(sub, indexX * 32, indexY * 32, 32, 32, null);
 
                 Creature cr = worldMap.getCreatureAt(cx, cy);
                 if (cr != null) {
-                    canvas.getGraphics().fillRect(indexX * 16, indexY * 16, 16, 16);
+                    canvas.getGraphics().fillRect(indexX * 32, indexY * 32, 32, 32);
                 }
 
                 indexX++;
@@ -822,7 +830,7 @@ public class Utils implements Constants {
         }
 
         //add avatar in the middle
-        canvas.getGraphics().fillRect((16 * 64) / 2, (16 * 64) / 2, 16, 16);
+        canvas.getGraphics().fillRect((32 * 64) / 2, (32 * 64) / 2, 32, 32);
 
         java.awt.Image tmp = canvas.getScaledInstance(16 * 32, 16 * 32, Image.SCALE_AREA_AVERAGING);
         BufferedImage scaledCanvas = new BufferedImage(16 * 32, 16 * 32, BufferedImage.TYPE_INT_ARGB);

@@ -13,6 +13,8 @@ public class LordBritishConversation extends Conversation implements Constants {
 
         this.name = "Lord British";
         this.pronoun = "He";
+        
+        this.map = Maps.CASTLE_OF_LORD_BRITISH_1;
 
         topics.add(new Topic("look", "Thou see the King with the Royal Sceptre.", null, null, null));
         topics.add(new Topic("name", "He says: My name is Lord British, sovereign of all Britannia!", null, null, null));
@@ -48,6 +50,7 @@ public class LordBritishConversation extends Conversation implements Constants {
 
     }
 
+    @Override
     public Topic matchTopic(String query) {
 
         if (query.toLowerCase().contains("help")) {
