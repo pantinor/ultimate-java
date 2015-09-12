@@ -59,6 +59,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.UBJsonReader;
+import static ultima.BaseScreen.mainGame;
+import static ultima.GameScreen.context;
 
 public class DungeonScreen extends BaseScreen {
 
@@ -1120,7 +1122,7 @@ public class DungeonScreen extends BaseScreen {
             showMiniMap = !showMiniMap;
         } else if (keycode == Keys.M) {
 
-            new MixtureDialog(GameScreen.context.getParty(), this, stage).show();
+            mainGame.setScreen(new MixtureScreen(mainGame, this, Ultima4.skin, context.getParty()));
 
         } else if (keycode == Keys.S) {
             if (tile == DungeonTile.ALTAR) {

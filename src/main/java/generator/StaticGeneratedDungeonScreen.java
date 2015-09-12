@@ -11,7 +11,6 @@ import ultima.BaseScreen;
 import ultima.CombatScreen;
 import ultima.DeathScreen;
 import ultima.GameScreen;
-import ultima.MixtureDialog;
 import ultima.SecondaryInputProcessor;
 import ultima.Sound;
 import ultima.Sounds;
@@ -64,6 +63,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.UBJsonReader;
+import static ultima.BaseScreen.mainGame;
+import ultima.MixtureScreen;
 
 public class StaticGeneratedDungeonScreen extends BaseScreen {
 
@@ -80,7 +81,6 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
     public CameraInputController inputController;
 
-    public PerspectiveCamera cam;
     public AssetManager assets;
     BitmapFont font;
 
@@ -173,14 +173,14 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
         batch = new SpriteBatch();
 
-        cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.near = 0.1f;
-        cam.far = 1000f;
-        cam.update();
+        camera = new PerspectiveCamera(67, Ultima4.MAP_WIDTH, Ultima4.MAP_HEIGHT);
+        
+        camera.near = 0.1f;
+        camera.far = 1000f;
 
-        decalBatch = new DecalBatch(new CameraGroupStrategy(cam));
+        decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
 
-        inputController = new CameraInputController(cam);
+        inputController = new CameraInputController(camera);
         inputController.rotateLeftKey = inputController.rotateRightKey = inputController.forwardKey = inputController.backwardKey = 0;
         inputController.translateUnits = 30f;
 
@@ -260,8 +260,8 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
             setStartPosition();
 
-            cam.position.set(currentPos);
-            cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+            camera.position.set(currentPos);
+            camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -299,10 +299,9 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
     @Override
     public void render(float delta) {
 
-        cam.update();
-
+        Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
-
+        
         lightFactor += Gdx.graphics.getDeltaTime();
         float lightSize = 4.75f + 0.25f * (float) Math.sin(lightFactor) + .2f * MathUtils.random();
 
@@ -310,7 +309,11 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         ll = isTorchOn ? nll2 : vdll;
         fixedLight.set(ll.x, ll.y, ll.z, currentPos.x, currentPos.y + .35f, currentPos.z, lightSize);
 
-        modelBatch.begin(cam);
+        Gdx.gl.glViewport(32, 64, Ultima4.MAP_WIDTH, Ultima4.MAP_HEIGHT);
+        
+        camera.update();
+        
+        modelBatch.begin(camera);
 
         for (DungeonTileModelInstance i : modelInstances) {
             if (i.getLevel() == currentLevel) {
@@ -328,8 +331,18 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         }
         decalBatch.flush();
 
-        drawHUD();
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        
+        batch.begin();
+        batch.draw(Ultima4.backGround, 0, 0);
 
+        Ultima4.hud.render(batch, GameScreen.context.getParty());
+        Ultima4.font.draw(batch, "Level " + (currentLevel + 1), 305, 36);
+        if (showZstats > 0) {
+            GameScreen.context.getParty().getSaveGame().renderZstats(showZstats, Ultima4.font, batch, Ultima4.SCREEN_HEIGHT);
+        }
+        batch.end();
+        
         stage.act();
         stage.draw();
 
@@ -484,21 +497,6 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         }
     }
 
-    public void drawHUD() {
-
-        batch.begin();
-
-        Ultima4.hud.render(batch, GameScreen.context.getParty());
-
-        font.draw(batch, "Level " + (currentLevel + 1), Ultima4.SCREEN_WIDTH / 2 - 20, Ultima4.SCREEN_HEIGHT - 3);
-
-        if (showZstats > 0) {
-            GameScreen.context.getParty().getSaveGame().renderZstats(showZstats, font, batch, Ultima4.SCREEN_HEIGHT);
-        }
-
-        batch.end();
-    }
-
     public void battleWandering(Creature cr, int x, int y) {
         if (cr == null) {
             return;
@@ -569,16 +567,16 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         if (keycode == Keys.LEFT) {
 
             if (currentDir == Direction.EAST) {
-                cam.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
+                camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
                 currentDir = Direction.NORTH;
             } else if (currentDir == Direction.WEST) {
-                cam.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
+                camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
                 currentDir = Direction.SOUTH;
             } else if (currentDir == Direction.NORTH) {
-                cam.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
+                camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
                 currentDir = Direction.WEST;
             } else if (currentDir == Direction.SOUTH) {
-                cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+                camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
                 currentDir = Direction.EAST;
             }
             setCreatureRotations();
@@ -587,16 +585,16 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         } else if (keycode == Keys.RIGHT) {
 
             if (currentDir == Direction.EAST) {
-                cam.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
+                camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
                 currentDir = Direction.SOUTH;
             } else if (currentDir == Direction.WEST) {
-                cam.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
+                camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
                 currentDir = Direction.NORTH;
             } else if (currentDir == Direction.NORTH) {
-                cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+                camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
                 currentDir = Direction.EAST;
             } else if (currentDir == Direction.SOUTH) {
-                cam.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
+                camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
                 currentDir = Direction.WEST;
             }
             setCreatureRotations();
@@ -618,15 +616,15 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
             tile = dungeonTiles[currentLevel][x][y];
             if (tile != DungeonTile.WALL) {
                 currentPos = new Vector3(x + .5f, .5f, y + .5f);
-                cam.position.set(currentPos);
+                camera.position.set(currentPos);
                 if (currentDir == Direction.EAST) {
-                    cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+                    camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
                 } else if (currentDir == Direction.WEST) {
-                    cam.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
+                    camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
                 } else if (currentDir == Direction.NORTH) {
-                    cam.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
+                    camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
                 } else if (currentDir == Direction.SOUTH) {
-                    cam.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
+                    camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
                 }
                 checkTrap(tile, x, y);
             }
@@ -646,15 +644,15 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
             tile = dungeonTiles[currentLevel][x][y];
             if (tile != DungeonTile.WALL) {
                 currentPos = new Vector3(x + .5f, .5f, y + .5f);
-                cam.position.set(currentPos);
+                camera.position.set(currentPos);
                 if (currentDir == Direction.EAST) {
-                    cam.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+                    camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
                 } else if (currentDir == Direction.WEST) {
-                    cam.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
+                    camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
                 } else if (currentDir == Direction.NORTH) {
-                    cam.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
+                    camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
                 } else if (currentDir == Direction.SOUTH) {
-                    cam.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
+                    camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
                 }
                 checkTrap(tile, x, y);
             }
@@ -711,7 +709,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
         } else if (keycode == Keys.M) {
 
-            new MixtureDialog(GameScreen.context.getParty(), this, stage).show();
+            mainGame.setScreen(new MixtureScreen(mainGame, this, Ultima4.skin, GameScreen.context.getParty()));
 
         } else if (keycode == Keys.S) {
             if (tile == DungeonTile.ALTAR) {

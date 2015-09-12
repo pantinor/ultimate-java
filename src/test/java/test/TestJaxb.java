@@ -237,8 +237,8 @@ public class TestJaxb {
             System.out.println(p);
         }
 
-        System.out.printf("Latitude [%s' %s]", (char) ((int) 54 / 16 + 'A'), (char) ((int) 54 % 16 + 'A'));
-        System.out.printf(" Longitude [%s' %s]\n", (char) ((int) 182 / 16 + 'A'), (char) ((int) 182 % 16 + 'A'));
+        //System.out.printf("Latitude [%s' %s]", (char) ((int) 54 / 16 + 'A'), (char) ((int) 54 % 16 + 'A'));
+        //System.out.printf(" Longitude [%s' %s]\n", (char) ((int) 182 / 16 + 'A'), (char) ((int) 182 % 16 + 'A'));
 
     }
 

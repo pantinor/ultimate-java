@@ -136,19 +136,6 @@ public class Tile {
         return false;
     }
 
-    public boolean climbable() {
-        switch (index) {
-            case 27:
-            case 28: {
-                return true;
-            }
-            default:
-
-        }
-
-        return false;
-    }
-
     public Maps getCombatMap() {
         return combatMap;
     }

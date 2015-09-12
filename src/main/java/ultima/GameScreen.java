@@ -255,12 +255,12 @@ public class GameScreen extends BaseScreen {
 //            sg.food = 30000;
 //            sg.gold = 999;
 //            sg.keys = 20;
-              sg.gems = 15;
+//              sg.gems = 15;
 //            sg.moves = 2800;
 //            sg.stones = 0xff;
 //            sg.runes = 0xff;
 //            sg.items = 0xff;
-              sg.sextants = 1;
+//              sg.sextants = 1;
               
 //            party.getMember(0).getPlayer().status = StatusType.GOOD;
 //            party.getMember(0).getPlayer().xp = 899;
@@ -280,8 +280,8 @@ public class GameScreen extends BaseScreen {
             //sg.items |= Constants.Item.BOOK.getLoc();
             
             //load the surface world first
-            loadNextMap(Maps.WORLD, sg.x, sg.y);
-            //loadNextMap(Maps.WORLD, 136, 159);
+            //loadNextMap(Maps.WORLD, sg.x, sg.y);
+            loadNextMap(Maps.WORLD, 154, 188);
 
             //load the dungeon if save game starts in dungeon
             if (Maps.get(sg.location) != Maps.WORLD) {
@@ -677,8 +677,8 @@ public class GameScreen extends BaseScreen {
                     }
                 }
             } else {
-                if (ct.climbable()) {
-                    Portal p = context.getCurrentMap().getPortal(v.x, v.y);
+                Portal p = context.getCurrentMap().getPortal(v.x, v.y);
+                if (p != null) {
                     loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
                     log(p.getMessage());
                 }
@@ -755,7 +755,7 @@ public class GameScreen extends BaseScreen {
             }
         } else if (keycode == Keys.M) {
 
-            new MixtureDialog(context.getParty(), this, stage).show();
+            mainGame.setScreen(new MixtureScreen(mainGame, this, Ultima4.skin, context.getParty()));
 
         } else if (keycode == Keys.B) {
             board((int) v.x, (int) v.y);

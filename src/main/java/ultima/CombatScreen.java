@@ -824,14 +824,14 @@ public class CombatScreen extends BaseScreen {
                     }
 
                     if (target != null) {
-                        if (creature.stealsFood() && rand.nextInt(4) == 0) {
+                        if (creature.stealsFood() && rand.nextInt(8) == 0) {
                             Sounds.play(Sound.NEGATIVE_EFFECT);
-                            party.adjustFood(-(rand.nextInt(25)*1000));
+                            party.adjustFood(-(rand.nextInt(10)*1000));
                         }
 
-                        if (creature.stealsGold() && rand.nextInt(4) == 0) {
+                        if (creature.stealsGold() && rand.nextInt(8) == 0) {
                             Sounds.play(Sound.NEGATIVE_EFFECT);
-                            party.adjustGold(-(rand.nextInt(0x3f)));
+                            party.adjustGold(-(rand.nextInt(40)));
                         }
                     }
                 }
@@ -848,30 +848,26 @@ public class CombatScreen extends BaseScreen {
                 break;
             }
 
-            case TELEPORT: {
-//	        Coords new_c;
-//	        bool valid = false;
-//	        bool firstTry = true;                    
-//	        
-//	        while (!valid) {
-//	            Map *map = getMap();
-//	            new_c = Coords(rand.nextInt(map->width), rand.nextInt(map->height), c->location->coords.z);
-//	                
-//	            const Tile *tile = map->tileTypeAt(new_c, WITH_OBJECTS);
-//	            
-//	            if (tile->isCreatureWalkable()) {
-//	                /* If the tile would slow me down, try again! */
-//	                if (firstTry && tile->getSpeed() != FAST)
-//	                    firstTry = false;
-//	                /* OK, good enough! */
-//	                else
-//	                    valid = true;
-//	            }
-//	        }
-//	        
-//	        /* Teleport! */
-//	        setCoords(new_c);
-//	        break;
+            case TELEPORT: {//only wisp teleports
+	        boolean valid = false;
+	        int rx=0, ry=0, count=0;
+	        while (!valid && count < 5) {
+                    rx = rand.nextInt(combatMap.getWidth());
+                    ry = rand.nextInt(combatMap.getHeight());
+                    Tile t = combatMap.getTile(rx, ry);
+                    if (t != null) {
+                        valid = true;
+                        TileRule rule = t.getRule();
+                        if (rule != null && rule.has(TileAttrib.creatureunwalkable)) {
+                            valid = false;
+                        }
+                    }
+                    count++;
+ 	        }
+                if (valid) {
+                    moveCreature(action, creature, rx, ry);
+                }
+	        break;
             }
 
             case RANGED: {
