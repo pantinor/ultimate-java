@@ -23,7 +23,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import static ultima.GameScreen.context;
 
 public abstract class BaseScreen implements Screen, InputProcessor, Constants, Observer {
 
@@ -90,12 +89,12 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
     public void endCombat(boolean isWon, BaseMap combatMap, boolean wounded) {
     }
     
-    public final void addButtons(Context ctxt) {
+    public final void addButtons() {
         TextButton jourButt = new TextButton("Journal", Ultima4.skin, "wood");
         jourButt.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                mainGame.setScreen(new JournalScreen(mainGame, BaseScreen.this, Ultima4.skin, ctxt.getJournal()));
+                mainGame.setScreen(new JournalScreen(mainGame, BaseScreen.this, Ultima4.skin, GameScreen.context.getJournal()));
             }
         });
         jourButt.setX(32);

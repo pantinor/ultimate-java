@@ -1,5 +1,7 @@
 package util;
 
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.files.FileHandle;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor;
@@ -46,13 +48,24 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Region;
 import com.badlogic.gdx.graphics.glutils.FileTextureData;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import java.util.Iterator;
+import static objects.Conversation.standardQuery;
+import objects.HawkwindConversation;
+import objects.LordBritishConversation;
+import objects.PersonRole;
 
 public class Utils implements Constants {
 
@@ -72,11 +85,12 @@ public class Utils implements Constants {
      */
     public static void setMapTiles(BaseMap map, TileSet ts) throws Exception {
 
-        if (map.getFname().length() < 1) {
+        String fname = map.getFname().toLowerCase();
+        if (fname == null || fname.isEmpty() || fname.endsWith(".tmx")) {
             return;
         }
 
-        InputStream is = new FileInputStream("assets/data/" + map.getFname().toLowerCase());
+        InputStream is = new FileInputStream("assets/data/" + fname);
         byte[] bytes = IOUtils.toByteArray(is);
 
         Tile[] tiles = new Tile[map.getWidth() * map.getHeight()];
@@ -714,7 +728,7 @@ public class Utils implements Constants {
     }
 
     public static Texture peerGem(TiledMapTileLayer layer, String[] ids, TextureAtlas atlas, int cx, int cy) throws Exception {
-        FileTextureData d = (FileTextureData)(atlas.getRegions().first().getTexture().getTextureData());
+        FileTextureData d = (FileTextureData) (atlas.getRegions().first().getTexture().getTextureData());
         BufferedImage sheet = ImageIO.read(d.getFileHandle().file());
         BufferedImage canvas = new BufferedImage(32 * layer.getWidth(), 32 * layer.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
@@ -752,7 +766,7 @@ public class Utils implements Constants {
         Texture t = null;
 
         if (map.getMap().getType() == MapType.city) {
-            FileTextureData d = (FileTextureData)(atlas.getRegions().first().getTexture().getTextureData());
+            FileTextureData d = (FileTextureData) (atlas.getRegions().first().getTexture().getTextureData());
             BufferedImage sheet = ImageIO.read(d.getFileHandle().file());
             BufferedImage canvas = new BufferedImage(32 * 32, 32 * 32, BufferedImage.TYPE_INT_ARGB);
 
@@ -764,7 +778,7 @@ public class Utils implements Constants {
                     canvas.getGraphics().drawImage(sub, x * 32, y * 32, 32, 32, null);
                 }
             }
-            
+
             java.awt.Image tmp = canvas.getScaledInstance(16 * 32, 16 * 32, Image.SCALE_AREA_AVERAGING);
             BufferedImage scaledCanvas = new BufferedImage(16 * 32, 16 * 32, BufferedImage.TYPE_INT_ARGB);
             scaledCanvas.getGraphics().drawImage(tmp, 0, 0, null);
@@ -789,7 +803,7 @@ public class Utils implements Constants {
 
     //used for view gem on the world map only
     public static Texture peerGem(BaseMap worldMap, int avatarX, int avatarY, TextureAtlas atlas) throws Exception {
-        FileTextureData d = (FileTextureData)(atlas.getRegions().first().getTexture().getTextureData());
+        FileTextureData d = (FileTextureData) (atlas.getRegions().first().getTexture().getTextureData());
         BufferedImage sheet = ImageIO.read(d.getFileHandle().file());
         BufferedImage canvas = new BufferedImage(32 * 64, 32 * 64, BufferedImage.TYPE_INT_ARGB);
 
@@ -895,7 +909,7 @@ public class Utils implements Constants {
             return null;
         }
 
-        List<Conversation> dialogs = new ArrayList<Conversation>();
+        List<Conversation> dialogs = new ArrayList<>();
 
         int block = 288;
         for (int i = 0; i < 16; i++) {
@@ -921,7 +935,7 @@ public class Utils implements Constants {
                 } else if (y > 2) {
                     if (bytes[pos] == 0x0 && stringIndex < 12) {
                         bb.flip();
-                        strings[stringIndex] = new String(bb.toString().replace("\n", " "));
+                        strings[stringIndex] = bb.toString().replace("\n", " ");
                         stringIndex++;
                         bb.clear();
                     } else {
@@ -937,13 +951,99 @@ public class Utils implements Constants {
 
     }
 
+    public static void setTMXMap(BaseMap map, Maps id, String tmxFile, TileSet ts) {
+        List<Person> people = new ArrayList<>();
+        Tile[] tiles = new Tile[map.getWidth() * map.getHeight()];
+
+
+        TmxMapLoader loader = new TmxMapLoader(); 
+        TiledMap tm = loader.load("assets/tilemaps/" + tmxFile);
+
+        TiledMapTileLayer ml = (TiledMapTileLayer) tm.getLayers().get(map.getId() + "-map");
+        if (ml != null) {
+            FileHandle f = new FileHandle("assets/tilemaps/tiles-enhanced-vga-atlas.txt");
+            TextureAtlas.TextureAtlasData atlas = new TextureAtlas.TextureAtlasData(f, f.parent(), false);
+            int png_grid_width = 20;
+            Tile[] mapTileIds = new Tile[png_grid_width * Constants.tilePixelWidth + 1];
+            for (Region r : atlas.getRegions()) {
+                int x = r.left / r.width;
+                int y = r.top / r.height;
+                int i = x + (y * png_grid_width) + 1;
+                mapTileIds[i] = ts.getTileByName(r.name);
+            }
+
+            for (int y = 0; y < map.getHeight(); y++) {
+                for (int x = 0; x < map.getWidth(); x++) {
+                    StaticTiledMapTile tr = (StaticTiledMapTile) ml.getCell(x, map.getWidth() - 1 - y).getTile();
+                    Tile tile = mapTileIds[tr.getId()];
+                    if (tile == null) {
+                        tile = ts.getTileByIndex(127);
+                    }
+                    tiles[x + (y * map.getWidth())] = tile;
+                }
+            }
+        }
+
+        MapLayer objectsLayer = tm.getLayers().get(map.getId() + "-people");
+        if (objectsLayer != null) {
+            Iterator<MapObject> iter = objectsLayer.getObjects().iterator();
+            while (iter.hasNext()) {
+                MapObject obj = iter.next();
+
+                Person p = new Person();
+                Conversation conv = new Conversation();
+                conv.setName(obj.getName());
+                conv.setMap(id);
+                p.setConversation(conv);
+                people.add(p);
+
+                Iterator<String> keys = obj.getProperties().getKeys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    String value = obj.getProperties().get(key).toString();
+                    if (key.equals("tileType")) {
+                        Tile tile = ts.getTileByName(value);
+                        p.setTileIndex(tile.getIndex());
+                        p.setTile(tile);
+                    } else if (key.equals("startX")) {
+                        p.setStart_x(new Float(value).intValue());
+                    } else if (key.equals("startY")) {
+                        p.setStart_y(new Float(value).intValue());
+                    } else if (key.equals("role")) {
+                        PersonRole role = new PersonRole();
+                        role.setInventoryType(InventoryType.valueOf(value));
+                        p.setRole(role);
+                    } else if (key.equals("movement")) {
+                        p.setMovement(ObjectMovementBehavior.valueOf(value));
+                    } else if (key.startsWith("description")) {
+                        conv.setDescription(value);
+                        conv.getTopics().add(conv.new Topic(standardQuery[2], value, null, null, null));
+                    } else if (key.startsWith("topic")) {
+                        String[] splits = value.split(",");
+                        if (splits.length == 5) {
+                            conv.getTopics().add(conv.new Topic(splits[0], splits[1], splits[2], splits[3], splits[4]));
+                        } else {
+                            conv.getTopics().add(conv.new Topic(splits[0], splits[1], null, null, null));
+                        }
+                    }
+                }
+
+            }
+
+
+        }
+
+        map.getCity().setPeople(people);
+        map.setTiles(tiles);
+    }
+
     /**
      * Read the ULT file and parse the people
      *
      * @param fname
      * @return
      */
-    public static Person[] getPeople(String fname, TileSet ts) {
+    public static List<Person> getPeople(String fname, Maps map, TileSet ts) {
         byte[] bytes;
         try {
             InputStream is = new FileInputStream("assets/data/" + fname);
@@ -1048,7 +1148,20 @@ public class Utils implements Constants {
             count++;
         }
 
-        return people;
+        List<Person> peeps = new ArrayList<>();
+        for (int i = 0; i < people.length; i++) {
+            if (people[i] != null) {
+                peeps.add(people[i]);
+                if (map == Maps.CASTLE_OF_LORD_BRITISH_2 && people[i].getId() == 31) {
+                    people[i].setConversation(new LordBritishConversation());
+                }
+                if (map == Maps.CASTLE_OF_LORD_BRITISH_1 && people[i].getId() == 29) {
+                    people[i].setConversation(new HawkwindConversation());
+                }
+            }
+        }
+
+        return peeps;
 
     }
 

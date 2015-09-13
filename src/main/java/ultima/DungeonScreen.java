@@ -130,7 +130,7 @@ public class DungeonScreen extends BaseScreen {
         this.stage = new Stage();
         sip = new SecondaryInputProcessor(this, stage);
         
-        addButtons(gameScreen.context);
+        addButtons();
 
         init();
     }
@@ -160,7 +160,7 @@ public class DungeonScreen extends BaseScreen {
 
         //convert the collada dae format to the g3db format (do not use the obj format)
         //C:\Users\Paul\Desktop\blender>fbx-conv-win32.exe -o G3DB ./Chess/pawn.dae ./pawn.g3db
-        ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader(), new ClasspathFileHandleResolver());
+        ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader());
         fountainModel = gloader.loadModel(Gdx.files.internal("assets/graphics/fountain2.g3db"));
         ladderModel = gloader.loadModel(Gdx.files.internal("assets/graphics/ladder.g3db"));
         chestModel = gloader.loadModel(Gdx.files.internal("assets/graphics/chest.g3db"));

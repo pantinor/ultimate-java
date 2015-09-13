@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import java.io.File;
 
 public interface Constants {
 
@@ -95,8 +96,10 @@ public interface Constants {
         BLACK_ROCK(59, "Black Rock"),
         BODANIA(60, "Bodania"),
         THORANGUARD_1(61, "Thoranguard"),
-        THORANGUARD_2(62, "Thoranguard");
-
+        THORANGUARD_2(62, "Thoranguard"),
+        DEVILS_GUARD_1(63, "Devil's Guard"),
+        DEVILS_GUARD_2(64, "Devil's Guard");
+        
         private int id;
         private String label;
         private BaseMap baseMap;
@@ -1567,13 +1570,6 @@ public interface Constants {
     public static final int MAX_WANDERING_CREATURES_IN_DUNGEON = 2;
     public static final int MAX_CREATURE_DISTANCE = 24;
 
-    public class ClasspathFileHandleResolver implements FileHandleResolver {
-
-        public FileHandle resolve(String fileName) {
-            return Gdx.files.classpath(fileName);
-        }
-    }
-
     public static String[] karmaQuestions = {
         "Entrusted to deliver an uncounted purse of gold, thou Dost meet a poor beggar. \nDost thou A) deliver the gold knowing the Trust in thee was well placed, or B) show Compassion, giving the beggar a coin, knowing it won't be missed?",
         "Thou has been prohibited by thy absent Lord from joining thy friends in a close pitched battle. \nDost thou A) refrain, so thou may Honesty claim obedience, or B) show Valor, and aid thy comrades, knowing thou may deny it later?",
@@ -1802,5 +1798,5 @@ public interface Constants {
             Sounds.play(s);
         }
     }
-
+    
 }

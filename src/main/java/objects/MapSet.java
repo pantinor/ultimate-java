@@ -33,51 +33,48 @@ public class MapSet {
             String tlkName = m.getCity() == null ? null : m.getCity().getTlk_fname();
             if (tlkName != null) {
 
-                List<Conversation> conv = Utils.getDialogs(tlkName);
-                m.getCity().setConversations(conv);
+                if (tlkName.endsWith(".tmx")) {
+                    Utils.setTMXMap(m, map, tlkName, ts);
+                } else {
+                    List<Conversation> conv = Utils.getDialogs(tlkName);
+                    m.getCity().setConversations(conv);
 
-                Person[] people = Utils.getPeople(m.getFname(), ts);
-                m.getCity().setPeople(people);
-                for (Person p : people) {
-                    if (p != null) {
+                    List<Person> people = Utils.getPeople(m.getFname(), map, ts);
+                    m.getCity().setPeople(people);
+                    for (Person p : people) {
+                        if (p != null) {
 
-                        for (Conversation c : conv) {
-                            c.setMap(map);
-                            if (c.getIndex() == p.getDialogId()) {
-                                p.setConversation(c);
-                            }
-                        }
-
-                        if (m.getCity().getPersonRoles() != null) {
-                            for (PersonRole pr : m.getCity().getPersonRoles()) {
-                                if (p.getId() == pr.getId()) {
-                                    p.setRole(pr);
+                            for (Conversation c : conv) {
+                                c.setMap(map);
+                                if (c.getIndex() == p.getDialogId()) {
+                                    p.setConversation(c);
                                 }
                             }
-                        }
 
-                        //set beggars give conversations
-                        if (p.getTile().getIndex() == 88 || p.getTile().getIndex() == 89) {
-                            Topic giveTopic = p.getConversation().matchTopic("give");
-                            giveTopic.setPhrase("How much?");
-                            CustomInputConversation cic = new CustomInputConversation(p.getTile(), p.getConversation());
-                            cic.setCustomInputQuery("give");
-                            p.setConversation(cic);
-                        }
+                            if (m.getCity().getPersonRoles() != null) {
+                                for (PersonRole pr : m.getCity().getPersonRoles()) {
+                                    if (p.getId() == pr.getId()) {
+                                        p.setRole(pr);
+                                    }
+                                }
+                            }
 
+                            //set beggars give conversations
+                            if (p.getTile().getIndex() == 88 || p.getTile().getIndex() == 89) {
+                                Topic giveTopic = p.getConversation().matchTopic("give");
+                                giveTopic.setPhrase("How much?");
+                                CustomInputConversation cic = new CustomInputConversation(p.getTile(), p.getConversation());
+                                cic.setCustomInputQuery("give");
+                                p.setConversation(cic);
+                            }
+
+                        }
                     }
                 }
-
             }
-
-            if (m.getId() == Maps.CASTLE_OF_LORD_BRITISH_2.getId()) {
-                m.getCity().getPeople()[31].setConversation(new LordBritishConversation());
-            }
-            if (m.getId() == Maps.CASTLE_OF_LORD_BRITISH_1.getId()) {
-                m.getCity().getPeople()[29].setConversation(new HawkwindConversation());
-            }
-
+            
             try {
+                //only for the original ULT or world data files, no-op for TMX files
                 Utils.setMapTiles(m, ts);
             } catch (Exception e) {
                 e.printStackTrace();

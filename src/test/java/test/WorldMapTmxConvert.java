@@ -1,5 +1,7 @@
 package test;
 
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import java.io.File;
 import java.util.List;
 
@@ -25,137 +27,154 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Region;
 
-public class WorldMapTmxConvert {
-
-    private String tilesetName;
-    private String imageSource;
-    private int mapWidth;
-    private int mapHeight;
-    private int tileWidth;
-    private int tileHeight;
-
-    private String dataLayer;
-    private String portalLayer;
-    private String moongateLayer;
-
-    private List<Portal> portalObjects;
-    private List<Moongate> moongateObjects;
-    private List<Label> labelObjects;
+public class WorldMapTmxConvert implements ApplicationListener {
 
     public static void main(String[] args) throws Exception {
 
-        File file2 = new File("assets/xml/tileset-base.xml");
-        JAXBContext jaxbContext = JAXBContext.newInstance(TileSet.class);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        TileSet ts = (TileSet) jaxbUnmarshaller.unmarshal(file2);
-        ts.setMaps();
+        new LwjglApplication(new WorldMapTmxConvert());
+    }
 
-        File file3 = new File("assets/xml/maps.xml");
-        jaxbContext = JAXBContext.newInstance(MapSet.class);
-        jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        MapSet ms = (MapSet) jaxbUnmarshaller.unmarshal(file3);
-        ms.init(ts);
+    @Override
+    public void create() {
 
-        int TILE_SIZE = 16;
+        try {
 
-        BaseMap map = Maps.WORLD.getMap();
-        Utils.setMapTiles(map, ts);
-        Tile[] tiles = map.getTiles();
+            File file2 = new File("assets/xml/tileset-base.xml");
+            JAXBContext jaxbContext = JAXBContext.newInstance(TileSet.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            TileSet ts = (TileSet) jaxbUnmarshaller.unmarshal(file2);
+            ts.setMaps();
 
-        // load the atlas and determine the tile indexes per tilemap position
-        FileHandle f = new FileHandle("assets/tilemaps/tiles-vga-atlas.txt");
-        TextureAtlasData atlas = new TextureAtlasData(f, f.parent(), false);
-        Tile[] mapTileIds = new Tile[atlas.getRegions().size + 1];
-        for (Region r : atlas.getRegions()) {
-            int x = r.left / r.width;
-            int y = r.top / r.height;
-            int i = y * TILE_SIZE + x + 1;
-            mapTileIds[i] = ts.getTileByName(r.name);
-        }
+            File file3 = new File("assets/xml/maps.xml");
+            jaxbContext = JAXBContext.newInstance(MapSet.class);
+            jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            MapSet ms = (MapSet) jaxbUnmarshaller.unmarshal(file3);
+            ms.init(ts);
 
-        // map layer
-        StringBuilder data = new StringBuilder();
-        int count = 1;
-        int total = 1;
-        for (int i = 0; i < tiles.length; i++) {
-            Tile t = tiles[i];
-            data.append(findTileId(mapTileIds, t.getName()) + ",");
-            count++;
-            total++;
-            if (count > map.getWidth()) {
-                data.append("\n");
-                count = 1;
+            BaseMap map = Maps.WORLD.getMap();
+            Utils.setMapTiles(map, ts);
+            Tile[] tiles = map.getTiles();
+
+            //load the atlas and determine the tile indexes per tilemap position
+            FileHandle f = new FileHandle("assets/tilemaps/tiles-enhanced-vga-atlas.txt");
+            TextureAtlasData atlas = new TextureAtlasData(f, f.parent(), false);
+            int png_grid_width = 20;
+            Tile[] mapTileIds = new Tile[png_grid_width * Constants.tilePixelWidth + 1];
+            for (Region r : atlas.getRegions()) {
+                int x = r.left / r.width;
+                int y = r.top / r.height;
+                int i = x + (y * png_grid_width) + 1;
+                mapTileIds[i] = ts.getTileByName(r.name);
             }
-            if (total > map.getWidth() * map.getHeight()) {
-                break;
-            }
-        }
 
-        String dl = data.toString();
-        dl = dl.substring(0, dl.length() - 2);
-
-        // portal layer
-        List<Portal> portals = map.getPortals();
-        StringBuilder portalBuffer = new StringBuilder();
-
-        //set map tile id per dest map type
-        for (Portal p : portals) {
-            BaseMap destMap = Maps.get(p.getDestmapid()).getMap();
-            p.setName(Constants.Maps.get(p.getDestmapid()).toString());
-            String ttype = destMap.getCity() == null ? destMap.getType().toString() : destMap.getCity().getType().toString();
-            p.setMapTileId(findTileId(mapTileIds, ttype));
-        }
-
-        if (portals != null) {
-            for (int y = 0; y < map.getHeight(); y++) {
-                for (int x = 0; x < map.getWidth(); x++) {
-                    Portal p = findPortalAtCoords(portals, x, y);
-                    if (p == null) {
-                        portalBuffer.append("0,");
-                    } else {
-                        portalBuffer.append(p.getMapTileId() + ",");
-                    }
+            // map layer
+            StringBuilder data = new StringBuilder();
+            int count = 1;
+            int total = 1;
+            for (int i = 0; i < tiles.length; i++) {
+                Tile t = tiles[i];
+                data.append(findTileId(mapTileIds, t.getName())).append(",");
+                count++;
+                total++;
+                if (count > png_grid_width * 32) {
+                    data.append("\n");
+                    count = 1;
                 }
-                portalBuffer.append("\n");
-            }
-        }
-
-        String pl = portalBuffer.toString();
-        pl = pl.substring(0, pl.length() - 2);
-
-        // moongate layer
-        List<Moongate> moongates = map.getMoongates();
-        StringBuilder moongateBuffer = new StringBuilder();
-
-        //set map tile id per dest map type
-        for (Moongate m : moongates) {
-            m.setMapTileId(findTileId(mapTileIds, "moongate"));
-        }
-
-        if (moongates != null) {
-            for (int y = 0; y < map.getHeight(); y++) {
-                for (int x = 0; x < map.getWidth(); x++) {
-                    Moongate p = findMoongateAtCoords(moongates, x, y);
-                    if (p == null) {
-                        moongateBuffer.append("0,");
-                    } else {
-                        moongateBuffer.append(p.getMapTileId() + ",");
-                    }
+                if (total > png_grid_width * 32 * 24 * 32) {
+                    break;
                 }
-                moongateBuffer.append("\n");
             }
+
+            String dl = data.toString();
+            dl = dl.substring(0, dl.length() - 2);
+
+            // portal layer
+            List<Portal> portals = map.getPortals();
+            StringBuilder portalBuffer = new StringBuilder();
+
+            //set map tile id per dest map type
+            for (Portal p : portals) {
+                BaseMap destMap = Maps.get(p.getDestmapid()).getMap();
+                p.setName(Constants.Maps.get(p.getDestmapid()).toString());
+                String ttype = destMap.getCity() == null ? destMap.getType().toString() : destMap.getCity().getType();
+                p.setMapTileId(findTileId(mapTileIds, ttype));
+            }
+
+            if (portals != null) {
+                for (int y = 0; y < map.getHeight(); y++) {
+                    for (int x = 0; x < map.getWidth(); x++) {
+                        Portal p = findPortalAtCoords(portals, x, y);
+                        if (p == null) {
+                            portalBuffer.append("0,");
+                        } else {
+                            portalBuffer.append(p.getMapTileId() + ",");
+                        }
+                    }
+                    portalBuffer.append("\n");
+                }
+            }
+
+            String pl = portalBuffer.toString();
+            pl = pl.substring(0, pl.length() - 2);
+
+            // moongate layer
+            List<Moongate> moongates = map.getMoongates();
+            StringBuilder moongateBuffer = new StringBuilder();
+
+            //set map tile id per dest map type
+            for (Moongate m : moongates) {
+                m.setMapTileId(findTileId(mapTileIds, "moongate"));
+            }
+
+            if (moongates != null) {
+                for (int y = 0; y < map.getHeight(); y++) {
+                    for (int x = 0; x < map.getWidth(); x++) {
+                        Moongate p = findMoongateAtCoords(moongates, x, y);
+                        if (p == null) {
+                            moongateBuffer.append("0,");
+                        } else {
+                            moongateBuffer.append(p.getMapTileId()).append(",");
+                        }
+                    }
+                    moongateBuffer.append("\n");
+                }
+            }
+
+            String ml = moongateBuffer.toString();
+            ml = ml.substring(0, ml.length() - 2);
+
+            Formatter c = new Formatter(map.getFname(), "tiles-enhanced-vga.png",
+                    map.getWidth(), map.getHeight(),
+                    Constants.tilePixelWidth, Constants.tilePixelWidth,
+                    dl, pl, ml,
+                    portals, moongates, map.getLabels());
+
+            FileUtils.writeStringToFile(new File("tmx/map_" + map.getId() + "_World.tmx"), c.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        String ml = moongateBuffer.toString();
-        ml = ml.substring(0, ml.length() - 2);
+        System.out.println("DONE");
+    }
 
-        WorldMapTmxConvert c = new WorldMapTmxConvert(map.getFname(), "tiles-vga.png",
-                map.getWidth(), map.getHeight(),
-                TILE_SIZE, TILE_SIZE,
-                dl, pl, ml,
-                portals, moongates, map.getLabels());
+    @Override
+    public void resize(int width, int height) {
+    }
 
-        FileUtils.writeStringToFile(new File("assets/tilemaps/map_" + map.getId() + "_World.tmx"), c.toString());
+    @Override
+    public void render() {
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
+    @Override
+    public void dispose() {
     }
 
     private static int findTileId(Tile[] tiles, String name) {
@@ -188,88 +207,107 @@ public class WorldMapTmxConvert {
         return null;
     }
 
-    private WorldMapTmxConvert(String tilesetName, String imageSource,
-            int mapWidth, int mapHeight,
-            int tileWidth, int tileHeight,
-            String dataLayer, String portalLayer, String moongateLayer,
-            List<Portal> portalObjects, List<Moongate> moongateObjects, List<Label> labelObjects) {
-        this.tilesetName = tilesetName;
-        this.imageSource = imageSource;
-        this.mapWidth = mapWidth;
-        this.mapHeight = mapHeight;
-        this.tileWidth = tileWidth;
-        this.tileHeight = tileHeight;
+    private static class Formatter {
 
-        this.dataLayer = dataLayer;
-        this.portalLayer = portalLayer;
-        this.moongateLayer = moongateLayer;
+        private String tilesetName;
+        private String imageSource;
+        private int mapWidth;
+        private int mapHeight;
+        private int tileWidth;
+        private int tileHeight;
 
-        this.portalObjects = portalObjects;
-        this.moongateObjects = moongateObjects;
-        this.labelObjects = labelObjects;
+        private String dataLayer;
+        private String portalLayer;
+        private String moongateLayer;
 
-    }
+        private List<Portal> portalObjects;
+        private List<Moongate> moongateObjects;
+        private List<Label> labelObjects;
 
-    @Override
-    public String toString() {
+        public Formatter(String tilesetName, String imageSource,
+                int mapWidth, int mapHeight,
+                int tileWidth, int tileHeight,
+                String dataLayer, String portalLayer, String moongateLayer,
+                List<Portal> portalObjects, List<Moongate> moongateObjects, List<Label> labelObjects) {
 
-        StringBuffer portalString = new StringBuffer();
-        if (portalObjects != null) {
-            for (Portal p : portalObjects) {
-                if (p == null) {
-                    continue;
-                }
-                portalString.append(p.toString());
-            }
+            this.tilesetName = tilesetName;
+            this.imageSource = imageSource;
+            this.mapWidth = mapWidth;
+            this.mapHeight = mapHeight;
+            this.tileWidth = tileWidth;
+            this.tileHeight = tileHeight;
+
+            this.dataLayer = dataLayer;
+            this.portalLayer = portalLayer;
+            this.moongateLayer = moongateLayer;
+
+            this.portalObjects = portalObjects;
+            this.moongateObjects = moongateObjects;
+            this.labelObjects = labelObjects;
+
         }
 
-        StringBuffer moongateString = new StringBuffer();
-        if (moongateObjects != null) {
-            for (Moongate p : moongateObjects) {
-                if (p == null) {
-                    continue;
+        @Override
+        public String toString() {
+
+            StringBuffer portalString = new StringBuffer();
+            if (portalObjects != null) {
+                for (Portal p : portalObjects) {
+                    if (p == null) {
+                        continue;
+                    }
+                    portalString.append(p.toString());
                 }
-                moongateString.append(p.toString());
             }
-        }
 
-        StringBuffer labelString = new StringBuffer();
-        if (labelObjects != null) {
-            for (Label p : labelObjects) {
-                if (p == null) {
-                    continue;
+            StringBuffer moongateString = new StringBuffer();
+            if (moongateObjects != null) {
+                for (Moongate p : moongateObjects) {
+                    if (p == null) {
+                        continue;
+                    }
+                    moongateString.append(p.toString());
                 }
-                labelString.append(p.toString());
             }
+
+            StringBuffer labelString = new StringBuffer();
+            if (labelObjects != null) {
+                for (Label p : labelObjects) {
+                    if (p == null) {
+                        continue;
+                    }
+                    labelString.append(p.toString());
+                }
+            }
+
+            String template = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                    + "<map version=\"1.0\" orientation=\"orthogonal\" width=\"%s\" height=\"%s\" tilewidth=\"%s\" tileheight=\"%s\" backgroundcolor=\"#000000\">\n"
+                    + "<tileset firstgid=\"1\" name=\"%s\" tilewidth=\"%s\" tileheight=\"%s\">\n"
+                    + "<image source=\"%s\" width=\"%s\" height=\"%s\"/>\n</tileset>\n"
+                    + "<layer name=\"Map Layer\" width=\"%s\" height=\"%s\">\n"
+                    + "<data encoding=\"csv\">\n%s\n</data>\n</layer>\n"
+                    + "<layer name=\"Portal Layer\" width=\"%s\" height=\"%s\">\n"
+                    + "<data encoding=\"csv\">\n%s\n</data>\n</layer>\n"
+                    + "<layer name=\"Moongate Layer\" width=\"%s\" height=\"%s\">\n"
+                    + "<data encoding=\"csv\">\n%s\n</data>\n</layer>\n"
+                    + "<objectgroup name=\"Portal Properties\" width=\"%s\" height=\"%s\">\n%s\n</objectgroup>\n"
+                    + "<objectgroup name=\"Moongate Properties\" width=\"%s\" height=\"%s\">\n%s\n</objectgroup>\n"
+                    + "<objectgroup name=\"Label Properties\" width=\"%s\" height=\"%s\">\n%s\n</objectgroup>\n"
+                    + "</map>";
+
+            return String.format(template,
+                    mapWidth, mapHeight, tileWidth, tileHeight,
+                    tilesetName, tileWidth, tileHeight,
+                    imageSource, 640, 768,
+                    mapWidth, mapHeight, dataLayer,
+                    mapWidth, mapHeight, portalLayer,
+                    mapWidth, mapHeight, moongateLayer,
+                    mapWidth, mapHeight, portalString.toString(),
+                    mapWidth, mapHeight, moongateString.toString(),
+                    mapWidth, mapHeight, labelString.toString()
+            );
+
         }
-
-        String template = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<map version=\"1.0\" orientation=\"orthogonal\" width=\"%s\" height=\"%s\" tilewidth=\"%s\" tileheight=\"%s\" backgroundcolor=\"#000000\">\n"
-                + "<tileset firstgid=\"1\" name=\"%s\" tilewidth=\"%s\" tileheight=\"%s\">\n"
-                + "<image source=\"%s\" width=\"%s\" height=\"%s\"/>\n</tileset>\n"
-                + "<layer name=\"Map Layer\" width=\"%s\" height=\"%s\">\n"
-                + "<data encoding=\"csv\">\n%s\n</data>\n</layer>\n"
-                + "<layer name=\"Portal Layer\" width=\"%s\" height=\"%s\">\n"
-                + "<data encoding=\"csv\">\n%s\n</data>\n</layer>\n"
-                + "<layer name=\"Moongate Layer\" width=\"%s\" height=\"%s\">\n"
-                + "<data encoding=\"csv\">\n%s\n</data>\n</layer>\n"
-                + "<objectgroup name=\"Portal Properties\" width=\"%s\" height=\"%s\">\n%s\n</objectgroup>\n"
-                + "<objectgroup name=\"Moongate Properties\" width=\"%s\" height=\"%s\">\n%s\n</objectgroup>\n"
-                + "<objectgroup name=\"Label Properties\" width=\"%s\" height=\"%s\">\n%s\n</objectgroup>\n"
-                + "</map>";
-
-        return String.format(template,
-                mapWidth, mapHeight, tileWidth, tileHeight,
-                tilesetName, tileWidth, tileHeight,
-                imageSource, mapWidth, mapHeight,
-                mapWidth, mapHeight, dataLayer,
-                mapWidth, mapHeight, portalLayer,
-                mapWidth, mapHeight, moongateLayer,
-                mapWidth, mapHeight, portalString.toString(),
-                mapWidth, mapHeight, moongateString.toString(),
-                mapWidth, mapHeight, labelString.toString()
-        );
-
     }
 
 }

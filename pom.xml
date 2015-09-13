@@ -71,12 +71,6 @@
             <classifier>natives-desktop</classifier>
         </dependency>
         <dependency>
-            <groupId>com.badlogicgames.gdx</groupId>
-            <artifactId>gdx-platform</artifactId>
-            <version>1.6.5</version>
-            <classifier>natives-desktop</classifier>
-        </dependency>
-        <dependency>
             <groupId>org.apache.directory.studio</groupId>
             <artifactId>org.apache.commons.collections</artifactId>
             <version>3.2.1</version>

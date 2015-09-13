@@ -151,7 +151,7 @@ public class CodexScreen extends BaseScreen {
 
         assets.update(2000);
 
-        ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader(), new ClasspathFileHandleResolver());
+        ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader());
         altarModel = gloader.loadModel(Gdx.files.internal("assets/graphics/altar.g3db"));
         avatarModel = gloader.loadModel(Gdx.files.internal("assets/graphics/avatar.g3db"));
 

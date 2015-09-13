@@ -123,7 +123,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         this.gameScreen = gameScreen;
         this.stage = new Stage();
         sip = new SecondaryInputProcessor(this, stage);
-        addButtons(gameScreen.context);
+        addButtons();
         init();
     }
 
@@ -155,7 +155,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         assets.get("assets/graphics/mortar.png", Texture.class).setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
         assets.get("assets/graphics/dirt.png", Texture.class).setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 
-        ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader(), new ClasspathFileHandleResolver());
+        ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader());
         fountainModel = gloader.loadModel(Gdx.files.internal("assets/graphics/fountain2.g3db"));
         ladderModel = gloader.loadModel(Gdx.files.internal("assets/graphics/ladder.g3db"));
         chestModel = gloader.loadModel(Gdx.files.internal("assets/graphics/chest.g3db"));

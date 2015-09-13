@@ -53,8 +53,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -156,7 +154,7 @@ public class GameScreen extends BaseScreen {
             seq1.addAction(Actions.run(gameTimer));
             stage.addAction(Actions.forever(seq1));
             
-            addButtons(context);
+            addButtons();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -286,7 +284,7 @@ public class GameScreen extends BaseScreen {
             
             //load the surface world first
             loadNextMap(Maps.WORLD, sg.x, sg.y);
-            //loadNextMap(Maps.WORLD, 144, 81);
+            //loadNextMap(Maps.WORLD, 141, 90);
 
             //load the dungeon if save game starts in dungeon
             if (Maps.get(sg.location) != Maps.WORLD) {

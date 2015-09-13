@@ -37,8 +37,7 @@
 		<portal x="81" y="207" destmapid="30" startx="0" starty="0"  condition="shrine" savelocation="true" transport="footorhorse" />
 		<portal x="231" y="216" destmapid="32" startx="0" starty="0"  condition="shrine" savelocation="true" transport="footorhorse" />
 
-		<portal x="139" y="89" destmapid="56" startx="1" starty="1"  savelocation="false" transport="foot" />
-		<portal x="145" y="81" destmapid="56" startx="1" starty="1"  savelocation="true" transport="foot" />
+		<portal x="139" y="89" destmapid="63" startx="1" starty="15"  savelocation="false" transport="foot" />
 
 		<portal x="155" y="188" destmapid="57" startx="14" starty="27"  savelocation="true" transport="footorhorse" />
 		<portal x="170" y="236" destmapid="59" startx="15" starty="30"  savelocation="true" transport="footorhorse" />
@@ -75,7 +74,7 @@
 	<!-- castles -->
 	<map id="1" type="city" fname="lcb_1.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="9" tileset="base" tilemap="base">
 		<city name="Britannia" type="castle" tlk_fname="lcb_1.tlk">
-			<personrole type="HEALER" role="healer" id="28" />
+			<personrole type="HEALER" role="" id="28" />
 			<personrole role="hawkwind" id="29" />
 		</city>
 		<portal x="3" y="3" destmapid="100" startx="3" starty="3"  savelocation="false" message="Klimb to second floor!" transport="foot" />
@@ -104,20 +103,20 @@
 	
 	<map id="2" type="city" fname="lycaeum.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="9" tileset="base" tilemap="base">
 		<city name="Lycaeum" type="castle" tlk_fname="lycaeum.tlk">
-			<personrole type="HEALER" role="healer" id="22" />
+			<personrole type="HEALER" role="" id="22" />
 		</city>
 		<label name="book" x="6" y="6" />
 		<label name="telescope" x="22" y="3" />
 	</map>
 	<map id="3" type="city" fname="empath.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="9" tileset="base" tilemap="base">
 		<city name="Empath Abbey" type="castle" tlk_fname="empath.tlk">
-			<personrole type="HEALER" role="healer" id="29" />
+			<personrole type="HEALER" role="" id="29" />
 		</city>
 		<label name="mysticarmor" x="22" y="4" />
 	</map>
 	<map id="4" type="city" fname="serpent.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="9" tileset="base" tilemap="base">
 		<city name="Serpents Hold" type="castle" tlk_fname="serpent.tlk">
-			<personrole type="HEALER" role="healer" id="30" />
+			<personrole type="HEALER" role="" id="30" />
 		</city>
 		<label name="mysticswords" x="8" y="15" />
 	</map>
@@ -126,71 +125,71 @@
 	<map id="5" type="city" fname="moonglow.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Moonglow" type="towne" tlk_fname="moonglow.tlk">
 			<personrole role="companion" id="31" />
-			<personrole type="FOOD" role="foodvendor" id="25" />
-			<personrole type="REAGENT" role="reagentsvendor" id="23" />
-			<personrole type="HEALER" role="healer" id="24" />
-			<personrole type="INN" role="innkeeper" id="29" />
+			<personrole type="FOOD" role="" id="25" />
+			<personrole type="REAGENT" role="" id="23" />
+			<personrole type="HEALER" role="" id="24" />
+			<personrole type="INN" role="" id="29" />
 		</city>
 		<label name="honestyrune" x="8" y="6" />
 	</map>
 	<map id="6" type="city" fname="britain.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Britain" type="towne" tlk_fname="britain.tlk">
 			<personrole role="companion" id="31" />
-			<personrole type="WEAPON" role="weaponsvendor" id="28" />
-			<personrole type="ARMOR" role="armorvendor" id="27" />
-			<personrole type="FOOD" role="foodvendor" id="26" />
-			<personrole type="TAVERN" role="tavernkeeper" id="25" />
-			<personrole type="HEALER" role="healer" id="30" />
-			<personrole type="INN" role="innkeeper" id="24" />
+			<personrole type="WEAPON" role="" id="28" />
+			<personrole type="ARMOR" role="" id="27" />
+			<personrole type="FOOD" role="" id="26" />
+			<personrole type="TAVERN" role="" id="25" />
+			<personrole type="HEALER" role="" id="30" />
+			<personrole type="INN" role="" id="24" />
 		</city>
 		<label name="compassionrune" x="25" y="1" />
 	</map>
 	<map id="7" type="city" fname="jhelom.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Jhelom" type="towne" tlk_fname="jhelom.tlk">
 			<personrole role="companion" id="31" />
-			<personrole type="WEAPON" role="weaponsvendor" id="28" />
-			<personrole type="ARMOR" role="armorvendor" id="27" />
-			<personrole type="TAVERN" role="tavernkeeper" id="29" />
-			<personrole type="HEALER" role="healer" id="24" />
-			<personrole type="HEALER" role="healer" id="25" />
-			<personrole type="HEALER" role="healer" id="26" />
-			<personrole type="INN" role="innkeeper" id="30" />
+			<personrole type="WEAPON" role="" id="28" />
+			<personrole type="ARMOR" role="" id="27" />
+			<personrole type="TAVERN" role="" id="29" />
+			<personrole type="HEALER" role="" id="24" />
+			<personrole type="HEALER" role="" id="25" />
+			<personrole type="HEALER" role="" id="26" />
+			<personrole type="INN" role="" id="30" />
 		</city>
 		<label name="valorrune" x="30" y="30" />
 	</map>
 	<map id="8" type="city" fname="yew.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Yew" type="towne" tlk_fname="yew.tlk">
 			<personrole role="companion" id="31" />
-			<personrole type="FOOD" role="foodvendor" id="26" />
-			<personrole type="HEALER" role="healer" id="25" />
+			<personrole type="FOOD" role="" id="26" />
+			<personrole type="HEALER" role="" id="25" />
 		</city>
 		<label name="justicerune" x="13" y="6" />
 	</map>
 	<map id="9" type="city" fname="minoc.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Minoc" type="towne" tlk_fname="minoc.tlk">
 			<personrole role="companion" id="31" />
-			<personrole type="WEAPON" role="weaponsvendor" id="29" />
-			<personrole type="INN" role="innkeeper" id="30" />
+			<personrole type="WEAPON" role="" id="29" />
+			<personrole type="INN" role="" id="30" />
 		</city>
 		<label name="sacrificerune" x="28" y="30" />
 	</map>
 	<map id="10" type="city" fname="trinsic.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Trinsic" type="towne" tlk_fname="trinsic.tlk">
 			<personrole role="companion" id="31" />
-			<personrole type="WEAPON" role="weaponsvendor" id="28" />
-			<personrole type="ARMOR" role="armorvendor" id="27" />
-			<personrole type="TAVERN" role="tavernkeeper" id="30" />
-			<personrole type="INN" role="innkeeper" id="29" />
+			<personrole type="WEAPON" role="" id="28" />
+			<personrole type="ARMOR" role="" id="27" />
+			<personrole type="TAVERN" role="" id="30" />
+			<personrole type="INN" role="" id="29" />
 		</city>
 		<label name="honorrune" x="2" y="29" />
 	</map>
 	<map id="11" type="city" fname="skara.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Skara Brae" type="towne" tlk_fname="skara.tlk">
 			<personrole role="companion" id="31" />
-			<personrole type="FOOD" role="foodvendor" id="27" />
-			<personrole type="REAGENT" role="reagentsvendor" id="29" />
-			<personrole type="HEALER" role="healer" id="30" />
-			<personrole type="INN" role="innkeeper" id="28" />
+			<personrole type="FOOD" role="" id="27" />
+			<personrole type="REAGENT" role="" id="29" />
+			<personrole type="HEALER" role="" id="30" />
+			<personrole type="INN" role="" id="28" />
 		</city>
 	</map>
 	<map id="12" type="city" fname="magincia.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
@@ -202,36 +201,36 @@
 	<!-- villages -->
 	<map id="13" type="city" fname="paws.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Paws" type="village" tlk_fname="paws.tlk">
-			<personrole type="ARMOR" role="armorvendor" id="26" />
-			<personrole type="FOOD" role="foodvendor" id="30" />
-			<personrole type="TAVERN" role="tavernkeeper" id="28" />
-			<personrole type="TAVERN" role="tavernkeeper" id="29" />
-			<personrole type="REAGENT" role="reagentsvendor" id="27" />
-			<personrole type="HORSE" role="horsevendor" id="17" />
+			<personrole type="ARMOR" role="" id="26" />
+			<personrole type="FOOD" role="" id="30" />
+			<personrole type="TAVERN" role="" id="28" />
+			<personrole type="TAVERN" role="" id="29" />
+			<personrole type="REAGENT" role="" id="27" />
+			<personrole type="HORSE" role="" id="17" />
 		</city>
 		<label name="greedrune" x="29" y="29" />
 	</map>
 	<map id="14" type="city" fname="den.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Buccaneers Den" type="village" tlk_fname="den.tlk">
-			<personrole type="WEAPON" role="weaponsvendor" id="27" />
-			<personrole type="ARMOR" role="armorvendor" id="26" />
-			<personrole type="TAVERN" role="tavernkeeper" id="25" />
-			<personrole type="REAGENT" role="reagentsvendor" id="29" />
-			<personrole type="GUILDITEM" role="guildvendor" id="28" />
+			<personrole type="WEAPON" role="" id="27" />
+			<personrole type="ARMOR" role="" id="26" />
+			<personrole type="TAVERN" role="" id="25" />
+			<personrole type="REAGENT" role="" id="29" />
+			<personrole type="GUILDITEM" role="" id="28" />
 		</city>
 		<label name="songhumility" x="28" y="18" />
 	</map>
 	<map id="15" type="city" fname="vesper.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Vesper" type="village" tlk_fname="vesper.tlk">
-			<personrole type="WEAPON" role="weaponsvendor" id="24" />
-			<personrole type="TAVERN" role="tavernkeeper" id="22" />
-			<personrole type="INN" role="innkeeper" id="25" />
-			<personrole type="GUILDITEM" role="guildvendor" id="23" />
+			<personrole type="WEAPON" role="" id="24" />
+			<personrole type="TAVERN" role="" id="22" />
+			<personrole type="INN" role="" id="25" />
+			<personrole type="GUILDITEM" role="" id="23" />
 		</city>
 	</map>
 	<map id="16" type="city" fname="cove.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Cove" type="village" tlk_fname="cove.tlk">
-			<personrole type="HEALER" role="healer" id="30" />
+			<personrole type="HEALER" role="" id="30" />
 		</city>
 		<label name="candle" x="22" y="1" />
 	</map>
@@ -520,7 +519,7 @@
 	
 	<map id="57" type="city" fname="aquaria_l1.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Aquaria" type="towne" tlk_fname="aquaria_l1.tlk">
-			<personrole type="TINKER" role="tinker" id="8" />
+			<personrole type="TINKER" role="" id="8" />
 		</city>
 		<portal x="27" y="28" destmapid="57" startx="24" starty="10"  savelocation="false" message="a portal through the ankh!" transport="foot" />
 		<portal x="26" y="10" destmapid="57" startx="3" starty="5"  savelocation="false" message="a portal through the ankh!" transport="foot" />
@@ -533,18 +532,18 @@
 	</map>
 	<map id="59" type="city" fname="black_rock.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Black Rock" type="towne" tlk_fname="black_rock.tlk">
-			<personrole type="WEAPON" role="weaponsvendor" id="5" />
-			<personrole type="ARMOR" role="armorvendor" id="4" />
-			<personrole type="FOOD" role="foodvendor" id="3" />
-			<personrole type="TAVERN" role="tavernkeeper" id="2" />
+			<personrole type="WEAPON" role="" id="5" />
+			<personrole type="ARMOR" role="" id="4" />
+			<personrole type="FOOD" role="" id="3" />
+			<personrole type="TAVERN" role="" id="2" />
 		</city>
 	</map>
 	<map id="60" type="city" fname="bodania.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
 		<city name="Bodania" type="towne" tlk_fname="bodania.tlk">
-			<personrole type="TAVERN" role="tavernkeeper" id="7" />
-			<personrole type="TAVERN" role="tavernkeeper" id="18" />
-			<personrole type="TINKER" role="tinker" id="2" />
-			<personrole type="GUILDITEM" role="guildvendor" id="3" />
+			<personrole type="TAVERN" role="" id="7" />
+			<personrole type="TAVERN" role="" id="18" />
+			<personrole type="TINKER" role="" id="2" />
+			<personrole type="GUILDITEM" role="" id="3" />
 		</city>
 	</map>
 	<map id="61" type="city" fname="thoranguard.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
@@ -557,6 +556,19 @@
 		<city name="Dungeon" type="towne" tlk_fname="thoranguard_2.tlk">
 		</city>
 		<portal x="16" y="20" destmapid="61" startx="25" starty="4"  savelocation="false" message="Klimb up!" transport="foot" />
+	</map>
+	<map id="63" type="city" fname="map_Devil_Guard.tmx" width="32" height="32" levels="2" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
+		<city name="Devil's Guard" type="towne" tlk_fname="map_Devil_Guard.tmx">
+		</city>
+		<portal x="8" y="28" destmapid="63" startx="10" starty="28"  savelocation="false" message="Enter the door in the mountain." transport="foot" />
+		<portal x="10" y="28" destmapid="63" startx="8" starty="28"  savelocation="false" message="Enter the door in the mountain." transport="foot" />
+		<portal x="26" y="2" destmapid="64" startx="28" starty="4"  savelocation="false" message="Enter the door in the mountain." transport="foot" />
+	</map>
+	<map id="64" type="city" fname="map_Devil_Guard.tmx" width="32" height="32" levels="2" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">
+		<city name="Devil's Guard" type="towne" tlk_fname="map_Devil_Guard.tmx">
+		</city>
+		<portal x="28" y="4" destmapid="63" startx="26" starty="2"  savelocation="false" message="Leave the Guard." transport="foot" />
+		<portal x="8" y="1" destmapid="56" startx="1" starty="1"  savelocation="false" message="Enter the Delve of Sorrows" transport="foot" />
 	</map>
 	
 </maps>

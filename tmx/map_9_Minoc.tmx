@@ -1,84 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="32" height="32" tilewidth="16" tileheight="16" backgroundcolor="#000000">
-<tileset firstgid="1" name="minoc.ult" tilewidth="16" tileheight="16">
-<image source="tiles-vga.png" width="256" height="256"/>
+<map version="1.0" orientation="orthogonal" width="32" height="32" tilewidth="32" tileheight="32" backgroundcolor="#000000">
+<tileset firstgid="1" name="minoc.ult" tilewidth="32" tileheight="32">
+<image source="tiles-enhanced-vga.png" width="640" height="768"/>
 </tileset>
 <layer name="Map Layer" width="32" height="32">
 <data encoding="csv">
-128,128,128,128,128,128,128,128,128,128,128,128,128,128,128,128,128,128,128,128,128,128,5,128,128,128,128,128,128,128,128,128,
-128,123,124,63,128,63,63,60,63,125,123,128,119,97,121,102,97,114,101,114,115,128,5,128,112,111,111,114,123,123,123,128,
-128,63,63,63,60,63,63,128,63,63,63,128,63,63,63,63,63,63,63,63,63,128,5,128,123,123,104,111,117,115,101,128,
-128,123,124,63,128,63,63,128,63,125,123,128,123,123,123,105,110,110,123,123,123,128,5,128,5,5,5,5,5,5,5,128,
-128,128,128,128,128,63,63,128,63,125,123,128,6,63,63,63,63,63,63,63,63,128,5,128,124,5,5,126,5,5,125,128,
-128,123,124,63,128,63,63,128,128,128,128,128,126,63,63,63,63,63,126,63,126,128,5,128,5,5,5,5,5,5,5,128,
-128,63,63,63,60,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,126,128,56,128,124,5,5,126,5,5,125,128,
-128,126,63,63,128,63,63,63,63,63,63,63,63,63,63,63,63,63,126,126,6,128,6,128,5,5,5,5,5,5,5,128,
-128,128,128,128,128,128,128,128,128,128,128,128,128,128,128,63,63,63,128,128,128,128,6,128,124,5,5,126,5,5,125,128,
-5,8,8,8,8,8,8,8,8,8,8,8,6,6,5,63,63,63,5,6,6,6,6,128,5,5,5,5,5,5,5,128,
-8,8,8,8,8,8,56,8,8,8,6,6,6,5,5,63,63,63,5,5,6,6,4,128,128,128,5,5,5,128,128,128,
-8,8,8,8,8,8,8,8,8,8,6,6,6,5,5,63,63,63,5,5,5,6,4,4,4,4,5,5,5,4,4,56,
-5,8,56,8,8,8,8,8,8,6,6,6,5,5,6,63,63,63,6,5,5,6,6,4,4,5,63,4,63,4,4,4,
-5,5,8,8,8,8,8,6,6,6,6,5,5,6,6,63,63,63,6,6,5,5,6,6,5,63,63,5,63,6,4,4,
-63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,4,63,6,6,4,4,
-63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,5,63,6,6,4,4,8,
-63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,63,5,6,4,4,8,8,
-5,5,8,8,8,5,5,5,5,5,5,5,5,6,6,63,63,63,6,6,5,5,5,5,5,5,5,6,6,8,8,56,
-5,8,8,8,8,8,8,5,5,5,5,5,5,5,6,63,63,63,6,5,5,5,5,5,5,5,5,5,6,6,6,6,
-8,8,8,8,56,8,8,8,5,5,5,5,5,5,5,63,63,63,5,5,5,5,5,5,5,5,5,5,6,6,6,6,
-8,8,8,8,8,8,8,8,5,5,5,5,5,5,5,63,63,63,5,5,5,5,5,5,5,5,5,5,6,6,6,8,
-8,8,8,8,8,8,8,8,8,5,5,5,5,6,3,63,63,63,3,6,5,5,5,5,5,5,5,6,6,6,8,8,
-8,8,56,8,8,8,8,8,8,5,5,5,6,6,3,63,63,63,3,6,6,5,5,5,5,5,5,6,6,6,8,8,
-8,8,8,8,8,8,8,8,8,56,5,128,128,128,128,63,63,63,128,128,128,128,6,6,5,5,6,6,6,8,8,8,
-5,8,8,8,8,8,8,8,8,8,56,128,189,63,63,63,63,63,63,63,189,128,6,6,6,6,6,6,6,8,8,56,
-5,8,8,8,8,8,8,8,8,8,8,128,189,63,63,63,63,63,63,63,189,128,128,128,128,128,128,128,128,128,8,5,
-5,8,8,8,8,8,8,8,8,8,6,128,189,63,63,63,63,63,63,63,189,128,123,102,111,114,103,101,123,128,8,5,
-5,5,8,8,8,8,8,8,8,6,6,128,63,63,63,63,63,63,63,63,63,60,63,63,63,63,63,63,63,128,5,5,
-5,5,8,8,8,8,8,8,8,6,6,128,116,104,101,123,123,105,114,111,110,128,63,63,63,63,125,123,123,128,5,5,
-5,5,5,8,8,8,8,8,8,6,6,128,63,63,63,63,63,63,63,63,63,128,3,3,63,63,71,71,71,128,5,5,
-5,5,5,5,5,8,8,8,8,8,6,128,123,123,119,111,114,107,115,123,123,128,3,3,63,63,126,71,71,128,5,5,
-5,5,5,5,5,5,5,8,8,8,8,128,128,128,128,128,128,128,128,128,128,128,128,128,128,128,128,128,128,128,5,5
+149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,81,149,149,149,149,149,149,149,149,149,149,49,69,45,149,45,45,284,45,89,49,149,268,127,9,227,127,168,207,168,188,149,81,149,128,108,108,168,49,49,49,149,149,45,45,45,284,45,45,149,45,45,45,149,45,45,45,45,45,45,45,45,45,149,81,149,49,49,267,108,228,188,207,149,149,49,69,45,149,45,45,149,45,89,49,149,49,49,49,287,88,88,49,49,49,149,81,149,81,81,81,81,81,81,81,149,149,149,149,149,149,45,45,149,45,89,49,149,101,45,45,45,45,45,45,45,45,149,81,149,69,81,81,109,81,81,89,149,149,49,69,45,149,45,45,149,149,149,149,149,109,45,45,45,45,45,109,45,109,149,81,149,81,81,81,81,81,81,81,149,149,45,45,45,284,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,109,149,204,149,69,81,81,109,81,81,89,149,149,109,45,45,149,45,45,45,45,45,45,45,45,45,45,45,45,45,109,109,101,149,101,149,81,81,81,81,81,81,81,149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,45,45,45,149,149,149,149,101,149,69,81,81,109,81,81,89,149,81,141,141,141,141,141,141,141,141,141,141,141,101,101,81,45,45,45,81,101,101,101,101,149,81,81,81,81,81,81,81,149,141,141,141,141,141,141,204,141,141,141,101,101,101,81,81,45,45,45,81,81,101,101,61,149,149,149,81,81,81,149,149,149,141,141,141,141,141,141,141,141,141,141,101,101,101,81,81,45,45,45,81,81,81,101,61,61,61,61,81,81,81,61,61,204,81,141,204,141,141,141,141,141,141,101,101,101,81,81,101,45,45,45,101,81,81,101,101,61,61,81,45,61,45,61,61,61,81,81,141,141,141,141,141,101,101,101,101,81,81,101,101,45,45,45,101,101,81,81,101,101,81,45,45,81,45,101,61,61,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,61,45,101,101,61,61,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,81,45,101,101,61,61,141,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,81,101,61,61,141,141,81,81,141,141,141,81,81,81,81,81,81,81,81,101,101,45,45,45,101,101,81,81,81,81,81,81,81,101,101,141,141,204,81,141,141,141,141,141,141,81,81,81,81,81,81,81,101,45,45,45,101,81,81,81,81,81,81,81,81,81,101,101,101,101,141,141,141,141,204,141,141,141,81,81,81,81,81,81,81,45,45,45,81,81,81,81,81,81,81,81,81,81,101,101,101,101,
+141,141,141,141,141,141,141,141,81,81,81,81,81,81,81,45,45,45,81,81,81,81,81,81,81,81,81,81,101,101,101,141,141,141,141,141,141,141,141,141,141,81,81,81,81,101,341,45,45,45,341,101,81,81,81,81,81,81,81,101,101,101,141,141,141,141,204,141,141,141,141,141,141,81,81,81,101,101,341,45,45,45,341,101,101,81,81,81,81,81,81,101,101,101,141,141,141,141,141,141,141,141,141,141,141,204,81,149,149,149,149,45,45,45,149,149,149,149,101,101,81,81,101,101,101,141,141,141,81,141,141,141,141,141,141,141,141,141,204,149,173,45,45,45,45,45,45,45,173,149,101,101,101,101,101,101,101,141,141,204,81,141,141,141,141,141,141,141,141,141,141,149,173,45,45,45,45,45,45,45,173,149,149,149,149,149,149,149,149,149,141,81,81,141,141,141,141,141,141,141,141,141,101,149,173,45,45,45,45,45,45,45,173,149,49,227,108,168,247,207,49,149,141,81,81,81,141,141,141,141,141,141,141,101,101,149,45,45,45,45,45,45,45,45,45,284,45,45,45,45,45,45,45,149,81,81,81,81,141,141,141,141,141,141,141,101,101,149,208,267,207,49,49,287,168,108,88,149,45,45,45,45,89,49,49,149,81,81,81,81,81,141,141,141,141,141,141,101,101,149,45,45,45,45,45,45,45,45,45,149,341,341,45,45,401,401,401,149,81,81,81,81,81,81,81,141,141,141,141,141,101,149,49,49,268,108,168,28,188,49,49,149,341,341,45,45,109,401,401,149,81,81,81,81,81,81,81,81,81,141,141,141,141,149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,149,81,8
 </data>
 </layer>
 <layer name="People Layer" width="32" height="32">
 <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,91,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,89,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,41,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,89,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,45,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,83,0,0,91,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,146,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,266,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,203,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,266,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,146,0,0,7,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,41,0,0,83,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,81,0,0,0,0,0,0,0,0,0,0,0,0,81,0,0,0,81,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,81,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,81,0,0,0,41,0,0,0,0,0,0,0,0,81,0,0,0,81,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,41,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,203,0,0,146,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,106,0,0,0,0,0,0,0,0,0,0,0,0,106,0,0,0,106,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,81,0,0,0,81,0,0,0,0,0,0,0,0,0,47,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,106,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,35,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,106,0,0,0,203,0,0,0,0,0,0,0,0,106,0,0,0,106,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,41,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,41,0,0,0,0,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,203,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,106,0,0,0,106,0,0,0,0,0,0,0,0,0,24,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,203,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,203,0,0,0,0,146,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
 </layer>
 <objectgroup name="Person Properties" width="32" height="32">
-<object name="6" type="person" x="16" y="272" width="16" height="16">
+<object name="a guard" type="guard" x="32" y="544" width="32" height="32">
 <properties>
-<property name="name" value="a guard"/>
+<property name="id" value="6"/>
 <property name="tileType" value="guard"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="1"/>
@@ -86,9 +56,9 @@
 <property name="dialogId" value="16"/>
 </properties>
 </object>
-<object name="7" type="person" x="16" y="208" width="16" height="16">
+<object name="a guard" type="guard" x="32" y="416" width="32" height="32">
 <properties>
-<property name="name" value="a guard"/>
+<property name="id" value="7"/>
 <property name="tileType" value="guard"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="1"/>
@@ -96,9 +66,9 @@
 <property name="dialogId" value="16"/>
 </properties>
 </object>
-<object name="8" type="person" x="288" y="384" width="16" height="16">
+<object name="a guard" type="guard" x="576" y="768" width="32" height="32">
 <properties>
-<property name="name" value="a guard"/>
+<property name="id" value="8"/>
 <property name="tileType" value="guard"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="18"/>
@@ -106,9 +76,9 @@
 <property name="dialogId" value="16"/>
 </properties>
 </object>
-<object name="9" type="person" x="224" y="384" width="16" height="16">
+<object name="a guard" type="guard" x="448" y="768" width="32" height="32">
 <properties>
-<property name="name" value="a guard"/>
+<property name="id" value="9"/>
 <property name="tileType" value="guard"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="14"/>
@@ -116,9 +86,9 @@
 <property name="dialogId" value="16"/>
 </properties>
 </object>
-<object name="10" type="person" x="432" y="240" width="16" height="16">
+<object name="a guard" type="guard" x="864" y="480" width="32" height="32">
 <properties>
-<property name="name" value="a guard"/>
+<property name="id" value="10"/>
 <property name="tileType" value="guard"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="27"/>
@@ -126,9 +96,9 @@
 <property name="dialogId" value="16"/>
 </properties>
 </object>
-<object name="11" type="person" x="224" y="272" width="16" height="16">
+<object name="a guard" type="guard" x="448" y="544" width="32" height="32">
 <properties>
-<property name="name" value="a guard"/>
+<property name="id" value="11"/>
 <property name="tileType" value="guard"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="14"/>
@@ -136,9 +106,9 @@
 <property name="dialogId" value="16"/>
 </properties>
 </object>
-<object name="12" type="person" x="288" y="272" width="16" height="16">
+<object name="a guard" type="guard" x="576" y="544" width="32" height="32">
 <properties>
-<property name="name" value="a guard"/>
+<property name="id" value="12"/>
 <property name="tileType" value="guard"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="18"/>
@@ -146,9 +116,9 @@
 <property name="dialogId" value="16"/>
 </properties>
 </object>
-<object name="13" type="person" x="288" y="208" width="16" height="16">
+<object name="a guard" type="guard" x="576" y="416" width="32" height="32">
 <properties>
-<property name="name" value="a guard"/>
+<property name="id" value="13"/>
 <property name="tileType" value="guard"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="18"/>
@@ -156,9 +126,9 @@
 <property name="dialogId" value="16"/>
 </properties>
 </object>
-<object name="14" type="person" x="224" y="208" width="16" height="16">
+<object name="a guard" type="guard" x="448" y="416" width="32" height="32">
 <properties>
-<property name="name" value="a guard"/>
+<property name="id" value="14"/>
 <property name="tileType" value="guard"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="14"/>
@@ -166,9 +136,9 @@
 <property name="dialogId" value="16"/>
 </properties>
 </object>
-<object name="15" type="person" x="368" y="304" width="16" height="16">
+<object name="Merida" type="tinker" x="736" y="608" width="32" height="32">
 <properties>
-<property name="name" value="Merida"/>
+<property name="id" value="15"/>
 <property name="tileType" value="tinker"/>
 <property name="movement" value="WANDER"/>
 <property name="startX" value="23"/>
@@ -176,9 +146,9 @@
 <property name="dialogId" value="15"/>
 </properties>
 </object>
-<object name="16" type="person" x="224" y="64" width="16" height="16">
+<object name="Azure" type="tinker" x="448" y="128" width="32" height="32">
 <properties>
-<property name="name" value="Azure"/>
+<property name="id" value="16"/>
 <property name="tileType" value="tinker"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="14"/>
@@ -186,9 +156,9 @@
 <property name="dialogId" value="14"/>
 </properties>
 </object>
-<object name="17" type="person" x="160" y="464" width="16" height="16">
+<object name="Mischief" type="tinker" x="320" y="928" width="32" height="32">
 <properties>
-<property name="name" value="Mischief"/>
+<property name="id" value="17"/>
 <property name="tileType" value="tinker"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="10"/>
@@ -196,9 +166,9 @@
 <property name="dialogId" value="13"/>
 </properties>
 </object>
-<object name="18" type="person" x="448" y="384" width="16" height="16">
+<object name="Damon" type="shepherd" x="896" y="768" width="32" height="32">
 <properties>
-<property name="name" value="Damon"/>
+<property name="id" value="18"/>
 <property name="tileType" value="shepherd"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="28"/>
@@ -206,9 +176,9 @@
 <property name="dialogId" value="12"/>
 </properties>
 </object>
-<object name="19" type="person" x="224" y="416" width="16" height="16">
+<object name="Singsong" type="bard" x="448" y="832" width="32" height="32">
 <properties>
-<property name="name" value="Singsong"/>
+<property name="id" value="19"/>
 <property name="tileType" value="bard"/>
 <property name="movement" value="WANDER"/>
 <property name="startX" value="14"/>
@@ -216,9 +186,9 @@
 <property name="dialogId" value="11"/>
 </properties>
 </object>
-<object name="20" type="person" x="80" y="272" width="16" height="16">
+<object name="Shentis" type="tinker" x="160" y="544" width="32" height="32">
 <properties>
-<property name="name" value="Shentis"/>
+<property name="id" value="20"/>
 <property name="tileType" value="tinker"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="5"/>
@@ -226,9 +196,9 @@
 <property name="dialogId" value="10"/>
 </properties>
 </object>
-<object name="21" type="person" x="96" y="48" width="16" height="16">
+<object name="Alex" type="child" x="192" y="96" width="32" height="32">
 <properties>
-<property name="name" value="Alex"/>
+<property name="id" value="21"/>
 <property name="tileType" value="child"/>
 <property name="movement" value="WANDER"/>
 <property name="startX" value="6"/>
@@ -236,9 +206,9 @@
 <property name="dialogId" value="9"/>
 </properties>
 </object>
-<object name="22" type="person" x="304" y="96" width="16" height="16">
+<object name="Mike Ward" type="ranger" x="608" y="192" width="32" height="32">
 <properties>
-<property name="name" value="Mike Ward"/>
+<property name="id" value="22"/>
 <property name="tileType" value="ranger"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="19"/>
@@ -246,9 +216,9 @@
 <property name="dialogId" value="8"/>
 </properties>
 </object>
-<object name="23" type="person" x="448" y="144" width="16" height="16">
+<object name="Alkerion" type="villager" x="896" y="288" width="32" height="32">
 <properties>
-<property name="name" value="Alkerion"/>
+<property name="id" value="23"/>
 <property name="tileType" value="villager"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="28"/>
@@ -256,9 +226,9 @@
 <property name="dialogId" value="7"/>
 </properties>
 </object>
-<object name="24" type="person" x="416" y="112" width="16" height="16">
+<object name="Jude" type="villager" x="832" y="224" width="32" height="32">
 <properties>
-<property name="name" value="Jude"/>
+<property name="id" value="24"/>
 <property name="tileType" value="villager"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="26"/>
@@ -266,9 +236,9 @@
 <property name="dialogId" value="6"/>
 </properties>
 </object>
-<object name="25" type="person" x="448" y="48" width="16" height="16">
+<object name="Gimble" type="beggar" x="896" y="96" width="32" height="32">
 <properties>
-<property name="name" value="Gimble"/>
+<property name="id" value="25"/>
 <property name="tileType" value="beggar"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="28"/>
@@ -276,9 +246,9 @@
 <property name="dialogId" value="5"/>
 </properties>
 </object>
-<object name="26" type="person" x="464" y="112" width="16" height="16">
+<object name="Linda Sue" type="child" x="928" y="224" width="32" height="32">
 <properties>
-<property name="name" value="Linda Sue"/>
+<property name="id" value="26"/>
 <property name="tileType" value="child"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="29"/>
@@ -286,9 +256,9 @@
 <property name="dialogId" value="4"/>
 </properties>
 </object>
-<object name="27" type="person" x="384" y="80" width="16" height="16">
+<object name="Bob the Beggar" type="beggar" x="768" y="160" width="32" height="32">
 <properties>
-<property name="name" value="Bob the Beggar"/>
+<property name="id" value="27"/>
 <property name="tileType" value="beggar"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="24"/>
@@ -296,9 +266,9 @@
 <property name="dialogId" value="3"/>
 </properties>
 </object>
-<object name="28" type="person" x="400" y="448" width="16" height="16">
+<object name="Zircon" type="tinker" x="800" y="896" width="32" height="32">
 <properties>
-<property name="name" value="Zircon"/>
+<property name="id" value="28"/>
 <property name="tileType" value="tinker"/>
 <property name="movement" value="WANDER"/>
 <property name="startX" value="25"/>
@@ -306,9 +276,9 @@
 <property name="dialogId" value="2"/>
 </properties>
 </object>
-<object name="29" type="person" x="240" y="464" width="16" height="16">
+<object name="anonymous" type="villager" x="480" y="928" width="32" height="32">
 <properties>
-<property name="name" value=""/>
+<property name="id" value="29"/>
 <property name="tileType" value="villager"/>
 <property name="movement" value="FOLLOW_AVATAR"/>
 <property name="startX" value="15"/>
@@ -316,9 +286,9 @@
 <property name="dialogId" value="37"/>
 </properties>
 </object>
-<object name="30" type="person" x="240" y="32" width="16" height="16">
+<object name="anonymous" type="villager" x="480" y="64" width="32" height="32">
 <properties>
-<property name="name" value=""/>
+<property name="id" value="30"/>
 <property name="tileType" value="villager"/>
 <property name="movement" value="FOLLOW_AVATAR"/>
 <property name="startX" value="15"/>
@@ -326,9 +296,9 @@
 <property name="dialogId" value="36"/>
 </properties>
 </object>
-<object name="31" type="person" x="400" y="144" width="16" height="16">
+<object name="Julia" type="tinker" x="800" y="288" width="32" height="32">
 <properties>
-<property name="name" value="Julia"/>
+<property name="id" value="31"/>
 <property name="tileType" value="tinker"/>
 <property name="movement" value="FIXED"/>
 <property name="startX" value="25"/>

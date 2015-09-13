@@ -55,7 +55,7 @@ public class Moongate {
     @Override
     public String toString() {
 
-        String template = "<object name=\"moongate\" type=\"portal\" x=\"%s\" y=\"%s\" width=\"16\" height=\"16\">\n"
+        String template = "<object name=\"moongate\" type=\"portal\" x=\"%s\" y=\"%s\" width=\"32\" height=\"32\">\n"
                 + "<properties>\n"
                 + "<property name=\"x\" value=\"%s\"/>\n"
                 + "<property name=\"y\" value=\"%s\"/>\n"
@@ -63,7 +63,7 @@ public class Moongate {
                 + "</properties>\n"
                 + "</object>\n";
 
-        return String.format(template, x * 16, y * 16, x, y, phase);
+        return String.format(template, x * 32, y * 32, x, y, phase);
     }
 
     public AtlasRegion getCurrentTexture() {

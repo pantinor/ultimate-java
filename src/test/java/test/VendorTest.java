@@ -99,7 +99,7 @@ public class VendorTest {
         MapSet ms = (MapSet) jaxbUnmarshaller.unmarshal(file3);
         ms.init(ts);
 
-        ArrayList<Holder> tm = new ArrayList<Holder>();
+        ArrayList<Holder> tm = new ArrayList<>();
 
         for (BaseMap map : ms.getMaps()) {
 
@@ -107,9 +107,7 @@ public class VendorTest {
                 continue;
             }
 
-			//System.out.println(Maps.convert(map.getId()));
-            for (int i = 0; i < map.getCity().getPeople().length; i++) {
-                Person p = map.getCity().getPeople()[i];
+            for (Person p : map.getCity().getPeople()) {
                 if (p != null && p.getRole() != null && p.getRole().getInventoryType() != null) {
                     tm.add(new Holder(p.getRole().getInventoryType(), p, Maps.get(map.getId())));
                     System.out.println("type=\"" + p.getRole().getInventoryType() + "\" personId=\"" + p.getId() + "\" " + Maps.get(map.getId()));

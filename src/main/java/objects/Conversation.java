@@ -54,7 +54,7 @@ public class Conversation {
         }
 
     }
-    
+        
     public boolean isStandardQuery(String query) {
         for (String st : standardQuery) {
             if (query.toLowerCase().contains(st)) {

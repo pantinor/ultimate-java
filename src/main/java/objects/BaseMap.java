@@ -853,17 +853,19 @@ public class BaseMap implements Constants {
         }
         for (PartyMember pm : party.getMembers()) {
             String name = pm.getPlayer().name;
-            for (int i = 0; i < city.getPeople().length; i++) {
-                Person p = city.getPeople()[i];
+            Person joiner = null;
+            for (Person p : city.getPeople()) {
                 if (p != null
                         && p.getRole() != null
                         && p.getRole().getRole().equals("companion")
                         && p.getConversation() != null
                         && p.getConversation().getName().equals(name)) {
 
-                    city.getPeople()[i] = null;
+                    joiner = p;
+                    break;
                 }
             }
+            city.getPeople().remove(joiner);
         }
     }
 

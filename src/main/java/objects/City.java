@@ -15,7 +15,7 @@ public class City {
     private String tlk_fname;
     private List<PersonRole> personRoles;
     private List<Conversation> conversations;
-    private Person[] people;
+    private List<Person> people;
 
     @XmlTransient
     public List<Conversation> getConversations() {
@@ -68,11 +68,11 @@ public class City {
     }
 
     @XmlTransient
-    public Person[] getPeople() {
+    public List<Person> getPeople() {
         return people;
     }
 
-    public void setPeople(Person[] people) {
+    public void setPeople(List<Person> people) {
         this.people = people;
     }
 
