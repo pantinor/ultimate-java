@@ -7,6 +7,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import objects.Party;
 import objects.SaveGame;
+import ultima.BookScreen;
 import ultima.Constants;
 import ultima.MixtureScreen;
 
@@ -44,7 +45,9 @@ public class ScreenTest extends Game {
         
         sg.reagents = new int[]{90, 93, 94, 90, 90, 90, 90, 90};
         
-        setScreen(new MixtureScreen(null, null, skin, party));
+        //setScreen(new MixtureScreen(null, null, skin, party));
+        setScreen(new BookScreen(null, null, skin));
+
 
     }
 

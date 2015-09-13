@@ -82,6 +82,8 @@ public class CombatScreen extends BaseScreen {
     private SecondaryInputProcessor sip;
 
     private Viewport mapViewPort;
+    
+    private boolean wounded;
 
     public CombatScreen(BaseScreen returnScreen, Context context, Maps contextMap,
             BaseMap combatMap, TiledMap tmap, CreatureType cr, CreatureSet cs, TextureAtlas a1) {
@@ -566,7 +568,7 @@ public class CombatScreen extends BaseScreen {
             }
         }
 
-        boolean roundIsDone = party.isRoundDone() || combatMap.getCreatures().size() == 0;
+        boolean roundIsDone = party.isRoundDone() || combatMap.getCreatures().isEmpty();
 
         PartyMember next = party.getAndSetNextActivePlayer();
         if (next != null) {
@@ -589,7 +591,7 @@ public class CombatScreen extends BaseScreen {
 
         context.getAura().passTurn();
 
-        if (combatMap.getCreatures().size() == 0 && combatMap.getType() == MapType.combat) {
+        if (combatMap.getCreatures().isEmpty() && combatMap.getType() == MapType.combat) {
             end();
             return;
         }
@@ -654,8 +656,8 @@ public class CombatScreen extends BaseScreen {
 
     public void end() {
 
-        boolean isWon = combatMap.getCreatures().size() == 0;
-        returnScreen.endCombat(isWon, combatMap);
+        boolean isWon = combatMap.getCreatures().isEmpty();
+        returnScreen.endCombat(isWon, combatMap, wounded);
 
         combatMap.setCombatPlayers(null);
         party.reset();
@@ -710,6 +712,8 @@ public class CombatScreen extends BaseScreen {
                         break;
                 }
                 Sounds.play(Sound.PC_STRUCK);
+                wounded = true;
+
                 return true;
             }
         }, fadeOut(.2f), removeActor(p)));
@@ -818,7 +822,8 @@ public class CombatScreen extends BaseScreen {
 
                 if (Utils.attackHit(creature, target) == AttackResult.HIT) {
                     Sounds.play(Sound.PC_STRUCK);
-
+                    wounded = true;
+                    
                     if (!Utils.dealDamage(creature, target)) {
                         target = null;
                     }
@@ -876,7 +881,7 @@ public class CombatScreen extends BaseScreen {
                 int dirmask = Utils.getRelativeDirection(MapBorderBehavior.fixed, combatMap.getWidth(), combatMap.getHeight(), target.combatCr.currentX, target.combatCr.currentY, creature.currentX, creature.currentY);
 
                 Sounds.play(Sound.NPC_ATTACK);
-
+                
                 List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dirmask, creature.currentX, creature.currentY, 1, 11, false, false, false);
                 for (AttackVector v : path) {
                     if (rangedAttackAt(v, creature)) {
@@ -914,7 +919,7 @@ public class CombatScreen extends BaseScreen {
         return true;
     }
 
-    public PartyMember nearestPartyMember(int fromX, int fromY, DistanceWrapper dist, boolean ranged) {
+    private PartyMember nearestPartyMember(int fromX, int fromY, DistanceWrapper dist, boolean ranged) {
         PartyMember opponent = null;
         int d = 0;
         int leastDist = 0xFFFF;
@@ -1089,6 +1094,7 @@ public class CombatScreen extends BaseScreen {
             setY(v.y);
         }
 
+        @Override
         public void setVisible(boolean v) {
             this.visible = v;
         }
@@ -1106,7 +1112,6 @@ public class CombatScreen extends BaseScreen {
 
     }
 
-    @SuppressWarnings("incomplete-switch")
     public void useStones(Stone c1, Stone c2, Stone c3, Stone c4) {
 
         DungeonRoom room = (DungeonRoom) tmap.getProperties().get("dungeonRoom");

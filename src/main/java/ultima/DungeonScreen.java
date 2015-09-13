@@ -121,14 +121,16 @@ public class DungeonScreen extends BaseScreen {
     private Texture miniMap;
     private MiniMapIcon miniMapIcon;
 
-    public DungeonScreen(Stage stage, GameScreen gameScreen, Maps map) {
+    public DungeonScreen(GameScreen gameScreen, Maps map) {
 
         scType = ScreenType.DUNGEON;
         this.dngMap = map;
         this.dungeonFileName = map.getMap().getFname();
         this.gameScreen = gameScreen;
-        this.stage = stage;
+        this.stage = new Stage();
         sip = new SecondaryInputProcessor(this, stage);
+        
+        addButtons(gameScreen.context);
 
         init();
     }
@@ -277,7 +279,6 @@ public class DungeonScreen extends BaseScreen {
             miniMapIcon = new MiniMapIcon();
             miniMapIcon.setOrigin(5, 5);
 
-            stage = new Stage();
             stage.addActor(miniMapIcon);
 
             setStartPosition();
@@ -785,7 +786,7 @@ public class DungeonScreen extends BaseScreen {
     }
 
     @Override
-    public void endCombat(boolean isWon, BaseMap combatMap) {
+    public void endCombat(boolean isWon, BaseMap combatMap, boolean wounded) {
 
         mainGame.setScreen(this);
 
@@ -840,7 +841,7 @@ public class DungeonScreen extends BaseScreen {
                             break;
                         }
                         log("Entering " + m.getLabel() + "!");
-                        DungeonScreen sc = new DungeonScreen(stage, this.gameScreen, m);
+                        DungeonScreen sc = new DungeonScreen(this.gameScreen, m);
                         sc.restoreSaveGameLocation(p.getStartx(), p.getStarty(), p.getStartlevel(), currentDir);
                         mainGame.setScreen(sc);
                         this.gameScreen.newMapPixelCoords = this.gameScreen.getMapPixelCoords(p.getRetroActiveDest().getX(), p.getRetroActiveDest().getY());

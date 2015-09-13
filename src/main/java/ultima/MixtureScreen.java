@@ -21,17 +21,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
+import java.io.IOException;
 import java.util.ArrayList;
 import objects.Party;
+import org.apache.commons.io.FileUtils;
 
 public class MixtureScreen implements Screen, Constants {
 
     private final Stage stage;
     private final Ultima4 mainGame;
     private final BaseScreen returnScreen;
-    private final Skin skin;
     private final Party party;
-
+    private final Skin skin;
+    
     ReagentCount[] owned;
     ReagentCount[] mixing;
     MixtureCount[] mixtures;
@@ -49,37 +51,43 @@ public class MixtureScreen implements Screen, Constants {
 
     private final Table internalTable;
     private final Table buttonTable;
+    
+    private final java.util.List<String> spellDescs = new ArrayList<>();
+    private final java.util.List<String> reagDescs = new ArrayList<>();
+    
+    private final Label reagLabel;
+    private final Label spellLabel;
 
     public MixtureScreen(Ultima4 mainGame, BaseScreen returnScreen, Skin skin, Party party) {
         this.returnScreen = returnScreen;
         this.mainGame = mainGame;
         this.stage = new Stage();
-        this.skin = skin;
         this.party = party;
+        this.skin = skin;
         
-        Pixmap pix = new Pixmap(14, 14, Pixmap.Format.RGBA8888);
-        pix.setColor(.3f, .3f, .3f, .50f);
-        pix.fillRectangle(0, 0, 14, 14);
-        Image img = new Image(new Texture(pix));
-        pix.dispose();
-        
-        ScrollPane.ScrollPaneStyle sps = new ScrollPane.ScrollPaneStyle(skin.get("default", ScrollPane.ScrollPaneStyle.class));
-        sps.background = img.getDrawable();
-        List.ListStyle ls = new List.ListStyle(skin.get("default", List.ListStyle.class));
-        ls.background = img.getDrawable();
-        BitmapFont font = skin.get("default-font", BitmapFont.class);
-        SelectBox.SelectBoxStyle sbs = new SelectBox.SelectBoxStyle(font, Color.WHITE, img.getDrawable(), sps, ls);
+        try {
+            spellDescs.addAll(FileUtils.readLines(Gdx.files.internal("assets/data/spells.txt").file()));
+            reagDescs.addAll(FileUtils.readLines(Gdx.files.internal("assets/data/reagents.txt").file()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         this.internalTable = new Table(skin);
         this.internalTable.defaults().pad(5);
 
-        spellSelect = new SelectBox<>(sbs);
+        spellSelect = new SelectBox<>(skin);
         spellSelect.setItems(Spell.values());
         spellSelect.setSelected(Spell.AWAKEN);
+        spellSelect.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                Spell s = spellSelect.getSelected();
+                spellLabel.setText(spellDescs.get(s.ordinal()));
+            }
+        });
 
         internalTable.add();
         internalTable.add(new Label("Spell:", skin)).align(Align.right);
-        //internalTable.add(spellSelect);
         internalTable.add(spellSelect).align(Align.top).minWidth(200);
 
         internalTable.add();
@@ -108,18 +116,25 @@ public class MixtureScreen implements Screen, Constants {
         }
         mixtures = (MixtureCount[]) tmp2.toArray(new MixtureCount[tmp2.size()]);
 
-        ownedList = new List<>(ls);
+        ownedList = new List<>(skin);
         ownedList.setItems(owned);
+        ownedList.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                ReagentCount rc = ownedList.getSelected();
+                reagLabel.setText(reagDescs.get(rc.rgnt.ordinal()));
+            }
+        });
+                
+        mixedList = new List<>(skin);
 
-        mixedList = new List<>(ls);
-
-        mixtureList = new List<>(ls);
+        mixtureList = new List<>(skin);
         mixtureList.setItems(mixtures);
 
         buttonTable = new Table(skin);
         buttonTable.defaults().padLeft(20).padRight(20).padTop(5);
 
-        add = new TextButton("Add", skin);
+        add = new TextButton("Add", skin, "wood");
         add.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
@@ -158,7 +173,7 @@ public class MixtureScreen implements Screen, Constants {
         });
         buttonTable.add(add).expandX().left().width(100);
 
-        clear = new TextButton("Clear", skin);
+        clear = new TextButton("Clear", skin, "wood");
         clear.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
@@ -179,7 +194,7 @@ public class MixtureScreen implements Screen, Constants {
         buttonTable.row();
         buttonTable.add(clear).expandX().left().width(100).padBottom(30);
 
-        mix = new TextButton("Mix", skin);
+        mix = new TextButton("Mix", skin, "wood");
         mix.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
@@ -234,7 +249,7 @@ public class MixtureScreen implements Screen, Constants {
         buttonTable.row();
         buttonTable.add(mix).expandX().left().width(100);
 
-        exit = new TextButton("Quit", skin);
+        exit = new TextButton("Quit", skin, "wood");
         exit.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
@@ -248,9 +263,9 @@ public class MixtureScreen implements Screen, Constants {
         buttonTable.row();
         buttonTable.add(exit).expandX().left().width(100);
 
-        ScrollPane sp1 = new ScrollPane(ownedList, sps);
-        ScrollPane sp2 = new ScrollPane(mixedList, sps);
-        ScrollPane sp3 = new ScrollPane(mixtureList, sps);
+        ScrollPane sp1 = new ScrollPane(ownedList, skin);
+        ScrollPane sp2 = new ScrollPane(mixedList, skin);
+        ScrollPane sp3 = new ScrollPane(mixtureList, skin);
 
         internalTable.add(sp1).align(Align.top).minWidth(200).minHeight(300);
         internalTable.add(buttonTable).align(Align.top);
@@ -259,10 +274,27 @@ public class MixtureScreen implements Screen, Constants {
         internalTable.row();
 
         internalTable.setX(500);
-        internalTable.setY(400);
+        internalTable.setY(575);
         
-        Image sp = new Image(new Texture(Gdx.files.internal("assets/graphics/alchemy.png")));
-        stage.addActor(sp);
+        reagLabel = new Label("", skin);
+        reagLabel.setWrap(true);
+        reagLabel.setAlignment(Align.topLeft, Align.left);
+        reagLabel.setWidth(465);
+        reagLabel.setHeight(375);
+        reagLabel.setX(20);
+        reagLabel.setY(0);
+        
+        spellLabel = new Label(spellDescs.get(0), skin);
+        spellLabel.setWrap(true);
+        spellLabel.setAlignment(Align.topLeft, Align.left);
+        spellLabel.setWidth(465);
+        spellLabel.setHeight(375);
+        spellLabel.setX(515);
+        spellLabel.setY(0);
+        
+        stage.addActor(new Image(new Texture(Gdx.files.internal("assets/graphics/alchemy.png"))));
+        stage.addActor(reagLabel);
+        stage.addActor(spellLabel);
         stage.addActor(internalTable);
 
     }
@@ -312,8 +344,8 @@ public class MixtureScreen implements Screen, Constants {
 
     private class ReagentCount {
 
-        public Reagent rgnt;
-        public int count;
+        Reagent rgnt;
+        int count;
 
         ReagentCount(Reagent rt, int count) {
             this.rgnt = rt;
@@ -328,9 +360,9 @@ public class MixtureScreen implements Screen, Constants {
 
     private class MixtureCount {
 
-        public Spell spell;
-        public int count;
-
+        Spell spell;
+        int count;
+        
         MixtureCount(Spell sp, int count) {
             this.spell = sp;
             this.count = count;

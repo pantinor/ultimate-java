@@ -53,6 +53,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -153,6 +155,8 @@ public class GameScreen extends BaseScreen {
             seq1.addAction(Actions.delay(.25f));
             seq1.addAction(Actions.run(gameTimer));
             stage.addAction(Actions.forever(seq1));
+            
+            addButtons(context);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -255,13 +259,14 @@ public class GameScreen extends BaseScreen {
 //            sg.food = 30000;
 //            sg.gold = 999;
 //            sg.keys = 20;
-//              sg.gems = 15;
+//            sg.gems = 15;
 //            sg.moves = 2800;
 //            sg.stones = 0xff;
 //            sg.runes = 0xff;
 //            sg.items = 0xff;
-//              sg.sextants = 1;
-              
+//            sg.sextants = 1;
+//              sg.reagents = new int[]{90, 93, 94, 90, 90, 90, 90, 90};
+
 //            party.getMember(0).getPlayer().status = StatusType.GOOD;
 //            party.getMember(0).getPlayer().xp = 899;
 //            party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
@@ -280,8 +285,8 @@ public class GameScreen extends BaseScreen {
             //sg.items |= Constants.Item.BOOK.getLoc();
             
             //load the surface world first
-            //loadNextMap(Maps.WORLD, sg.x, sg.y);
-            loadNextMap(Maps.WORLD, 154, 188);
+            loadNextMap(Maps.WORLD, sg.x, sg.y);
+            //loadNextMap(Maps.WORLD, 144, 81);
 
             //load the dungeon if save game starts in dungeon
             if (Maps.get(sg.location) != Maps.WORLD) {
@@ -338,13 +343,13 @@ public class GameScreen extends BaseScreen {
         if (m.getMap().getType() == MapType.dungeon) {
 
             if (m != Maps.DELVE_SORROWS) {
-                DungeonScreen sc = new DungeonScreen(stage, this, m);
+                DungeonScreen sc = new DungeonScreen(this, m);
                 if (restoreSG) {
                     sc.restoreSaveGameLocation(dngx, dngy, dngLevel, orientation);
                 }
                 mainGame.setScreen(sc);
             } else {
-                StaticGeneratedDungeonScreen sc = new StaticGeneratedDungeonScreen(stage, this, m);
+                StaticGeneratedDungeonScreen sc = new StaticGeneratedDungeonScreen(this, m);
                 mainGame.setScreen(sc);
             }
 
@@ -402,7 +407,7 @@ public class GameScreen extends BaseScreen {
     }
 
     @Override
-    public void endCombat(boolean isWon, BaseMap combatMap) {
+    public void endCombat(boolean isWon, BaseMap combatMap, boolean wounded) {
 
         mainGame.setScreen(this);
 
@@ -442,7 +447,9 @@ public class GameScreen extends BaseScreen {
                     /* minus points for fleeing from evil creatures */
                     if (!currentEncounter.getGood()) {
                         //lose karma points here
-                        context.getParty().adjustKarma(KarmaAction.FLED_EVIL);
+                        if (!wounded) {
+                            context.getParty().adjustKarma(KarmaAction.HEALTHY_FLED_EVIL);
+                        }
                     } else {
                         //get extra karma points
                         context.getParty().adjustKarma(KarmaAction.FLED_GOOD);
@@ -564,15 +571,7 @@ public class GameScreen extends BaseScreen {
         viewport.update(width, height, false);
         mapViewPort.update(width, height, false);
     }
-    
-    @Override
-    public boolean touchDown(int x, int y, int pointer, int button) {
-        if (x >=32 && x <= 64 && y >= Ultima4.SCREEN_HEIGHT - 48 && y <= Ultima4.SCREEN_HEIGHT - 16) {
-            mainGame.setScreen(new JournalScreen(mainGame, this, context.getJournal()));
-        }
-        return false;
-    }
-    
+       
     @Override
     public boolean keyUp(int keycode) {
 
@@ -818,7 +817,7 @@ public class GameScreen extends BaseScreen {
 
         } else if (keycode == Keys.ESCAPE) {
 
-            new DocumentationDialog(this, stage).show();
+            mainGame.setScreen(new BookScreen(mainGame, this, Ultima4.skin));
 
         } else if (keycode == Keys.SPACE) {
             log("Pass");

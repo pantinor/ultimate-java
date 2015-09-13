@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -24,33 +25,33 @@ public class JournalScreen implements Screen, InputProcessor, Constants {
     private final JournalEntries entries;
     private final JournalList list;
 
-    public JournalScreen(Ultima4 mainGame, BaseScreen returnScreen, JournalEntries entries) {
+    public JournalScreen(Ultima4 mainGame, BaseScreen returnScreen, Skin skin, JournalEntries entries) {
         this.returnScreen = returnScreen;
         this.mainGame = mainGame;
         this.entries = entries;
         this.stage = new Stage();
 
-        Label filterLabel = new Label("Filter:", Ultima4.skin);
+        Label filterLabel = new Label("Filter:", skin);
         filterLabel.setX(16);
         filterLabel.setY(Gdx.graphics.getHeight() - 32);
 
-        TextField filterField = new TextField("", Ultima4.skin);
+        TextField filterField = new TextField("", skin);
         filterField.setX(56);
         filterField.setY(Gdx.graphics.getHeight() - 32);
 
-        CheckBox cb = new CheckBox("Show Active", Ultima4.skin);
+        CheckBox cb = new CheckBox("Show Active", skin);
         cb.setX(256);
         cb.setY(Gdx.graphics.getHeight() - 32);
 
-        list = new JournalList(Ultima4.skin, Ultima4.font, filterField, cb, this.entries.toArray(Ultima4.skin));
+        list = new JournalList(skin, filterField, cb, this.entries.toArray(skin));
 
-        ScrollPane sp = new ScrollPane(list, Ultima4.skin);
+        ScrollPane sp = new ScrollPane(list, skin);
         sp.setX(16);
         sp.setY(16);
         sp.setWidth(Gdx.graphics.getWidth() - 32);
         sp.setHeight(Gdx.graphics.getHeight() - 64);
 
-        TextButton exit = new TextButton("Exit", Ultima4.skin);
+        TextButton exit = new TextButton("Exit", skin, "wood");
         exit.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {

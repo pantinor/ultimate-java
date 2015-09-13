@@ -766,6 +766,8 @@ public class SpellUtil implements Constants {
 
             Sounds.play(Sound.RAGE, ocl);
 
+        } else {
+            Sounds.play(Sound.ERROR);
         }
 
     }

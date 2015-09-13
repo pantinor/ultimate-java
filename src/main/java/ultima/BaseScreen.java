@@ -17,9 +17,13 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import static ultima.GameScreen.context;
 
 public abstract class BaseScreen implements Screen, InputProcessor, Constants, Observer {
 
@@ -83,7 +87,32 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 
     public abstract void finishTurn(int currentX, int currentY);
 
-    public void endCombat(boolean isWon, BaseMap combatMap) {
+    public void endCombat(boolean isWon, BaseMap combatMap, boolean wounded) {
+    }
+    
+    public final void addButtons(Context ctxt) {
+        TextButton jourButt = new TextButton("Journal", Ultima4.skin, "wood");
+        jourButt.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                mainGame.setScreen(new JournalScreen(mainGame, BaseScreen.this, Ultima4.skin, ctxt.getJournal()));
+            }
+        });
+        jourButt.setX(32);
+        jourButt.setY(24);
+        stage.addActor(jourButt);
+
+        TextButton bookButt = new TextButton("Book", Ultima4.skin, "wood");
+        bookButt.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                mainGame.setScreen(new BookScreen(mainGame, BaseScreen.this, Ultima4.skin));
+            }
+        });
+        bookButt.setX(128);
+        bookButt.setY(24);
+        
+        stage.addActor(bookButt);
     }
 
     @Override

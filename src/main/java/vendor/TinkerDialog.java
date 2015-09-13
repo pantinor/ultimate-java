@@ -75,9 +75,9 @@ public class TinkerDialog extends Window implements Constants {
         add(internalTable).expand().fill();
         row();
 
-        internalTable.add(new Label("Owned Items", skin, "logs")).align(Align.left);
+        internalTable.add(new Label("Owned Items", skin)).align(Align.left);
         internalTable.add();
-        internalTable.add(new Label("Tinkering Table", skin, "logs")).align(Align.left);
+        internalTable.add(new Label("Tinkering Table", skin)).align(Align.left);
         internalTable.row();
 
         Array<String> tmp = new Array<>();
@@ -96,7 +96,7 @@ public class TinkerDialog extends Window implements Constants {
         buttonTable = new Table(skin);
         buttonTable.defaults().padLeft(20).padRight(20).padTop(5);
 
-        add = new TextButton("Add", skin, "default");
+        add = new TextButton("Add", skin, "wood");
         add.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
@@ -110,7 +110,7 @@ public class TinkerDialog extends Window implements Constants {
         });
         buttonTable.add(add).expandX().left().width(100);
 
-        clear = new TextButton("Clear", skin, "default");
+        clear = new TextButton("Clear", skin, "wood");
         clear.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
@@ -120,7 +120,7 @@ public class TinkerDialog extends Window implements Constants {
         buttonTable.row();
         buttonTable.add(clear).expandX().left().width(100).padBottom(30);
 
-        mix = new TextButton("Tinker", skin, "default");
+        mix = new TextButton("Tinker", skin, "wood");
         mix.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
@@ -188,7 +188,7 @@ public class TinkerDialog extends Window implements Constants {
         buttonTable.row();
         buttonTable.add(mix).expandX().left().width(100);
 
-        exit = new TextButton("Quit", skin, "default");
+        exit = new TextButton("Quit", skin, "wood");
         exit.addListener(new ChangeListener() {
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 hide();
@@ -231,7 +231,7 @@ public class TinkerDialog extends Window implements Constants {
     }
 
     private void animateText(String text, Color color, float sx, float sy, float dx, float dy, float delay) {
-        Label label = new Label(text, skin, "larger");
+        Label label = new Label(text, skin);
         label.setPosition(sx, sy);
         label.setColor(color);
         stage.addActor(label);

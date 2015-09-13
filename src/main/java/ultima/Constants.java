@@ -1325,7 +1325,6 @@ public interface Constants {
         MEDITATION,
         BAD_MANTRA,
         ATTACKED_GOOD,
-        FLED_EVIL,
         FLED_GOOD,
         HEALTHY_FLED_EVIL,
         KILLED_EVIL,

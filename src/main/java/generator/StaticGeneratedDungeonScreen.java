@@ -109,7 +109,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
     public DungeonTile[][][] dungeonTiles = new DungeonTile[DUNGEON_LEVELS][DUNGEON_MAP][DUNGEON_MAP];
 
-    public List<DungeonTileModelInstance> modelInstances = new ArrayList<DungeonTileModelInstance>();
+    public List<DungeonTileModelInstance> modelInstances = new ArrayList<>();
 
     public int currentLevel = 0;
     public Vector3 currentPos;
@@ -117,13 +117,13 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
     public SecondaryInputProcessor sip;
 
-    public StaticGeneratedDungeonScreen(Stage stage, GameScreen gameScreen, Maps map) {
+    public StaticGeneratedDungeonScreen(GameScreen gameScreen, Maps map) {
         this.dngMap = map;
         scType = ScreenType.TMXDUNGEON;
         this.gameScreen = gameScreen;
-        this.stage = stage;
+        this.stage = new Stage();
         sip = new SecondaryInputProcessor(this, stage);
-
+        addButtons(gameScreen.context);
         init();
     }
 
@@ -337,7 +337,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         batch.draw(Ultima4.backGround, 0, 0);
 
         Ultima4.hud.render(batch, GameScreen.context.getParty());
-        Ultima4.font.draw(batch, "Level " + (currentLevel + 1), 305, 36);
+        Ultima4.font.draw(batch, "Level " + (currentLevel + 1) + " facing " + currentDir, 305, 36);
         if (showZstats > 0) {
             GameScreen.context.getParty().getSaveGame().renderZstats(showZstats, Ultima4.font, batch, Ultima4.SCREEN_HEIGHT);
         }
@@ -517,7 +517,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
     }
 
     @Override
-    public void endCombat(boolean isWon, BaseMap combatMap) {
+    public void endCombat(boolean isWon, BaseMap combatMap, boolean wounded) {
 
         mainGame.setScreen(this);
 
@@ -1132,7 +1132,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         return new StaticGeneratedDungeonScreen.PeerGemInputAdapter();
     }
 
-    public class PeerGemInputAdapter extends InputAdapter {
+    private class PeerGemInputAdapter extends InputAdapter {
 
         Image img;
 

@@ -34,9 +34,9 @@ public class JournalList extends Widget implements Cullable {
     private final TextField filterField;
     private final CheckBox activeFilter;
     
-    public JournalList(Skin skin, BitmapFont font, TextField filterField, CheckBox cb, Array<JournalEntry> items) {
+    public JournalList(Skin skin, TextField filterField, CheckBox cb, Array<JournalEntry> items) {
 
-        this.font = font;
+        this.font = skin.get("default-font", BitmapFont.class);
         this.filterField = filterField;
         this.activeFilter = cb;
         
@@ -54,7 +54,7 @@ public class JournalList extends Widget implements Cullable {
             filteredIndex[i] = i;
         }
 
-        setStyle(skin.get("journal", ListStyle.class));
+        setStyle(skin.get("default", ListStyle.class));
         setSize(getPrefWidth(), getPrefHeight());
 
         addListener(new InputListener() {

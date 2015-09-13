@@ -67,6 +67,8 @@ public class Ultima4 extends Game {
         ls.font = font;
         TextButton.TextButtonStyle tbs = Ultima4.skin.get("default", TextButton.TextButtonStyle.class);
         tbs.font = font;
+        TextButton.TextButtonStyle tbswood = Ultima4.skin.get("wood", TextButton.TextButtonStyle.class);
+        tbswood.font = font;
         SelectBox.SelectBoxStyle sbs = Ultima4.skin.get("default", SelectBox.SelectBoxStyle.class);
         sbs.font = font;
         sbs.listStyle.font = font;

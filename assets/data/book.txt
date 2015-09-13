@@ -125,7 +125,9 @@ Residing within Lord British's castle is the Royal Seer, Hawkwind. Many aspire t
 CHAPTER V
 
 TRANSPORTATION
+
 Throughout the centuries most travel has been accomplished by use of the feet. While this method lends itself to scenic hikes, it is a terribly slow way to journey from one end of a huge continent to the other. Getting around Britannia, which may never be without risk, could soon become easier. Under the auspices of Lord British, studies of the properties of the Moon Gates are beginning to yield a clearer understanding of the Gates' mystical workings. People forecast that future citizens will use these gates as a normal means of distant travel. The destinations of the gates appear to be rigidly bound to the phases of the twin moons Trammel and Felucca. The appearance and disappearance of the gates are definitely so linked. The location of the gates are represented on most maps of the realm as phases of the moons. The gate active is indicated by the phase of the moon Trammel. Once a gate is entered, thy destination is indicated by the phase of the moon Felucca.
+
 Britannia is marked by six terrain types, each with their own features:
 
 GRASS

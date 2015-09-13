@@ -219,10 +219,10 @@ public class TestJaxb {
 
     }
 
-    //@Test
+    @Test
     public void parseTlkFiles() throws Exception {
-        Person[] people = Utils.getPeople("aquaria_l1.ult", null);
-        List<Conversation> cons = Utils.getDialogs("aquaria_l1.tlk");
+        Person[] people = Utils.getPeople("cove.ult", null);
+        List<Conversation> cons = Utils.getDialogs("cove.tlk");
 
         for (Person p : people) {
             if (p != null) {

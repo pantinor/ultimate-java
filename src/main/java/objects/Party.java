@@ -716,9 +716,6 @@ public class Party extends Observable implements Constants {
                 adjustKarmaMin(newKarma, Virtue.JUSTICE, -5, 1);
                 adjustKarmaMin(newKarma, Virtue.HONOR, -5, 1);
                 break;
-            case FLED_EVIL:
-                adjustKarmaMin(newKarma, Virtue.VALOR, -2, 1);
-                break;
             case HEALTHY_FLED_EVIL:
                 adjustKarmaMin(newKarma, Virtue.VALOR, -2, 1);
                 adjustKarmaMin(newKarma, Virtue.SACRIFICE, -2, 1);
