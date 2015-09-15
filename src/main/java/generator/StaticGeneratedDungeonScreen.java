@@ -63,7 +63,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.UBJsonReader;
+import objects.Portal;
 import static ultima.BaseScreen.mainGame;
+import ultima.DungeonScreen;
 import ultima.MixtureScreen;
 
 public class StaticGeneratedDungeonScreen extends BaseScreen {
@@ -287,6 +289,25 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         }
 
     }
+    
+    public void restoreSaveGameLocation(int x, int y, int z, Direction orientation) {
+
+        currentPos = new Vector3(x + .5f, .5f, y + .5f);
+        camera.position.set(currentPos);
+        currentDir = orientation;
+        currentLevel = z;
+
+        if (currentDir == Direction.EAST) {
+            camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+        } else if (currentDir == Direction.WEST) {
+            camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
+        } else if (currentDir == Direction.NORTH) {
+            camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
+        } else if (currentDir == Direction.SOUTH) {
+            camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
+        }
+
+    }
 
     @Override
     public void dispose() {
@@ -381,6 +402,14 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
             instance.calculateTransforms();
             DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
             modelInstances.add(in);
+        } else if (tile == DungeonTile.MOONGATE) {
+            Color c = new Color(0x53c6f1ff);
+            Model model = builder.createBox(1, 1, 1, getMaterial(c, .7f), Usage.Position | Usage.Normal);
+            ModelInstance instance = new ModelInstance(model, tx, .5f, tz);
+            DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
+            modelInstances.add(in);
+            in.x = (int) tx;
+            in.y = (int) tz;
         } else if (tile.getValue() >= 10 && tile.getValue() <= 48) {
             ModelInstance instance = new ModelInstance(ladderModel, tx, 0, tz);
             instance.nodes.get(0).scale.set(.060f, .060f, .060f);
@@ -667,7 +696,6 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
                         dispose();
                     }
                 }
-
             }
             return false;
 
@@ -733,7 +761,10 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
                 Gdx.input.setInputProcessor(sip);
                 sip.setinitialKeyCode(keycode, tile, x, y);
             }
-
+        } else if (keycode == Keys.Q) {
+            GameScreen.context.saveGame(x, y, currentLevel, currentDir, dngMap);
+            log("Saved Game.");
+            return false;
         } else if (keycode == Keys.Z) {
             showZstats = showZstats + 1;
             if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
@@ -766,7 +797,6 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         moveDungeonCreatures(this, currentX, currentY);
     }
 
-    @SuppressWarnings("incomplete-switch")
     public void checkTrap(DungeonTile tile, int x, int y) {
         switch (tile) {
             case WIND_TRAP:
@@ -786,10 +816,19 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
                 Sounds.play(Sound.ROCKS);
                 dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
                 break;
+            case MOONGATE:
+                Portal p = dngMap.getMap().getPortal(x, y, currentLevel);
+                if (p != null) {
+                    log(p.getMessage());
+                    Sounds.play(Sound.MOONGATE);
+                    mainGame.setScreen(gameScreen);
+                    gameScreen.loadNextMap(Maps.WORLD, p.getStartx(), p.getStarty());
+                    dispose();
+                }
+                break;
         }
     }
 
-    @SuppressWarnings("incomplete-switch")
     public void dungeonDrinkFountain(DungeonTile type, int index) {
         if (index >= GameScreen.context.getParty().getMembers().size()) {
             return;

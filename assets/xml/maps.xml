@@ -511,10 +511,11 @@
 	<map id="55" type="combat" fname="camp.dng" width="11" height="11" levels="1" borderbehavior="fixed" nolineofsight="true" music="8" tileset="base" tilemap="base" />
 
 	
-	<map id="56" type="dungeon" fname="" width="32" height="32" levels="8" borderbehavior="fixed" firstperson="true" music="7" tileset="dungeon" tilemap="dungeon">
+	<map id="56" type="dungeon" fname="delveOfSorrows.tmx" width="32" height="32" levels="8" borderbehavior="fixed" firstperson="true" music="7" tileset="dungeon" tilemap="dungeon">
 		<dungeon name="The Delve of Sorrows" />
-		<label name="maskofminax" x="1" y="17" z="1"/>
-		<label name="rageofgod" x="6" y="28" z="2"/>
+		<portal x="6" y="19" z="1" destmapid="0" startx="108" starty="102"  savelocation="false" message="A feeling of nausea and you find your party transported to the surface!" transport="foot" />
+		<label name="maskofminax" x="1" y="17" z="0"/>
+		<label name="rageofgod" x="6" y="28" z="1"/>
 	</map>
 	
 	<map id="57" type="city" fname="aquaria_l1.ult" width="32" height="32" levels="1" borderbehavior="exit" showavatar="true" music="2" tileset="base" tilemap="base">

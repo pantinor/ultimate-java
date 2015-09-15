@@ -188,8 +188,8 @@ public class Context implements Constants {
             Portal p = Maps.WORLD.getMap().getPortal(map.getId());
             party.getSaveGame().x = (int) x;
             party.getSaveGame().y = (int) y;
-            party.getSaveGame().dngx = p.getX();
-            party.getSaveGame().dngy = p.getY();
+            party.getSaveGame().dngx = (p == null ? (int) x : p.getX());
+            party.getSaveGame().dngy = (p == null ? (int) y : p.getY());
             party.getSaveGame().dnglevel = (int) z;
             party.getSaveGame().orientation = orientation.getVal() - 1;
         }

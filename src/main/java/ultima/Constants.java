@@ -10,14 +10,10 @@ import objects.Weapon;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import java.io.File;
 
 public interface Constants {
 
@@ -558,6 +554,7 @@ public interface Constants {
         FLOOR_HOLE(0x60, "Floor Hole", "solid", false),
         ORB(0x70, "Magic Orb", "magic_flash", true),
         LIGHT(0, "Light", "miss_flash", true),
+        MOONGATE(0, "Moongate", "moongate", true),
         ALTAR(0, "Altar", "altar", true),
         CHEST(0x40, "Treasure Chest", "chest", true),
         FIRE(0x40, "Fireplace", "campfire", true),

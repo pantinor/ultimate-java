@@ -54,7 +54,7 @@ public class BaseMap implements Constants {
     private Dungeon dungeon;
     private Shrine shrine;
 
-    private List<Creature> creatures = new ArrayList<Creature>();
+    private List<Creature> creatures = new ArrayList<>();
     private List<PartyMember> combatPlayers;
     private Stage surfaceMapStage;
 
@@ -66,7 +66,7 @@ public class BaseMap implements Constants {
     //otherwise cannot catch up and talk to the character
     private long wanderFlag = 0;
 
-    private List<DoorStatus> doors = new ArrayList<DoorStatus>();
+    private List<DoorStatus> doors = new ArrayList<>();
 
     public Moongate getMoongate(int phase) {
         if (moongates == null) {
@@ -92,12 +92,12 @@ public class BaseMap implements Constants {
         return null;
     }
 
-    public Portal getPortal(float x, float y) {
+    public Portal getPortal(float x, float y, float z) {
         if (portals == null) {
             return null;
         }
         for (Portal p : portals) {
-            if (p.getX() == x && p.getY() == y) {
+            if (p.getX() == x && p.getY() == y && p.getZ() == z) {
                 return p;
             }
         }
@@ -105,7 +105,7 @@ public class BaseMap implements Constants {
     }
 
     public List<Portal> getPortals(int x, int y, int z) {
-        List<Portal> ps = new ArrayList<Portal>();
+        List<Portal> ps = new ArrayList<>();
         if (portals == null) {
             return ps;
         }
@@ -929,9 +929,6 @@ public class BaseMap implements Constants {
         }
     }
 
-    /**
-     * Add item to inventory and add experience etc for a found item
-     */
     public ItemMapLabels searchLocation(BaseScreen screen, Party p, int x, int y, int z) {
         SaveGame sg = p.getSaveGame();
 
@@ -941,7 +938,7 @@ public class BaseMap implements Constants {
 
         Label tmp = null;
         for (Label l : labels) {
-            if (l.getX() == x && l.getY() == y) {
+            if (l.getX() == x && l.getY() == y && l.getZ() == z) {
                 tmp = l;
             }
         }

@@ -291,6 +291,7 @@ public class GameScreen extends BaseScreen {
                 loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation + 1), true);
                 //loadNextMap(Maps.ABYSS, 0, 0, 5, 5, 0, Direction.SOUTH, true);
                 //loadNextMap(Maps.DESTARD, 0, 0, 5, 5, 0, Direction.NORTH, true);
+                //loadNextMap(Maps.DELVE_SORROWS, 0, 0, 3, 19, 1, Direction.EAST, true);
             }
 
             party.setTransport(baseTileSet.getTileByIndex(sg.transport));
@@ -348,6 +349,9 @@ public class GameScreen extends BaseScreen {
                 mainGame.setScreen(sc);
             } else {
                 StaticGeneratedDungeonScreen sc = new StaticGeneratedDungeonScreen(this, m);
+                if (restoreSG) {
+                    sc.restoreSaveGameLocation(dngx, dngy, dngLevel, orientation);
+                }
                 mainGame.setScreen(sc);
             }
 
@@ -674,7 +678,7 @@ public class GameScreen extends BaseScreen {
                     }
                 }
             } else {
-                Portal p = context.getCurrentMap().getPortal(v.x, v.y);
+                Portal p = context.getCurrentMap().getPortal(v.x, v.y, 0);
                 if (p != null) {
                     loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
                     log(p.getMessage());
@@ -688,7 +692,7 @@ public class GameScreen extends BaseScreen {
                 return false;
             }
 
-            Portal p = context.getCurrentMap().getPortal(v.x, v.y);
+            Portal p = context.getCurrentMap().getPortal(v.x, v.y, 0);
             if (p != null) {
                 if (Maps.get(p.getDestmapid()).getMap().getType() == MapType.shrine) {
                     Virtue virtue = Virtue.get(Maps.get(p.getDestmapid()).getId() - 25);
