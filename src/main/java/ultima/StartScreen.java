@@ -9,6 +9,7 @@ import objects.SaveGame;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -22,9 +23,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.io.File;
+import static ultima.Constants.PARTY_SAV_BASE_FILENAME;
+import static ultima.Ultima4.skin;
 
 public class StartScreen implements Screen, InputProcessor, Constants {
 
@@ -33,7 +41,10 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
     Animation beast1;
     Animation beast2;
-    Animation whirlpool;
+    
+    TextButton init;
+    TextButton journey;
+    Stage stage;
 
     Sprite title;
     BitmapFont font;
@@ -104,15 +115,47 @@ public class StartScreen implements Screen, InputProcessor, Constants {
         ta = new TextureAtlas(Gdx.files.internal("assets/graphics/initial-atlas.txt"));
         title = ta.createSprite("title");
 
-        TextureAtlas ua = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-enhanced-vga-atlas.txt"));
-        whirlpool = new Animation(0.50f, ua.findRegions("whirlpool"));
-
         font = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_24.fnt"));
         font.setColor(Color.WHITE);
+        
+        init = new TextButton("New Game", skin, "wood");
+        init.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                Sounds.play(Sound.TRIGGER);
+                state = State.ASK_NAME;
+                stage.clear();
+            }
+        });
+        init.setX(330);
+        init.setY(250);
+        init.setWidth(150);
+        init.setHeight(25);
+        
+        journey = new TextButton("Journey Onward", skin, "wood");
+        journey.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                Sounds.play(Sound.TRIGGER);
+                if (!Gdx.files.internal(PARTY_SAV_BASE_FILENAME).file().exists()) {
+                    state = State.ASK_NAME;
+                } else {
+                    mainGame.setScreen(new GameScreen(mainGame));
+                }
+            }
+        });
+        journey.setX(530);
+        journey.setY(250);
+        journey.setWidth(150);
+        journey.setHeight(25);
 
         batch = new SpriteBatch();
-
-        Gdx.input.setInputProcessor(this);
+        
+        stage = new Stage(new ScreenViewport(), batch);
+        stage.addActor(init);
+        stage.addActor(journey);
+        
+        Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
 
     }
 
@@ -133,29 +176,32 @@ public class StartScreen implements Screen, InputProcessor, Constants {
         float height = 50;
 
         if (state == State.INIT) {
-            batch.draw(title, Ultima4.SCREEN_WIDTH / 2 - title.getWidth() / 2, 350);
-
-            font.draw(batch, "In another world, in a time to come.", 215, 300);
-            font.draw(batch, "Options:", 350, 260);
-            batch.draw(whirlpool.getKeyFrame(time, true), 445, 240, 20, 20);
-            font.draw(batch, "Initiate New Game", 300, 220);
-            font.draw(batch, "Journey Onward", 300, 190);
-            font.draw(batch, "Conversion by Paul Antinori", 250, 60);
-            font.draw(batch, "Copyright 1987 Lord British", 250, 30);
-            Gdx.input.setInputProcessor(this);
+            
+            batch.draw(title, Ultima4.SCREEN_WIDTH / 2 - title.getWidth() / 2, 150);
+            
+            batch.end();
+            stage.act();
+            stage.draw();
+            batch.begin();
+            
+            font.draw(batch, "In another world, in a time to come.", 320, 315);
+            font.draw(batch, "Conversion by Paul Antinori", 350, 96);
+            font.draw(batch, "Copyright 1987 Lord British", 350, 64);
 
         } else if (state == State.ASK_NAME) {
-            batch.draw(title, Ultima4.SCREEN_WIDTH / 2 - title.getWidth() / 2, 350);
+            batch.draw(title, Ultima4.SCREEN_WIDTH / 2 - title.getWidth() / 2, 150);
 
-            font.draw(batch, "By what name shalt thou be known in this world and time?", 100, 240);
-            font.draw(batch, nameBuffer.toString(), 300, 210);
+            font.draw(batch, "By what name shalt thou be known", 320, 315);
+            font.draw(batch, "in this world and time?", 320, 290);
+            font.draw(batch, nameBuffer.toString(), 320, 265);
+            
             Gdx.input.setInputProcessor(nia);
 
         } else if (state == State.ASK_SEX) {
-            batch.draw(title, Ultima4.SCREEN_WIDTH / 2 - title.getWidth() / 2, 350);
+            batch.draw(title, Ultima4.SCREEN_WIDTH / 2 - title.getWidth() / 2, 150);
 
-            font.draw(batch, "Art thou Male or Female?", 250, 240);
-            font.draw(batch, sexBuffer.toString(), 300, 210);
+            font.draw(batch, "Art thou Male or Female?", 320, 315);
+            font.draw(batch, sexBuffer.toString(), 320, 275);
             Gdx.input.setInputProcessor(sia);
 
         } else if (state == State.TELL_STORY) {

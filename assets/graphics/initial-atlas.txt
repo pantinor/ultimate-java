@@ -4,9 +4,9 @@ filter: Nearest, Nearest
 repeat: none
 title
   rotate: false
-  xy: 5, 1732
-  size: 480, 184
-  orig: 480, 184
+  xy: 0, 1730
+  size: 656, 535
+  orig: 656, 535
   offset: 0, 0
   index: 0
 tree
