@@ -51,7 +51,7 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
     TextureRegion door;
     TextureRegion brick_floor;
     TextureRegion locked_door;
-
+    
     public UltimaMapRenderer(TextureAtlas atlas, BaseMap bm, TiledMap map, float unitScale) {
         super(map, unitScale);
         this.bm = bm;
@@ -215,7 +215,7 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
                 if (p == null || p.isRemovedFromMap()) {
                     continue;
                 }
-
+                
                 if (p.getAnim() != null) {
                     draw(p.getAnim().getKeyFrame(stateTime, true), p.getCurrentPos().x, p.getCurrentPos().y, p.getX(), p.getY());
                 } else {
@@ -277,44 +277,42 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
         float x2 = x1 + tilePixelWidth;
         float y2 = y1 + tilePixelHeight;
         
-        Rectangle bounds = new Rectangle();
+        Rectangle b = new Rectangle(x, y, 5, 5);
+        
+        if (viewBounds.contains(b)) {
 
-        bounds.set(x1, y1, tilePixelWidth, tilePixelHeight);
-        if (!viewBounds.contains(bounds)) {
-            return;
+            float u1 = region.getU();
+            float v1 = region.getV2();
+            float u2 = region.getU2();
+            float v2 = region.getV();
+
+            float color = getColor(batch.getColor(), locX, locY);
+
+            vertices[X1] = x1;
+            vertices[Y1] = y1;
+            vertices[C1] = color;
+            vertices[U1] = u1;
+            vertices[V1] = v1;
+
+            vertices[X2] = x1;
+            vertices[Y2] = y2;
+            vertices[C2] = color;
+            vertices[U2] = u1;
+            vertices[V2] = v2;
+
+            vertices[X3] = x2;
+            vertices[Y3] = y2;
+            vertices[C3] = color;
+            vertices[U3] = u2;
+            vertices[V3] = v2;
+
+            vertices[X4] = x2;
+            vertices[Y4] = y1;
+            vertices[C4] = color;
+            vertices[U4] = u2;
+            vertices[V4] = v1;
+
+            batch.draw(region.getTexture(), vertices, 0, 20);
         }
-
-        float u1 = region.getU();
-        float v1 = region.getV2();
-        float u2 = region.getU2();
-        float v2 = region.getV();
-
-        float color = getColor(batch.getColor(), locX, locY);
-
-        vertices[X1] = x1;
-        vertices[Y1] = y1;
-        vertices[C1] = color;
-        vertices[U1] = u1;
-        vertices[V1] = v1;
-
-        vertices[X2] = x1;
-        vertices[Y2] = y2;
-        vertices[C2] = color;
-        vertices[U2] = u1;
-        vertices[V2] = v2;
-
-        vertices[X3] = x2;
-        vertices[Y3] = y2;
-        vertices[C3] = color;
-        vertices[U3] = u2;
-        vertices[V3] = v2;
-
-        vertices[X4] = x2;
-        vertices[Y4] = y1;
-        vertices[C4] = color;
-        vertices[U4] = u2;
-        vertices[V4] = v1;
-
-        batch.draw(region.getTexture(), vertices, 0, 20);
     }
 }

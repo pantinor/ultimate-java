@@ -579,10 +579,19 @@ public class SpellUtil implements Constants {
 
     public static void spellXit(BaseScreen screen, PartyMember caster) {
         if (screen.scType == ScreenType.DUNGEON) {
-            screen.log("Leaving..");
             DungeonScreen dngScreen = (DungeonScreen) screen;
-            if (dngScreen.mainGame != null) {
-                dngScreen.mainGame.setScreen(dngScreen.gameScreen);
+            screen.log("Leaving " + dngScreen.dngMap.getLabel());
+            if (dngScreen.dngMap == Maps.HYTHLOTH) {
+                if (GameScreen.context.getParty().getSaveGame().balloonfound == 0) {
+                    dngScreen.gameScreen.addBalloonActor(233, 242);
+                    GameScreen.context.getParty().getSaveGame().balloonx = 233;
+                    GameScreen.context.getParty().getSaveGame().balloony = 242;
+                }
+                GameScreen.context.getParty().getSaveGame().balloonfound = 1;
+                dngScreen.gameScreen.newMapPixelCoords = dngScreen.gameScreen.getMapPixelCoords(239, 240);
+            }
+            if (DungeonScreen.mainGame != null) {
+                DungeonScreen.mainGame.setScreen(dngScreen.gameScreen);
             }
         }
     }

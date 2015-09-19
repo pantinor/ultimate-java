@@ -97,7 +97,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
                 mainGame.setScreen(new JournalScreen(mainGame, BaseScreen.this, Ultima4.skin, GameScreen.context.getJournal()));
             }
         });
-        jourButt.setX(32);
+        jourButt.setX(515);
         jourButt.setY(24);
         stage.addActor(jourButt);
 
@@ -108,7 +108,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
                 mainGame.setScreen(new BookScreen(mainGame, BaseScreen.this, Ultima4.skin));
             }
         });
-        bookButt.setX(128);
+        bookButt.setX(615);
         bookButt.setY(24);
         
         stage.addActor(bookButt);

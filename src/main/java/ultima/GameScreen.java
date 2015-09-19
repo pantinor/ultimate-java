@@ -203,6 +203,7 @@ public class GameScreen extends BaseScreen {
 
         boolean active = true;
 
+        @Override
         public void run() {
             if (active) {
 
@@ -233,11 +234,13 @@ public class GameScreen extends BaseScreen {
             Party party = new Party(sg);
             context.setParty(party);
             context.loadJournalEntries();
-
-//            party.getMember(0).getPlayer().hp = 40;
+            
+//            party.getMember(0).getPlayer().xp = 899;
+//            party.getMember(0).getPlayer().hp = 999;
 //            party.getMember(0).getPlayer().hpMax = 999;
 //            party.getMember(0).getPlayer().intel = 99;
 //            party.getMember(0).getPlayer().mp = 999;
+//            sg.reagents = new int[]{90, 93, 94, 90, 90, 90, 90, 90};
 //            for (Spell sp : Spell.values()) {
 //                party.getSaveGame().mixtures[sp.ordinal()] = 99;
 //            }
@@ -263,10 +266,8 @@ public class GameScreen extends BaseScreen {
 //            sg.runes = 0xff;
 //            sg.items = 0xff;
 //            sg.sextants = 1;
-//              sg.reagents = new int[]{90, 93, 94, 90, 90, 90, 90, 90};
 
 //            party.getMember(0).getPlayer().status = StatusType.GOOD;
-//            party.getMember(0).getPlayer().xp = 899;
 //            party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
 //            party.getMember(0).getPlayer().armor = ArmorType.MYSTICROBE;
 //            for (int i = 1; i < 16; i++) {
@@ -284,7 +285,7 @@ public class GameScreen extends BaseScreen {
             
             //load the surface world first
             loadNextMap(Maps.WORLD, sg.x, sg.y);
-            //loadNextMap(Maps.WORLD, 141, 90);
+            //loadNextMap(Maps.WORLD, 86, 108);
 
             //load the dungeon if save game starts in dungeon
             if (Maps.get(sg.location) != Maps.WORLD) {
@@ -508,8 +509,8 @@ public class GameScreen extends BaseScreen {
         renderer.setView(camera.combined, 
                 camera.position.x - tilePixelWidth*15, //this is voodoo
                 camera.position.y - tilePixelHeight*10, 
-                Ultima4.MAP_WIDTH-32, 
-                Ultima4.MAP_HEIGHT-64);
+                Ultima4.MAP_WIDTH, 
+                Ultima4.MAP_HEIGHT);
         
         renderer.render();
 
@@ -682,6 +683,7 @@ public class GameScreen extends BaseScreen {
                 if (p != null) {
                     loadNextMap(Maps.get(p.getDestmapid()), p.getStartx(), p.getStarty());
                     log(p.getMessage());
+                    return false;
                 }
             }
 
@@ -714,7 +716,12 @@ public class GameScreen extends BaseScreen {
                         }
                     }
 
-                    loadNextMap(dest, p.getStartx(), p.getStarty());
+                    if (p.getDestmapid() != context.getCurrentMap().getId()) {
+                        loadNextMap(dest, p.getStartx(), p.getStarty());
+                    } else {
+                        newMapPixelCoords = getMapPixelCoords(p.getStartx(), p.getStarty());
+                        recalcFOV(context.getCurrentMap(), p.getStartx(), p.getStarty());
+                    }
                     return false;
                 }
             }

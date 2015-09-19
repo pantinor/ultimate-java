@@ -34,7 +34,6 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -1067,6 +1066,7 @@ public class DungeonScreen extends BaseScreen {
                             GameScreen.context.getParty().getSaveGame().balloony = 242;
                         }
                         GameScreen.context.getParty().getSaveGame().balloonfound = 1;
+                        gameScreen.newMapPixelCoords = gameScreen.getMapPixelCoords(239, 240);
                     }
                     if (mainGame != null) {
                         mainGame.setScreen(gameScreen);

@@ -138,8 +138,8 @@ public class ShrineScreen extends BaseScreen {
         renderer.setView(camera.combined, 
                 camera.position.x - tilePixelWidth*10, //this is voodoo
                 camera.position.y - tilePixelHeight*10, 
-                Ultima4.MAP_WIDTH-32, 
-                Ultima4.MAP_HEIGHT-64);
+                Ultima4.MAP_WIDTH, 
+                Ultima4.MAP_HEIGHT);
         
         renderer.render();
 
