@@ -56,6 +56,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import util.PartyDeathException;
 
 public class GameScreen extends BaseScreen {
 
@@ -235,15 +236,15 @@ public class GameScreen extends BaseScreen {
             context.setParty(party);
             context.loadJournalEntries();
             
-//            party.getMember(0).getPlayer().xp = 899;
-//            party.getMember(0).getPlayer().hp = 999;
-//            party.getMember(0).getPlayer().hpMax = 999;
-//            party.getMember(0).getPlayer().intel = 99;
-//            party.getMember(0).getPlayer().mp = 999;
-//            sg.reagents = new int[]{90, 93, 94, 90, 90, 90, 90, 90};
-//            for (Spell sp : Spell.values()) {
-//                party.getSaveGame().mixtures[sp.ordinal()] = 99;
-//            }
+            party.getMember(0).getPlayer().xp = 899;
+            party.getMember(0).getPlayer().hp = 999;
+            party.getMember(0).getPlayer().hpMax = 999;
+            party.getMember(0).getPlayer().intel = 99;
+            party.getMember(0).getPlayer().mp = 999;
+            sg.reagents = new int[]{90, 93, 94, 90, 90, 90, 90, 90};
+            for (Spell sp : Spell.values()) {
+                party.getSaveGame().mixtures[sp.ordinal()] = 99;
+            }
 //            for (Virtue v : Virtue.values()) {
 //                sg.karma[v.ordinal()] = 0;
 //            }
@@ -471,11 +472,8 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void partyDeath() {
-        //death scene
         mainGame.setScreen(new DeathScreen(this, context.getParty()));
         loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
-
-        throw new RuntimeException("Party Death");
     }
     
     @Override
@@ -947,17 +945,15 @@ public class GameScreen extends BaseScreen {
 
                 TileEffect effect = context.getCurrentMap().getTile(currentX, currentY).getRule().getEffect();
                 context.getParty().applyEffect(effect);
-                if (effect == TileEffect.FIRE) {
-                    Sounds.play(Sound.ACID);
-                } else if (effect == TileEffect.POISON) {
+                if (effect == TileEffect.FIRE || effect == TileEffect.LAVA) {
+                    Sounds.play(Sound.FIREFIELD);
+                } else if (effect == TileEffect.POISON || effect == TileEffect.POISONFIELD) {
                     Sounds.play(Sound.POISON_EFFECT);
                 } else if (effect == TileEffect.SLEEP) {
                     Sounds.play(Sound.SLEEP);
                     if (context.getParty().getMember(0).getPlayer().status == StatusType.SLEEPING) {
                         mainAvatar = corpseAnim;
                     }
-                } else if (effect == TileEffect.LAVA) {
-                    Sounds.play(Sound.BOOM);
                 }
 
                 if (checkRandomCreatures()) {
@@ -967,8 +963,8 @@ public class GameScreen extends BaseScreen {
                 context.getCurrentMap().moveObjects(this, currentX, currentY);
             }
 
-        } catch (Throwable t) {
-            System.err.printf("finish Turn: %s\n", t.getMessage());
+        } catch (PartyDeathException t) {
+            partyDeath();
         }
 
     }
@@ -1406,22 +1402,26 @@ public class GameScreen extends BaseScreen {
                 found = true;
             }
         }
-
-        if (found) {
-            PartyMember pm = context.getParty().getMember(index);
-            if (pm == null) {
-                System.err.println("member is null " + index);
+        
+        try {
+            if (found) {
+                PartyMember pm = context.getParty().getMember(index);
+                if (pm == null) {
+                    System.err.println("member is null " + index);
+                }
+                if (pm.getPlayer() == null) {
+                    System.err.println("player is null " + index);
+                }
+                context.getChestTrapHandler(pm);
+                log(String.format("The Chest Holds: %d Gold", context.getParty().getChestGold()));
+                if (context.getCurrentMap().getType() == MapType.city) {
+                    context.getParty().adjustKarma(KarmaAction.STOLE_CHEST);
+                }
+            } else {
+                log("Not Here!");
             }
-            if (pm.getPlayer() == null) {
-                System.err.println("player is null " + index);
-            }
-            context.getChestTrapHandler(pm);
-            log(String.format("The Chest Holds: %d Gold", context.getParty().getChestGold()));
-            if (context.getCurrentMap().getType() == MapType.city) {
-                context.getParty().adjustKarma(KarmaAction.STOLE_CHEST);
-            }
-        } else {
-            log("Not Here!");
+        } catch (PartyDeathException e) {
+            partyDeath();
         }
 
     }

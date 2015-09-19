@@ -24,6 +24,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import util.PartyDeathException;
 
 @XmlRootElement(name = "map")
 public class BaseMap implements Constants {
@@ -493,7 +494,7 @@ public class BaseMap implements Constants {
         initialized = true;
     }
 
-    public void moveObjects(GameScreen screen, int avatarX, int avatarY) {
+    public void moveObjects(GameScreen screen, int avatarX, int avatarY) throws PartyDeathException {
 
         if (city != null) {
 

@@ -29,6 +29,7 @@ public enum Sound {
     ACID("AcidicRain.ogg", false, 0.3f),
     LIGHTNING("LightningBolt.ogg", false, 0.3f),
     FIREBALL("Fireball.ogg", false, 0.3f),
+    FIREFIELD("fire_field_walking.ogg", false, 0.3f),
     ROCKS("StoneRain.ogg", false, 0.3f),
     WIND("tornado.ogg", false, 0.3f),
     CANNON("cannon.mp3", false, 0.3f),

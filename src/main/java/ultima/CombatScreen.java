@@ -37,7 +37,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -58,6 +57,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import util.PartyDeathException;
 
 public class CombatScreen extends BaseScreen {
 
@@ -385,84 +385,99 @@ public class CombatScreen extends BaseScreen {
         PartyMember ap = party.getActivePartyMember();
         Creature active = ap.combatCr;
 
-        if (keycode == Keys.SPACE || ap.isDisabled()) {
-            log("Pass");
-        } else if (keycode == Keys.UP) {
-            if (preMove(active, Direction.NORTH)) {
-                active.currentY--;
-                active.currentPos = getMapPixelCoords(active.currentX, active.currentY);
-                checkTrigger(active.currentX, active.currentY);
-            }
-        } else if (keycode == Keys.DOWN) {
-            if (preMove(active, Direction.SOUTH)) {
-                active.currentY++;
-                active.currentPos = getMapPixelCoords(active.currentX, active.currentY);
-                checkTrigger(active.currentX, active.currentY);
-            }
-        } else if (keycode == Keys.RIGHT) {
-            if (preMove(active, Direction.EAST)) {
-                active.currentX++;
-                active.currentPos = getMapPixelCoords(active.currentX, active.currentY);
-                checkTrigger(active.currentX, active.currentY);
-            }
-        } else if (keycode == Keys.LEFT) {
-            if (preMove(active, Direction.WEST)) {
-                active.currentX--;
-                active.currentPos = getMapPixelCoords(active.currentX, active.currentY);
-                checkTrigger(active.currentX, active.currentY);
-            }
-        } else if (keycode == Keys.A) {
-            log("Attack: ");
-            Gdx.input.setInputProcessor(sip);
-            sip.setinitialKeyCode(keycode, combatMap, active.currentX, active.currentY);
-            return false;
-        } else if (keycode == Keys.C) {
-            log("Cast Spell (A-Z): ");
-            Gdx.input.setInputProcessor(new SpellInputProcessor(this, stage, active.currentX, active.currentY, ap));
-            return false;
-        } else if (keycode == Keys.U) {
-            Tile tile = combatMap.getTile(active.currentX, active.currentY);
-            if (tile.getIndex() == 74 || (party.getSaveGame().items & Item.RAGE_GOD.getLoc()) > 0) { //altar or rage of god
-                log("Use which item: ");
-                log("");
+        try {
+            if (keycode == Keys.SPACE || ap.isDisabled()) {
+                log("Pass");
+            } else if (keycode == Keys.UP) {
+                if (preMove(active, Direction.NORTH)) {
+                    active.currentY--;
+                    active.currentPos = getMapPixelCoords(active.currentX, active.currentY);
+                    checkTileAffects(ap, active.currentX, active.currentY);
+                }
+            } else if (keycode == Keys.DOWN) {
+                if (preMove(active, Direction.SOUTH)) {
+                    active.currentY++;
+                    active.currentPos = getMapPixelCoords(active.currentX, active.currentY);
+                    checkTileAffects(ap, active.currentX, active.currentY);
+                }
+            } else if (keycode == Keys.RIGHT) {
+                if (preMove(active, Direction.EAST)) {
+                    active.currentX++;
+                    active.currentPos = getMapPixelCoords(active.currentX, active.currentY);
+                    checkTileAffects(ap, active.currentX, active.currentY);
+                }
+            } else if (keycode == Keys.LEFT) {
+                if (preMove(active, Direction.WEST)) {
+                    active.currentX--;
+                    active.currentPos = getMapPixelCoords(active.currentX, active.currentY);
+                    checkTileAffects(ap, active.currentX, active.currentY);
+                }
+            } else if (keycode == Keys.A) {
+                log("Attack: ");
                 Gdx.input.setInputProcessor(sip);
                 sip.setinitialKeyCode(keycode, combatMap, active.currentX, active.currentY);
                 return false;
-            }
-
-        } else if (keycode == Keys.R) {
-            Gdx.input.setInputProcessor(new ReadyWearInputAdapter(ap, true));
-            return false;
-
-        } else if (keycode == Keys.W) {
-            Gdx.input.setInputProcessor(new ReadyWearInputAdapter(ap, false));
-            return false;
-
-        } else if (keycode == Keys.G) {
-            getChest(party.getActivePlayer(), active.currentX, active.currentY);
-            return false;
-
-        } else if (keycode == Keys.Z) {
-            showZstats = showZstats + 1;
-            if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
-                if (showZstats > party.getMembers().size()) {
-                    showZstats = STATS_WEAPONS;
+            } else if (keycode == Keys.C) {
+                log("Cast Spell (A-Z): ");
+                Gdx.input.setInputProcessor(new SpellInputProcessor(this, stage, active.currentX, active.currentY, ap));
+                return false;
+            } else if (keycode == Keys.U) {
+                Tile tile = combatMap.getTile(active.currentX, active.currentY);
+                if (tile.getIndex() == 74 || (party.getSaveGame().items & Item.RAGE_GOD.getLoc()) > 0) { //altar or rage of god
+                    log("Use which item: ");
+                    log("");
+                    Gdx.input.setInputProcessor(sip);
+                    sip.setinitialKeyCode(keycode, combatMap, active.currentX, active.currentY);
+                    return false;
                 }
-            }
-            if (showZstats > STATS_SPELLS) {
-                showZstats = STATS_NONE;
+
+            } else if (keycode == Keys.R) {
+                Gdx.input.setInputProcessor(new ReadyWearInputAdapter(ap, true));
+                return false;
+
+            } else if (keycode == Keys.W) {
+                Gdx.input.setInputProcessor(new ReadyWearInputAdapter(ap, false));
+                return false;
+
+            } else if (keycode == Keys.G) {
+                getChest(party.getActivePlayer(), active.currentX, active.currentY);
+                return false;
+
+            } else if (keycode == Keys.Z) {
+                showZstats = showZstats + 1;
+                if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
+                    if (showZstats > party.getMembers().size()) {
+                        showZstats = STATS_WEAPONS;
+                    }
+                }
+                if (showZstats > STATS_SPELLS) {
+                    showZstats = STATS_NONE;
+                }
+
+                return false;
             }
 
-            return false;
+            finishPlayerTurn();
+        } catch (PartyDeathException e) {
+            this.returnScreen.partyDeath();
         }
-
-        finishPlayerTurn();
 
         return false;
 
     }
 
-    private void checkTrigger(int x, int y) {
+    private void checkTileAffects(PartyMember ap, int x, int y) throws PartyDeathException {
+        
+        TileEffect effect = combatMap.getTile(x, y).getRule().getEffect();
+        context.getParty().applyEffect(ap, effect);
+        if (effect == TileEffect.FIRE || effect == TileEffect.LAVA) {
+            Sounds.play(Sound.FIREFIELD);
+        } else if (effect == TileEffect.POISON || effect == TileEffect.POISONFIELD) {
+            Sounds.play(Sound.POISON_EFFECT);
+        } else if (effect == TileEffect.SLEEP) {
+            Sounds.play(Sound.SLEEP);
+        }
+        
         DungeonRoom room = (DungeonRoom) tmap.getProperties().get("dungeonRoom");
         if (room != null) {
             for (int i = 0; i < 4; i++) {
@@ -587,25 +602,29 @@ public class CombatScreen extends BaseScreen {
     @Override
     public void finishTurn(int currentX, int currentY) {
 
-        party.endTurn(combatMap.getType());
+        try {
+            party.endTurn(combatMap.getType());
 
-        context.getAura().passTurn();
+            context.getAura().passTurn();
 
-        if (combatMap.getCreatures().isEmpty() && combatMap.getType() == MapType.combat) {
-            end();
-            return;
-        }
-
-        boolean quick = context.getAura().getType() == AuraType.QUICKNESS && (rand.nextInt(2) == 0);
-
-        if (!quick) {
-            SequenceAction seq = Actions.action(SequenceAction.class);
-            for (Creature cr : combatMap.getCreatures()) {
-                seq.addAction(Actions.run(new CreatureActionsAction(cr)));
-                seq.addAction(Actions.delay(.04f));
+            if (combatMap.getCreatures().isEmpty() && combatMap.getType() == MapType.combat) {
+                end();
+                return;
             }
-            seq.addAction(Actions.run(new FinishCreatureAction()));
-            stage.addAction(seq);
+
+            boolean quick = context.getAura().getType() == AuraType.QUICKNESS && (rand.nextInt(2) == 0);
+
+            if (!quick) {
+                SequenceAction seq = Actions.action(SequenceAction.class);
+                for (Creature cr : combatMap.getCreatures()) {
+                    seq.addAction(Actions.run(new CreatureActionsAction(cr)));
+                    seq.addAction(Actions.delay(.04f));
+                }
+                seq.addAction(Actions.run(new FinishCreatureAction()));
+                stage.addAction(seq);
+            }
+        } catch (PartyDeathException e) {
+            this.returnScreen.partyDeath();
         }
 
     }
@@ -621,9 +640,13 @@ public class CombatScreen extends BaseScreen {
 
         @Override
         public void run() {
-            if (!creatureAction(cr)) {
-                //remove creature from map
-                combatMap.getCreatures().remove(cr);
+            try {
+                if (!creatureAction(cr)) {
+                    //remove creature from map
+                    combatMap.getCreatures().remove(cr);
+                }
+            } catch (PartyDeathException e) {
+                CombatScreen.this.returnScreen.partyDeath();
             }
         }
     }
@@ -663,7 +686,7 @@ public class CombatScreen extends BaseScreen {
         party.reset();
     }
 
-    private boolean rangedAttackAt(AttackVector target, Creature attacker) {
+    private boolean rangedAttackAt(AttackVector target, Creature attacker) throws PartyDeathException {
 
         PartyMember defender = null;
         for (PartyMember p : party.getMembers()) {
@@ -761,6 +784,7 @@ public class CombatScreen extends BaseScreen {
         return res == AttackResult.HIT;
     }
 
+    @Override
     public void partyDeath() {
         //not used here
     }
@@ -768,7 +792,7 @@ public class CombatScreen extends BaseScreen {
     /**
      * Return false if to remove from map.
      */
-    private boolean creatureAction(Creature creature) {
+    private boolean creatureAction(Creature creature) throws PartyDeathException {
 
         //accept no input starting now, re-enabled when creature actions are done
         Gdx.input.setInputProcessor(null);
@@ -1156,16 +1180,19 @@ public class CombatScreen extends BaseScreen {
 
     //for dungeon room chests only
     public void getChest(int index, int x, int y) {
+        try {
+            Tile chest = combatMap.getTile(x, y);
 
-        Tile chest = combatMap.getTile(x, y);
-
-        if (chest != null) {
-            PartyMember pm = context.getParty().getMember(index);
-            context.getChestTrapHandler(pm);
-            log(String.format("The Chest Holds: %d Gold", context.getParty().getChestGold()));
-            replaceTile("dungeon_floor", x, y);
-        } else {
-            log("Not Here!");
+            if (chest != null) {
+                PartyMember pm = context.getParty().getMember(index);
+                context.getChestTrapHandler(pm);
+                log(String.format("The Chest Holds: %d Gold", context.getParty().getChestGold()));
+                replaceTile("dungeon_floor", x, y);
+            } else {
+                log("Not Here!");
+            }
+        } catch (PartyDeathException e) {
+            this.returnScreen.partyDeath();
         }
     }
 

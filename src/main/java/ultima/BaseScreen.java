@@ -141,9 +141,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
                     Sounds.play(Sound.POSITIVE_EFFECT);
                     break;
                 case PARTY_REVIVED:
-                    break;
                 case PARTY_DEATH:
-                    partyDeath();
                     break;
                 case POISON_DAMAGE:
                     Sounds.play(Sound.POISON_DAMAGE);

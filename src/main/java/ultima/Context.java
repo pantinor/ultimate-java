@@ -21,6 +21,7 @@ import javax.xml.bind.Unmarshaller;
 import objects.JournalEntries;
 import objects.JournalEntry;
 import static ultima.GameScreen.context;
+import util.PartyDeathException;
 
 public class Context implements Constants {
 
@@ -322,7 +323,7 @@ public class Context implements Constants {
         }
     }
 
-    public boolean getChestTrapHandler(PartyMember pm) {
+    public boolean getChestTrapHandler(PartyMember pm) throws PartyDeathException {
 
         TileEffect trapType;
         int randNum = rand.nextInt(4);
@@ -367,12 +368,8 @@ public class Context implements Constants {
                 Sounds.play(Sound.BOOM);
             }
 
-			// player is null when using the Open spell (immune to traps)
-            // if the chest was opened by a PC, see if the trap was
-            // evaded by testing the PC's dex
             if (pm.getPlayer().dex + 25 < rand.nextInt(100)) {
                 if (trapType == TileEffect.LAVA) {/* bomb trap */
-
                     party.applyEffect(trapType);
                 } else {
                     pm.applyEffect(trapType);

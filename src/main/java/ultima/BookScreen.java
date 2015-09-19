@@ -97,14 +97,12 @@ public class BookScreen extends InputAdapter implements Screen, Constants {
 
     @Override
     public void dispose() {
-        stage.dispose();
     }
     
     @Override
     public boolean keyUp(int i) {
         if (mainGame != null) {
             mainGame.setScreen(returnScreen);
-            dispose();
         }
         return false;
     }

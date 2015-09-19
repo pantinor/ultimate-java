@@ -562,7 +562,7 @@ public class Utils implements Constants {
         stage.addActor(p);
     }
 
-    public static AttackVector enemyfireCannon(Stage stage, BaseMap combatMap, Direction dir, int startX, int startY, int avatarX, int avatarY) {
+    public static AttackVector enemyfireCannon(Stage stage, BaseMap combatMap, Direction dir, int startX, int startY, int avatarX, int avatarY) throws PartyDeathException {
 
         List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), startX, startY, 1, 4, true, false, true);
 
@@ -585,24 +585,27 @@ public class Utils implements Constants {
     public static AttackVector avatarfireCannon(Stage stage, BaseMap combatMap, Direction dir, int startX, int startY) {
 
         List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), startX, startY, 1, 4, true, true, true);
-
         AttackVector target = null;
-        int distance = 1;
-        for (AttackVector v : path) {
-            AttackResult res = fireAt(stage, combatMap, v, true, 0, 0);
-            target = v;
-            target.result = res;
-            target.distance = distance;
-            if (res != AttackResult.NONE) {
-                break;
+        try {
+            int distance = 1;
+            for (AttackVector v : path) {
+                AttackResult res = fireAt(stage, combatMap, v, true, 0, 0);
+                target = v;
+                target.result = res;
+                target.distance = distance;
+                if (res != AttackResult.NONE) {
+                    break;
+                }
+                distance++;
             }
-            distance++;
+        } catch (PartyDeathException e) {
+            //not happening
         }
 
         return target;
     }
 
-    private static AttackResult fireAt(Stage stage, BaseMap combatMap, AttackVector target, boolean avatarAttack, int avatarX, int avatarY) {
+    private static AttackResult fireAt(Stage stage, BaseMap combatMap, AttackVector target, boolean avatarAttack, int avatarX, int avatarY) throws PartyDeathException {
 
         AttackResult res = AttackResult.NONE;
 
@@ -679,7 +682,7 @@ public class Utils implements Constants {
         return true;
     }
 
-    public static boolean dealDamage(Creature attacker, PartyMember defender) {
+    public static boolean dealDamage(Creature attacker, PartyMember defender) throws PartyDeathException {
         int damage = attacker.getDamage();
         return defender.applyDamage(damage, true);
     }

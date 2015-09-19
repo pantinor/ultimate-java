@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import ultima.Constants;
 import ultima.Context;
+import util.PartyDeathException;
 import util.Utils;
 
 public class Party extends Observable implements Constants {
@@ -98,7 +99,7 @@ public class Party extends Observable implements Constants {
         return saveGame.shiphull;
     }
 
-    public void damageParty(int minDamage, int maxDamage) {
+    public void damageParty(int minDamage, int maxDamage) throws PartyDeathException {
         for (int i = 0; i < members.size(); i++) {
             if (rand.nextInt(2) == 0) {
                 int damage = minDamage >= 0 && minDamage < maxDamage ? rand.nextInt(maxDamage + 1 - minDamage) + minDamage : maxDamage;
@@ -305,7 +306,7 @@ public class Party extends Observable implements Constants {
         return (saveGame.balloonstate > 0 && saveGame.torchduration <= 0);
     }
 
-    public void applyEffect(TileEffect effect) {
+    public void applyEffect(TileEffect effect) throws PartyDeathException {
         for (int i = 0; i < members.size(); i++) {
             switch (effect) {
                 case NONE:
@@ -327,6 +328,29 @@ public class Party extends Observable implements Constants {
                     }
                     break;
             }
+        }
+    }
+    
+    public void applyEffect(PartyMember pm, TileEffect effect) throws PartyDeathException {
+        switch (effect) {
+            case NONE:
+                break;
+            case ELECTRICITY:
+                pm.applyEffect(effect);
+                break;
+            case LAVA:
+            case FIRE:
+            case SLEEP:
+                if (rand.nextInt(2) == 0) {
+                    pm.applyEffect(effect);
+                }
+                break;
+            case POISONFIELD:
+            case POISON:
+                if (rand.nextInt(5) == 0) {
+                    pm.applyEffect(effect);
+                }
+                break;
         }
     }
 
@@ -363,7 +387,7 @@ public class Party extends Observable implements Constants {
             return rand.nextInt(maxDamage);
         }
 
-        public void applyEffect(TileEffect effect) {
+        public void applyEffect(TileEffect effect) throws PartyDeathException {
             if (player.status == StatusType.DEAD) {
                 return;
             }
@@ -570,7 +594,7 @@ public class Party extends Observable implements Constants {
             }
         }
 
-        public boolean applyDamage(int damage, boolean combatRelatedDamage) {
+        public boolean applyDamage(int damage, boolean combatRelatedDamage) throws PartyDeathException {
             int newHp = player.hp;
 
             if (isDead()) {
@@ -587,9 +611,7 @@ public class Party extends Observable implements Constants {
             player.hp = newHp;
 
             if (!combatRelatedDamage && isDead() && !this.party.isAnyoneAlive()) {
-                this.party.setChanged();
-                this.party.notifyObservers(PartyEvent.PARTY_DEATH);
-                return false;
+                throw new PartyDeathException();
             }
 
             return true;
@@ -810,7 +832,7 @@ public class Party extends Observable implements Constants {
         karma[v.ordinal()] = n;
     }
 
-    public void endTurn(MapType mapType) {
+    public void endTurn(MapType mapType) throws PartyDeathException {
 
         saveGame.moves++;
 

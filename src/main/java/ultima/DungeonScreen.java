@@ -60,6 +60,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.UBJsonReader;
 import static ultima.BaseScreen.mainGame;
 import static ultima.GameScreen.context;
+import util.PartyDeathException;
 
 public class DungeonScreen extends BaseScreen {
 
@@ -475,6 +476,7 @@ public class DungeonScreen extends BaseScreen {
             batch.draw(miniMap, xalignMM, yalignMM);
         }
         Ultima4.hud.render(batch, GameScreen.context.getParty());
+        Ultima4.font.draw(batch, this.dngMap.getLabel(), 315, Ultima4.SCREEN_HEIGHT - 10);
         Ultima4.font.draw(batch, "Level " + (currentLevel + 1), 305, 36);
         if (showZstats > 0) {
             GameScreen.context.getParty().getSaveGame().renderZstats(showZstats, Ultima4.font, batch, Ultima4.SCREEN_HEIGHT);
@@ -869,22 +871,26 @@ public class DungeonScreen extends BaseScreen {
                         y = 0;
                     }
                 }
-
+                
                 DungeonTile tile = dungeonTiles[currentLevel][x][y];
-                if (tile != DungeonTile.WALL) {
-                    currentPos = new Vector3(x + .5f, .5f, y + .5f);
-                    camera.position.set(currentPos);
-                    if (currentDir == Direction.EAST) {
-                        camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
-                    } else if (currentDir == Direction.WEST) {
-                        camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
-                    } else if (currentDir == Direction.NORTH) {
-                        camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
-                    } else if (currentDir == Direction.SOUTH) {
-                        camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
+                try {
+                    if (tile != DungeonTile.WALL) {
+                        currentPos = new Vector3(x + .5f, .5f, y + .5f);
+                        camera.position.set(currentPos);
+                        if (currentDir == Direction.EAST) {
+                            camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+                        } else if (currentDir == Direction.WEST) {
+                            camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
+                        } else if (currentDir == Direction.NORTH) {
+                            camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
+                        } else if (currentDir == Direction.SOUTH) {
+                            camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
+                        }
+                        checkTileAffects(tile, x, y);
+                        moveMiniMapIcon();
                     }
-                    checkTrap(tile, x, y);
-                    moveMiniMapIcon();
+                } catch (PartyDeathException e) {
+                    partyDeath();
                 }
 
                 if (tile.getValue() >= 208 && tile.getValue() <= 223) {
@@ -897,8 +903,6 @@ public class DungeonScreen extends BaseScreen {
                     }
                     enterRoom(loc, Direction.reverse(currentDir));
                 }
-            } else {
-                //no one exited, perhaps they all died, death screen will show up next
             }
         }
 
@@ -972,34 +976,12 @@ public class DungeonScreen extends BaseScreen {
                 }
             }
 
-            tile = dungeonTiles[currentLevel][x][y];
-            if (tile != DungeonTile.WALL) {
-                currentPos = new Vector3(x + .5f, .5f, y + .5f);
-                camera.position.set(currentPos);
-                if (currentDir == Direction.EAST) {
-                    camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
-                } else if (currentDir == Direction.WEST) {
-                    camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
-                } else if (currentDir == Direction.NORTH) {
-                    camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
-                } else if (currentDir == Direction.SOUTH) {
-                    camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
-                }
-                moveMiniMapIcon();
-                checkTrap(tile, x, y);
+            try {
+                move(dungeonTiles[currentLevel][x][y], x, y);
+            } catch (PartyDeathException e) {
+                partyDeath();
             }
-
-            if (tile.getValue() >= 208 && tile.getValue() <= 223) {
-                RoomLocater loc = null;
-                for (RoomLocater r : locaters) {
-                    if (r.z == currentLevel && r.x == x && r.y == y) {
-                        loc = r;
-                        break;
-                    }
-                }
-                enterRoom(loc, Direction.reverse(currentDir));
-                return false;
-            }
+            return false;
 
         } else if (keycode == Keys.DOWN) {
 
@@ -1025,34 +1007,13 @@ public class DungeonScreen extends BaseScreen {
                     y = 7;
                 }
             }
-            tile = dungeonTiles[currentLevel][x][y];
-            if (tile != DungeonTile.WALL) {
-                currentPos = new Vector3(x + .5f, .5f, y + .5f);
-                camera.position.set(currentPos);
-                if (currentDir == Direction.EAST) {
-                    camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
-                } else if (currentDir == Direction.WEST) {
-                    camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
-                } else if (currentDir == Direction.NORTH) {
-                    camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
-                } else if (currentDir == Direction.SOUTH) {
-                    camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
-                }
-                moveMiniMapIcon();
-                checkTrap(tile, x, y);
+            
+            try {
+                move(dungeonTiles[currentLevel][x][y], x, y);
+            } catch (PartyDeathException e) {
+                partyDeath();
             }
-
-            if (tile.getValue() >= 208 && tile.getValue() <= 223) {
-                RoomLocater loc = null;
-                for (RoomLocater r : locaters) {
-                    if (r.z == currentLevel && r.x == x && r.y == y) {
-                        loc = r;
-                        break;
-                    }
-                }
-                enterRoom(loc, currentDir);
-                return false;
-            }
+            return false;
 
         } else if (keycode == Keys.K) {
             if (tile == DungeonTile.LADDER_UP || tile == DungeonTile.LADDER_UP_DOWN) {
@@ -1178,21 +1139,40 @@ public class DungeonScreen extends BaseScreen {
         return false;
     }
 
-    @Override
-    public void finishTurn(int currentX, int currentY) {
-        GameScreen.context.getAura().passTurn();
-
-        creatureCleanup(currentX, currentY);
-
-        if (checkRandomDungeonCreatures()) {
-            spawnDungeonCreature(null, currentX, currentY);
+    private void move(DungeonTile tile, int x, int y) throws PartyDeathException {
+        
+        if (tile != DungeonTile.WALL && tile != DungeonTile.FIELD_ENERGY) {
+            currentPos = new Vector3(x + .5f, .5f, y + .5f);
+            camera.position.set(currentPos);
+            if (currentDir == Direction.EAST) {
+                camera.lookAt(currentPos.x + 1, currentPos.y, currentPos.z);
+            } else if (currentDir == Direction.WEST) {
+                camera.lookAt(currentPos.x - 1, currentPos.y, currentPos.z);
+            } else if (currentDir == Direction.NORTH) {
+                camera.lookAt(currentPos.x, currentPos.y, currentPos.z - 1);
+            } else if (currentDir == Direction.SOUTH) {
+                camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
+            }
+            moveMiniMapIcon();
+            checkTileAffects(tile, x, y);
         }
 
-        moveDungeonCreatures(this, currentX, currentY);
-    }
+        if (tile.getValue() >= 208 && tile.getValue() <= 223) {
+            RoomLocater loc = null;
+            for (RoomLocater r : locaters) {
+                if (r.z == currentLevel && r.x == x && r.y == y) {
+                    loc = r;
+                    break;
+                }
+            }
+            enterRoom(loc, Direction.reverse(currentDir));
+            return;
+        }
+        
+        finishTurn(x, y);
+    } 
 
-    @SuppressWarnings("incomplete-switch")
-    public void checkTrap(DungeonTile tile, int x, int y) {
+    private void checkTileAffects(DungeonTile tile, int x, int y) throws PartyDeathException {
         switch (tile) {
             case WIND_TRAP:
                 log("Wind extinguished your torch!");
@@ -1211,7 +1191,32 @@ public class DungeonScreen extends BaseScreen {
                 Sounds.play(Sound.ROCKS);
                 dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
                 break;
+            case FIELD_POISON:
+                GameScreen.context.getParty().applyEffect(TileEffect.POISONFIELD);
+                Sounds.play(Sound.POISON_DAMAGE);
+                break;
+            case FIELD_SLEEP:
+                GameScreen.context.getParty().applyEffect(TileEffect.SLEEP);
+                Sounds.play(Sound.SLEEP);
+                break;
+            case FIELD_FIRE:
+                GameScreen.context.getParty().applyEffect(TileEffect.LAVA);
+                Sounds.play(Sound.FIREFIELD);
+                break;
         }
+    }
+    
+    @Override
+    public void finishTurn(int currentX, int currentY) {
+        GameScreen.context.getAura().passTurn();
+
+        creatureCleanup(currentX, currentY);
+
+        if (checkRandomDungeonCreatures()) {
+            spawnDungeonCreature(null, currentX, currentY);
+        }
+
+        moveDungeonCreatures(this, currentX, currentY);
     }
 
     public void dungeonTouchOrb(int index) {
@@ -1269,10 +1274,15 @@ public class DungeonScreen extends BaseScreen {
             pm.getPlayer().intel = n;
             damage += 200;
         }
-
-        pm.applyDamage(damage, false);
-
+        
         Sounds.play(Sound.LIGHTNING);
+
+        try {
+            pm.applyDamage(damage, false);
+        } catch (PartyDeathException pde) {
+            partyDeath();
+            return;
+        }
 
         //remove orb model instance
         DungeonTileModelInstance orb = null;
@@ -1290,45 +1300,49 @@ public class DungeonScreen extends BaseScreen {
     }
 
     public void dungeonDrinkFountain(DungeonTile type, int index) {
-        if (index >= GameScreen.context.getParty().getMembers().size()) {
-            return;
-        }
-        PartyMember pm = GameScreen.context.getParty().getMember(index);
-        switch (type) {
-            case FOUNTAIN_PLAIN:
-                log("Hmmm--No Effect!");
-                break;
-            case FOUNTAIN_HEAL:
-                if (pm.heal(HealType.FULLHEAL)) {
-                    Sounds.play(Sound.HEALING);
-                    log("Ahh-Refreshing!");
-                } else {
+        try {
+            if (index >= GameScreen.context.getParty().getMembers().size()) {
+                return;
+            }
+            PartyMember pm = GameScreen.context.getParty().getMember(index);
+            switch (type) {
+                case FOUNTAIN_PLAIN:
                     log("Hmmm--No Effect!");
-                }
-                break;
-            case FOUNTAIN_ACID:
-                pm.applyDamage(100, false);
-                Sounds.play(Sound.DAMAGE_EFFECT);
-                log("Bleck--Nasty!");
-                break;
-            case FOUNTAIN_CURE:
-                if (pm.heal(HealType.CURE)) {
-                    Sounds.play(Sound.HEALING);
-                    log("Hmmm--Delicious!");
-                } else {
-                    log("Hmmm--No Effect!");
-                }
-                break;
-            case FOUNTAIN_POISON:
-                if (pm.getPlayer().status != StatusType.POISONED) {
-                    Sounds.play(Sound.DAMAGE_EFFECT);
-                    pm.applyEffect(TileEffect.POISON);
+                    break;
+                case FOUNTAIN_HEAL:
+                    if (pm.heal(HealType.FULLHEAL)) {
+                        Sounds.play(Sound.HEALING);
+                        log("Ahh-Refreshing!");
+                    } else {
+                        log("Hmmm--No Effect!");
+                    }
+                    break;
+                case FOUNTAIN_ACID:
                     pm.applyDamage(100, false);
-                    log("Argh-Choke-Gasp!");
-                } else {
-                    log("Hmm--No Effect!");
-                }
-                break;
+                    Sounds.play(Sound.DAMAGE_EFFECT);
+                    log("Bleck--Nasty!");
+                    break;
+                case FOUNTAIN_CURE:
+                    if (pm.heal(HealType.CURE)) {
+                        Sounds.play(Sound.HEALING);
+                        log("Hmmm--Delicious!");
+                    } else {
+                        log("Hmmm--No Effect!");
+                    }
+                    break;
+                case FOUNTAIN_POISON:
+                    if (pm.getPlayer().status != StatusType.POISONED) {
+                        Sounds.play(Sound.DAMAGE_EFFECT);
+                        pm.applyEffect(TileEffect.POISON);
+                        pm.applyDamage(100, false);
+                        log("Argh-Choke-Gasp!");
+                    } else {
+                        log("Hmm--No Effect!");
+                    }
+                    break;
+            }
+        } catch (PartyDeathException pde) {
+            partyDeath();
         }
     }
 
@@ -1337,28 +1351,31 @@ public class DungeonScreen extends BaseScreen {
     }
 
     public void getChest(int index, int x, int y) {
-
-        DungeonTileModelInstance chest = null;
-        for (DungeonTileModelInstance dmi : modelInstances) {
-            if (dmi.getTile() == DungeonTile.CHEST) {
-                if (dmi.x == x && dmi.y == y && dmi.getLevel() == currentLevel) {
-                    chest = dmi;
-                    break;
+        try {
+            DungeonTileModelInstance chest = null;
+            for (DungeonTileModelInstance dmi : modelInstances) {
+                if (dmi.getTile() == DungeonTile.CHEST) {
+                    if (dmi.x == x && dmi.y == y && dmi.getLevel() == currentLevel) {
+                        chest = dmi;
+                        break;
+                    }
                 }
             }
-        }
 
-        if (chest != null) {
-            PartyMember pm = GameScreen.context.getParty().getMember(index);
-            GameScreen.context.getChestTrapHandler(pm);
-            log(String.format("The Chest Holds: %d Gold", GameScreen.context.getParty().getChestGold()));
+            if (chest != null) {
+                PartyMember pm = GameScreen.context.getParty().getMember(index);
+                GameScreen.context.getChestTrapHandler(pm);
+                log(String.format("The Chest Holds: %d Gold", GameScreen.context.getParty().getChestGold()));
 
-            //remove chest model instance
-            modelInstances.remove(chest);
-            dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
+                //remove chest model instance
+                modelInstances.remove(chest);
+                dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
 
-        } else {
-            log("Not Here!");
+            } else {
+                log("Not Here!");
+            }
+        } catch (PartyDeathException e) {
+            partyDeath();
         }
     }
 

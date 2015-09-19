@@ -181,18 +181,6 @@ public interface Constants {
         LAVA;
     }
 
-    public enum TileAnimationStyle {
-
-        NONE,
-        SCROLL,
-        CAMPFIRE,
-        CITYFLAG,
-        CASTLEFLAG,
-        SHIPFLAG,
-        LCBFLAG,
-        FRAMES;
-    }
-
     public enum TileAttrib {
 
         unwalkable(0x1),
@@ -229,10 +217,10 @@ public interface Constants {
         none(0),
         water(TileAttrib.unwalkable.getVal() | TileAttrib.swimmable.getVal() | TileAttrib.sailable.getVal() | TileAttrib.onWaterOnlyReplacement.getVal()),
         shallows(TileAttrib.unwalkable.getVal() | TileAttrib.swimmable.getVal() | TileAttrib.onWaterOnlyReplacement.getVal()),
-        swamp(0, TileSpeed.SLOW, TileEffect.POISON, TileAnimationStyle.NONE),
+        swamp(0, TileSpeed.SLOW, TileEffect.POISON),
         grass(TileAttrib.canlandballoon.getVal() | TileAttrib.replacement.getVal()),
-        brush(0, TileSpeed.VSLOW, TileEffect.NONE, TileAnimationStyle.NONE),
-        hills(0, TileSpeed.VVSLOW, TileEffect.NONE, TileAnimationStyle.NONE),
+        brush(0, TileSpeed.VSLOW, TileEffect.NONE),
+        hills(0, TileSpeed.VVSLOW, TileEffect.NONE),
         mountains(TileAttrib.unwalkable.getVal() | TileAttrib.unflyable.getVal() | TileAttrib.creatureunwalkable.getVal()),
         lcb(TileAttrib.unwalkable.getVal() | TileAttrib.creatureunwalkable.getVal()),
         lcb_entrance(TileAttrib.creatureunwalkable.getVal()),
@@ -248,11 +236,11 @@ public interface Constants {
         door(TileAttrib.unwalkable.getVal() | TileAttrib.door.getVal()),
         secret_door(TileAttrib.secretdoor.getVal()),
         chest(TileAttrib.chest.getVal()),
-        poison_field(TileAttrib.dispelable.getVal(), TileSpeed.FAST, TileEffect.POISON, TileAnimationStyle.NONE),
-        energy_field(TileAttrib.dispelable.getVal() | TileAttrib.unflyable.getVal() | TileAttrib.unwalkable.getVal() | TileAttrib.creatureunwalkable.getVal(), TileSpeed.FAST, TileEffect.ELECTRICITY, TileAnimationStyle.NONE),
-        fire_field(TileAttrib.dispelable.getVal(), TileSpeed.VVSLOW, TileEffect.FIRE, TileAnimationStyle.NONE),
-        sleep_field(TileAttrib.dispelable.getVal(), TileSpeed.FAST, TileEffect.SLEEP, TileAnimationStyle.NONE),
-        lava(TileAttrib.replacement.getVal(), TileSpeed.FAST, TileEffect.LAVA, TileAnimationStyle.NONE),
+        poison_field(TileAttrib.dispelable.getVal(), TileSpeed.VVSLOW, TileEffect.POISON),
+        energy_field(TileAttrib.dispelable.getVal() | TileAttrib.unflyable.getVal() | TileAttrib.unwalkable.getVal() | TileAttrib.creatureunwalkable.getVal(), TileSpeed.VVSLOW, TileEffect.ELECTRICITY),
+        fire_field(TileAttrib.dispelable.getVal(), TileSpeed.VVSLOW, TileEffect.FIRE),
+        sleep_field(TileAttrib.dispelable.getVal(), TileSpeed.VVSLOW, TileEffect.SLEEP),
+        lava(TileAttrib.replacement.getVal(), TileSpeed.VVSLOW, TileEffect.LAVA),
         signs(TileAttrib.unwalkable.getVal() | TileAttrib.unflyable.getVal()),
         spacers(TileAttrib.unwalkable.getVal()),
         monster(TileAttrib.livingthing.getVal() & TileAttrib.unwalkable.getVal());
@@ -260,13 +248,11 @@ public interface Constants {
         private int attribs = 0;
         private TileSpeed speed = TileSpeed.FAST;
         private TileEffect effect = TileEffect.NONE;
-        private TileAnimationStyle animStyle = TileAnimationStyle.NONE;
 
-        private TileRule(int attribs, TileSpeed speed, TileEffect effect, TileAnimationStyle animStyle) {
+        private TileRule(int attribs, TileSpeed speed, TileEffect effect) {
             this.attribs = attribs;
             this.speed = speed;
             this.effect = effect;
-            this.animStyle = animStyle;
         }
 
         private TileRule(int attribs) {
@@ -287,10 +273,6 @@ public interface Constants {
 
         public TileEffect getEffect() {
             return effect;
-        }
-
-        public TileAnimationStyle getAnimStyle() {
-            return animStyle;
         }
 
     }

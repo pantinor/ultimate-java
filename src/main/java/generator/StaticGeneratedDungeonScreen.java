@@ -67,6 +67,7 @@ import objects.Portal;
 import static ultima.BaseScreen.mainGame;
 import ultima.DungeonScreen;
 import ultima.MixtureScreen;
+import util.PartyDeathException;
 
 public class StaticGeneratedDungeonScreen extends BaseScreen {
 
@@ -539,8 +540,9 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         currentEncounter = cr;
     }
 
+
+    @Override
     public void partyDeath() {
-        //death scene
         mainGame.setScreen(new DeathScreen(gameScreen, GameScreen.context.getParty()));
         gameScreen.loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
     }
@@ -643,7 +645,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
             }
 
             tile = dungeonTiles[currentLevel][x][y];
-            if (tile != DungeonTile.WALL) {
+            if (tile != DungeonTile.WALL && tile != DungeonTile.FIELD_ENERGY) {
                 currentPos = new Vector3(x + .5f, .5f, y + .5f);
                 camera.position.set(currentPos);
                 if (currentDir == Direction.EAST) {
@@ -655,7 +657,12 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
                 } else if (currentDir == Direction.SOUTH) {
                     camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
                 }
-                checkTrap(tile, x, y);
+                try {
+                    checkTileAffects(tile, x, y);
+                } catch (PartyDeathException e) {
+                    partyDeath();
+                    return false;
+                }
             }
 
         } else if (keycode == Keys.DOWN) {
@@ -671,7 +678,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
                 y = y - 1;
             }
             tile = dungeonTiles[currentLevel][x][y];
-            if (tile != DungeonTile.WALL) {
+            if (tile != DungeonTile.WALL && tile != DungeonTile.FIELD_ENERGY) {
                 currentPos = new Vector3(x + .5f, .5f, y + .5f);
                 camera.position.set(currentPos);
                 if (currentDir == Direction.EAST) {
@@ -683,7 +690,12 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
                 } else if (currentDir == Direction.SOUTH) {
                     camera.lookAt(currentPos.x, currentPos.y, currentPos.z + 1);
                 }
-                checkTrap(tile, x, y);
+                try {
+                    checkTileAffects(tile, x, y);
+                } catch (PartyDeathException e) {
+                    partyDeath();
+                    return false;
+                }
             }
 
         } else if (keycode == Keys.K) {
@@ -797,7 +809,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         moveDungeonCreatures(this, currentX, currentY);
     }
 
-    public void checkTrap(DungeonTile tile, int x, int y) {
+    public void checkTileAffects(DungeonTile tile, int x, int y) throws PartyDeathException {
         switch (tile) {
             case WIND_TRAP:
                 log("Wind extinguished your torch!");
@@ -826,109 +838,128 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
                     dispose();
                 }
                 break;
+            case FIELD_POISON:
+                GameScreen.context.getParty().applyEffect(TileEffect.POISONFIELD);
+                Sounds.play(Sound.POISON_DAMAGE);
+                break;
+            case FIELD_SLEEP:
+                GameScreen.context.getParty().applyEffect(TileEffect.SLEEP);
+                Sounds.play(Sound.SLEEP);
+                break;
+            case FIELD_FIRE:
+                GameScreen.context.getParty().applyEffect(TileEffect.LAVA);
+                Sounds.play(Sound.FIREFIELD);
+                break;
         }
     }
 
     public void dungeonDrinkFountain(DungeonTile type, int index) {
-        if (index >= GameScreen.context.getParty().getMembers().size()) {
-            return;
-        }
-        PartyMember pm = GameScreen.context.getParty().getMember(index);
-        switch (type) {
-            case FOUNTAIN_PLAIN:
-                log("Hmmm--No Effect!");
-                break;
-            case FOUNTAIN_HEAL:
-                if (pm.heal(HealType.FULLHEAL)) {
-                    Sounds.play(Sound.HEALING);
-                    log("Ahh-Refreshing!");
-                } else {
+        try {
+            if (index >= GameScreen.context.getParty().getMembers().size()) {
+                return;
+            }
+            PartyMember pm = GameScreen.context.getParty().getMember(index);
+            switch (type) {
+                case FOUNTAIN_PLAIN:
                     log("Hmmm--No Effect!");
-                }
-                break;
-            case FOUNTAIN_ACID:
-                pm.applyDamage(100, false);
-                Sounds.play(Sound.DAMAGE_EFFECT);
-                log("Bleck--Nasty!");
-                break;
-            case FOUNTAIN_CURE:
-                if (pm.heal(HealType.CURE)) {
-                    Sounds.play(Sound.HEALING);
-                    log("Hmmm--Delicious!");
-                } else {
-                    log("Hmmm--No Effect!");
-                }
-                break;
-            case FOUNTAIN_POISON:
-                if (pm.getPlayer().status != StatusType.POISONED) {
-                    Sounds.play(Sound.DAMAGE_EFFECT);
-                    pm.applyEffect(TileEffect.POISON);
+                    break;
+                case FOUNTAIN_HEAL:
+                    if (pm.heal(HealType.FULLHEAL)) {
+                        Sounds.play(Sound.HEALING);
+                        log("Ahh-Refreshing!");
+                    } else {
+                        log("Hmmm--No Effect!");
+                    }
+                    break;
+                case FOUNTAIN_ACID:
                     pm.applyDamage(100, false);
-                    log("Argh-Choke-Gasp!");
-                } else {
-                    log("Hmm--No Effect!");
-                }
-                break;
+                    Sounds.play(Sound.DAMAGE_EFFECT);
+                    log("Bleck--Nasty!");
+                    break;
+                case FOUNTAIN_CURE:
+                    if (pm.heal(HealType.CURE)) {
+                        Sounds.play(Sound.HEALING);
+                        log("Hmmm--Delicious!");
+                    } else {
+                        log("Hmmm--No Effect!");
+                    }
+                    break;
+                case FOUNTAIN_POISON:
+                    if (pm.getPlayer().status != StatusType.POISONED) {
+                        Sounds.play(Sound.DAMAGE_EFFECT);
+                        pm.applyEffect(TileEffect.POISON);
+                        pm.applyDamage(100, false);
+                        log("Argh-Choke-Gasp!");
+                    } else {
+                        log("Hmm--No Effect!");
+                    }
+                    break;
+            }
+        } catch (PartyDeathException pde) {
+            partyDeath();
         }
     }
 
     public void dungeonTouchOrb(int index) {
-
-        if (index >= GameScreen.context.getParty().getMembers().size()) {
-            return;
-        }
-        PartyMember pm = GameScreen.context.getParty().getMember(index);
-        int x = (Math.round(currentPos.x) - 1);
-        int y = (Math.round(currentPos.z) - 1);
-
-        int stats = 0;
-        int damage = 0;
-
-        if (dngMap == Maps.DELVE_SORROWS) {
-            if (currentLevel == 1) {
-                stats = STATSBONUS_INT | STATSBONUS_DEX;
-            } else {
-                stats = STATSBONUS_INT | STATSBONUS_DEX | STATSBONUS_STR;
+        try {
+            if (index >= GameScreen.context.getParty().getMembers().size()) {
+                return;
             }
-        } else {
-            stats = STATSBONUS_STR;
-        }
+            PartyMember pm = GameScreen.context.getParty().getMember(index);
+            int x = (Math.round(currentPos.x) - 1);
+            int y = (Math.round(currentPos.z) - 1);
 
-        if ((stats & STATSBONUS_STR) > 0) {
-            log("Strength + 5");
-            int n = Utils.adjustValueMax(pm.getPlayer().str, 5, 50);
-            pm.getPlayer().str = n;
-            damage += 200;
-        }
-        if ((stats & STATSBONUS_DEX) > 0) {
-            log("Dexterity + 5");
-            int n = Utils.adjustValueMax(pm.getPlayer().dex, 5, 50);
-            pm.getPlayer().dex = n;
-            damage += 200;
-        }
-        if ((stats & STATSBONUS_INT) > 0) {
-            log("Intelligence + 5");
-            int n = Utils.adjustValueMax(pm.getPlayer().intel, 5, 50);
-            pm.getPlayer().intel = n;
-            damage += 200;
-        }
+            int stats = 0;
+            int damage = 0;
 
-        pm.applyDamage(damage, false);
+            if (dngMap == Maps.DELVE_SORROWS) {
+                if (currentLevel == 1) {
+                    stats = STATSBONUS_INT | STATSBONUS_DEX;
+                } else {
+                    stats = STATSBONUS_INT | STATSBONUS_DEX | STATSBONUS_STR;
+                }
+            } else {
+                stats = STATSBONUS_STR;
+            }
 
-        Sounds.play(Sound.LIGHTNING);
+            if ((stats & STATSBONUS_STR) > 0) {
+                log("Strength + 5");
+                int n = Utils.adjustValueMax(pm.getPlayer().str, 5, 50);
+                pm.getPlayer().str = n;
+                damage += 200;
+            }
+            if ((stats & STATSBONUS_DEX) > 0) {
+                log("Dexterity + 5");
+                int n = Utils.adjustValueMax(pm.getPlayer().dex, 5, 50);
+                pm.getPlayer().dex = n;
+                damage += 200;
+            }
+            if ((stats & STATSBONUS_INT) > 0) {
+                log("Intelligence + 5");
+                int n = Utils.adjustValueMax(pm.getPlayer().intel, 5, 50);
+                pm.getPlayer().intel = n;
+                damage += 200;
+            }
+            
+            Sounds.play(Sound.LIGHTNING);
 
-        //remove orb model instance
-        DungeonTileModelInstance orb = null;
-        for (DungeonTileModelInstance dmi : modelInstances) {
-            if (dmi.getTile() == DungeonTile.ORB) {
-                if (dmi.x == x && dmi.y == y && dmi.getLevel() == currentLevel) {
-                    orb = dmi;
-                    break;
+            pm.applyDamage(damage, false);
+
+            //remove orb model instance
+            DungeonTileModelInstance orb = null;
+            for (DungeonTileModelInstance dmi : modelInstances) {
+                if (dmi.getTile() == DungeonTile.ORB) {
+                    if (dmi.x == x && dmi.y == y && dmi.getLevel() == currentLevel) {
+                        orb = dmi;
+                        break;
+                    }
                 }
             }
+            modelInstances.remove(orb);
+            dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
+        } catch (PartyDeathException pde) {
+            partyDeath();
         }
-        modelInstances.remove(orb);
-        dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
 
     }
 
@@ -937,28 +968,31 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
     }
 
     public void getChest(int index, int x, int y) {
-
-        DungeonTileModelInstance chest = null;
-        for (DungeonTileModelInstance dmi : modelInstances) {
-            if (dmi.getTile() == DungeonTile.CHEST) {
-                if (dmi.x == x && dmi.y == y && dmi.getLevel() == currentLevel) {
-                    chest = dmi;
-                    break;
+        try {
+            DungeonTileModelInstance chest = null;
+            for (DungeonTileModelInstance dmi : modelInstances) {
+                if (dmi.getTile() == DungeonTile.CHEST) {
+                    if (dmi.x == x && dmi.y == y && dmi.getLevel() == currentLevel) {
+                        chest = dmi;
+                        break;
+                    }
                 }
             }
-        }
 
-        if (chest != null) {
-            PartyMember pm = GameScreen.context.getParty().getMember(index);
-            GameScreen.context.getChestTrapHandler(pm);
-            log(String.format("The Chest Holds: %d Gold", GameScreen.context.getParty().getChestGold()));
+            if (chest != null) {
+                PartyMember pm = GameScreen.context.getParty().getMember(index);
+                GameScreen.context.getChestTrapHandler(pm);
+                log(String.format("The Chest Holds: %d Gold", GameScreen.context.getParty().getChestGold()));
 
-            //remove chest model instance
-            modelInstances.remove(chest);
-            dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
+                //remove chest model instance
+                modelInstances.remove(chest);
+                dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
 
-        } else {
-            log("Not Here!");
+            } else {
+                log("Not Here!");
+            }
+        } catch (PartyDeathException e) {
+            partyDeath();
         }
     }
 
