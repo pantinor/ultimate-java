@@ -303,7 +303,7 @@ public class Party extends Observable implements Constants {
     }
 
     public boolean isFlying() {
-        return (saveGame.balloonstate > 0 && saveGame.torchduration <= 0);
+        return (saveGame.balloonstate > 0);
     }
 
     public void applyEffect(TileEffect effect) throws PartyDeathException {

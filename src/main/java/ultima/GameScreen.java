@@ -236,15 +236,15 @@ public class GameScreen extends BaseScreen {
             context.setParty(party);
             context.loadJournalEntries();
             
-            party.getMember(0).getPlayer().xp = 899;
-            party.getMember(0).getPlayer().hp = 999;
-            party.getMember(0).getPlayer().hpMax = 999;
-            party.getMember(0).getPlayer().intel = 99;
-            party.getMember(0).getPlayer().mp = 999;
-            sg.reagents = new int[]{90, 93, 94, 90, 90, 90, 90, 90};
-            for (Spell sp : Spell.values()) {
-                party.getSaveGame().mixtures[sp.ordinal()] = 99;
-            }
+//            party.getMember(0).getPlayer().xp = 899;
+//            party.getMember(0).getPlayer().hp = 999;
+//            party.getMember(0).getPlayer().hpMax = 999;
+//            party.getMember(0).getPlayer().intel = 99;
+//            party.getMember(0).getPlayer().mp = 999;
+//            sg.reagents = new int[]{90, 93, 94, 90, 90, 90, 90, 90};
+//            for (Spell sp : Spell.values()) {
+//                party.getSaveGame().mixtures[sp.ordinal()] = 99;
+//            }
 //            for (Virtue v : Virtue.values()) {
 //                sg.karma[v.ordinal()] = 0;
 //            }
@@ -286,7 +286,7 @@ public class GameScreen extends BaseScreen {
             
             //load the surface world first
             loadNextMap(Maps.WORLD, sg.x, sg.y);
-            //loadNextMap(Maps.WORLD, 86, 108);
+            //loadNextMap(Maps.WORLD, 239, 241);
 
             //load the dungeon if save game starts in dungeon
             if (Maps.get(sg.location) != Maps.WORLD) {
@@ -1711,28 +1711,28 @@ public class GameScreen extends BaseScreen {
     private void driftBalloon(Direction dir) {
 
         if (dir == Direction.NORTH) {
-            if (camera.position.y + tilePixelHeight > context.getCurrentMap().getHeight() * tilePixelHeight) {
-                camera.position.y = 0;
+            if (newMapPixelCoords.y + tilePixelHeight >= Maps.WORLD.getMap().getHeight() * tilePixelHeight) {
+                newMapPixelCoords.y = 0;
             } else {
-                camera.position.y = camera.position.y + tilePixelHeight;
+                newMapPixelCoords.y = newMapPixelCoords.y + tilePixelHeight;
             }
         } else if (dir == Direction.SOUTH) {
-            if (camera.position.y - tilePixelHeight < 0) {
-                camera.position.y = context.getCurrentMap().getHeight() * tilePixelHeight;
+            if (newMapPixelCoords.y - tilePixelHeight < 0) {
+                newMapPixelCoords.y = (Maps.WORLD.getMap().getHeight()-1) * tilePixelHeight;
             } else {
-                camera.position.y = camera.position.y - tilePixelHeight;
+                newMapPixelCoords.y = newMapPixelCoords.y - tilePixelHeight;
             }
         } else if (dir == Direction.EAST) {
-            if (camera.position.x + tilePixelWidth > context.getCurrentMap().getWidth() * tilePixelWidth) {
-                camera.position.x = 0;
+            if (newMapPixelCoords.x + tilePixelWidth >= Maps.WORLD.getMap().getWidth() * tilePixelWidth) {
+                newMapPixelCoords.x = 0;
             } else {
-                camera.position.x = camera.position.x + tilePixelWidth;
+                newMapPixelCoords.x = newMapPixelCoords.x + tilePixelWidth;
             }
         } else if (dir == Direction.WEST) {
-            if (camera.position.x - tilePixelWidth < 0) {
-                camera.position.x = context.getCurrentMap().getWidth() * tilePixelWidth;
+            if (newMapPixelCoords.x - tilePixelWidth < 0) {
+                newMapPixelCoords.x = (Maps.WORLD.getMap().getWidth()-1) * tilePixelWidth;
             } else {
-                camera.position.x = camera.position.x - tilePixelWidth;
+                newMapPixelCoords.x = newMapPixelCoords.x - tilePixelWidth;
             }
         }
 
