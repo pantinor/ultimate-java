@@ -9,7 +9,6 @@ import objects.Party;
 import objects.SaveGame;
 import ultima.BookScreen;
 import ultima.Constants;
-import ultima.MixtureScreen;
 
 public class ScreenTest extends Game {
 
@@ -47,8 +46,7 @@ public class ScreenTest extends Game {
         
         //setScreen(new MixtureScreen(null, null, skin, party));
         setScreen(new BookScreen(null, null, skin));
-
-
+        
     }
 
 }

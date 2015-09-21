@@ -1041,29 +1041,29 @@ public interface Constants {
 
     public enum Spell {
 
-        AWAKEN("Awaken", Reagent.GINSENG.getMask() | Reagent.GARLIC.getMask(), 5),
+        AWAKEN("Awaken", Reagent.GINSENG.getMask() | Reagent.GARLIC.getMask(), 5, Sound.HEALING),
         BLINK("Blink", Reagent.SILK.getMask() | Reagent.MOSS.getMask(), 15),
-        CURE("Cure", Reagent.GINSENG.getMask() | Reagent.GARLIC.getMask(), 5),
+        CURE("Cure", Reagent.GINSENG.getMask() | Reagent.GARLIC.getMask(), 5, Sound.HEALING),
         DISPEL("Dispell", Reagent.ASH.getMask() | Reagent.GARLIC.getMask() | Reagent.PEARL.getMask(), 20),
         ENERGY("Energy Field", Reagent.ASH.getMask() | Reagent.SILK.getMask() | Reagent.PEARL.getMask(), 10),
-        FIREBALL("Fireball", Reagent.ASH.getMask() | Reagent.PEARL.getMask(), 15),
+        FIREBALL("Fireball", Reagent.ASH.getMask() | Reagent.PEARL.getMask(), 15, Sound.FIREBALL),
         GATE("Gate", Reagent.ASH.getMask() | Reagent.PEARL.getMask() | Reagent.MANDRAKE.getMask(), 40),
-        HEAL("Heal", Reagent.GINSENG.getMask() | Reagent.SILK.getMask(), 10),
-        ICEBALL("Iceball", Reagent.PEARL.getMask() | Reagent.MANDRAKE.getMask(), 20),
+        HEAL("Heal", Reagent.GINSENG.getMask() | Reagent.SILK.getMask(), 10, Sound.HEALING),
+        ICEBALL("Iceball", Reagent.PEARL.getMask() | Reagent.MANDRAKE.getMask(), 20, Sound.FIREBALL),
         JINX("Jinx", Reagent.PEARL.getMask() | Reagent.NIGHTSHADE.getMask() | Reagent.MANDRAKE.getMask(), 30),
         KILL("Kill", Reagent.PEARL.getMask() | Reagent.NIGHTSHADE.getMask(), 25),
         LIGHT("Light", Reagent.ASH.getMask(), 5),
-        MAGICMISSILE("Magic missile", Reagent.ASH.getMask() | Reagent.PEARL.getMask(), 5),
+        MAGICMISSILE("Magic missile", Reagent.ASH.getMask() | Reagent.PEARL.getMask(), 5, Sound.FIREBALL),
         NEGATE("Negate", Reagent.ASH.getMask() | Reagent.GARLIC.getMask() | Reagent.MANDRAKE.getMask(), 20),
         OPEN("Open", Reagent.ASH.getMask() | Reagent.MOSS.getMask(), 5),
         PROTECTION("Protection", Reagent.ASH.getMask() | Reagent.GINSENG.getMask() | Reagent.GARLIC.getMask(), 15),
         QUICKNESS("Quickness", Reagent.ASH.getMask() | Reagent.GINSENG.getMask() | Reagent.MOSS.getMask(), 20),
         RESURRECT("Resurrect", Reagent.ASH.getMask() | Reagent.GINSENG.getMask() | Reagent.GARLIC.getMask() | Reagent.SILK.getMask() | Reagent.MOSS.getMask() | Reagent.MANDRAKE.getMask(), 45),
-        SLEEP("Sleep", Reagent.SILK.getMask() | Reagent.GINSENG.getMask(), 15),
-        TREMOR("Tremor", Reagent.ASH.getMask() | Reagent.MOSS.getMask() | Reagent.MANDRAKE.getMask(), 30),
-        UNDEAD("Undead", Reagent.ASH.getMask() | Reagent.GARLIC.getMask(), 15),
+        SLEEP("Sleep", Reagent.SILK.getMask() | Reagent.GINSENG.getMask(), 15, Sound.SLEEP),
+        TREMOR("Tremor", Reagent.ASH.getMask() | Reagent.MOSS.getMask() | Reagent.MANDRAKE.getMask(), 30, Sound.TREMOR),
+        UNDEAD("Undead", Reagent.ASH.getMask() | Reagent.GARLIC.getMask(), 15, Sound.STEAL_ESSENCE),
         VIEW("View", Reagent.NIGHTSHADE.getMask() | Reagent.MANDRAKE.getMask(), 15),
-        WINDS("Winds", Reagent.ASH.getMask() | Reagent.MOSS.getMask(), 10),
+        WINDS("Winds", Reagent.ASH.getMask() | Reagent.MOSS.getMask(), 10, Sound.ROCKS),
         XIT("X-it", Reagent.ASH.getMask() | Reagent.SILK.getMask() | Reagent.MOSS.getMask(), 15),
         YUP("Y-up", Reagent.SILK.getMask() | Reagent.MOSS.getMask(), 10),
         ZDOWN("Z-down", Reagent.SILK.getMask() | Reagent.MOSS.getMask(), 5);
@@ -1071,11 +1071,19 @@ public interface Constants {
         String desc;
         int mask;
         int mp;
+        Sound sound = Sound.MAGIC;
 
         private Spell(String desc, int mask, int mp) {
             this.desc = desc;
             this.mask = mask;
             this.mp = mp;
+        }
+        
+        private Spell(String desc, int mask, int mp, Sound snd) {
+            this.desc = desc;
+            this.mask = mask;
+            this.mp = mp;
+            this.sound = snd;
         }
 
         public static Spell get(int i) {
@@ -1097,6 +1105,10 @@ public interface Constants {
 
         public int getMp() {
             return mp;
+        }
+        
+        public Sound getSound() {
+            return sound;
         }
 
         @Override

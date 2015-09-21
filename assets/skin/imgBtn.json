@@ -1,0 +1,9 @@
+{
+com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
+    default: { imageUp:right-up, imageDown:right-down, imageOver:right-up, imageChecked:right-up, imageCheckedOver:right-up, imageDisabled:right-disabled },
+    right: { imageUp:right-up, imageDown:right-down, imageOver:right-up, imageChecked:right-up, imageCheckedOver:right-up, imageDisabled:right-disabled },
+    left: { imageUp:left-up, imageDown:left-down, imageOver:left-up, imageChecked:left-up, imageCheckedOver:left-up, imageDisabled:left-disabled },
+    up: { imageUp:up-up, imageDown:up-down, imageOver:up-up, imageChecked:up-up, imageCheckedOver:up-up, imageDisabled:up-disabled },
+    down: { imageUp:down-up, imageDown:down-down, imageOver:down-up, imageChecked:down-up, imageCheckedOver:down-up, imageDisabled:down-disabled }
+}
+}

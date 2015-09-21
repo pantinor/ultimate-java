@@ -26,7 +26,7 @@ public class SpellUtil implements Constants {
         if (caster == null || spell == null || screen == null) {
             return false;
         }
-
+        
         switch (spell) {
             case AWAKEN:
             case CURE:
@@ -78,7 +78,7 @@ public class SpellUtil implements Constants {
         }
 
         caster.adjustMagic(spell.getMp());
-
+        
         OnCompletionListener ocl = new OnCompletionListener() {
             @Override
             public void onCompletion(Music music) {
@@ -120,7 +120,6 @@ public class SpellUtil implements Constants {
                     case BLINK:
                         spellBlink(screen, dir);
                         break;
-
                     case GATE:
                         spellGate(screen, phase);
                         break;
@@ -173,7 +172,7 @@ public class SpellUtil implements Constants {
             }
         };
 
-        Sounds.play(Sound.MAGIC, ocl);
+        Sounds.play(spell.getSound(), ocl);
 
         return true;
     }
@@ -347,6 +346,7 @@ public class SpellUtil implements Constants {
             combatScreen.replaceTile("dungeon_floor", x, y);
 
         } else if (screen.scType == ScreenType.DUNGEON) {
+            
             DungeonScreen dngScreen = (DungeonScreen) screen;
             int x = (Math.round(dngScreen.currentPos.x) - 1);
             int y = (Math.round(dngScreen.currentPos.z) - 1);
@@ -366,8 +366,9 @@ public class SpellUtil implements Constants {
 
             DungeonTileModelInstance dispellable = null;
             for (DungeonTileModelInstance dmi : dngScreen.modelInstances) {
-                if (dmi.getTile().getValue() >= 160 && dmi.getTile().getValue() <= 163) {
-                    if (dmi.x == x && dmi.y == y) {
+                if (dmi.getTile().getValue() >= DungeonTile.FIELD_POISON.getValue() && 
+                    dmi.getTile().getValue() <= DungeonTile.FIELD_SLEEP.getValue()) {
+                    if (dmi.x == x && dmi.y == y && dmi.getLevel() == dngScreen.currentLevel) {
                         dispellable = dmi;
                         break;
                     }
@@ -400,6 +401,8 @@ public class SpellUtil implements Constants {
                 if (g.getPhase() == phase) {
                     Vector3 dest = new Vector3(g.getX(), g.getY(), 0);
                     gameScreen.newMapPixelCoords = gameScreen.getMapPixelCoords((int) dest.x, (int) dest.y);
+                    BaseMap bm = GameScreen.context.getCurrentMap();
+                    gameScreen.recalcFOV(bm, (int) dest.x, (int) dest.y);
                     break;
                 }
             }
@@ -613,7 +616,7 @@ public class SpellUtil implements Constants {
                 }
             } else {
 
-                for (int i = 0; i < 0x20; i++) {
+                for (int i = 0; i < 32; i++) {
                     int x = Utils.rand.nextInt(8);
                     int y = Utils.rand.nextInt(8);
                     if (dngScreen.validTeleportLocation(x, y, dngScreen.currentLevel)) {
@@ -655,7 +658,7 @@ public class SpellUtil implements Constants {
 
             } else {
 
-                for (int i = 0; i < 0x20; i++) {
+                for (int i = 0; i < 32; i++) {
                     int x = Utils.rand.nextInt(8);
                     int y = Utils.rand.nextInt(8);
                     if (dngScreen.validTeleportLocation(x, y, dngScreen.currentLevel)) {

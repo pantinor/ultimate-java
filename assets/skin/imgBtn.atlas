@@ -1,0 +1,88 @@
+imgBtn.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+left-up
+  rotate: false
+  xy: 120, 0
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+left-down
+  rotate: false
+  xy: 120, 40
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+left-disabled
+  rotate: false
+  xy: 120, 80
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+right-up
+  rotate: false
+  xy: 40, 0
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+right-down
+  rotate: false
+  xy: 40, 40
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+right-disabled
+  rotate: false
+  xy: 40, 80
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+up-up
+  rotate: false
+  xy: 0, 0
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+up-down
+  rotate: false
+  xy: 0, 40
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+up-disabled
+  rotate: false
+  xy: 0, 80
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+down-up
+  rotate: false
+  xy: 80, 0
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+down-down
+  rotate: false
+  xy: 80, 40
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+down-disabled
+  rotate: false
+  xy: 80, 80
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1

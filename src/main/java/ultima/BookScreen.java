@@ -4,27 +4,37 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import org.apache.commons.io.FileUtils;
+import static ultima.Ultima4.font;
 
 public class BookScreen extends InputAdapter implements Screen, Constants {
 
     private final Stage stage;
     private final Ultima4 mainGame;
     private final BaseScreen returnScreen;
-    private final java.util.List<String> lines = new ArrayList<>();
+    private final java.util.List<Label> labels = new ArrayList<>();
+    private final java.util.Map<Integer, Page> pages = new HashMap<>();
+
+    private int currentPage = 0;
     
     public BookScreen(Ultima4 mainGame, BaseScreen returnScreen, Skin skin) {
         this.returnScreen = returnScreen;
@@ -34,35 +44,132 @@ public class BookScreen extends InputAdapter implements Screen, Constants {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/fonts/lindberg.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         
-        parameter.size = 24;
+        parameter.size = 18;
         BitmapFont fontLarger = generator.generateFont(parameter);
         
         generator.dispose();
         
         Label.LabelStyle labs = new Label.LabelStyle(skin.get("default", Label.LabelStyle.class));
         labs.font = fontLarger;
+        labs.background = null;
         
-        Label text = new Label("", labs);
-        text.setWrap(true);
-        text.setAlignment(Align.topLeft, Align.left);
+        addPages(fontLarger, 0, "assets/data/commands.txt", labs);
+        addPages(fontLarger, labels.size(), "assets/data/book.txt", labs);
         
+        if (labels.size() % 2 != 0) {
+            labels.add(new Label("",labs));
+        }
+        
+        int x = 0;
+        for (Label l : labels) {
+            l.setWrap(true);
+            l.setAlignment(Align.topLeft, Align.left);
+            l.setWidth(460);
+            l.setHeight(600);
+            l.setX(x%2==0?35:525);
+            l.setY(145);
+            x++;
+        }
+        
+        int idx = 0;
+        for (int i=0;i<labels.size();i+=2) {
+            Page page = new Page(idx, labels.get(i), labels.get(i+1));
+            pages.put(idx, page);
+            idx++;
+        }
+        
+        Skin imgBtnSkin = new Skin(Gdx.files.internal("assets/skin/imgBtn.json"));
+        ImageButton left = new ImageButton(imgBtnSkin, "left");
+        ImageButton right = new ImageButton(imgBtnSkin, "right");
+        left.setX(512 - 64);
+        left.setY(16);
+        right.setX(512 + 64);
+        right.setY(16);
+        
+        left.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                pages.get(currentPage).left.remove();
+                pages.get(currentPage).right.remove();
+                currentPage --;
+                if (currentPage < 0) {
+                    currentPage = 0;
+                }
+                stage.addActor(pages.get(currentPage).left);
+                stage.addActor(pages.get(currentPage).right);
+            }
+        });
+        
+        right.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                pages.get(currentPage).left.remove();
+                pages.get(currentPage).right.remove();
+                currentPage ++;
+                if (currentPage >= pages.size()) {
+                    currentPage = pages.size()-1;
+                }
+                stage.addActor(pages.get(currentPage).left);
+                stage.addActor(pages.get(currentPage).right);
+            }
+        });
+        
+        CheckBox.CheckBoxStyle cbs = new CheckBox.CheckBoxStyle(skin.get("default", CheckBox.CheckBoxStyle.class));
+        cbs.font = fontLarger;
+        cbs.fontColor = Color.BLUE;
+        
+        CheckBox cb = new CheckBox("Enable Music", cbs);
+        cb.setX(32);
+        cb.setY(16);
+        cb.setChecked(Ultima4.playMusic);
+        
+        cb.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                CheckBox cb = (CheckBox)actor;
+                if (cb.isChecked()) {
+                    Ultima4.playMusic = true;
+                    if (Ultima4.music != null) {
+                        Ultima4.music.play();
+                    }
+                } else {
+                    Ultima4.playMusic = false;
+                    if (Ultima4.music != null) {
+                        Ultima4.music.stop();
+                    }
+                }
+            }
+        });
+        
+        stage.addActor(new Image(new Texture(Gdx.files.internal("assets/graphics/scroll.png"))));
+        stage.addActor(pages.get(0).left);
+        stage.addActor(pages.get(0).right);
+        
+        stage.addActor(left);
+        stage.addActor(right);
+        stage.addActor(cb);
+
+    }
+    
+    private void addPages(BitmapFont font, int pageStart, String fn, Label.LabelStyle labs) {
         try {
-            StringBuilder sb = new StringBuilder(FileUtils.readFileToString(Gdx.files.internal("assets/data/commands.txt").file()));
-            sb.append("\n\n").append(FileUtils.readFileToString(Gdx.files.internal("assets/data/book.txt").file()));
-            text.setText(sb.toString());
+            List<String> lines = FileUtils.readLines(Gdx.files.internal(fn).file());
+            int page = pageStart;
+            GlyphLayout gl = new GlyphLayout(font, "");
+            StringBuilder sb = new StringBuilder();
+            for (String line : lines) {
+                sb.append(line).append("\n");
+                gl.setText(font, sb.toString().trim(), Color.WHITE, 450, Align.left, true);
+                if (gl.height > 600) {
+                    labels.add(new Label(sb.toString().trim(), labs));
+                    sb = new StringBuilder();
+                    page++;
+                }
+            }
+            labels.add(new Label(sb.toString().trim(), labs));
         } catch (IOException e) {
             e.printStackTrace();
         }
-                
-        ScrollPane sp1 = new ScrollPane(text, skin);
-        sp1.setWidth(750);
-        sp1.setHeight(650);
-        sp1.setX(150);
-        sp1.setY(60);
-
-        stage.addActor(new Image(new Texture(Gdx.files.internal("assets/graphics/scroll.png"))));
-        stage.addActor(sp1);
-
     }
 
     @Override
@@ -105,6 +212,18 @@ public class BookScreen extends InputAdapter implements Screen, Constants {
             mainGame.setScreen(returnScreen);
         }
         return false;
+    }
+    
+    private class Page {
+        int page;
+        Label left;
+        Label right;
+        public Page(int page, Label left, Label right) {
+            this.page = page;
+            this.left = left;
+            this.right = right;
+        }
+        
     }
 
 }

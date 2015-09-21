@@ -5,6 +5,7 @@ import util.LogDisplay;
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Texture;
@@ -31,6 +32,10 @@ public class Ultima4 extends Game {
     public static BitmapFont font;
     public static StartScreen startScreen;
     public static Skin skin;
+    
+    public static boolean playMusic = true;
+    public static float musicVolume = 0.1f;
+    public static Music music;
     
     public static void main(String[] args) {
 

@@ -766,10 +766,14 @@ public class CombatScreen extends BaseScreen {
                 }
                 break;
             case SLEEP:
-                if (rand.nextInt(2) == 0) {
+                if (context.getAura().getType() == AuraType.NEGATE) {
+                    log("Sleep attack negated.");
+                } else {
+                    log("Sleep!");
                     Sounds.play(Sound.SLEEP);
-                    log("Slept!");
-                    defender.putToSleep();
+                    if (rand.nextInt(2) == 0 && !defender.isDisabled()) {
+                        defender.putToSleep();
+                    }
                 }
                 break;
             default:
@@ -811,11 +815,11 @@ public class CombatScreen extends BaseScreen {
 
         CombatAction action = null;
 
-        if (creature.getTeleports() && rand.nextInt(8) == 0) {
+        if (creature.getTeleports() && rand.nextInt(6) == 0) {
             action = CombatAction.TELEPORT;
-        } else if (creature.getRanged() && rand.nextInt(4) == 0 && (!creature.rangedAttackIs("magic_flash") || context.getAura().getType() != AuraType.NEGATE)) {
+        } else if (creature.getRanged() && rand.nextInt(4) == 0) {
             action = CombatAction.RANGED;
-        } else if (creature.castsSleep() && context.getAura().getType() != AuraType.NEGATE && rand.nextInt(4) == 0) {
+        } else if (creature.castsSleep() && rand.nextInt(4) == 0 && context.getAura().getType() != AuraType.NEGATE) {
             action = CombatAction.CAST_SLEEP;
         } else if (creature.getDamageStatus() == CreatureStatus.FLEEING) {
             action = CombatAction.FLEE;
@@ -867,11 +871,15 @@ public class CombatScreen extends BaseScreen {
                 break;
             }
             case CAST_SLEEP: {
-                log("Sleep!");
-                Sounds.play(Sound.SLEEP);
-                for (PartyMember p : party.getMembers()) {
-                    if (rand.nextInt(2) == 0 && !p.isDisabled()) {
-                        p.putToSleep();
+                if (context.getAura().getType() == AuraType.NEGATE) {
+                    log("Sleep spell negated.");
+                } else {
+                    log("Sleep!");
+                    Sounds.play(Sound.SLEEP);
+                    for (PartyMember p : party.getMembers()) {
+                        if (rand.nextInt(2) == 0 && !p.isDisabled()) {
+                            p.putToSleep();
+                        }
                     }
                 }
                 break;

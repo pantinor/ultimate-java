@@ -11,50 +11,55 @@ import com.badlogic.gdx.audio.Music.OnCompletionListener;
 
 public class Sounds {
 
-    public static Map<Sound, Music> sounds = new HashMap<Sound, Music>();
+    public static Map<Sound, Music> sounds = new HashMap<>();
 
-    public static List<Sound> backgroundList = new ArrayList<Sound>();
+    public static final List<Sound> backgroundList = new ArrayList<>();
     public static boolean backgroundPlaying = true;
 
     static {
         backgroundList.add(Sound.OUTSIDE);
     }
 
-    public static Music.OnCompletionListener listener = new Music.OnCompletionListener() {
-        public void onCompletion(Music music) {
-            backgroundPlaying = false;
-        }
-    };
+    public static class BackgroundMusicJukeBox implements Runnable {
 
-    public static void startBackGroundMusic() {
-        new Thread() {
-            public void run() {
-                while (true) {
-                    for (Sound sound : backgroundList) {
-                        Music m = play(sound);
-                        backgroundPlaying = true;
-                        m.setOnCompletionListener(listener);
-                        while (backgroundPlaying) {
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException e) {
-                            }
+        @Override
+        public void run() {
+            while (true) {
+                for (Sound sound : backgroundList) {
+                    
+                    Music m = play(sound);
+                    backgroundPlaying = true;
+                    
+                    m.setOnCompletionListener(new Music.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(Music music) {
+                            backgroundPlaying = false;
+                        }
+                    });
+                    
+                    while (backgroundPlaying) {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
                         }
                     }
                 }
             }
-        }.start();
+        }
     }
 
     public static Music play(Sound sound) {
+        return play(sound, sound.getVolume());
+    }
+    
+    public static Music play(Sound sound, float volume) {
         Music m = sounds.get(sound);
         if (m == null) {
             m = Gdx.audio.newMusic(Gdx.files.internal("assets/sound/" + sound.getFile()));
-            m.setVolume(sound.getVolume());
-            m.setLooping(sound.getLooping());
-
             sounds.put(sound, m);
         }
+        m.setLooping(sound.getLooping());
+        m.setVolume(volume);
         m.play();
         return m;
     }
