@@ -236,15 +236,15 @@ public class GameScreen extends BaseScreen {
             context.setParty(party);
             context.loadJournalEntries();
             
-            party.getMember(0).getPlayer().xp = 899;
-            party.getMember(0).getPlayer().hp = 999;
-            party.getMember(0).getPlayer().hpMax = 999;
-            party.getMember(0).getPlayer().intel = 99;
-            party.getMember(0).getPlayer().mp = 999;
-            sg.reagents = new int[]{90, 93, 94, 90, 90, 90, 90, 90};
-            for (Spell sp : Spell.values()) {
-                party.getSaveGame().mixtures[sp.ordinal()] = 99;
-            }
+//            party.getMember(0).getPlayer().xp = 899;
+//            party.getMember(0).getPlayer().hp = 999;
+//            party.getMember(0).getPlayer().hpMax = 999;
+//            party.getMember(0).getPlayer().intel = 99;
+//            party.getMember(0).getPlayer().mp = 999;
+//            sg.reagents = new int[]{90, 93, 94, 90, 90, 90, 90, 90};
+//            for (Spell sp : Spell.values()) {
+//                party.getSaveGame().mixtures[sp.ordinal()] = 99;
+//            }
 //            for (Virtue v : Virtue.values()) {
 //                sg.karma[v.ordinal()] = 0;
 //            }
@@ -271,12 +271,12 @@ public class GameScreen extends BaseScreen {
 //            party.getMember(0).getPlayer().status = StatusType.GOOD;
 //            party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
 //            party.getMember(0).getPlayer().armor = ArmorType.MYSTICROBE;
-            for (int i = 1; i < 16; i++) {
-                party.getSaveGame().weapons[i] = 2;
-            }
-            for (int i = 1; i < 8; i++) {
-                party.getSaveGame().armor[i] = 2;
-            }
+//            for (int i = 1; i < 16; i++) {
+//                party.getSaveGame().weapons[i] = 2;
+//            }
+//            for (int i = 1; i < 8; i++) {
+//                party.getSaveGame().armor[i] = 2;
+//            }
             //mainAvatar = shipAnim;
             //sg.transport = 0x10;
             
@@ -285,12 +285,12 @@ public class GameScreen extends BaseScreen {
             //sg.items |= Constants.Item.BOOK.getLoc();
             
             //load the surface world first
-            //loadNextMap(Maps.WORLD, sg.x, sg.y);
-            loadNextMap(Maps.WORLD, 86, 108);
+            loadNextMap(Maps.WORLD, sg.x, sg.y);
+            //loadNextMap(Maps.WORLD, 86, 108);
 
             //load the dungeon if save game starts in dungeon
             if (Maps.get(sg.location) != Maps.WORLD) {
-                //loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation + 1), true);
+                loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation + 1), true);
                 //loadNextMap(Maps.ABYSS, 0, 0, 5, 5, 0, Direction.SOUTH, true);
                 //loadNextMap(Maps.DESTARD, 0, 0, 5, 5, 0, Direction.NORTH, true);
                 //loadNextMap(Maps.DELVE_SORROWS, 0, 0, 3, 19, 1, Direction.EAST, true);
