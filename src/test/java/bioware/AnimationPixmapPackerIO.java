@@ -117,7 +117,7 @@ public class AnimationPixmapPackerIO {
                     writer.write("  rotate: false" + "\n");
                     writer.write("  xy: " + (int) rect.x + "," + (int) rect.y + "\n");
                     writer.write("  size: " + (int) rect.width + "," + (int) rect.height + "\n");
-                    writer.write("  orig: " + (int) rect.width + "," + (int) rect.height + "\n");
+                    writer.write("  orig: " + (int) rect.width/2 + "," + (int) rect.height/2 + "\n");
                     writer.write("  offset: 0, 0" + "\n");
                     writer.write("  index: " + count + "\n");
 

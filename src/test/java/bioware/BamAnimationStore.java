@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 import org.apache.commons.io.FileUtils;
@@ -26,10 +25,10 @@ import com.badlogic.gdx.utils.Array;
 
 public class BamAnimationStore {
 
-    LinkedHashMap<String, List<TextureRegion>> animations = new LinkedHashMap<String, List<TextureRegion>>(60);
-    public LinkedHashMap<String, Animation> gdxAnimations = new LinkedHashMap<String, Animation>(60);
+    LinkedHashMap<String, List<TextureRegion>> animations = new LinkedHashMap<>(60);
+    public LinkedHashMap<String, Animation> gdxAnimations = new LinkedHashMap<>(60);
 
-    ArrayList<Bam> bams = new ArrayList<Bam>();
+    ArrayList<Bam> bams = new ArrayList<>();
     Collection<File> infiles;
 
     byte transparent;
@@ -198,7 +197,7 @@ public class BamAnimationStore {
                         String tmp = animationName + "-" + count;
                         animation = animations.get(tmp);
                         if (animation == null) {
-                            animation = new ArrayList<TextureRegion>();
+                            animation = new ArrayList<>();
                             animations.put(tmp, animation);
                             break;
                         } else {
@@ -238,12 +237,12 @@ public class BamAnimationStore {
                 String key = iter.next();
                 List<TextureRegion> texts = animations.get(key);
                 TextureRegion[] ts = texts.toArray(new TextureRegion[texts.size()]);
-                Array<TextureRegion> array = new Array<TextureRegion>(ts);
+                Array<TextureRegion> array = new Array<>(ts);
                 Animation anim = new Animation(.125f, array);
                 gdxAnimations.put(key, anim);
                 iter.remove();
             }
-
+           
             bams = null;
 
         } catch (Exception e) {
@@ -253,13 +252,13 @@ public class BamAnimationStore {
 
     public Animation getAnimation(String name) {
         List<TextureRegion> texts = animations.get(name);
-        Animation anim = new Animation(.125f, new Array<TextureRegion>((TextureRegion[]) texts.toArray()));
+        Animation anim = new Animation(.125f, new Array<>((TextureRegion[]) texts.toArray()));
         return anim;
     }
 
     private LinkedHashMap<String, List<TextureRegion>> sortAnimations(LinkedHashMap<String, List<TextureRegion>> input) {
-        SortedSet<String> keys = new TreeSet<String>(input.keySet());
-        LinkedHashMap<String, List<TextureRegion>> sortedMap = new LinkedHashMap<String, List<TextureRegion>>();
+        SortedSet<String> keys = new TreeSet<>(input.keySet());
+        LinkedHashMap<String, List<TextureRegion>> sortedMap = new LinkedHashMap<>();
         for (String key : keys) {
             sortedMap.put(key, input.get(key));
         }
@@ -543,62 +542,19 @@ public class BamAnimationStore {
         return animationName;
     }
 
-    @SuppressWarnings("unchecked")
     public static Collection<File> getFiles(String directoryName, String filter) {
         File directory = new File(directoryName);
         Collection<File> c = FileUtils.listFiles(directory, new WildcardFileFilter(filter), null);
         return c;
     }
 
-    public static byte[] getSubArray(byte[] buffer, int offset, int length) {
+    private static byte[] getSubArray(byte[] buffer, int offset, int length) {
         byte[] r = new byte[length];
         System.arraycopy(buffer, offset, r, 0, length);
         return r;
     }
 
-    public static byte[] mergeArrays(byte[] a1, byte[] a2) {
-        byte[] r = new byte[a1.length + a2.length];
-        System.arraycopy(a1, 0, r, 0, a1.length);
-        System.arraycopy(a2, 0, r, a1.length, a2.length);
-        return r;
-    }
-
-    public static byte[] resizeArray(byte[] src, int new_size) {
-        byte[] tmp = new byte[new_size];
-        System.arraycopy(src, 0, tmp, 0, Math.min(src.length, new_size));
-        return tmp;
-    }
-
-    public static byte[] convertBack(byte value) {
-        byte[] buffer = {value};
-        return buffer;
-    }
-
-    public static byte[] convertBack(short value) {
-        byte[] buffer = new byte[2];
-        for (int i = 0; i <= 1; i++) {
-            buffer[i] = ((byte) (value >> 8 * i & 0xFF));
-        }
-        return buffer;
-    }
-
-    public static byte[] convertBack(int value) {
-        byte[] buffer = new byte[4];
-        for (int i = 0; i <= 3; i++) {
-            buffer[i] = ((byte) (value >> 8 * i & 0xFF));
-        }
-        return buffer;
-    }
-
-    public static byte[] convertBack(long value) {
-        byte[] buffer = new byte[8];
-        for (int i = 0; i <= 7; i++) {
-            buffer[i] = ((byte) (int) (value >> 8 * i & 0xFF));
-        }
-        return buffer;
-    }
-
-    public static byte convertByte(byte[] buffer, int offset) {
+    private static byte convertByte(byte[] buffer, int offset) {
         int value = 0;
         for (int i = 0; i >= 0; i--) {
             value = value << 8 | buffer[(offset + i)] & 0xFF;
@@ -606,7 +562,7 @@ public class BamAnimationStore {
         return (byte) value;
     }
 
-    public static int convertInt(byte[] buffer, int offset) {
+    private static int convertInt(byte[] buffer, int offset) {
         int value = 0;
         for (int i = 3; i >= 0; i--) {
             value = value << 8 | buffer[(offset + i)] & 0xFF;
@@ -614,15 +570,7 @@ public class BamAnimationStore {
         return value;
     }
 
-    public static long convertLong(byte[] buffer, int offset) {
-        long value = 0L;
-        for (int i = 7; i >= 0; i--) {
-            value = value << 8 | buffer[(offset + i)] & 0xFF;
-        }
-        return value;
-    }
-
-    public static short convertShort(byte[] buffer, int offset) {
+    private static short convertShort(byte[] buffer, int offset) {
         int value = 0;
         for (int i = 1; i >= 0; i--) {
             value = value << 8 | buffer[(offset + i)] & 0xFF;
@@ -630,24 +578,7 @@ public class BamAnimationStore {
         return (short) value;
     }
 
-    public static String convertString(byte[] buffer, int offset, int length) {
-        for (int i = 0; i < length; i++) {
-            if (buffer[(offset + i)] == 0) {
-                return new String(buffer, offset, i);
-            }
-        }
-        return new String(buffer, offset, length);
-    }
-
-    public static byte[] convertThreeBack(int value) {
-        byte[] buffer = new byte[3];
-        for (int i = 0; i <= 2; i++) {
-            buffer[i] = ((byte) (value >> 8 * i & 0xFF));
-        }
-        return buffer;
-    }
-
-    public static short convertUnsignedByte(byte[] buffer, int offset) {
+    private static short convertUnsignedByte(byte[] buffer, int offset) {
         short value = (short) convertByte(buffer, offset);
         if (value < 0) {
             value = (short) (value + 256);
@@ -655,7 +586,7 @@ public class BamAnimationStore {
         return value;
     }
 
-    public static long convertUnsignedInt(byte[] buffer, int offset) {
+    private static long convertUnsignedInt(byte[] buffer, int offset) {
         long value = convertInt(buffer, offset);
         if (value < 0L) {
             value += 4294967296L;
@@ -663,26 +594,7 @@ public class BamAnimationStore {
         return value;
     }
 
-    public static int convertUnsignedShort(byte[] buffer, int offset) {
-        int value = convertShort(buffer, offset);
-        if (value < 0) {
-            value += 65536;
-        }
-        return value;
-    }
-
-    public static byte[] compress(byte[] data, String signature, String version) {
-        byte[] header = mergeArrays(signature.getBytes(), version.getBytes());
-        header = mergeArrays(header, convertBack(data.length));
-        byte[] result = resizeArray(header, data.length * 2);
-        Deflater deflater = new Deflater();
-        deflater.setInput(data);
-        deflater.finish();
-        int clength = deflater.deflate(result, 12, result.length - 12);
-        return getSubArray(result, 0, clength + 12);
-    }
-
-    public static byte[] decompress(byte[] buffer) throws IOException {
+    private static byte[] decompress(byte[] buffer) throws IOException {
 
         Inflater inflater = new Inflater();
         byte[] result = new byte[convertInt(buffer, 8)];
@@ -696,7 +608,7 @@ public class BamAnimationStore {
         return result;
     }
 
-    class Palette {
+    private class Palette {
 
         private final int[] colors;
 
@@ -732,7 +644,7 @@ public class BamAnimationStore {
         }
     }
 
-    class Bam {
+    private class Bam {
 
         String bamFileName;
         Frame[] frames;
@@ -756,7 +668,7 @@ public class BamAnimationStore {
         }
     }
 
-    class Anim {
+    private class Anim {
 
         int frameCount;
         int lookupIndex;
@@ -772,14 +684,19 @@ public class BamAnimationStore {
 
     }
 
-    class Frame {
+    private class Frame {
 
         Pixmap image;
-
+        int xcoord;
+        int ycoord;
+        
         Frame(byte[] buffer, int offset) {
 
             int width = convertShort(buffer, offset);
             int height = convertShort(buffer, offset + 2);
+            
+            xcoord = convertShort(buffer, offset + 4);
+            ycoord = convertShort(buffer, offset + 6);
 
             long frameDataOffset = convertUnsignedInt(buffer, offset + 8);
             boolean rle = true;

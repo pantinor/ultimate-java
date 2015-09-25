@@ -236,18 +236,18 @@ public class GameScreen extends BaseScreen {
             context.setParty(party);
             context.loadJournalEntries();
             
-//            party.getMember(0).getPlayer().xp = 899;
-//            party.getMember(0).getPlayer().hp = 999;
-//            party.getMember(0).getPlayer().hpMax = 999;
-//            party.getMember(0).getPlayer().intel = 99;
-//            party.getMember(0).getPlayer().mp = 999;
-//            sg.reagents = new int[]{90, 93, 94, 90, 90, 90, 90, 90};
-//            for (Spell sp : Spell.values()) {
-//                party.getSaveGame().mixtures[sp.ordinal()] = 99;
-//            }
-//            for (Virtue v : Virtue.values()) {
-//                sg.karma[v.ordinal()] = 0;
-//            }
+            party.getMember(0).getPlayer().xp = 899;
+            party.getMember(0).getPlayer().hp = 999;
+            party.getMember(0).getPlayer().hpMax = 999;
+            party.getMember(0).getPlayer().intel = 99;
+            party.getMember(0).getPlayer().mp = 999;
+            sg.reagents = new int[]{90, 93, 94, 90, 90, 90, 90, 90};
+            for (Spell sp : Spell.values()) {
+                party.getSaveGame().mixtures[sp.ordinal()] = 99;
+            }
+            for (Virtue v : Virtue.values()) {
+                sg.karma[v.ordinal()] = 0;
+            }
 //
 //            party.join(NpcDefaults.Geoffrey.name());
 //            party.join(NpcDefaults.Shamino.name());
@@ -261,7 +261,7 @@ public class GameScreen extends BaseScreen {
 //            sg.food = 30000;
 //            sg.gold = 999;
 //            sg.keys = 20;
-//            sg.gems = 15;
+            sg.gems = 15;
 //            sg.moves = 2800;
 //            sg.stones = 0xff;
 //            sg.runes = 0xff;
@@ -285,8 +285,8 @@ public class GameScreen extends BaseScreen {
             //sg.items |= Constants.Item.BOOK.getLoc();
             
             //load the surface world first
-            loadNextMap(Maps.WORLD, sg.x, sg.y);
-            //loadNextMap(Maps.WORLD, 86, 108);
+            //loadNextMap(Maps.WORLD, sg.x, sg.y);
+            loadNextMap(Maps.WORLD, 141, 90);
 
             //load the dungeon if save game starts in dungeon
             if (Maps.get(sg.location) != Maps.WORLD) {
@@ -1458,7 +1458,7 @@ public class GameScreen extends BaseScreen {
         return new GameScreen.PeerGemInputAdapter();
     }
 
-    public class PeerGemInputAdapter extends InputAdapter {
+    private class PeerGemInputAdapter extends InputAdapter {
 
         Image img;
 
@@ -1476,6 +1476,7 @@ public class GameScreen extends BaseScreen {
                 img.setY(0);
                 img.addAction(sequence(Actions.alpha(0), Actions.fadeIn(1f, Interpolation.fade)));
                 stage.addActor(img);
+                gameTimer.active = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1483,12 +1484,11 @@ public class GameScreen extends BaseScreen {
 
         @Override
         public boolean keyUp(int keycode) {
-            //if (keycode == Keys.ENTER || keycode == Keys.SPACE) {
             if (img != null) {
                 img.remove();
             }
             Gdx.input.setInputProcessor(new InputMultiplexer(GameScreen.this, stage));
-            //}
+            gameTimer.active = true;
             return false;
         }
     }

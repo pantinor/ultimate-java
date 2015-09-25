@@ -13,9 +13,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class BamSpriteSheetViewer extends InputAdapter implements ApplicationListener {
 
@@ -23,7 +25,7 @@ public class BamSpriteSheetViewer extends InputAdapter implements ApplicationLis
     float time = 0;
 
     BitmapFont font;
-    List<String> animNames = new ArrayList<String>();
+    List<String> animNames = new ArrayList<>();
     int index = 0;
     TextureAtlas atlas;
     Animation anim;
@@ -46,20 +48,21 @@ public class BamSpriteSheetViewer extends InputAdapter implements ApplicationLis
         font = new BitmapFont();
 
         batch = new SpriteBatch();
-
-        atlas = new TextureAtlas(Gdx.files.absolute(BAMDIR + "NPIR.txt"));
+        atlas = new TextureAtlas(Gdx.files.absolute(BAMDIR + "METN.txt"));
+        //atlas = new TextureAtlas(Gdx.files.internal("bioware-sprites-2"));
         for (AtlasRegion ar : atlas.getRegions()) {
             if (!animNames.contains(ar.name)) {
                 animNames.add(ar.name);
             }
         }
         String k = animNames.get(index);
-        anim = new Animation(0.125f, atlas.findRegions(k));
+        anim = new Animation(0.125f, atlas.createSprites(k));
 
         Gdx.input.setInputProcessor(this);
 
     }
 
+    @Override
     public void render() {
 
         time += Gdx.graphics.getDeltaTime();
@@ -70,8 +73,9 @@ public class BamSpriteSheetViewer extends InputAdapter implements ApplicationLis
         String key = animNames.get(index);
 
         font.draw(batch, key, 10, 800 - 10);
-
-        batch.draw(anim.getKeyFrame(time, true), 100, 800 - 200);
+        
+        Sprite sp = (Sprite)anim.getKeyFrame(time, true);
+        batch.draw(sp, 100, 600);
 
         batch.end();
 
@@ -85,7 +89,7 @@ public class BamSpriteSheetViewer extends InputAdapter implements ApplicationLis
                 index = 0;
             }
             String k = animNames.get(index);
-            anim = new Animation(0.125f, atlas.findRegions(k));
+            anim = new Animation(0.125f, atlas.createSprites(k));
         }
         return false;
     }

@@ -57,7 +57,6 @@ public class AnimationPixMapPacker implements Disposable {
     final int pageHeight;
     final Format pageFormat;
     final int padding;
-    final boolean duplicateBorder;
     final public Array<Page> pages = new Array();
     Page currPage;
     boolean disposed;
@@ -75,14 +74,12 @@ public class AnimationPixMapPacker implements Disposable {
      * @param width the width of the output image
      * @param height the height of the output image
      * @param padding the number of padding pixels
-     * @param duplicateBorder whether to duplicate the border
      */
-    public AnimationPixMapPacker(int width, int height, Format format, int padding, boolean duplicateBorder) {
+    public AnimationPixMapPacker(int width, int height, Format format, int padding) {
         this.pageWidth = width;
         this.pageHeight = height;
         this.pageFormat = format;
         this.padding = padding;
-        this.duplicateBorder = duplicateBorder;
         newPage();
     }
 
@@ -107,7 +104,7 @@ public class AnimationPixMapPacker implements Disposable {
         if (getRect(name) != null) {
             throw new RuntimeException("Key with name '" + name + "' is already in map");
         }
-        int borderPixels = padding + (duplicateBorder ? 1 : 0);
+        int borderPixels = padding;
         borderPixels <<= 1;
 
         Rectangle rect = new Rectangle(0, 0, image.getWidth() + borderPixels, image.getHeight() + borderPixels);
@@ -134,25 +131,6 @@ public class AnimationPixMapPacker implements Disposable {
         Blending blending = Pixmap.getBlending();
         Pixmap.setBlending(Blending.None);
         this.currPage.image.drawPixmap(image, (int) rect.x, (int) rect.y);
-
-        if (duplicateBorder) {
-            int imageWidth = image.getWidth();
-            int imageHeight = image.getHeight();
-            // Copy corner pixels to fill corners of the padding.
-            this.currPage.image.drawPixmap(image, 0, 0, 1, 1, (int) rect.x - 1, (int) rect.y - 1, 1, 1);
-            this.currPage.image.drawPixmap(image, imageWidth - 1, 0, 1, 1, (int) rect.x + (int) rect.width, (int) rect.y - 1, 1, 1);
-            this.currPage.image.drawPixmap(image, 0, imageHeight - 1, 1, 1, (int) rect.x - 1, (int) rect.y + (int) rect.height, 1, 1);
-            this.currPage.image.drawPixmap(image, imageWidth - 1, imageHeight - 1, 1, 1, (int) rect.x + (int) rect.width, (int) rect.y
-                    + (int) rect.height, 1, 1);
-            // Copy edge pixels into padding.
-            this.currPage.image.drawPixmap(image, 0, 0, imageWidth, 1, (int) rect.x, (int) rect.y - 1, (int) rect.width, 1);
-            this.currPage.image.drawPixmap(image, 0, imageHeight - 1, imageWidth, 1, (int) rect.x, (int) rect.y + (int) rect.height,
-                    (int) rect.width, 1);
-            this.currPage.image.drawPixmap(image, 0, 0, 1, imageHeight, (int) rect.x - 1, (int) rect.y, 1, (int) rect.height);
-            this.currPage.image.drawPixmap(image, imageWidth - 1, 0, 1, imageHeight, (int) rect.x + (int) rect.width, (int) rect.y, 1,
-                    (int) rect.height);
-        }
-
         Pixmap.setBlending(blending);
 
         currPage.addedRects.add(name);
@@ -163,7 +141,7 @@ public class AnimationPixMapPacker implements Disposable {
         Page page = new Page();
         page.image = new Pixmap(pageWidth, pageHeight, pageFormat);
         page.root = new Node(0, 0, pageWidth, pageHeight, null, null, null);
-        page.rects = new OrderedMap<String, Rectangle>();
+        page.rects = new OrderedMap<>();
         pages.add(page);
         currPage = page;
     }
@@ -284,6 +262,7 @@ public class AnimationPixMapPacker implements Disposable {
      * Do not call this method if you generated or updated a TextureAtlas,
      * instead dispose the TextureAtlas.
      */
+    @Override
     public synchronized void dispose() {
         for (Page page : pages) {
             page.image.dispose();
@@ -330,8 +309,7 @@ public class AnimationPixMapPacker implements Disposable {
      * {@link #pack(String, Pixmap)} and update the TextureAtlas on the
      * rendering thread. This method must be called on the rendering thread.
      */
-    public synchronized void updateTextureAtlas(TextureAtlas atlas, TextureFilter minFilter, TextureFilter magFilter,
-            boolean useMipMaps) {
+    public synchronized void updateTextureAtlas(TextureAtlas atlas, TextureFilter minFilter, TextureFilter magFilter, boolean useMipMaps) {
         for (Page page : pages) {
             if (page.texture == null) {
                 if (page.rects.size != 0 && page.addedRects.size > 0) {
@@ -378,10 +356,6 @@ public class AnimationPixMapPacker implements Disposable {
 
     public int getPadding() {
         return padding;
-    }
-
-    public boolean duplicateBorder() {
-        return duplicateBorder;
     }
 
 }
