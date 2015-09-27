@@ -58,6 +58,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import util.PartyDeathException;
+import util.XORShiftRandom;
 
 public class CombatScreen extends BaseScreen {
 
@@ -346,7 +347,7 @@ public class CombatScreen extends BaseScreen {
             if (p.getPlayer().status != StatusType.DEAD && p.getPlayer().status != StatusType.SLEEPING) {
                 renderer.getBatch().draw(p.combatCr.getAnim().getKeyFrame(time, true), p.combatCr.currentPos.x, p.combatCr.currentPos.y);
             } else {
-                renderer.getBatch().draw(corpse, p.combatCr.currentPos.x, p.combatCr.currentPos.y);
+                renderer.getBatch().draw(Ultima4.corpse, p.combatCr.currentPos.x, p.combatCr.currentPos.y);
             }
         }
 
@@ -710,8 +711,7 @@ public class CombatScreen extends BaseScreen {
             effect = TileEffect.POISON;
             col = Color.GREEN;
         } else if (attacker.rangedAttackIs("magic_flash")) {
-            effect = TileEffect.NONE;
-            col = Color.TEAL;
+            col = Color.CYAN;
         } else if (attacker.rangedAttackIs("fire_field")) {
             effect = TileEffect.FIRE;
             col = Color.RED;
@@ -721,6 +721,8 @@ public class CombatScreen extends BaseScreen {
         } else if (attacker.rangedAttackIs("energy_field")) {
             effect = TileEffect.ELECTRICITY;
             col = Color.BLUE;
+        } else if (attacker.rangedAttackIs("rocks")) {
+            col = Color.BROWN;
         }
 
         final ProjectileActor p = new ProjectileActor(this, col, attacker.currentX, attacker.currentY, res);
@@ -729,15 +731,15 @@ public class CombatScreen extends BaseScreen {
             public boolean act(float delta) {
                 switch (p.res) {
                     case HIT:
-                        p.resultTexture = CombatScreen.hitTile;
+                        p.resultTexture = Ultima4.hitTile;
+                        Sounds.play(Sound.NPC_MAGIC_STRUCK);
+                        wounded = true;
                         break;
                     case MISS:
-                        p.resultTexture = CombatScreen.missTile;
+                        p.resultTexture = Ultima4.missTile;
+                        Sounds.play(Sound.EVADE);
                         break;
                 }
-                Sounds.play(Sound.PC_STRUCK);
-                wounded = true;
-
                 return true;
             }
         }, fadeOut(.2f), removeActor(p)));
@@ -802,7 +804,7 @@ public class CombatScreen extends BaseScreen {
         //accept no input starting now, re-enabled when creature actions are done
         Gdx.input.setInputProcessor(null);
 
-        if (creature.getStatus() == StatusType.SLEEPING && rand.nextInt(8) == 0) {
+        if (creature.getStatus() == StatusType.SLEEPING && rand.nextInt(16) == 0) {
             creature.setStatus(StatusType.GOOD);
         }
 
@@ -816,11 +818,11 @@ public class CombatScreen extends BaseScreen {
 
         CombatAction action = null;
 
-        if (creature.getTeleports() && rand.nextInt(6) == 0) {
+        if (creature.getTeleports() && rand.nextInt(100) <= 25) {
             action = CombatAction.TELEPORT;
-        } else if (creature.getRanged() && rand.nextInt(4) == 0) {
+        } else if (creature.getRanged() && rand.nextInt(100) <= 25) {
             action = CombatAction.RANGED;
-        } else if (creature.castsSleep() && rand.nextInt(4) == 0 && context.getAura().getType() != AuraType.NEGATE) {
+        } else if (creature.castsSleep() && rand.nextInt(100) <= 25 && context.getAura().getType() != AuraType.NEGATE) {
             action = CombatAction.CAST_SLEEP;
         } else if (creature.getDamageStatus() == CreatureStatus.FLEEING) {
             action = CombatAction.FLEE;
@@ -1290,7 +1292,7 @@ public class CombatScreen extends BaseScreen {
         mainGame.setScreen(sc);
 
         final int CAMP_HEAL_INTERVAL = 5;
-        Random rand = new Random();
+        Random rand = new XORShiftRandom();
 
         SequenceAction seq = Actions.action(SequenceAction.class);
         for (int i = 0; i < CAMP_HEAL_INTERVAL; i++) {

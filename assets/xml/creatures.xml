@@ -63,12 +63,4 @@
 	<creature id="51" encounterSize="4" name="Dragon" tile="dragon" basehp="224" exp="15" ranged="true" worldrangedtile="hit_flash" rangedhittile="hit_flash" rangedmisstile="hit_flash" flies="true" resists="fire" leader="52" />
 	<creature id="52" encounterSize="1" name="Balron" tile="balron" basehp="255" exp="16" ranged="true" rangedhittile="random" rangedmisstile="random" flies="true" casts="sleep" resists="fire" />
 
-	<!-- Non-standard creatures -->
-	<creature id="53" name="Phantom" tile="phantom" basehp="48" exp="14" good="true" /> <!-- Ankh -->
-	<creature id="54" name="Phantom" tile="campfire" basehp="48" exp="4" good="true" /> <!-- Campfire -->
-	<creature id="55" name="Villager" tile="corpse" basehp="32" exp="13" good="true" /> <!-- Wounded Villager -->
-	<creature id="56" name="Adventurer" tile="avatar" basehp="160" exp="11" good="true" /> <!-- Avatar tile -->
-	<creature id="57" name="Water" tile="shallows" basehp="255" exp="16" good="true" swims="true" /> <!-- Water in LBs castle -->
-	<creature id="58" name="Ankh" tile="ankh" basehp="255" exp="16" good="true" /> <!-- Ankh in Skara Brae -->
-	<creature id="59" name="Phantom" tile="fire_field" basehp="48" exp="14" canMoveOntoCreatures="true" resists="fire" canMoveOntoAvatar="true" rangedhittile="random" rangedmisstile="fire_field" leader="45" divides="true" /> <!-- Peculiar Fire field phantoms found in Destard LV4 -->
 </creatures>

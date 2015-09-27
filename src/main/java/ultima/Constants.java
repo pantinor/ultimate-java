@@ -1,7 +1,5 @@
 package ultima;
 
-import java.util.Random;
-
 import objects.Armor;
 import objects.BaseMap;
 import objects.Creature;
@@ -14,6 +12,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import util.XORShiftRandom;
 
 public interface Constants {
 
@@ -414,7 +413,7 @@ public interface Constants {
             if (n == 0) {
                 return null;
             }
-            int rand = new Random().nextInt(n);
+            int rand = new XORShiftRandom().nextInt(n);
             return d[rand];
         }
 
@@ -1051,7 +1050,7 @@ public interface Constants {
         HEAL("Heal", Reagent.GINSENG.getMask() | Reagent.SILK.getMask(), 10, Sound.HEALING),
         ICEBALL("Iceball", Reagent.PEARL.getMask() | Reagent.MANDRAKE.getMask(), 20, Sound.FIREBALL),
         JINX("Jinx", Reagent.PEARL.getMask() | Reagent.NIGHTSHADE.getMask() | Reagent.MANDRAKE.getMask(), 30),
-        KILL("Kill", Reagent.PEARL.getMask() | Reagent.NIGHTSHADE.getMask(), 25),
+        KILL("Kill", Reagent.PEARL.getMask() | Reagent.NIGHTSHADE.getMask(), 25, Sound.FIREBALL),
         LIGHT("Light", Reagent.ASH.getMask(), 5),
         MAGICMISSILE("Magic missile", Reagent.ASH.getMask() | Reagent.PEARL.getMask(), 5, Sound.FIREBALL),
         NEGATE("Negate", Reagent.ASH.getMask() | Reagent.GARLIC.getMask() | Reagent.MANDRAKE.getMask(), 20),

@@ -1,7 +1,5 @@
 package objects;
 
-import java.util.Random;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -14,6 +12,7 @@ import ultima.Constants;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
+import util.XORShiftRandom;
 
 @XmlRootElement(name = "creature")
 public class Creature implements Constants {
@@ -542,7 +541,7 @@ public class Creature implements Constants {
     public int getDamage() {
         int damage, val, x;
         val = basehp;
-        x = new Random().nextInt(val >> 2);
+        x = new XORShiftRandom().nextInt(val >> 2);
         damage = (x >> 4) + ((x >> 2) & 0xfc);
         damage += x % 10;
         return damage;
@@ -552,7 +551,7 @@ public class Creature implements Constants {
         if (!rangedAttackIs("random")) {
             return;
         }
-        switch (new Random().nextInt(4)) {
+        switch (new XORShiftRandom().nextInt(4)) {
             case 0:
                 rangedhittile = rangedmisstile = "poison_field";
                 break;

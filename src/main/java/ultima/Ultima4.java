@@ -11,6 +11,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -21,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import objects.ArmorSet;
 import objects.CreatureSet;
+import objects.Drawable;
 import objects.MapSet;
 import objects.TileSet;
 import objects.WeaponSet;
@@ -44,7 +46,7 @@ public class Ultima4 extends Game {
     public static boolean playMusic = true;
     public static float musicVolume = 0.1f;
     public static Music music;
-    
+
     public static MapSet maps;
     public static TileSet baseTileSet;
     public static WeaponSet weapons;
@@ -52,6 +54,12 @@ public class Ultima4 extends Game {
     public static CreatureSet creatures;
     public static VendorClassSet vendorClassSet;
     public static TextureAtlas standardAtlas;
+    
+    public static TextureRegion hitTile;
+    public static TextureRegion missTile;
+    public static TextureRegion corpse;
+    
+    public static Drawable balloon;
 
     public static void main(String[] args) {
 
@@ -100,12 +108,16 @@ public class Ultima4 extends Game {
         tfs.font = font;
 
         hud = new LogDisplay(font);
-        
+
         try {
 
             backGround = new Texture(Gdx.files.internal("assets/graphics/frame.png"));
 
             standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-enhanced-vga-atlas.txt"));
+
+            hitTile = Ultima4.standardAtlas.findRegion("hit_flash");
+            missTile = Ultima4.standardAtlas.findRegion("miss_flash");
+            corpse = Ultima4.standardAtlas.findRegion("corpse");
 
             baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);
             baseTileSet.setMaps();
@@ -122,32 +134,13 @@ public class Ultima4 extends Game {
             creatures.init();
             weapons.init();
             armors.init();
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         startScreen = new StartScreen(this);
 
-//        SaveGame sg = new SaveGame();
-//        sg.items |= Constants.Item.KEY_C.getLoc();
-//        sg.items |= Constants.Item.KEY_L.getLoc();
-//        sg.items |= Constants.Item.KEY_T.getLoc();
-//                SaveGame.SaveGamePlayerRecord rec = sg.new SaveGamePlayerRecord();
-//        rec.name = "avatar";
-//        rec.hp = 200;
-//
-//        Party p = new Party(sg);
-//        for (int i = 0; i < 8; i++) {
-//            sg.karma[i] = 0;
-//        }
-//        for (int i = 0; i < 7; i++) {
-//            try {
-//                p.addMember(rec);
-//            } catch (Exception ex) {
-//            }
-//        }
-//        setScreen(new CodexScreen(startScreen, p));
         setScreen(startScreen);
 
     }

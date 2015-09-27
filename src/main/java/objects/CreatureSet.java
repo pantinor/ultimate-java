@@ -1,7 +1,6 @@
 package objects;
 
 import java.util.List;
-import java.util.Random;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -15,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.utils.Array;
+import util.XORShiftRandom;
 
 @XmlRootElement(name = "creatures")
 public class CreatureSet {
@@ -36,6 +36,8 @@ public class CreatureSet {
             CreatureType ct = CreatureType.get(cr.getId());
             if (ct != null) {
                 ct.setCreature(cr);
+            } else {
+                System.err.printf("CreatureSet.init: Could not find creature type with id %d\n", cr.getId());
             }
         }
     }
@@ -84,7 +86,7 @@ public class CreatureSet {
 
         if (numAmbushingCreatures > 0) {
 
-            randCreature = new Random().nextInt(numAmbushingCreatures);
+            randCreature = new XORShiftRandom().nextInt(numAmbushingCreatures);
             numAmbushingCreatures = 0;
 
             for (Creature cr : creatures) {

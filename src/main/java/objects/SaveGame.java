@@ -1,7 +1,5 @@
 package objects;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -20,6 +18,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.io.LittleEndianDataOutputStream;
+import util.XORShiftRandom;
 
 public class SaveGame implements Constants {
 
@@ -73,7 +72,7 @@ public class SaveGame implements Constants {
     //see Constants.Maps enum for locations
     public int location = 0;
 
-    private final Random rand = new Random();
+    private final Random rand = new XORShiftRandom();
 
     Texture zstatsBox;
 
@@ -415,7 +414,7 @@ public class SaveGame implements Constants {
         }
 
         /**
-         * Performed at game init time only frmo Start Screen
+         * Performed at game init time only from Start Screen
          *
          * @param questionTree
          */
@@ -466,90 +465,6 @@ public class SaveGame implements Constants {
             return String.format("SaveGamePlayerRecord [name=%s, hp=%s, xp=%s, weapon=%s, armor=%s, sex=%s, klass=%s, status=%s]", name, hp, xp, weapon, armor, sex, klass, status);
         }
 
-    }
-
-    /**
-     * How Ultima IV stores monster information
-     */
-    public class SaveGameMonsterRecord {
-
-        public byte tile;
-        public byte x;
-        public byte y;
-        public byte prevTile;
-        public byte prevx;
-        public byte prevy;
-        public byte unused1;
-        public byte unused2;
-    }
-
-    public int saveGameMonstersWrite(SaveGameMonsterRecord[] monsterTable, DataOutputStream dos) throws Exception {
-        int i;
-        int max;
-
-        if (monsterTable != null && monsterTable.length > 0) {
-            for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-                dos.writeByte(monsterTable[i].tile);
-            }
-            for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-                dos.writeByte(monsterTable[i].x);
-            }
-            for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-                dos.writeByte(monsterTable[i].y);
-            }
-            for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-                dos.writeByte(monsterTable[i].prevTile);
-            }
-            for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-                dos.writeByte(monsterTable[i].prevx);
-            }
-            for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-                dos.writeByte(monsterTable[i].prevy);
-            }
-            for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-                dos.writeByte(monsterTable[i].unused1);
-            }
-            for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-                dos.writeByte(monsterTable[i].unused2);
-            }
-        } else {
-            max = MONSTERTABLE_SIZE * 8;
-            for (i = 0; i < max; i++) {
-                dos.writeByte((byte) 0);
-            }
-        }
-        return 1;
-    }
-
-    public int saveGameMonstersRead(SaveGameMonsterRecord[] monsterTable, DataInputStream dis) throws Exception {
-        int i;
-
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-            monsterTable[i].tile = dis.readByte();
-        }
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-            monsterTable[i].x = dis.readByte();
-        }
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-            monsterTable[i].y = dis.readByte();
-        }
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-            monsterTable[i].prevTile = dis.readByte();
-        }
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-            monsterTable[i].prevx = dis.readByte();
-        }
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-            monsterTable[i].prevy = dis.readByte();
-        }
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-            monsterTable[i].unused1 = dis.readByte();
-        }
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-            monsterTable[i].unused1 = dis.readByte();
-        }
-
-        return 1;
     }
 
     //to proper case

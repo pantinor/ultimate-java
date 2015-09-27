@@ -13,6 +13,7 @@ import ultima.Constants;
 import ultima.Context;
 import util.PartyDeathException;
 import util.Utils;
+import util.XORShiftRandom;
 
 public class Party extends Observable implements Constants {
 
@@ -21,7 +22,7 @@ public class Party extends Observable implements Constants {
     private int activePlayer = 0;
     private Tile transport;
     private int torchduration;
-    private final Random rand = new Random();
+    private final Random rand = new XORShiftRandom();
     private Context context;
 
     public Party(SaveGame sg) {
@@ -743,7 +744,6 @@ public class Party extends Observable implements Constants {
                 adjustKarmaMin(newKarma, Virtue.SACRIFICE, -2, 1);
                 break;
             case KILLED_EVIL:
-                Random rand = new Random();
                 // gain one valor half the time, zero the rest
                 adjustKarmaMax(newKarma, Virtue.VALOR, rand.nextInt(1), maxVal);
                 break;

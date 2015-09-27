@@ -72,7 +72,7 @@ public class GameScreen extends BaseScreen {
     public Stage mapObjectsStage;
     public Stage projectilesStage;
     
-    private Viewport mapViewPort;
+    private final Viewport mapViewPort;
     
     Array<AtlasRegion> moongateTextures = new Array<>();
     public static int phase = 0, trammelphase = 0, trammelSubphase = 0, feluccaphase = 0;
@@ -86,10 +86,6 @@ public class GameScreen extends BaseScreen {
         scType = ScreenType.MAIN;
 
         GameScreen.mainGame = mainGame;
-     
-        hitTile = Ultima4.standardAtlas.findRegion("hit_flash");
-        missTile = Ultima4.standardAtlas.findRegion("miss_flash");
-        corpse = Ultima4.standardAtlas.findRegion("corpse");
 
         initTransportAnimations();
         mainAvatar = avatarAnim;;
@@ -199,6 +195,7 @@ public class GameScreen extends BaseScreen {
             context.setParty(party);
             context.loadJournalEntries();
             
+//            party.getMember(0).getPlayer().klass = ClassType.MAGE;
 //            party.getMember(0).getPlayer().xp = 899;
 //            party.getMember(0).getPlayer().hp = 999;
 //            party.getMember(0).getPlayer().hpMax = 999;
@@ -977,13 +974,13 @@ public class GameScreen extends BaseScreen {
             dx = 15;
             dy = rand.nextInt(15);
 
-            if (rand.nextInt(2) > 0) {
+            if (rand.nextInt(100) > 50) {
                 dx = -dx;
             }
-            if (rand.nextInt(2) > 0) {
+            if (rand.nextInt(100) > 50) {
                 dy = -dy;
             }
-            if (rand.nextInt(2) > 0) {
+            if (rand.nextInt(100) > 50) {
                 tmp = dx;
                 dx = dy;
                 dy = tmp;
@@ -1673,12 +1670,15 @@ public class GameScreen extends BaseScreen {
     }
 
     public void addBalloonActor(int x, int y) {
+        if (Ultima4.balloon != null) {
+            Ultima4.balloon.remove();
+        }
         Tile st = Ultima4.baseTileSet.getTileByName("balloon");
-        Drawable balloon = new Drawable(Maps.WORLD.getMap(), x, y, st, Ultima4.standardAtlas);
+        Ultima4.balloon = new Drawable(Maps.WORLD.getMap(), x, y, st, Ultima4.standardAtlas);
         Vector3 bpos = getMapPixelCoords(x, y);
-        balloon.setX(bpos.x);
-        balloon.setY(bpos.y);
-        mapObjectsStage.addActor(balloon);
+        Ultima4.balloon.setX(bpos.x);
+        Ultima4.balloon.setY(bpos.y);
+        mapObjectsStage.addActor(Ultima4.balloon);
     }
 
     private void driftBalloon(Direction dir) {

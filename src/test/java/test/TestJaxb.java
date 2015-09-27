@@ -221,8 +221,8 @@ public class TestJaxb {
 
     @Test
     public void parseTlkFiles() throws Exception {
-        List<Person> people = Utils.getPeople("cove.ult", Maps.COVE, null);
-        List<Conversation> cons = Utils.getDialogs("cove.tlk");
+        List<Person> people = Utils.getPeople("lcb_1.ult", Maps.COVE, null);
+        List<Conversation> cons = Utils.getDialogs("lcb_1.tlk");
 
         for (Person p : people) {
             if (p != null) {

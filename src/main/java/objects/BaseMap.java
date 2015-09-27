@@ -3,7 +3,6 @@ package objects;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -27,6 +26,7 @@ import com.badlogic.gdx.utils.Array;
 import ultima.Context;
 import ultima.Ultima4;
 import util.PartyDeathException;
+import util.XORShiftRandom;
 
 @XmlRootElement(name = "map")
 public class BaseMap implements Constants {
@@ -765,7 +765,7 @@ public class BaseMap implements Constants {
                         canmove = true;
                     } else if (rule.has(TileAttrib.creatureunwalkable)) {
                         canmove = false;
-                    } else if (!rule.has(TileAttrib.unwalkable)) {
+                    } else if (cr.getIncorporeal() || !rule.has(TileAttrib.unwalkable)) {
                         canmove = true;
                     }
                 } else {
@@ -800,7 +800,8 @@ public class BaseMap implements Constants {
 
             //NPCs cannot go thru the secret doors or walk where the avatar is
             if (cr != null) {
-                if (tile.getIndex() == 73 || (avatarX == x && avatarY == y)) {
+                if ((tile.getIndex() == 73 && !cr.getIncorporeal()) || 
+                        (avatarX == x && avatarY == y && !cr.getCanMoveOntoAvatar())) {
                     canmove = false;
                 }
             }
@@ -1195,7 +1196,7 @@ public class BaseMap implements Constants {
 
             case mandrake1:
             case mandrake2:
-                sg.reagents[Reagent.MANDRAKE.ordinal()] += new Random().nextInt(8) + 2;
+                sg.reagents[Reagent.MANDRAKE.ordinal()] += new XORShiftRandom().nextInt(8) + 2;
                 if (sg.reagents[Reagent.MANDRAKE.ordinal()] > 99) {
                     sg.reagents[Reagent.MANDRAKE.ordinal()] = 99;
                 }
@@ -1205,7 +1206,7 @@ public class BaseMap implements Constants {
                 break;
             case nightshade1:
             case nightshade2:
-                sg.reagents[Reagent.NIGHTSHADE.ordinal()] += new Random().nextInt(8) + 2;
+                sg.reagents[Reagent.NIGHTSHADE.ordinal()] += new XORShiftRandom().nextInt(8) + 2;
                 if (sg.reagents[Reagent.NIGHTSHADE.ordinal()] > 99) {
                     sg.reagents[Reagent.NIGHTSHADE.ordinal()] = 99;
                 }

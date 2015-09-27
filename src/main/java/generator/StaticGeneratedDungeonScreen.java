@@ -406,7 +406,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
             DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);
             modelInstances.add(in);
         } else if (tile == DungeonTile.MOONGATE) {
-            Color c = new Color(0x53c6f1ff);
+            Color c = Color.CYAN;
             Model model = builder.createBox(1, 1, 1, getMaterial(c, .7f), Usage.Position | Usage.Normal);
             ModelInstance instance = new ModelInstance(model, tx, .5f, tz);
             DungeonTileModelInstance in = new DungeonTileModelInstance(instance, tile, level);

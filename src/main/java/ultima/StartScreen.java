@@ -33,6 +33,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.io.File;
 import static ultima.Constants.PARTY_SAV_BASE_FILENAME;
 import static ultima.Ultima4.skin;
+import util.XORShiftRandom;
 
 public class StartScreen implements Screen, InputProcessor, Constants {
 
@@ -464,7 +465,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
         }
 
         //shuffle the first 8 virtue slots, the last 8 slots are for the answers
-        Random rand = new Random();
+        Random rand = new XORShiftRandom();
         for (int i = 0; i < 8; i++) {
             int r = rand.nextInt(8);
             int tmp = questionTree[r];

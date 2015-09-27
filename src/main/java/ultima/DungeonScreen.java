@@ -1021,11 +1021,9 @@ public class DungeonScreen extends BaseScreen {
                 if (currentLevel < 0) {
                     currentLevel = 0;
                     if (dngMap == Maps.HYTHLOTH) {
-                        if (context.getParty().getSaveGame().balloonfound == 0) {
-                            gameScreen.addBalloonActor(233, 242);
-                            context.getParty().getSaveGame().balloonx = 233;
-                            context.getParty().getSaveGame().balloony = 242;
-                        }
+                        gameScreen.addBalloonActor(233, 242);
+                        context.getParty().getSaveGame().balloonx = 233;
+                        context.getParty().getSaveGame().balloony = 242;
                         context.getParty().getSaveGame().balloonfound = 1;
                         gameScreen.newMapPixelCoords = gameScreen.getMapPixelCoords(239, 240);
                     }
@@ -1415,13 +1413,13 @@ public class DungeonScreen extends BaseScreen {
             dx = 7;
             dy = rand.nextInt(7);
 
-            if (rand.nextInt(2) > 0) {
+            if (rand.nextInt(100) > 50) {
                 dx = -dx;
             }
-            if (rand.nextInt(2) > 0) {
+            if (rand.nextInt(100) > 50) {
                 dy = -dy;
             }
-            if (rand.nextInt(2) > 0) {
+            if (rand.nextInt(100) > 50) {
                 tmp = dx;
                 dx = dy;
                 dy = tmp;

@@ -56,16 +56,14 @@ public class TestMain extends Game {
             context.setParty(party);
             context.setCurrentMap(Maps.WORLD.getMap());
 
-            sg.players[0].hpMax = 500;
+            sg.players[0].hpMax = 700;
 
             party.join(NpcDefaults.Geoffrey.name());
-            party.join(NpcDefaults.Shamino.name());
-            party.join(NpcDefaults.Katrina.name());
 
             sg.players[0].weapon = WeaponType.SLING;
 
-            TiledMap tmap = new UltimaTiledMapLoader(Maps.GRASS_CON, Ultima4.standardAtlas, Maps.GRASS_CON.getMap().getWidth(), Maps.GRASS_CON.getMap().getHeight(), 32, 32).load();
-            CombatScreen sc = new CombatScreen(null, context, Maps.WORLD, Maps.GRASS_CON.getMap(), tmap, CreatureType.skeleton, Ultima4.creatures, Ultima4.standardAtlas);
+            TiledMap tmap = new UltimaTiledMapLoader(Maps.INN_CON, Ultima4.standardAtlas, Maps.INN_CON.getMap().getWidth(), Maps.INN_CON.getMap().getHeight(), 32, 32).load();
+            CombatScreen sc = new CombatScreen(null, context, Maps.WORLD, Maps.INN_CON.getMap(), tmap, CreatureType.liche, Ultima4.creatures, Ultima4.standardAtlas);
             
             setScreen(sc);
             //atlas = a1;

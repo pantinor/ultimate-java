@@ -41,6 +41,7 @@ public class SpellUtil implements Constants {
             case DISPEL:
             case ICEBALL:
             case KILL:
+            case SLEEP:
             case MAGICMISSILE:
             case FIREBALL:
             case ENERGY:
@@ -83,6 +84,7 @@ public class SpellUtil implements Constants {
         seq.addAction(Actions.run(new PlaySoundAction(spell.getSound())));
         seq.addAction(Actions.delay(0.5f));
         seq.addAction(Actions.run(new Runnable() {
+            @Override
             public void run() {
                 switch (spell) {
 
@@ -144,7 +146,7 @@ public class SpellUtil implements Constants {
                         spellQuick(context);
                         break;
                     case SLEEP:
-                        spellSleep(screen, caster);
+                        spellSleep(screen, caster, dir);
                         break;
                     case TREMOR:
                         spellTremor(screen, caster);
@@ -286,6 +288,8 @@ public class SpellUtil implements Constants {
             } else {
                 screen.log("Failed to blink!");
             }
+        } else {
+            screen.log("Outdoors only!");
         }
 
     }
@@ -383,6 +387,7 @@ public class SpellUtil implements Constants {
     }
 
     public static void spellEnergyField(Direction dir) {
+        //TODO
     }
 
     public static void spellFireball(BaseScreen screen, PartyMember caster, Direction dir) {
@@ -427,6 +432,7 @@ public class SpellUtil implements Constants {
     }
 
     public static void spellLight() {
+        //TODO
     }
 
     public static void spellMMissle(BaseScreen screen, PartyMember caster, Direction dir) {
@@ -440,9 +446,11 @@ public class SpellUtil implements Constants {
     }
 
     public static void spellOpen() {
+        //TODO
     }
 
     public static void spellProtect(Context context) {
+        //TODO
         context.getAura().set(AuraType.PROTECTION, 10);
     }
 
@@ -454,7 +462,10 @@ public class SpellUtil implements Constants {
         context.getAura().set(AuraType.QUICKNESS, 10);
     }
 
-    public static void spellSleep(BaseScreen screen, PartyMember caster) {
+    public static void spellSleep(BaseScreen screen, PartyMember caster, Direction dir) {
+        if (screen.scType == ScreenType.COMBAT) {
+            spellMagicAttack((CombatScreen) screen, caster, Spell.SLEEP, dir, 0, 0);
+        }
     }
 
     public static void spellTremor(BaseScreen screen, PartyMember caster) {
@@ -532,8 +543,23 @@ public class SpellUtil implements Constants {
             SequenceAction seq = Actions.action(SequenceAction.class);
 
             final CombatScreen combatScreen = (CombatScreen) screen;
+            
+            
+            int level = caster.getPlayer().getLevel();
+            //from the AD&D dungeon masters guide page 75 :)
+            boolean turn = Utils.rand.nextInt(100) >= 50;
+            if (level > 1) {
+                turn = Utils.rand.nextInt(100) >= 35;
+            }
+            if (level > 2) {
+                turn = Utils.rand.nextInt(100) >= 20;
+            }
+            if (level > 3) {
+                turn = true;
+            }
+            
             for (Creature cr : combatScreen.combatMap.getCreatures()) {
-                if (cr.getUndead() && Utils.rand.nextInt(2) == 0) {
+                if (cr.getUndead() && turn) {
 
                     Tile tile = Ultima4.baseTileSet.getTileByName("hit_flash");
                     Drawable d = new Drawable(combatScreen.combatMap, cr.currentX, cr.currentY, tile, Ultima4.standardAtlas);
@@ -546,6 +572,8 @@ public class SpellUtil implements Constants {
                     seq.addAction(Actions.run(new PlaySoundAction(Sound.NPC_STRUCK)));
 
                     Utils.dealDamage(caster, cr, 23);
+                } else {
+                    seq.addAction(Actions.run(new PlaySoundAction(Sound.EVADE)));
                 }
 
                 if (cr.getDamageStatus() == CreatureStatus.DEAD) {
@@ -581,11 +609,9 @@ public class SpellUtil implements Constants {
             DungeonScreen dngScreen = (DungeonScreen) screen;
             screen.log("Leaving " + dngScreen.dngMap.getLabel());
             if (dngScreen.dngMap == Maps.HYTHLOTH) {
-                if (screen.context.getParty().getSaveGame().balloonfound == 0) {
-                    dngScreen.gameScreen.addBalloonActor(233, 242);
-                    screen.context.getParty().getSaveGame().balloonx = 233;
-                    screen.context.getParty().getSaveGame().balloony = 242;
-                }
+                dngScreen.gameScreen.addBalloonActor(233, 242);
+                screen.context.getParty().getSaveGame().balloonx = 233;
+                screen.context.getParty().getSaveGame().balloony = 242;
                 screen.context.getParty().getSaveGame().balloonfound = 1;
                 dngScreen.gameScreen.newMapPixelCoords = dngScreen.gameScreen.getMapPixelCoords(239, 240);
             }

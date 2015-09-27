@@ -35,15 +35,15 @@ public enum Sound {
     CANNON("cannon.mp3", false, 0.3f),
     RAGE("RageOfGod.ogg", false, 0.3f),
     //music
-    OUTSIDE("Wanderer.mp3", true, 0.1f),
-    TOWNS("Towns.mp3", true, 0.1f),
-    SHRINES("Shrines.mp3", true, 0.1f),
-    SHOPPING("Shopping.mp3", true, 0.1f),
-    RULEBRIT("Rule_Britannia.mp3", true, 0.1f),
+    OUTSIDE("music3.ogg", true, 0.1f),
+    TOWNS("music2.ogg", true, 0.1f),
+    SHRINES("music2.ogg", true, 0.1f),
+    SHOPPING("music1.ogg", true, 0.1f),
+    RULEBRIT("music1.ogg", true, 0.1f),
     FANFARE("Fanfare_Of_Lord_British.mp3", true, 0.1f),
-    DUNGEON("Dungeon.mp3", true, 0.1f),
-    COMBAT("Combat.mp3", true, 0.1f),
-    CASTLES("Castles.mp3", true, 0.1f);
+    DUNGEON("music2.ogg", true, 0.1f),
+    COMBAT("music2.ogg", true, 0.1f),
+    CASTLES("music1.ogg", true, 0.1f);
 
     String file;
     boolean looping;

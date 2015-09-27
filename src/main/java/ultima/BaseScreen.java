@@ -14,7 +14,6 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -23,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import util.XORShiftRandom;
 
 public abstract class BaseScreen implements Screen, InputProcessor, Constants, Observer {
 
@@ -33,13 +33,9 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
     protected BaseScreen returnScreen;
     public Context context;
     protected Stage stage;
-
-    public static TextureRegion hitTile;
-    public static TextureRegion missTile;
-    public static TextureRegion corpse;
     
     protected float time = 0;
-    protected Random rand = new Random();
+    protected Random rand = new XORShiftRandom();
 
     protected int mapPixelHeight;
     public Vector3 newMapPixelCoords;

@@ -1,6 +1,5 @@
 package util;
 
-import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
@@ -9,7 +8,6 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.CharBuffer;
@@ -37,7 +35,6 @@ import org.lwjgl.BufferUtils;
 import ultima.BaseScreen;
 import ultima.CombatScreen;
 import ultima.Constants;
-import ultima.GameScreen;
 import ultima.Sound;
 import ultima.Sounds;
 import ultima.Ultima4;
@@ -70,7 +67,7 @@ import ultima.Context;
 
 public class Utils implements Constants {
 
-    public static Random rand = new Random();
+    public static Random rand = new XORShiftRandom();
 
     public static String properCase(String s) {
         return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
@@ -157,7 +154,7 @@ public class Utils implements Constants {
     public static List<AttackVector> getDirectionalActionPath(BaseMap combatMap, int dirmask, int x, int y, int minDistance, int maxDistance,
             boolean weaponCanAttackThroughObjects, boolean checkForCreatures, boolean isCannonBall) {
 
-        List<AttackVector> path = new ArrayList<AttackVector>();
+        List<AttackVector> path = new ArrayList<>();
 
         /*
          * try every tile in the given direction, up to the given range.
@@ -346,10 +343,10 @@ public class Utils implements Constants {
             public boolean act(float delta) {
                 switch (p.res) {
                     case HIT:
-                        p.resultTexture = CombatScreen.hitTile;
+                        p.resultTexture = Ultima4.hitTile;
                         break;
                     case MISS:
-                        p.resultTexture = CombatScreen.missTile;
+                        p.resultTexture = Ultima4.missTile;
                         break;
                 }
 
@@ -401,7 +398,7 @@ public class Utils implements Constants {
 
     public static void animateMagicAttack(Stage stage, final CombatScreen scr, PartyMember attacker, Direction dir, int x, int y, Spell spell, int minDamage, int maxDamage) {
 
-        final AttackVector av = Utils.castSpellAttack(scr.combatMap, attacker, dir, x, y, minDamage, maxDamage);
+        final AttackVector av = Utils.castSpellAttack(scr.combatMap, attacker, dir, x, y, minDamage, maxDamage, spell);
 
         Color color = Color.WHITE;
         switch (spell) {
@@ -409,13 +406,16 @@ public class Utils implements Constants {
                 color = Color.RED;
                 break;
             case ICEBALL:
-                color = Color.BLUE;
+                color = Color.CYAN;
                 break;
             case KILL:
-                color = Color.WHITE;
+                color = Color.VIOLET;
                 break;
             case MAGICMISSILE:
                 color = Color.BLUE;
+                break;
+            case SLEEP:
+                color = Color.PURPLE;
                 break;
         }
 
@@ -428,10 +428,10 @@ public class Utils implements Constants {
 
                 switch (p.res) {
                     case HIT:
-                        p.resultTexture = CombatScreen.hitTile;
+                        p.resultTexture = Ultima4.hitTile;
                         break;
                     case MISS:
-                        p.resultTexture = CombatScreen.missTile;
+                        p.resultTexture = Ultima4.missTile;
                         break;
                 }
 
@@ -446,14 +446,14 @@ public class Utils implements Constants {
         stage.addActor(p);
     }
 
-    private static AttackVector castSpellAttack(BaseMap combatMap, PartyMember attacker, Direction dir, int x, int y, int minDamage, int maxDamage) {
+    private static AttackVector castSpellAttack(BaseMap combatMap, PartyMember attacker, Direction dir, int x, int y, int minDamage, int maxDamage, Spell spell) {
 
         List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), x, y, 1, 11, true, true, false);
 
         AttackVector target = null;
         int distance = 1;
         for (AttackVector v : path) {
-            AttackResult res = castAt(combatMap, v, attacker, minDamage, maxDamage);
+            AttackResult res = castAt(combatMap, v, attacker, minDamage, maxDamage, spell);
             target = v;
             target.result = res;
             target.distance = distance;
@@ -497,7 +497,7 @@ public class Utils implements Constants {
         return res;
     }
 
-    private static AttackResult castAt(BaseMap combatMap, AttackVector target, PartyMember attacker, int minDamage, int maxDamage) {
+    private static AttackResult castAt(BaseMap combatMap, AttackVector target, PartyMember attacker, int minDamage, int maxDamage, Spell spell) {
 
         AttackResult res = AttackResult.NONE;
         Creature creature = null;
@@ -511,22 +511,37 @@ public class Utils implements Constants {
         if (creature == null) {
             return res;
         }
-
-        if (!attackHit(attacker, creature)) {
-            Ultima4.hud.add("Missed!\n");
-            res = AttackResult.MISS;
-        } else {
-            Sounds.play(Sound.NPC_STRUCK);
-
-            int attackDamage = ((minDamage >= 0) && (minDamage < maxDamage))
-                    ? rand.nextInt((maxDamage + 1) - minDamage) + minDamage
-                    : maxDamage;
-
-            dealDamage(attacker, creature, attackDamage);
-            res = AttackResult.HIT;
+        
+        if (spell == Spell.SLEEP) {
+            if (!"sleep".equals(creature.getResists())) {
+                Sounds.play(Sound.NPC_STRUCK);
+                Ultima4.hud.add("Slept!\n");
+                creature.setStatus(StatusType.SLEEPING);
+                return AttackResult.HIT;
+            } else {
+                Sounds.play(Sound.EVADE);
+                Ultima4.hud.add("Resisted!\n");
+                return AttackResult.MISS;
+            }
         }
+        
+        if (spell == Spell.FIREBALL) {
+            if ("fire".equals(creature.getResists())) {
+                Sounds.play(Sound.EVADE);
+                Ultima4.hud.add("Resisted!\n");
+                return AttackResult.MISS;
+            }
+        } 
 
-        return res;
+        Sounds.play(Sound.NPC_STRUCK);
+        
+        int attackDamage = ((minDamage >= 0) && (minDamage < maxDamage))
+                ? rand.nextInt((maxDamage + 1) - minDamage) + minDamage
+                : maxDamage;
+        
+        dealDamage(attacker, creature, attackDamage);
+
+        return AttackResult.HIT;
     }
 
     public static void animateCannonFire(final BaseScreen screen, final Stage stage, final BaseMap map, final AttackVector av, final int sx, final int sy, final boolean avatarAttack) {
@@ -541,14 +556,14 @@ public class Utils implements Constants {
             public void run() {
                 switch (p.res) {
                     case HIT:
-                        p.resultTexture = CombatScreen.hitTile;
+                        p.resultTexture = Ultima4.hitTile;
                         map.removeCreature(av.impactedCreature);
                         if (av.impactedDrawable != null && av.impactedDrawable.getShipHull() <= 0) {
                             av.impactedDrawable.remove();
                         }
                         break;
                     case MISS:
-                        p.resultTexture = CombatScreen.missTile;
+                        p.resultTexture = Ultima4.missTile;
                         break;
                 }
 

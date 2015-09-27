@@ -21,6 +21,7 @@ import javax.xml.bind.Unmarshaller;
 import objects.JournalEntries;
 import objects.JournalEntry;
 import util.PartyDeathException;
+import util.XORShiftRandom;
 
 public class Context implements Constants {
 
@@ -43,7 +44,7 @@ public class Context implements Constants {
 
     private long lastCommandTime = System.currentTimeMillis();
 
-    private final Random rand = new Random();
+    private final Random rand = new XORShiftRandom();
 
     public int getLine() {
         return line;

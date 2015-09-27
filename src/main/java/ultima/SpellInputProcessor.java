@@ -60,6 +60,7 @@ public class SpellInputProcessor extends InputAdapter implements Constants {
                     case KILL:
                     case MAGICMISSILE:
                     case FIREBALL:
+                    case SLEEP:
                     case ENERGY:
                     case WINDS:
                     case BLINK:
