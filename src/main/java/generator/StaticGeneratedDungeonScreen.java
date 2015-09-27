@@ -65,6 +65,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.UBJsonReader;
 import objects.Portal;
 import static ultima.BaseScreen.mainGame;
+import ultima.Context;
 import ultima.DungeonScreen;
 import ultima.MixtureScreen;
 import util.PartyDeathException;
@@ -120,10 +121,11 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
     public SecondaryInputProcessor sip;
 
-    public StaticGeneratedDungeonScreen(GameScreen gameScreen, Maps map) {
+    public StaticGeneratedDungeonScreen(GameScreen gameScreen, Context context, Maps map) {
         this.dngMap = map;
         scType = ScreenType.TMXDUNGEON;
         this.gameScreen = gameScreen;
+        this.context = context;
         this.stage = new Stage();
         sip = new SecondaryInputProcessor(this, stage);
         addButtons();
@@ -133,12 +135,12 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(new InputMultiplexer(this, stage, inputController));
-        GameScreen.context.getParty().addObserver(this);
+        context.getParty().addObserver(this);
     }
 
     @Override
     public void hide() {
-        GameScreen.context.getParty().deleteObserver(this);
+        context.getParty().deleteObserver(this);
     }
 
     public void init() {
@@ -224,7 +226,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
                         if (tile == null) {
                             CreatureType ct = CreatureType.get(val);
                             if (ct != null) {
-                                Creature creature = GameScreen.creatures.getInstance(ct, GameScreen.standardAtlas);
+                                Creature creature = Ultima4.creatures.getInstance(ct, Ultima4.standardAtlas);
                                 creature.currentX = x;
                                 creature.currentY = y;
                                 creature.currentLevel = level;
@@ -358,10 +360,10 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         batch.begin();
         batch.draw(Ultima4.backGround, 0, 0);
 
-        Ultima4.hud.render(batch, GameScreen.context.getParty());
+        Ultima4.hud.render(batch, context.getParty());
         Ultima4.font.draw(batch, "Level " + (currentLevel + 1) + " facing " + currentDir, 305, 36);
         if (showZstats > 0) {
-            GameScreen.context.getParty().getSaveGame().renderZstats(showZstats, Ultima4.font, batch, Ultima4.SCREEN_HEIGHT);
+            context.getParty().getSaveGame().renderZstats(showZstats, Ultima4.font, batch, Ultima4.SCREEN_HEIGHT);
         }
         batch.end();
         
@@ -533,9 +535,9 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         }
         Maps contextMap = Maps.get(dngMap.getId());
         DungeonTile tile = dungeonTiles[currentLevel][x][y];
-        TiledMap tmap = new UltimaTiledMapLoader(tile.getCombatMap(), GameScreen.standardAtlas, 11, 11, tilePixelWidth, tilePixelHeight).load();
-        GameScreen.context.setCurrentTiledMap(tmap);
-        CombatScreen sc = new CombatScreen(this, GameScreen.context, contextMap, tile.getCombatMap().getMap(), tmap, cr.getTile(), GameScreen.creatures, GameScreen.standardAtlas);
+        TiledMap tmap = new UltimaTiledMapLoader(tile.getCombatMap(), Ultima4.standardAtlas, 11, 11, tilePixelWidth, tilePixelHeight).load();
+        context.setCurrentTiledMap(tmap);
+        CombatScreen sc = new CombatScreen(this, context, contextMap, tile.getCombatMap().getMap(), tmap, cr.getTile(), Ultima4.creatures, Ultima4.standardAtlas);
         mainGame.setScreen(sc);
         currentEncounter = cr;
     }
@@ -543,7 +545,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
     @Override
     public void partyDeath() {
-        mainGame.setScreen(new DeathScreen(gameScreen, GameScreen.context.getParty()));
+        mainGame.setScreen(new DeathScreen(gameScreen, context.getParty()));
         gameScreen.loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
     }
 
@@ -556,7 +558,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
             if (currentEncounter != null) {
                 log("Victory!");
-                GameScreen.context.getParty().adjustKarma(KarmaAction.KILLED_EVIL);
+                context.getParty().adjustKarma(KarmaAction.KILLED_EVIL);
                 int x = (Math.round(currentPos.x) - 1);
                 int y = (Math.round(currentPos.z) - 1);
                 /* add a chest, if the creature leaves one */
@@ -573,10 +575,10 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
             }
 
         } else {
-            if (combatMap.getType() == MapType.combat && GameScreen.context.getParty().didAnyoneFlee()) {
+            if (combatMap.getType() == MapType.combat && context.getParty().didAnyoneFlee()) {
                 log("Battle is lost!");
                 //no flee penalty in dungeons
-            } else if (!GameScreen.context.getParty().isAnyoneAlive()) {
+            } else if (!context.getParty().isAnyoneAlive()) {
                 partyDeath();
             }
         }
@@ -730,7 +732,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         } else if (keycode == Keys.C) {
             log("Cast Spell: ");
             log("Who casts (1-8): ");
-            Gdx.input.setInputProcessor(new SpellInputProcessor(this, stage, x, y, null));
+            Gdx.input.setInputProcessor(new SpellInputProcessor(this, context, stage, x, y, null));
 
         } else if (keycode == Keys.I) {
 
@@ -742,19 +744,19 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
             sip.setinitialKeyCode(keycode, tile, x, y);
 
         } else if (keycode == Keys.H) {
-            CombatScreen.holeUp(this.dngMap, x, y, this, GameScreen.context, GameScreen.creatures, GameScreen.standardAtlas);
+            CombatScreen.holeUp(this.dngMap, x, y, this, context, Ultima4.creatures, Ultima4.standardAtlas);
             return false;
 
         } else if (keycode == Keys.V) {
 
         } else if (keycode == Keys.M) {
 
-            mainGame.setScreen(new MixtureScreen(mainGame, this, Ultima4.skin, GameScreen.context.getParty()));
+            mainGame.setScreen(new MixtureScreen(mainGame, this, Ultima4.skin, context.getParty()));
 
         } else if (keycode == Keys.S) {
             if (tile == DungeonTile.ALTAR) {
                 log("Search Altar");
-                ItemMapLabels l = dngMap.getMap().searchLocation(this, GameScreen.context.getParty(), x, y, currentLevel);
+                ItemMapLabels l = dngMap.getMap().searchLocation(this, context.getParty(), x, y, currentLevel);
                 if (l != null) {
                     log("You found " + l.getDesc() + ".");
                 } else {
@@ -774,13 +776,13 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
                 sip.setinitialKeyCode(keycode, tile, x, y);
             }
         } else if (keycode == Keys.Q) {
-            GameScreen.context.saveGame(x, y, currentLevel, currentDir, dngMap);
+            context.saveGame(x, y, currentLevel, currentDir, dngMap);
             log("Saved Game.");
             return false;
         } else if (keycode == Keys.Z) {
             showZstats = showZstats + 1;
             if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
-                if (showZstats > GameScreen.context.getParty().getMembers().size()) {
+                if (showZstats > context.getParty().getMembers().size()) {
                     showZstats = STATS_WEAPONS;
                 }
             }
@@ -800,7 +802,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
     @Override
     public void finishTurn(int currentX, int currentY) {
-        GameScreen.context.getAura().passTurn();
+        context.getAura().passTurn();
 
         if (checkRandomDungeonCreatures()) {
             spawnDungeonCreature(null, currentX, currentY);
@@ -818,13 +820,13 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
                 break;
             case PIT_TRAP:
                 log("Pit!");
-                GameScreen.context.getParty().applyEffect(TileEffect.LAVA);
+                context.getParty().applyEffect(TileEffect.LAVA);
                 Sounds.play(Sound.BOOM);
                 dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
                 break;
             case ROCK_TRAP:
                 log("Falling Rocks!");
-                GameScreen.context.getParty().applyEffect(TileEffect.LAVA);
+                context.getParty().applyEffect(TileEffect.LAVA);
                 Sounds.play(Sound.ROCKS);
                 dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
                 break;
@@ -839,15 +841,15 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
                 }
                 break;
             case FIELD_POISON:
-                GameScreen.context.getParty().applyEffect(TileEffect.POISONFIELD);
+                context.getParty().applyEffect(TileEffect.POISONFIELD);
                 Sounds.play(Sound.POISON_DAMAGE);
                 break;
             case FIELD_SLEEP:
-                GameScreen.context.getParty().applyEffect(TileEffect.SLEEP);
+                context.getParty().applyEffect(TileEffect.SLEEP);
                 Sounds.play(Sound.SLEEP);
                 break;
             case FIELD_FIRE:
-                GameScreen.context.getParty().applyEffect(TileEffect.LAVA);
+                context.getParty().applyEffect(TileEffect.LAVA);
                 Sounds.play(Sound.FIREFIELD);
                 break;
         }
@@ -855,10 +857,10 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
     public void dungeonDrinkFountain(DungeonTile type, int index) {
         try {
-            if (index >= GameScreen.context.getParty().getMembers().size()) {
+            if (index >= context.getParty().getMembers().size()) {
                 return;
             }
-            PartyMember pm = GameScreen.context.getParty().getMember(index);
+            PartyMember pm = context.getParty().getMember(index);
             switch (type) {
                 case FOUNTAIN_PLAIN:
                     log("Hmmm--No Effect!");
@@ -902,10 +904,10 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
     public void dungeonTouchOrb(int index) {
         try {
-            if (index >= GameScreen.context.getParty().getMembers().size()) {
+            if (index >= context.getParty().getMembers().size()) {
                 return;
             }
-            PartyMember pm = GameScreen.context.getParty().getMember(index);
+            PartyMember pm = context.getParty().getMember(index);
             int x = (Math.round(currentPos.x) - 1);
             int y = (Math.round(currentPos.z) - 1);
 
@@ -980,9 +982,9 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
             }
 
             if (chest != null) {
-                PartyMember pm = GameScreen.context.getParty().getMember(index);
-                GameScreen.context.getChestTrapHandler(pm);
-                log(String.format("The Chest Holds: %d Gold", GameScreen.context.getParty().getChestGold()));
+                PartyMember pm = context.getParty().getMember(index);
+                context.getChestTrapHandler(pm);
+                log(String.format("The Chest Holds: %d Gold", context.getParty().getChestGold()));
 
                 //remove chest model instance
                 modelInstances.remove(chest);
@@ -1086,7 +1088,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
                 }
             }
 
-            creature = GameScreen.creatures.getInstance(monster, GameScreen.standardAtlas);
+            creature = Ultima4.creatures.getInstance(monster, Ultima4.standardAtlas);
         }
 
         if (creature != null) {
@@ -1213,7 +1215,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
             try {
                 int x = (Math.round(currentPos.x) - 1);
                 int y = (Math.round(currentPos.z) - 1);
-                Texture t = Utils.peerGem(layers[currentLevel], mapTileIds, GameScreen.standardAtlas, x, y);
+                Texture t = Utils.peerGem(layers[currentLevel], mapTileIds, Ultima4.standardAtlas, x, y);
                 img = new Image(t);
                 img.setX(Ultima4.SCREEN_WIDTH / 2 - t.getWidth() / 2);
                 img.setY(Ultima4.SCREEN_HEIGHT / 2 - t.getHeight() / 2);

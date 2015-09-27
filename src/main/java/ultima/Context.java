@@ -20,7 +20,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import objects.JournalEntries;
 import objects.JournalEntry;
-import static ultima.GameScreen.context;
 import util.PartyDeathException;
 
 public class Context implements Constants {

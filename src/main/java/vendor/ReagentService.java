@@ -1,15 +1,15 @@
 package vendor;
 
-import objects.Party;
 import ultima.Constants.KarmaAction;
+import ultima.Context;
 import util.Utils;
 
 public class ReagentService extends BaseVendor {
 
     int youPay;
 
-    public ReagentService(Vendor vendor, Party party) {
-        super(vendor, party);
+    public ReagentService(Vendor vendor, Context context) {
+        super(vendor, context);
     }
 
     @Override

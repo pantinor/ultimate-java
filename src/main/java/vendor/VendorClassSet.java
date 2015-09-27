@@ -5,9 +5,9 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import objects.Party;
 import ultima.Constants.InventoryType;
 import ultima.Constants.Maps;
+import ultima.Context;
 
 @XmlRootElement(name = "vendorSet")
 public class VendorClassSet {
@@ -44,38 +44,38 @@ public class VendorClassSet {
         }
     }
 
-    public BaseVendor getVendorImpl(InventoryType type, Maps map, Party party) {
+    public BaseVendor getVendorImpl(InventoryType type, Maps map, Context context) {
 
         BaseVendor v = null;
 
         switch (type) {
             case ARMOR:
-                v = new ArmorVendor(getVendor(type, map), party);
+                v = new ArmorVendor(getVendor(type, map), context);
                 break;
             case FOOD:
-                v = new FoodVendor(getVendor(type, map), party);
+                v = new FoodVendor(getVendor(type, map), context);
                 break;
             case GUILDITEM:
-                v = new GuildVendor(getVendor(type, map), party);
+                v = new GuildVendor(getVendor(type, map), context);
                 break;
             case HEALER:
-                v = new HealerService(getVendor(type, map), party);
+                v = new HealerService(getVendor(type, map), context);
                 break;
             case HORSE:
-                v = new HorseService(getVendor(type, map), party);
+                v = new HorseService(getVendor(type, map), context);
                 break;
             case INN:
-                v = new InnService(getVendor(type, map), party);
+                v = new InnService(getVendor(type, map), context);
                 break;
             case REAGENT:
-                v = new ReagentService(getVendor(type, map), party);
+                v = new ReagentService(getVendor(type, map), context);
                 break;
             case TAVERNINFO:
             case TAVERN:
-                v = new TavernService(getVendor(type, map), party);
+                v = new TavernService(getVendor(type, map), context);
                 break;
             case WEAPON:
-                v = new WeaponVendor(getVendor(type, map), party);
+                v = new WeaponVendor(getVendor(type, map), context);
                 break;
             default:
                 break;

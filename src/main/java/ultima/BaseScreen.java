@@ -31,7 +31,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
     public static Ultima4 mainGame;
 
     protected BaseScreen returnScreen;
-
+    public Context context;
     protected Stage stage;
 
     public static TextureRegion hitTile;
@@ -94,7 +94,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
         jourButt.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                mainGame.setScreen(new JournalScreen(mainGame, BaseScreen.this, Ultima4.skin, GameScreen.context.getJournal()));
+                mainGame.setScreen(new JournalScreen(mainGame, BaseScreen.this, Ultima4.skin, context.getJournal()));
             }
         });
         jourButt.setX(515);
@@ -255,7 +255,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
                     if (p1 == 0 || p2 == 0) {
                         log("You must lead!");
                     } else {
-                        GameScreen.context.getParty().swapPlayers(p1, p2);;
+                        context.getParty().swapPlayers(p1, p2);;
                     }
                 }
             } else {

@@ -3,6 +3,7 @@ package vendor;
 import objects.Party;
 import ultima.BaseScreen;
 import ultima.Constants.InventoryType;
+import ultima.Context;
 import util.LogScrollPane;
 
 public abstract class BaseVendor {
@@ -48,6 +49,7 @@ public abstract class BaseVendor {
     ConvState state;
     Vendor vendor;
     Party party;
+    Context context;
     InventoryType type;
     String welcomeMessage;
 
@@ -58,9 +60,10 @@ public abstract class BaseVendor {
 
     private LogScrollPane scrollPane;
 
-    public BaseVendor(Vendor vendor, Party party) {
+    public BaseVendor(Vendor vendor, Context context) {
         this.vendor = vendor;
-        this.party = party;
+        this.context = context;
+        this.party = context.getParty();
         this.type = vendor.getVendorType();
         init();
     }

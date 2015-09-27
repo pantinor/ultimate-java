@@ -1,7 +1,7 @@
 package vendor;
 
-import objects.Party;
 import ultima.Constants.InventoryType;
+import ultima.Context;
 import ultima.GameScreen;
 import vendor.BaseVendor.ConvState;
 
@@ -12,8 +12,8 @@ public class TavernService extends BaseVendor {
     Item specFood;
     Item ale;
 
-    public TavernService(Vendor vendor, Party party) {
-        super(vendor, party);
+    public TavernService(Vendor vendor, Context context) {
+        super(vendor, context);
 
         for (Item i : vendor.getInventoryItems()) {
             if (i.getType() == InventoryType.FOOD) {
@@ -80,7 +80,7 @@ public class TavernService extends BaseVendor {
             case TAVERN_INFO:
                 party.adjustGold(-(youPay + tip));
                 String text = String.format(currentSelectedItem.getDescription(), vendor.getOwner());
-                GameScreen.context.addEntry(vendor.getOwner(), this.vendor.getMapId(), text);
+                context.addEntry(vendor.getOwner(), this.vendor.getMapId(), text);
                 displayToScreen(text);
                 displayToScreen("Somethin' else?");
                 state = ConvState.ANYTHING_ELSE;
@@ -216,7 +216,7 @@ public class TavernService extends BaseVendor {
         boolean ret = false;
 
         if (specFood.getPrice() * currentCount > party.getSaveGame().gold) {
-            displayToScreen("Ya can only afford " + Math.round(GameScreen.context.getParty().getSaveGame().gold / specFood.getPrice()) + " plates.");
+            displayToScreen("Ya can only afford " + Math.round(party.getSaveGame().gold / specFood.getPrice()) + " plates.");
         } else {
             ret = true;
         }

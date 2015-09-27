@@ -57,12 +57,12 @@ public class ShrineScreen extends BaseScreen {
     
     private Viewport mapViewPort;
 
-    public ShrineScreen(BaseScreen returnScreen, Virtue virtue, TiledMap tmap, TextureAtlas a1, TextureAtlas a2) {
+    public ShrineScreen(BaseScreen returnScreen, Party party, Virtue virtue, TiledMap tmap, TextureAtlas a1, TextureAtlas a2) {
 
         scType = ScreenType.SHRINE;
 
         this.returnScreen = returnScreen;
-        this.party = GameScreen.context.getParty();
+        this.party = party;
         this.virtue = virtue;
 
         renderer = new OrthogonalTiledMapRenderer(tmap, 1f);

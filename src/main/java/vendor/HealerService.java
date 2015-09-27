@@ -1,14 +1,14 @@
 package vendor;
 
-import objects.Party;
 import objects.Party.PartyMember;
 import objects.SaveGame;
 import ultima.Constants.KarmaAction;
+import ultima.Context;
 
 public class HealerService extends BaseVendor {
 
-    public HealerService(Vendor vendor, Party party) {
-        super(vendor, party);
+    public HealerService(Vendor vendor, Context context) {
+        super(vendor, context);
     }
 
     @Override

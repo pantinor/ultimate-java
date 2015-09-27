@@ -66,6 +66,7 @@ import static objects.Conversation.standardQuery;
 import objects.HawkwindConversation;
 import objects.LordBritishConversation;
 import objects.PersonRole;
+import ultima.Context;
 
 public class Utils implements Constants {
 
@@ -562,14 +563,14 @@ public class Utils implements Constants {
         stage.addActor(p);
     }
 
-    public static AttackVector enemyfireCannon(Stage stage, BaseMap combatMap, Direction dir, int startX, int startY, int avatarX, int avatarY) throws PartyDeathException {
+    public static AttackVector enemyfireCannon(Context context, Stage stage, BaseMap combatMap, Direction dir, int startX, int startY, int avatarX, int avatarY) throws PartyDeathException {
 
         List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), startX, startY, 1, 4, true, false, true);
 
         AttackVector target = null;
         int distance = 1;
         for (AttackVector v : path) {
-            AttackResult res = fireAt(stage, combatMap, v, false, avatarX, avatarY);
+            AttackResult res = fireAt(context, stage, combatMap, v, false, avatarX, avatarY);
             target = v;
             target.result = res;
             target.distance = distance;
@@ -582,14 +583,14 @@ public class Utils implements Constants {
         return target;
     }
 
-    public static AttackVector avatarfireCannon(Stage stage, BaseMap combatMap, Direction dir, int startX, int startY) {
+    public static AttackVector avatarfireCannon(Context context, Stage stage, BaseMap combatMap, Direction dir, int startX, int startY) {
 
         List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dir.getMask(), startX, startY, 1, 4, true, true, true);
         AttackVector target = null;
         try {
             int distance = 1;
             for (AttackVector v : path) {
-                AttackResult res = fireAt(stage, combatMap, v, true, 0, 0);
+                AttackResult res = fireAt(context, stage, combatMap, v, true, 0, 0);
                 target = v;
                 target.result = res;
                 target.distance = distance;
@@ -605,7 +606,7 @@ public class Utils implements Constants {
         return target;
     }
 
-    private static AttackResult fireAt(Stage stage, BaseMap combatMap, AttackVector target, boolean avatarAttack, int avatarX, int avatarY) throws PartyDeathException {
+    private static AttackResult fireAt(Context context, Stage stage, BaseMap combatMap, AttackVector target, boolean avatarAttack, int avatarX, int avatarY) throws PartyDeathException {
 
         AttackResult res = AttackResult.NONE;
 
@@ -649,10 +650,10 @@ public class Utils implements Constants {
 
         } else if (target.x == avatarX && target.y == avatarY) {
 
-            if (GameScreen.context.getTransportContext() == TransportContext.SHIP) {
-                GameScreen.context.damageShip(-1, 10);
+            if (context.getTransportContext() == TransportContext.SHIP) {
+                context.damageShip(-1, 10);
             } else {
-                GameScreen.context.getParty().damageParty(10, 25);
+                context.getParty().damageParty(10, 25);
             }
 
             res = AttackResult.HIT;

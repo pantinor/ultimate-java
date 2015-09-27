@@ -1,13 +1,13 @@
 package vendor;
 
-import objects.Party;
+import ultima.Context;
 import ultima.GameScreen;
 import util.Utils;
 
 public class InnService extends BaseVendor {
 
-    public InnService(Vendor vendor, Party party) {
-        super(vendor, party);
+    public InnService(Vendor vendor, Context context) {
+        super(vendor, context);
     }
 
     @Override

@@ -130,7 +130,7 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
                     if (p != null && (p.getConversation() != null || p.getRole() != null)) {
                         Gdx.input.setInputProcessor(stage);
                         if (p.getRole() != null && p.getRole().getInventoryType() != null && p.getRole().getInventoryType() == InventoryType.TINKER) {
-                            dialog = new TinkerDialog(GameScreen.context.getParty(), screen, stage, Ultima4.skin).show();
+                            dialog = new TinkerDialog(screen.context.getParty(), screen, stage, Ultima4.skin).show();
                         } else {
                             dialog = new ConversationDialog(p, screen, stage).show(stage);
                         }
@@ -162,14 +162,14 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
             } else if (initialKeyCode == Keys.R) {
 
                 if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
-                    Gdx.input.setInputProcessor(new ReadyWearInputAdapter(GameScreen.context.getParty().getMember(keycode - 7 - 1), true));
+                    Gdx.input.setInputProcessor(new ReadyWearInputAdapter(screen.context.getParty().getMember(keycode - 7 - 1), true));
                     return false;
                 }
 
             } else if (initialKeyCode == Keys.W) {
 
                 if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
-                    Gdx.input.setInputProcessor(new ReadyWearInputAdapter(GameScreen.context.getParty().getMember(keycode - 7 - 1), false));
+                    Gdx.input.setInputProcessor(new ReadyWearInputAdapter(screen.context.getParty().getMember(keycode - 7 - 1), false));
                     return false;
                 }
 
@@ -188,7 +188,7 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
 
                 for (Creature c : bm.getCreatures()) {
                     if (c.currentX == x && c.currentY == y) {
-                        Maps cm = GameScreen.context.getCombatMap(c, bm, x, y, currentX, currentY);
+                        Maps cm = screen.context.getCombatMap(c, bm, x, y, currentX, currentY);
                         gameScreen.attackAt(cm, c);
                         return false;
                     }
@@ -342,14 +342,14 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
             } else if (initialKeyCode == Keys.R) {
 
                 if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
-                    Gdx.input.setInputProcessor(new ReadyWearInputAdapter(GameScreen.context.getParty().getMember(keycode - 7 - 1), true));
+                    Gdx.input.setInputProcessor(new ReadyWearInputAdapter(screen.context.getParty().getMember(keycode - 7 - 1), true));
                     return false;
                 }
 
             } else if (initialKeyCode == Keys.W) {
 
                 if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
-                    Gdx.input.setInputProcessor(new ReadyWearInputAdapter(GameScreen.context.getParty().getMember(keycode - 7 - 1), false));
+                    Gdx.input.setInputProcessor(new ReadyWearInputAdapter(screen.context.getParty().getMember(keycode - 7 - 1), false));
                     return false;
                 }
             }
@@ -390,14 +390,14 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
             } else if (initialKeyCode == Keys.R) {
 
                 if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
-                    Gdx.input.setInputProcessor(new ReadyWearInputAdapter(GameScreen.context.getParty().getMember(keycode - 7 - 1), true));
+                    Gdx.input.setInputProcessor(new ReadyWearInputAdapter(screen.context.getParty().getMember(keycode - 7 - 1), true));
                     return false;
                 }
 
             } else if (initialKeyCode == Keys.W) {
 
                 if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
-                    Gdx.input.setInputProcessor(new ReadyWearInputAdapter(GameScreen.context.getParty().getMember(keycode - 7 - 1), false));
+                    Gdx.input.setInputProcessor(new ReadyWearInputAdapter(screen.context.getParty().getMember(keycode - 7 - 1), false));
                     return false;
                 }
             }
@@ -432,7 +432,7 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
                 try {
                     Stone stone = Stone.valueOf(Stone.class, color);
 
-                    if ((GameScreen.context.getParty().getSaveGame().stones & stone.getLoc()) == 0) {
+                    if ((screen.context.getParty().getSaveGame().stones & stone.getLoc()) == 0) {
                         screen.log("None owned!");
                         Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
                         combatScreen.finishPlayerTurn();

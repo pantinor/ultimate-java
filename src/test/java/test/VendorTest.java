@@ -23,6 +23,7 @@ import ultima.Constants.InventoryType;
 import ultima.Constants.Maps;
 import ultima.Constants.StatusType;
 import ultima.Constants.WeaponType;
+import ultima.Context;
 import vendor.BaseVendor;
 import vendor.GuildVendor;
 import vendor.HealerService;
@@ -50,6 +51,8 @@ public class VendorTest {
         rec.hp = 200;
 
         Party party = new Party(sg);
+        Context context = new Context();
+        context.setParty(party);
         party.addMember(rec);
 
         sg.gold = 25;
@@ -58,7 +61,7 @@ public class VendorTest {
         party.getSaveGame().weapons[WeaponType.SLING.ordinal()] = 5;
         party.getSaveGame().weapons[WeaponType.MAGICAXE.ordinal()] = 5;
 
-        BaseVendor v = new WeaponVendor(vcs.getVendor(InventoryType.WEAPON, Maps.BRITAIN), party);
+        BaseVendor v = new WeaponVendor(vcs.getVendor(InventoryType.WEAPON, Maps.BRITAIN), context);
 
         while (true) {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -174,13 +177,15 @@ public class VendorTest {
         rec.status = StatusType.POISONED;
 
         Party party = new Party(sg);
+        Context context = new Context();
+        context.setParty(party);
         party.addMember(rec);
         party.addMember(rec2);
 
         sg.gold = 50;
         sg.food = 200;
 
-        BaseVendor v = new HealerService(vcs.getVendor(InventoryType.HEALER, Maps.BRITAIN), party);
+        BaseVendor v = new HealerService(vcs.getVendor(InventoryType.HEALER, Maps.BRITAIN), context);
 
         while (true) {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -220,11 +225,13 @@ public class VendorTest {
         rec.hp = 200;
 
         Party party = new Party(sg);
+        Context context = new Context();
+        context.setParty(party);
         party.addMember(rec);
 
         sg.gold = 500;
 
-        BaseVendor v = new HorseService(vcs.getVendor(InventoryType.HORSE, Maps.PAWS), party);
+        BaseVendor v = new HorseService(vcs.getVendor(InventoryType.HORSE, Maps.PAWS), context);
 
         while (true) {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -263,11 +270,13 @@ public class VendorTest {
         rec.hp = 200;
 
         Party party = new Party(sg);
+        Context context = new Context();
+        context.setParty(party);
         party.addMember(rec);
 
         sg.gold = 500;
 
-        BaseVendor v = new ReagentService(vcs.getVendor(InventoryType.REAGENT, Maps.PAWS), party);
+        BaseVendor v = new ReagentService(vcs.getVendor(InventoryType.REAGENT, Maps.PAWS), context);
 
         while (true) {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -306,11 +315,13 @@ public class VendorTest {
         rec.hp = 200;
 
         Party party = new Party(sg);
+        Context context = new Context();
+        context.setParty(party);
         party.addMember(rec);
 
         sg.gold = 500;
 
-        BaseVendor v = new InnService(vcs.getVendor(InventoryType.INN, Maps.TRINSIC), party);
+        BaseVendor v = new InnService(vcs.getVendor(InventoryType.INN, Maps.TRINSIC), context);
 
         while (true) {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -349,11 +360,13 @@ public class VendorTest {
         rec.hp = 200;
 
         Party party = new Party(sg);
+        Context context = new Context();
+        context.setParty(party);
         party.addMember(rec);
 
         sg.gold = 20;
 
-        BaseVendor v = new GuildVendor(vcs.getVendor(InventoryType.GUILDITEM, Maps.BUCCANEERS_DEN), party);
+        BaseVendor v = new GuildVendor(vcs.getVendor(InventoryType.GUILDITEM, Maps.BUCCANEERS_DEN), context);
 
         while (true) {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));

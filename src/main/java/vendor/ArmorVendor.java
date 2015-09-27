@@ -1,13 +1,13 @@
 package vendor;
 
-import objects.Party;
+import ultima.Context;
 
 public class ArmorVendor extends BaseVendor {
 
     String welcomeMessage = "Welcome to %s\n%s says:\nWelcome friend!\nArt thou here to Buy or Sell?";
 
-    public ArmorVendor(Vendor vendor, Party party) {
-        super(vendor, party);
+    public ArmorVendor(Vendor vendor, Context context) {
+        super(vendor, context);
         state = ConvState.ASK_BUY_SELL;
     }
 

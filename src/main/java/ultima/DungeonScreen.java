@@ -59,7 +59,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.UBJsonReader;
 import static ultima.BaseScreen.mainGame;
-import static ultima.GameScreen.context;
 import util.PartyDeathException;
 
 public class DungeonScreen extends BaseScreen {
@@ -121,10 +120,11 @@ public class DungeonScreen extends BaseScreen {
     private Texture miniMap;
     private MiniMapIcon miniMapIcon;
 
-    public DungeonScreen(GameScreen gameScreen, Maps map) {
+    public DungeonScreen(GameScreen gameScreen, Context context, Maps map) {
 
         scType = ScreenType.DUNGEON;
         this.dngMap = map;
+        this.context = context;
         this.dungeonFileName = map.getMap().getFname();
         this.gameScreen = gameScreen;
         this.stage = new Stage();
@@ -138,12 +138,12 @@ public class DungeonScreen extends BaseScreen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
-        GameScreen.context.getParty().addObserver(this);
+        context.getParty().addObserver(this);
     }
 
     @Override
     public void hide() {
-        GameScreen.context.getParty().deleteObserver(this);
+        context.getParty().deleteObserver(this);
     }
 
     public void init() {
@@ -475,11 +475,11 @@ public class DungeonScreen extends BaseScreen {
             batch.draw(MINI_MAP_TEXTURE, xalignMM, yalignMM);
             batch.draw(miniMap, xalignMM, yalignMM);
         }
-        Ultima4.hud.render(batch, GameScreen.context.getParty());
+        Ultima4.hud.render(batch, context.getParty());
         Ultima4.font.draw(batch, this.dngMap.getLabel(), 315, Ultima4.SCREEN_HEIGHT - 10);
         Ultima4.font.draw(batch, "Level " + (currentLevel + 1), 305, 36);
         if (showZstats > 0) {
-            GameScreen.context.getParty().getSaveGame().renderZstats(showZstats, Ultima4.font, batch, Ultima4.SCREEN_HEIGHT);
+            context.getParty().getSaveGame().renderZstats(showZstats, Ultima4.font, batch, Ultima4.SCREEN_HEIGHT);
         }
         batch.end();
         
@@ -725,7 +725,7 @@ public class DungeonScreen extends BaseScreen {
         }
         Maps contextMap = Maps.get(dngMap.getId());
 
-        TiledMap tiledMap = new DungeonRoomTiledMapLoader(loc.room, entryDir, GameScreen.standardAtlas).load();
+        TiledMap tiledMap = new DungeonRoomTiledMapLoader(loc.room, entryDir, Ultima4.standardAtlas).load();
 
         BaseMap baseMap = new BaseMap();
         baseMap.setTiles(loc.room.tiles);
@@ -734,7 +734,7 @@ public class DungeonScreen extends BaseScreen {
         baseMap.setType(MapType.dungeon);
         baseMap.setPortals(dngMap.getMap().getPortals(loc.x, loc.y, loc.z));
 
-        CombatScreen sc = new CombatScreen(this, GameScreen.context, contextMap, baseMap, tiledMap, null, GameScreen.creatures, GameScreen.standardAtlas);
+        CombatScreen sc = new CombatScreen(this, context, contextMap, baseMap, tiledMap, null, Ultima4.creatures, Ultima4.standardAtlas);
 
         if (loc.room.hasAltar) {
             sc.log("The Altar Room of " + loc.room.altarRoomVirtue.toString());
@@ -752,9 +752,9 @@ public class DungeonScreen extends BaseScreen {
                 continue;
             }
 
-            Tile t = GameScreen.baseTileSet.getTileByIndex(tile);
+            Tile t = Ultima4.baseTileSet.getTileByIndex(tile);
 
-            Creature c = GameScreen.creatures.getInstance(CreatureType.get(t.getName()), GameScreen.standardAtlas);
+            Creature c = Ultima4.creatures.getInstance(CreatureType.get(t.getName()), Ultima4.standardAtlas);
 
             c.currentX = startX;
             c.currentY = startY;
@@ -773,16 +773,16 @@ public class DungeonScreen extends BaseScreen {
         }
         Maps contextMap = Maps.get(dngMap.getId());
         DungeonTile tile = dungeonTiles[currentLevel][x][y];
-        TiledMap tmap = new UltimaTiledMapLoader(tile.getCombatMap(), GameScreen.standardAtlas, 11, 11, tilePixelWidth, tilePixelHeight).load();
-        GameScreen.context.setCurrentTiledMap(tmap);
-        CombatScreen sc = new CombatScreen(this, GameScreen.context, contextMap, tile.getCombatMap().getMap(), tmap, cr.getTile(), GameScreen.creatures, GameScreen.standardAtlas);
+        TiledMap tmap = new UltimaTiledMapLoader(tile.getCombatMap(), Ultima4.standardAtlas, 11, 11, tilePixelWidth, tilePixelHeight).load();
+        context.setCurrentTiledMap(tmap);
+        CombatScreen sc = new CombatScreen(this, context, contextMap, tile.getCombatMap().getMap(), tmap, cr.getTile(), Ultima4.creatures, Ultima4.standardAtlas);
         mainGame.setScreen(sc);
         currentEncounter = cr;
     }
 
     @Override
     public void partyDeath() {
-        mainGame.setScreen(new DeathScreen(gameScreen, GameScreen.context.getParty()));
+        mainGame.setScreen(new DeathScreen(gameScreen, context.getParty()));
         gameScreen.loadNextMap(Maps.CASTLE_OF_LORD_BRITISH_2, REVIVE_CASTLE_X, REVIVE_CASTLE_Y);
     }
 
@@ -795,7 +795,7 @@ public class DungeonScreen extends BaseScreen {
 
             if (currentEncounter != null) {
                 log("Victory!");
-                GameScreen.context.getParty().adjustKarma(KarmaAction.KILLED_EVIL);
+                context.getParty().adjustKarma(KarmaAction.KILLED_EVIL);
                 int x = (Math.round(currentPos.x) - 1);
                 int y = (Math.round(currentPos.z) - 1);
                 /* add a chest, if the creature leaves one */
@@ -812,10 +812,10 @@ public class DungeonScreen extends BaseScreen {
             }
 
         } else {
-            if (combatMap.getType() == MapType.combat && GameScreen.context.getParty().didAnyoneFlee()) {
+            if (combatMap.getType() == MapType.combat && context.getParty().didAnyoneFlee()) {
                 log("Battle is lost!");
                 //no flee penalty in dungeons
-            } else if (!GameScreen.context.getParty().isAnyoneAlive()) {
+            } else if (!context.getParty().isAnyoneAlive()) {
                 partyDeath();
             }
         }
@@ -827,7 +827,7 @@ public class DungeonScreen extends BaseScreen {
 
         //if exiting dungeon rooms, move out of the room with orientation to next coordinate
         if (combatMap.getType() == MapType.dungeon) {
-            Direction exitDirection = GameScreen.context.getParty().getActivePartyMember().combatMapExitDirection;
+            Direction exitDirection = context.getParty().getActivePartyMember().combatMapExitDirection;
             if (exitDirection != null) {
                 currentDir = exitDirection;
 
@@ -842,7 +842,7 @@ public class DungeonScreen extends BaseScreen {
                             break;
                         }
                         log("Entering " + m.getLabel() + "!");
-                        DungeonScreen sc = new DungeonScreen(this.gameScreen, m);
+                        DungeonScreen sc = new DungeonScreen(this.gameScreen, this.context, m);
                         sc.restoreSaveGameLocation(p.getStartx(), p.getStarty(), p.getStartlevel(), currentDir);
                         mainGame.setScreen(sc);
                         this.gameScreen.newMapPixelCoords = this.gameScreen.getMapPixelCoords(p.getRetroActiveDest().getX(), p.getRetroActiveDest().getY());
@@ -1021,12 +1021,12 @@ public class DungeonScreen extends BaseScreen {
                 if (currentLevel < 0) {
                     currentLevel = 0;
                     if (dngMap == Maps.HYTHLOTH) {
-                        if (GameScreen.context.getParty().getSaveGame().balloonfound == 0) {
+                        if (context.getParty().getSaveGame().balloonfound == 0) {
                             gameScreen.addBalloonActor(233, 242);
-                            GameScreen.context.getParty().getSaveGame().balloonx = 233;
-                            GameScreen.context.getParty().getSaveGame().balloony = 242;
+                            context.getParty().getSaveGame().balloonx = 233;
+                            context.getParty().getSaveGame().balloony = 242;
                         }
-                        GameScreen.context.getParty().getSaveGame().balloonfound = 1;
+                        context.getParty().getSaveGame().balloonfound = 1;
                         gameScreen.newMapPixelCoords = gameScreen.getMapPixelCoords(239, 240);
                     }
                     if (mainGame != null) {
@@ -1058,14 +1058,14 @@ public class DungeonScreen extends BaseScreen {
             return false;
 
         } else if (keycode == Keys.Q) {
-            GameScreen.context.saveGame(x, y, currentLevel, currentDir, dngMap);
+            context.saveGame(x, y, currentLevel, currentDir, dngMap);
             log("Saved Game.");
             return false;
 
         } else if (keycode == Keys.C) {
             log("Cast Spell: ");
             log("Who casts (1-8): ");
-            Gdx.input.setInputProcessor(new SpellInputProcessor(this, stage, x, y, null));
+            Gdx.input.setInputProcessor(new SpellInputProcessor(this, context, stage, x, y, null));
 
         } else if (keycode == Keys.I) {
 
@@ -1077,7 +1077,7 @@ public class DungeonScreen extends BaseScreen {
             sip.setinitialKeyCode(keycode, tile, x, y);
 
         } else if (keycode == Keys.H) {
-            CombatScreen.holeUp(this.dngMap, x, y, this, GameScreen.context, GameScreen.creatures, GameScreen.standardAtlas);
+            CombatScreen.holeUp(this.dngMap, x, y, this, context, Ultima4.creatures, Ultima4.standardAtlas);
             return false;
 
         } else if (keycode == Keys.V) {
@@ -1089,7 +1089,7 @@ public class DungeonScreen extends BaseScreen {
         } else if (keycode == Keys.S) {
             if (tile == DungeonTile.ALTAR) {
                 log("Search Altar");
-                ItemMapLabels l = dngMap.getMap().searchLocation(this, GameScreen.context.getParty(), x, y, currentLevel);
+                ItemMapLabels l = dngMap.getMap().searchLocation(this, context.getParty(), x, y, currentLevel);
                 if (l != null) {
                     log("You found " + l.getDesc() + ".");
                 } else {
@@ -1121,7 +1121,7 @@ public class DungeonScreen extends BaseScreen {
         } else if (keycode == Keys.Z) {
             showZstats = showZstats + 1;
             if (showZstats >= STATS_PLAYER1 && showZstats <= STATS_PLAYER8) {
-                if (showZstats > GameScreen.context.getParty().getMembers().size()) {
+                if (showZstats > context.getParty().getMembers().size()) {
                     showZstats = STATS_WEAPONS;
                 }
             }
@@ -1181,26 +1181,26 @@ public class DungeonScreen extends BaseScreen {
                 break;
             case PIT_TRAP:
                 log("Pit!");
-                GameScreen.context.getParty().applyEffect(TileEffect.LAVA);
+                context.getParty().applyEffect(TileEffect.LAVA);
                 Sounds.play(Sound.BOOM);
                 dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
                 break;
             case ROCK_TRAP:
                 log("Falling Rocks!");
-                GameScreen.context.getParty().applyEffect(TileEffect.LAVA);
+                context.getParty().applyEffect(TileEffect.LAVA);
                 Sounds.play(Sound.ROCKS);
                 dungeonTiles[currentLevel][x][y] = DungeonTile.NOTHING;
                 break;
             case FIELD_POISON:
-                GameScreen.context.getParty().applyEffect(TileEffect.POISONFIELD);
+                context.getParty().applyEffect(TileEffect.POISONFIELD);
                 Sounds.play(Sound.POISON_DAMAGE);
                 break;
             case FIELD_SLEEP:
-                GameScreen.context.getParty().applyEffect(TileEffect.SLEEP);
+                context.getParty().applyEffect(TileEffect.SLEEP);
                 Sounds.play(Sound.SLEEP);
                 break;
             case FIELD_FIRE:
-                GameScreen.context.getParty().applyEffect(TileEffect.LAVA);
+                context.getParty().applyEffect(TileEffect.LAVA);
                 Sounds.play(Sound.FIREFIELD);
                 break;
         }
@@ -1208,7 +1208,7 @@ public class DungeonScreen extends BaseScreen {
     
     @Override
     public void finishTurn(int currentX, int currentY) {
-        GameScreen.context.getAura().passTurn();
+        context.getAura().passTurn();
 
         creatureCleanup(currentX, currentY);
 
@@ -1220,10 +1220,10 @@ public class DungeonScreen extends BaseScreen {
     }
 
     public void dungeonTouchOrb(int index) {
-        if (index >= GameScreen.context.getParty().getMembers().size()) {
+        if (index >= context.getParty().getMembers().size()) {
             return;
         }
-        PartyMember pm = GameScreen.context.getParty().getMember(index);
+        PartyMember pm = context.getParty().getMember(index);
         int x = (Math.round(currentPos.x) - 1);
         int y = (Math.round(currentPos.z) - 1);
 
@@ -1301,10 +1301,10 @@ public class DungeonScreen extends BaseScreen {
 
     public void dungeonDrinkFountain(DungeonTile type, int index) {
         try {
-            if (index >= GameScreen.context.getParty().getMembers().size()) {
+            if (index >= context.getParty().getMembers().size()) {
                 return;
             }
-            PartyMember pm = GameScreen.context.getParty().getMember(index);
+            PartyMember pm = context.getParty().getMember(index);
             switch (type) {
                 case FOUNTAIN_PLAIN:
                     log("Hmmm--No Effect!");
@@ -1363,9 +1363,9 @@ public class DungeonScreen extends BaseScreen {
             }
 
             if (chest != null) {
-                PartyMember pm = GameScreen.context.getParty().getMember(index);
-                GameScreen.context.getChestTrapHandler(pm);
-                log(String.format("The Chest Holds: %d Gold", GameScreen.context.getParty().getChestGold()));
+                PartyMember pm = context.getParty().getMember(index);
+                context.getChestTrapHandler(pm);
+                log(String.format("The Chest Holds: %d Gold", context.getParty().getChestGold()));
 
                 //remove chest model instance
                 modelInstances.remove(chest);
@@ -1479,7 +1479,7 @@ public class DungeonScreen extends BaseScreen {
                 }
             }
 
-            creature = GameScreen.creatures.getInstance(monster, GameScreen.standardAtlas);
+            creature = Ultima4.creatures.getInstance(monster, Ultima4.standardAtlas);
         }
 
         if (creature != null) {
@@ -1682,7 +1682,7 @@ public class DungeonScreen extends BaseScreen {
                 pos++;
             }
 
-            TileSet ts = GameScreen.baseTileSet;
+            TileSet ts = Ultima4.baseTileSet;
 
             for (int y = 0; y < 11; y++) {
                 for (int x = 0; x < 11; x++) {
@@ -1731,7 +1731,7 @@ public class DungeonScreen extends BaseScreen {
         public int t2Y;
 
         public Trigger(byte[] data) {
-            this.tile = GameScreen.baseTileSet.getTileByIndex(data[0] & 0xff);
+            this.tile = Ultima4.baseTileSet.getTileByIndex(data[0] & 0xff);
             this.trigX = (data[1] >> 4) & 0x0f;
             this.trigY = data[1] & 0x0f;
             this.t1X = (data[2] >> 4) & 0x0f;
@@ -1770,7 +1770,7 @@ public class DungeonScreen extends BaseScreen {
                 String input = inputBuffer.toString().toLowerCase();
 
                 if (state == 1) {
-                    if (input.startsWith("stone") && (GameScreen.context.getParty().getSaveGame().stones & Stone.get(currentLevel).getLoc()) == 0) {
+                    if (input.startsWith("stone") && (context.getParty().getSaveGame().stones & Stone.get(currentLevel).getLoc()) == 0) {
                         log("None owned!");
                         Gdx.input.setInputProcessor(new InputMultiplexer(DungeonScreen.this, stage));
                         return false;
@@ -1801,7 +1801,7 @@ public class DungeonScreen extends BaseScreen {
                     if (input.startsWith(Stone.get(currentLevel).toString().toLowerCase())) {
                         Sounds.play(Sound.POSITIVE_EFFECT);
                         if (currentLevel == 7) {
-                            CodexScreen sc = new CodexScreen(DungeonScreen.this, GameScreen.context.getParty());
+                            CodexScreen sc = new CodexScreen(DungeonScreen.this, context.getParty());
                             mainGame.setScreen(sc);
                         } else {
                             log("The altar changes before thyne eyes!");

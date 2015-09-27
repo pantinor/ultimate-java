@@ -87,7 +87,7 @@ public class ConversationDialog extends Window implements Constants {
                     if (conversation != null) {
 
                         if (conversation instanceof CustomInputConversation) {
-                            ((CustomInputConversation) conversation).setParty(GameScreen.context.getParty());
+                            ((CustomInputConversation) conversation).setParty(screen.context.getParty());
                         }
 
                         String query = tf.getText();
@@ -96,12 +96,12 @@ public class ConversationDialog extends Window implements Constants {
 
                             if (t.getQuery() != null && t.getQuery().equals("join")) {
                                 String name = conversation.getName();
-                                Virtue virtue = GameScreen.context.getParty().getVirtueForJoinable(name);
+                                Virtue virtue = screen.context.getParty().getVirtueForJoinable(name);
                                 if (virtue != null) {
-                                    CannotJoinError join = GameScreen.context.getParty().join(name);
+                                    CannotJoinError join = screen.context.getParty().join(name);
                                     if (join == CannotJoinError.JOIN_SUCCEEDED) {
                                         scrollPane.add("I am honored to join thee!");
-                                        GameScreen.context.getCurrentMap().removeJoinedPartyMemberFromPeopleList(GameScreen.context.getParty());
+                                        screen.context.getCurrentMap().removeJoinedPartyMemberFromPeopleList(screen.context.getParty());
                                     } else {
                                         scrollPane.add("Thou art not " + (join == CannotJoinError.JOIN_NOT_VIRTUOUS ? virtue.getDescription() : "experienced") + " enough for me to join thee.");
                                     }
@@ -110,7 +110,7 @@ public class ConversationDialog extends Window implements Constants {
                             } else {
                                 
                                 if (!conversation.isStandardQuery(query)) {
-                                    GameScreen.context.addEntry(conversation.getName(), conversation.getMap(), t.getPhrase());
+                                    screen.context.addEntry(conversation.getName(), conversation.getMap(), t.getPhrase());
                                 }
                                 
                                 scrollPane.add(t.getPhrase());
@@ -125,26 +125,26 @@ public class ConversationDialog extends Window implements Constants {
                             if (previousTopic != null && previousTopic.getQuestion() != null) {
                                 if (query.toLowerCase().contains("y")) {
                                     
-                                    GameScreen.context.addEntry(conversation.getName(), conversation.getMap(), previousTopic.getYesResponse());
+                                    screen.context.addEntry(conversation.getName(), conversation.getMap(), previousTopic.getYesResponse());
                                     scrollPane.add(previousTopic.getYesResponse());
 
                                     if (conversation.getRespAffectsHumility() > 0) {
-                                        GameScreen.context.getParty().adjustKarma(KarmaAction.BRAGGED);
+                                        screen.context.getParty().adjustKarma(KarmaAction.BRAGGED);
                                     }
                                 } else {
                                     
-                                    GameScreen.context.addEntry(conversation.getName(), conversation.getMap(), previousTopic.getNoResponse());
+                                    screen.context.addEntry(conversation.getName(), conversation.getMap(), previousTopic.getNoResponse());
                                     scrollPane.add(previousTopic.getNoResponse());
                                     
                                     if (previousTopic.isLbHeal()) {
-                                        for (PartyMember pm : GameScreen.context.getParty().getMembers()) {
+                                        for (PartyMember pm : screen.context.getParty().getMembers()) {
                                             pm.heal(HealType.CURE);
                                             pm.heal(HealType.FULLHEAL);
                                         }
                                         Sounds.play(Sound.HEALING);
                                     }
                                     if (conversation.getRespAffectsHumility() > 0) {
-                                        GameScreen.context.getParty().adjustKarma(KarmaAction.HUMBLE);
+                                        screen.context.getParty().adjustKarma(KarmaAction.HUMBLE);
                                     }
                                 }
 
@@ -206,10 +206,10 @@ public class ConversationDialog extends Window implements Constants {
             if (person.getRole() != null && person.getRole().getRole().equals("lordbritish")) {
 
                 LordBritishConversation conv = (LordBritishConversation) person.getConversation();
-                scrollPane.add(conv.intro());
+                scrollPane.add(conv.intro(screen.context));
 
                 SequenceAction seq = Actions.action(SequenceAction.class);
-                Party party = GameScreen.context.getParty();
+                Party party = screen.context.getParty();
                 if (party.getMember(0).getPlayer().status == StatusType.DEAD) {
                     party.getMember(0).heal(HealType.RESURRECT);
                     party.getMember(0).heal(HealType.FULLHEAL);
@@ -230,7 +230,7 @@ public class ConversationDialog extends Window implements Constants {
             } else if (person.getRole() != null && person.getRole().getRole().equals("hawkwind")) {
 
                 HawkwindConversation conv = (HawkwindConversation) person.getConversation();
-                conv.setParty(GameScreen.context.getParty());
+                conv.setParty(screen.context.getParty());
                 scrollPane.add(conv.intro());
 
             } else {
@@ -239,8 +239,8 @@ public class ConversationDialog extends Window implements Constants {
 
         } else if (person.getRole() != null && person.getRole().getInventoryType() != null) {
 
-            vendor = GameScreen.vendorClassSet.getVendorImpl(person.getRole().getInventoryType(),
-                    Maps.get(GameScreen.context.getCurrentMap().getId()), GameScreen.context.getParty());
+            vendor = Ultima4.vendorClassSet.getVendorImpl(person.getRole().getInventoryType(),
+                    Maps.get(screen.context.getCurrentMap().getId()), screen.context);
             vendor.setScreen(screen);
             vendor.setScrollPane(scrollPane);
             vendor.nextDialog();
@@ -338,8 +338,8 @@ public class ConversationDialog extends Window implements Constants {
 
         Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
 
-        if (GameScreen.context.getCurrentMap().getCity() != null) {
-            GameScreen.context.getCurrentMap().getCity().resetTalkingFlags();
+        if (screen.context.getCurrentMap().getCity() != null) {
+            screen.context.getCurrentMap().getCity().resetTalkingFlags();
         }
 
     }

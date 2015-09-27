@@ -3,27 +3,21 @@ package ultima;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import generator.StaticGeneratedDungeonScreen;
 
-import objects.ArmorSet;
 import objects.BaseMap;
 import objects.Creature;
-import objects.CreatureSet;
 import objects.Drawable;
-import objects.MapSet;
 import objects.Moongate;
 import objects.Party;
 import objects.Party.PartyMember;
 import objects.Portal;
 import objects.SaveGame;
 import objects.Tile;
-import objects.TileSet;
-import objects.WeaponSet;
 
 import org.apache.commons.lang3.StringUtils;
 
 import util.UltimaMapRenderer;
 import util.UltimaTiledMapLoader;
 import util.Utils;
-import vendor.VendorClassSet;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -56,19 +50,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import objects.LordBritishConversation;
 import util.PartyDeathException;
 
 public class GameScreen extends BaseScreen {
 
-    public static Context context;
-    public static TileSet baseTileSet;
-    public static WeaponSet weapons;
-    public static ArmorSet armors;
-    public static CreatureSet creatures;
-    public static VendorClassSet vendorClassSet;
-    public static TextureAtlas standardAtlas;
-
-    MapSet maps;
     TextureAtlas moonAtlas;
     
     public static Animation mainAvatar;
@@ -100,75 +86,50 @@ public class GameScreen extends BaseScreen {
         scType = ScreenType.MAIN;
 
         GameScreen.mainGame = mainGame;
+     
+        hitTile = Ultima4.standardAtlas.findRegion("hit_flash");
+        missTile = Ultima4.standardAtlas.findRegion("miss_flash");
+        corpse = Ultima4.standardAtlas.findRegion("corpse");
 
-        try {
+        initTransportAnimations();
+        mainAvatar = avatarAnim;;
 
-            //use this to see the original tile set
-            //standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-ega-atlas.txt"));
-            standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-enhanced-vga-atlas.txt"));
+        //textures for the moongates
+        moongateTextures = Ultima4.standardAtlas.findRegions("moongate");
+        //textures for the phases of  the moon
+        moonAtlas = new TextureAtlas(Gdx.files.internal("assets/graphics/moon-atlas.txt"));
 
-            baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);
-            baseTileSet.setMaps();
-
-            hitTile = standardAtlas.findRegion("hit_flash");
-            missTile = standardAtlas.findRegion("miss_flash");
-            corpse = standardAtlas.findRegion("corpse");
-
-            maps = (MapSet) Utils.loadXml("maps.xml", MapSet.class);
-            maps.init(baseTileSet);
-
-            vendorClassSet = (VendorClassSet) Utils.loadXml("vendor.xml", VendorClassSet.class);
-            vendorClassSet.init();
-
-            weapons = (WeaponSet) Utils.loadXml("weapons.xml", WeaponSet.class);
-            armors = (ArmorSet) Utils.loadXml("armors.xml", ArmorSet.class);
-            creatures = (CreatureSet) Utils.loadXml("creatures.xml", CreatureSet.class);
-            creatures.init();
-            weapons.init();
-            armors.init();
-
-            initTransportAnimations();
-            mainAvatar = avatarAnim;;
-
-            //textures for the moongates
-            moongateTextures = standardAtlas.findRegions("moongate");
-            //textures for the phases of  the moon
-            moonAtlas = new TextureAtlas(Gdx.files.internal("assets/graphics/moon-atlas.txt"));
-
-            batch = new SpriteBatch();
+        batch = new SpriteBatch();
             //batch.enableBlending();
-            
-            stage = new Stage(viewport);
 
-            camera = new OrthographicCamera(Ultima4.MAP_WIDTH, Ultima4.MAP_HEIGHT);
-            
-            mapViewPort = new ScreenViewport(camera);
+        stage = new Stage(viewport);
 
-            mapObjectsStage = new Stage(mapViewPort);
-            Maps.WORLD.getMap().setSurfaceMapStage(mapObjectsStage);
-            projectilesStage = new Stage(mapViewPort);
+        camera = new OrthographicCamera(Ultima4.MAP_WIDTH, Ultima4.MAP_HEIGHT);
 
-            sip = new SecondaryInputProcessor(this, stage);
+        mapViewPort = new ScreenViewport(camera);
 
-            SequenceAction seq1 = Actions.action(SequenceAction.class);
-            seq1.addAction(Actions.delay(.25f));
-            seq1.addAction(Actions.run(gameTimer));
-            stage.addAction(Actions.forever(seq1));
-            
-            addButtons();
+        mapObjectsStage = new Stage(mapViewPort);
+        Maps.WORLD.getMap().setSurfaceMapStage(mapObjectsStage);
+        projectilesStage = new Stage(mapViewPort);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        sip = new SecondaryInputProcessor(this, stage);
+
+        SequenceAction seq1 = Actions.action(SequenceAction.class);
+        seq1.addAction(Actions.delay(.25f));
+        seq1.addAction(Actions.run(gameTimer));
+        stage.addAction(Actions.forever(seq1));
+
+        addButtons();
 
     }
 
     private void initTransportAnimations() {
-        Array<AtlasRegion> avatar = standardAtlas.findRegions("avatar");
-        Array<AtlasRegion> corps = standardAtlas.findRegions("corpse");
-        Array<AtlasRegion> horse = standardAtlas.findRegions("horse");
-        Array<AtlasRegion> ship = standardAtlas.findRegions("ship");
-        Array<AtlasRegion> balloon = standardAtlas.findRegions("balloon");
+        
+        Array<AtlasRegion> avatar = Ultima4.standardAtlas.findRegions("avatar");
+        Array<AtlasRegion> corps = Ultima4.standardAtlas.findRegions("corpse");
+        Array<AtlasRegion> horse = Ultima4.standardAtlas.findRegions("horse");
+        Array<AtlasRegion> ship = Ultima4.standardAtlas.findRegions("ship");
+        Array<AtlasRegion> balloon = Ultima4.standardAtlas.findRegions("balloon");
 
         Array<AtlasRegion> tmp = new Array<>(4);
         for (int i = 0; i < 4; i++) {
@@ -231,6 +192,8 @@ public class GameScreen extends BaseScreen {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            
+            LordBritishConversation.saveGame = sg;
 
             Party party = new Party(sg);
             context.setParty(party);
@@ -296,7 +259,7 @@ public class GameScreen extends BaseScreen {
                 //loadNextMap(Maps.DELVE_SORROWS, 0, 0, 3, 19, 1, Direction.EAST, true);
             }
 
-            party.setTransport(baseTileSet.getTileByIndex(sg.transport));
+            party.setTransport(Ultima4.baseTileSet.getTileByIndex(sg.transport));
 
             switch (sg.transport) {
                 case 31:
@@ -346,13 +309,13 @@ public class GameScreen extends BaseScreen {
         if (baseMap.getType() == MapType.dungeon) {
 
             if (m != Maps.DELVE_SORROWS) {
-                DungeonScreen sc = new DungeonScreen(this, m);
+                DungeonScreen sc = new DungeonScreen(this, context, m);
                 if (restoreSG) {
                     sc.restoreSaveGameLocation(dngx, dngy, dngLevel, orientation);
                 }
                 mainGame.setScreen(sc);
             } else {
-                StaticGeneratedDungeonScreen sc = new StaticGeneratedDungeonScreen(this, m);
+                StaticGeneratedDungeonScreen sc = new StaticGeneratedDungeonScreen(this, context, m);
                 if (restoreSG) {
                     sc.restoreSaveGameLocation(dngx, dngy, dngLevel, orientation);
                 }
@@ -361,10 +324,10 @@ public class GameScreen extends BaseScreen {
 
         } else if (baseMap.getType() == MapType.shrine) {
             
-            map = new UltimaTiledMapLoader(m, standardAtlas, baseMap.getWidth(), baseMap.getHeight(), tilePixelWidth, tilePixelHeight).load();
+            map = new UltimaTiledMapLoader(m, Ultima4.standardAtlas, baseMap.getWidth(), baseMap.getHeight(), tilePixelWidth, tilePixelHeight).load();
             context.setCurrentTiledMap(map);
             Virtue virtue = Virtue.get(baseMap.getId() - 25);
-            ShrineScreen sc = new ShrineScreen(this, virtue, map, standardAtlas, standardAtlas);
+            ShrineScreen sc = new ShrineScreen(this, context.getParty(), virtue, map, Ultima4.standardAtlas, Ultima4.standardAtlas);
             mainGame.setScreen(sc);
             
         } else {
@@ -373,20 +336,20 @@ public class GameScreen extends BaseScreen {
 
             baseMap.removeJoinedPartyMemberFromPeopleList(context.getParty());
 
-            map = new UltimaTiledMapLoader(m, standardAtlas, m.getMap().getWidth(), m.getMap().getHeight(), tilePixelWidth, tilePixelHeight).load();
+            map = new UltimaTiledMapLoader(m, Ultima4.standardAtlas, m.getMap().getWidth(), m.getMap().getHeight(), tilePixelWidth, tilePixelHeight).load();
             context.setCurrentTiledMap(map);
 
             if (renderer != null) {
                 renderer.dispose();
             }
-            renderer = new UltimaMapRenderer(standardAtlas, baseMap, map, 1f);
+            renderer = new UltimaMapRenderer(context, Ultima4.standardAtlas, baseMap, map, 1f);
 
             mapBatch = renderer.getBatch();
 
             MapProperties prop = map.getProperties();
             mapPixelHeight = prop.get("height", Integer.class) * tilePixelHeight;
 
-            baseMap.initObjects(this, standardAtlas, standardAtlas);
+            baseMap.initObjects(this, Ultima4.standardAtlas, Ultima4.standardAtlas);
 
             renderer.getFOV().calculateFOV(baseMap.getShadownMap(), x, y, 17f);
 
@@ -412,9 +375,9 @@ public class GameScreen extends BaseScreen {
         Maps contextMap = Maps.get(context.getCurrentMap().getId());
         BaseMap combatMap = combat.getMap();
 
-        TiledMap tmap = new UltimaTiledMapLoader(combat, standardAtlas, combat.getMap().getWidth(), combat.getMap().getHeight(), tilePixelWidth, tilePixelHeight).load();
+        TiledMap tmap = new UltimaTiledMapLoader(combat, Ultima4.standardAtlas, combat.getMap().getWidth(), combat.getMap().getHeight(), tilePixelWidth, tilePixelHeight).load();
 
-        CombatScreen sc = new CombatScreen(this, context, contextMap, combatMap, tmap, cr.getTile(), creatures, standardAtlas);
+        CombatScreen sc = new CombatScreen(this, context, contextMap, combatMap, tmap, cr.getTile(), Ultima4.creatures, Ultima4.standardAtlas);
         mainGame.setScreen(sc);
 
         currentEncounter = cr;
@@ -441,14 +404,14 @@ public class GameScreen extends BaseScreen {
 
                 /* add a chest, if the creature leaves one */
                 if (!currentEncounter.getNochest() && (r == null || !r.has(TileAttrib.unwalkable))) {
-                    Tile ct = baseTileSet.getTileByName("chest");
-                    Drawable chest = new Drawable(context.getCurrentMap(), currentEncounter.currentX, currentEncounter.currentY, ct, standardAtlas);
+                    Tile ct = Ultima4.baseTileSet.getTileByName("chest");
+                    Drawable chest = new Drawable(context.getCurrentMap(), currentEncounter.currentX, currentEncounter.currentY, ct, Ultima4.standardAtlas);
                     chest.setX(currentEncounter.currentPos.x);
                     chest.setY(currentEncounter.currentPos.y);
                     mapObjectsStage.addActor(chest);
                 } /* add a ship if you just defeated a pirate ship */ else if (currentEncounter.getTile() == CreatureType.pirate_ship) {
-                    Tile st = baseTileSet.getTileByName("ship");
-                    Drawable ship = new Drawable(context.getCurrentMap(), currentEncounter.currentX, currentEncounter.currentY, st, standardAtlas);
+                    Tile st = Ultima4.baseTileSet.getTileByName("ship");
+                    Drawable ship = new Drawable(context.getCurrentMap(), currentEncounter.currentX, currentEncounter.currentY, st, Ultima4.standardAtlas);
                     ship.setX(currentEncounter.currentPos.x);
                     ship.setY(currentEncounter.currentPos.y);
                     mapObjectsStage.addActor(ship);
@@ -668,7 +631,7 @@ public class GameScreen extends BaseScreen {
 
         } else if (keycode == Keys.H) {
 
-            CombatScreen.holeUp(Maps.WORLD, (int) v.x, (int) v.y, this, context, creatures, standardAtlas);
+            CombatScreen.holeUp(Maps.WORLD, (int) v.x, (int) v.y, this, context, Ultima4.creatures, Ultima4.standardAtlas);
             return false;
 
         } else if (keycode == Keys.K || keycode == Keys.D) {
@@ -777,13 +740,13 @@ public class GameScreen extends BaseScreen {
             board((int) v.x, (int) v.y);
         } else if (keycode == Keys.X) {
             if (context.getTransportContext() == TransportContext.SHIP) {
-                Tile st = baseTileSet.getTileByName("ship");
-                Drawable ship = new Drawable(context.getCurrentMap(), (int) v.x, (int) v.y, st, standardAtlas);
+                Tile st = Ultima4.baseTileSet.getTileByName("ship");
+                Drawable ship = new Drawable(context.getCurrentMap(), (int) v.x, (int) v.y, st, Ultima4.standardAtlas);
                 ship.setX(newMapPixelCoords.x);
                 ship.setY(newMapPixelCoords.y);
                 mapObjectsStage.addActor(ship);
             } else if (context.getTransportContext() == TransportContext.HORSE) {
-                Creature cr = GameScreen.creatures.getInstance(CreatureType.horse, GameScreen.standardAtlas);
+                Creature cr = Ultima4.creatures.getInstance(CreatureType.horse, Ultima4.standardAtlas);
                 cr.currentX = (int) v.x;
                 cr.currentY = (int) v.y;
                 context.getCurrentMap().addCreature(cr);
@@ -797,7 +760,7 @@ public class GameScreen extends BaseScreen {
                     return false;
                 }
             }
-            context.getParty().setTransport(baseTileSet.getTileByIndex(0x1f));
+            context.getParty().setTransport(Ultima4.baseTileSet.getTileByIndex(0x1f));
             mainAvatar = avatarAnim;
         } else if (keycode == Keys.P) {
             peerGem();
@@ -818,7 +781,7 @@ public class GameScreen extends BaseScreen {
 
             log("Cast Spell: ");
             log("Who casts (1-8): ");
-            Gdx.input.setInputProcessor(new SpellInputProcessor(this, stage, (int) v.x, (int) v.y, null));
+            Gdx.input.setInputProcessor(new SpellInputProcessor(this, context, stage, (int) v.x, (int) v.y, null));
             return false;
 
         } else if (keycode == Keys.Z) {
@@ -894,7 +857,7 @@ public class GameScreen extends BaseScreen {
             }
         }
 
-        int mask = bm.getValidMovesMask((int) currentTile.x, (int) currentTile.y);
+        int mask = bm.getValidMovesMask(context, (int) currentTile.x, (int) currentTile.y);
         if (!Direction.isDirInMask(dir, mask)) {
             Sounds.play(Sound.BLOCKED);
             finishTurn((int) currentTile.x, (int) currentTile.y);
@@ -983,13 +946,13 @@ public class GameScreen extends BaseScreen {
         if (name == null) {
             return;
         }
-        TextureRegion texture = standardAtlas.findRegion(name);
+        TextureRegion texture = Ultima4.standardAtlas.findRegion(name);
         TiledMapTileLayer layer = (TiledMapTileLayer) context.getCurrentTiledMap().getLayers().get("Map Layer");
         Cell cell = layer.getCell(x, context.getCurrentMap().getWidth() - 1 - y);
         TiledMapTile tmt = new StaticTiledMapTile(texture);
         tmt.setId(y * context.getCurrentMap().getWidth() + x);
         cell.setTile(tmt);
-        context.getCurrentMap().setTile(baseTileSet.getTileByName(name), x, y);
+        context.getCurrentMap().setTile(Ultima4.baseTileSet.getTileByName(name), x, y);
     }
 
     private boolean checkRandomCreatures() {
@@ -1084,12 +1047,12 @@ public class GameScreen extends BaseScreen {
         if (tile.getRule().has(TileAttrib.sailable)) {
             randId = CreatureType.pirate_ship.getValue();
             randId += rand.nextInt(7);
-            Creature cr = creatures.getInstance(CreatureType.get(randId), standardAtlas);
+            Creature cr = Ultima4.creatures.getInstance(CreatureType.get(randId), Ultima4.standardAtlas);
             return cr;
         } else if (tile.getRule().has(TileAttrib.swimmable)) {
             randId = CreatureType.nixie.getValue();
             randId += rand.nextInt(5);
-            Creature cr = creatures.getInstance(CreatureType.get(randId), standardAtlas);
+            Creature cr = Ultima4.creatures.getInstance(CreatureType.get(randId), Ultima4.standardAtlas);
             return cr;
         }
 
@@ -1103,7 +1066,7 @@ public class GameScreen extends BaseScreen {
 
         randId = CreatureType.orc.getValue();
         randId += era & rand.nextInt(16) & rand.nextInt(16);
-        Creature cr = creatures.getInstance(CreatureType.get(randId), standardAtlas);
+        Creature cr = Ultima4.creatures.getInstance(CreatureType.get(randId), Ultima4.standardAtlas);
 
         return cr;
     }
@@ -1210,7 +1173,7 @@ public class GameScreen extends BaseScreen {
          */
         if (dir == Direction.EAST && x == 0xdd && y == 0xe0) {
             for (PirateCoveInfo pci : PirateCoveInfo.values()) {
-                Creature pirate = creatures.getInstance(CreatureType.pirate_ship, standardAtlas);
+                Creature pirate = Ultima4.creatures.getInstance(CreatureType.pirate_ship, Ultima4.standardAtlas);
                 pirate.currentX = pci.getX();
                 pirate.currentY = pci.getY();
                 pirate.currentPos = getMapPixelCoords(pci.getX(), pci.getY());
@@ -1225,7 +1188,7 @@ public class GameScreen extends BaseScreen {
          */
         if (dir == Direction.SOUTH && x >= 229 && x < 234 && y >= 212 && y < 217 && context.getAura().getType() != AuraType.HORN) {
             for (int i = 0; i < 8; i++) {
-                Creature daemon = creatures.getInstance(CreatureType.daemon, standardAtlas);
+                Creature daemon = Ultima4.creatures.getInstance(CreatureType.daemon, Ultima4.standardAtlas);
                 daemon.currentX = 231;
                 daemon.currentY = y + 1;
                 daemon.currentPos = getMapPixelCoords(231, y + 1);
@@ -1247,7 +1210,7 @@ public class GameScreen extends BaseScreen {
 
         log("Bridge Trolls!");
 
-        Creature troll = creatures.getInstance(CreatureType.troll, standardAtlas);
+        Creature troll = Ultima4.creatures.getInstance(CreatureType.troll, Ultima4.standardAtlas);
         troll.currentX = x;
         troll.currentY = y;
         troll.currentPos = getMapPixelCoords(x, y);
@@ -1278,7 +1241,7 @@ public class GameScreen extends BaseScreen {
         //check for horse
         Creature horse = context.getCurrentMap().getCreatureAt(x, y);
         if (horse != null && (horse.getTile() == CreatureType.horse)) {
-            tile = baseTileSet.getTileByName("horse");
+            tile = Ultima4.baseTileSet.getTileByName("horse");
         }
 
         //check for balloon
@@ -1370,7 +1333,7 @@ public class GameScreen extends BaseScreen {
 
             if (fireDir != null) {
                 logAppend(fireDir.toString());
-                AttackVector av = Utils.avatarfireCannon(mapObjectsStage, GameScreen.context.getCurrentMap(), fireDir, (int) pos.x, (int) pos.y);
+                AttackVector av = Utils.avatarfireCannon(context, mapObjectsStage, context.getCurrentMap(), fireDir, (int) pos.x, (int) pos.y);
                 Utils.animateCannonFire(GameScreen.this, projectilesStage, context.getCurrentMap(), av, (int) pos.x, (int) pos.y, true);
             } else {
                 log("Broadsides only!");
@@ -1467,9 +1430,9 @@ public class GameScreen extends BaseScreen {
                 Texture t = null;
                 if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
                     Vector3 v = getCurrentMapCoords();
-                    t = Utils.peerGem(context.getCurrentMap(), (int) v.x, (int) v.y, standardAtlas);
+                    t = Utils.peerGem(context.getCurrentMap(), (int) v.x, (int) v.y, Ultima4.standardAtlas);
                 } else {
-                    t = Utils.peerGem(Maps.get(context.getCurrentMap().getId()), standardAtlas);
+                    t = Utils.peerGem(Maps.get(context.getCurrentMap().getId()), Ultima4.standardAtlas);
                 }
                 img = new Image(t);
                 img.setX(0);
@@ -1506,7 +1469,7 @@ public class GameScreen extends BaseScreen {
                 Maps map = Maps.get(keycode - Keys.A + 1);
                 log(Keys.toString(keycode).toUpperCase() + " - " + map.getLabel());
                 try {
-                    Texture t = Utils.peerGem(map, standardAtlas);
+                    Texture t = Utils.peerGem(map, Ultima4.standardAtlas);
                     img = new Image(t);
                     img.setX(0);
                     img.setY(0);
@@ -1703,15 +1666,15 @@ public class GameScreen extends BaseScreen {
 
         if (killAll) {
             context.getParty().killAll();
-            context.getParty().setTransport(baseTileSet.getTileByIndex(0x1f));
+            context.getParty().setTransport(Ultima4.baseTileSet.getTileByIndex(0x1f));
             mainAvatar = avatarAnim;
             partyDeath();
         }
     }
 
     public void addBalloonActor(int x, int y) {
-        Tile st = baseTileSet.getTileByName("balloon");
-        Drawable balloon = new Drawable(Maps.WORLD.getMap(), x, y, st, standardAtlas);
+        Tile st = Ultima4.baseTileSet.getTileByName("balloon");
+        Drawable balloon = new Drawable(Maps.WORLD.getMap(), x, y, st, Ultima4.standardAtlas);
         Vector3 bpos = getMapPixelCoords(x, y);
         balloon.setX(bpos.x);
         balloon.setY(bpos.y);

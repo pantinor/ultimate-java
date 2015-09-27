@@ -1,9 +1,11 @@
 package objects;
 
 import ultima.Constants;
-import ultima.GameScreen;
+import ultima.Context;
 
 public class LordBritishConversation extends Conversation implements Constants {
+    
+    public static SaveGame saveGame;
 
     public LordBritishConversation() {
 
@@ -67,10 +69,10 @@ public class LordBritishConversation extends Conversation implements Constants {
         return null;
     }
 
-    public String intro() {
+    public String intro(Context context) {
 
-        Party party = GameScreen.context.getParty();
-        SaveGame sg = GameScreen.context.getParty().getSaveGame();
+        Party party = context.getParty();
+        SaveGame sg = context.getParty().getSaveGame();
 
         StringBuffer sb = new StringBuffer();
         if (sg.lbintro == 1) {
@@ -96,26 +98,24 @@ public class LordBritishConversation extends Conversation implements Constants {
 
     private String lordBritishGetHelp() {
 
-        SaveGame sg = GameScreen.context.getParty().getSaveGame();
-
         boolean fullAvatar = true;
         boolean partialAvatar = false;
 
         for (Virtue v : Virtue.values()) {
-            fullAvatar &= (sg.karma[v.ordinal()] == 0);
-            partialAvatar |= (sg.karma[v.ordinal()] == 0);
+            fullAvatar &= (saveGame.karma[v.ordinal()] == 0);
+            partialAvatar |= (saveGame.karma[v.ordinal()] == 0);
         }
 
         String text;
 
-        if (sg.moves <= 1000) {
+        if (saveGame.moves <= 1000) {
             text = "To survive in this hostile land thou must first know thyself! Seek ye to master thy weapons and thy magical ability!\n"
                     + "\nTake great care in these thy first travels in Britannia.\n"
                     + "\nUntil thou dost well know thyself, travel not far from the safety of the townes!\n";
-        } else if (sg.members == 1) {
+        } else if (saveGame.members == 1) {
             text = "Travel not the open lands alone. There are many worthy people in the diverse townes whom it would be wise to ask to Join thee!\n"
                     + "\nBuild thy party unto eight travellers, for only a true leader can win the Quest!\n";
-        } else if (sg.runes == 0) {
+        } else if (saveGame.runes == 0) {
             text = "Learn ye the paths of virtue. Seek to gain entry unto the eight shrines!\n"
                     + "\nFind ye the Runes, needed for entry into each shrine, and learn each chant or \"Mantra\" used to focus thy meditations.\n"
                     + "\nWithin the Shrines thou shalt learn of the deeds which show thy inner virtue or vice!\n"
@@ -124,14 +124,14 @@ public class LordBritishConversation extends Conversation implements Constants {
             text = "Visit the Seer Hawkwind often and use his wisdom to help thee prove thy virtue.\n"
                     + "\nWhen thou art ready, Hawkwind will advise thee to seek the Elevation unto partial Avatarhood in a virtue.\n"
                     + "\nSeek ye to become a partial Avatar in all eight virtues, for only then shalt thou be ready to seek the codex!\n";
-        } else if (sg.stones == 0) {
+        } else if (saveGame.stones == 0) {
             text = "Go ye now into the depths of the dungeons. Therein recover the 8 colored stones from the altar pedestals in the halls of the dungeons.\n"
                     + "\nFind the uses of these stones for they can help thee in the Abyss!\n";
         } else if (!fullAvatar) {
             text = "Thou art doing very well indeed on the path to Avatarhood! Strive ye to achieve the Elevation in all eight virtues!\n";
-        } else if ((sg.items & Item.BELL.ordinal()) == 0 || (sg.items & Item.BOOK.ordinal()) == 0 || (sg.items & Item.CANDLE.ordinal()) == 0) {
+        } else if ((saveGame.items & Item.BELL.ordinal()) == 0 || (saveGame.items & Item.BOOK.ordinal()) == 0 || (saveGame.items & Item.CANDLE.ordinal()) == 0) {
             text = "Find ye the Bell, Book and Candle!  With these three things, one may enter the Great Stygian Abyss!\n";
-        } else if ((sg.items & Item.KEY_C.ordinal()) == 0 || (sg.items & Item.KEY_L.ordinal()) == 0 || (sg.items & Item.KEY_T.ordinal()) == 0) {
+        } else if ((saveGame.items & Item.KEY_C.ordinal()) == 0 || (saveGame.items & Item.KEY_L.ordinal()) == 0 || (saveGame.items & Item.KEY_T.ordinal()) == 0) {
             text = "Before thou dost enter the Abyss thou shalt need the Key of Three Parts, and the Word of Passage.\n"
                     + "\nThen might thou enter the Chamber of the Codex of Ultimate Wisdom!\n";
         } else {

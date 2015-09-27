@@ -10,20 +10,22 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class SpellInputProcessor extends InputAdapter implements Constants {
 
-    private BaseScreen screen;
-    private Stage stage;
-    private int player = -1;
+    private final BaseScreen screen;
+    private final Stage stage;
+    private int player;
     private Spell spell;
-    private int currentX;
-    private int currentY;
+    private final int currentX;
+    private final int currentY;
     private PartyMember caster;
+    private final Context context;
 
-    public SpellInputProcessor(BaseScreen screen, Stage stage, int x, int y, PartyMember pm) {
+    public SpellInputProcessor(BaseScreen screen, Context context, Stage stage, int x, int y, PartyMember pm) {
         this.screen = screen;
         this.stage = stage;
         this.currentX = x;
         this.currentY = y;
         this.caster = pm;
+        this.context = context;
     }
 
     @Override
@@ -36,7 +38,7 @@ public class SpellInputProcessor extends InputAdapter implements Constants {
         } else if (caster != null || player != -1) {
 
             if (caster == null) {
-                caster = GameScreen.context.getParty().getMember(player - 1);
+                caster = context.getParty().getMember(player - 1);
             }
 
             if (keycode >= Keys.A && keycode <= Keys.Z) {
@@ -71,7 +73,7 @@ public class SpellInputProcessor extends InputAdapter implements Constants {
                         break;
 
                     default:
-                        SpellUtil.spellCast(screen, GameScreen.context, spell, caster, null, null, 0);
+                        SpellUtil.spellCast(screen, context, spell, caster, null, null, 0);
                         Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
                         break;
 
@@ -96,8 +98,8 @@ public class SpellInputProcessor extends InputAdapter implements Constants {
         public boolean keyUp(int keycode) {
             if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
                 screen.logAppend("" + (keycode - 7));
-                PartyMember subject = GameScreen.context.getParty().getMember(keycode - 7 - 1);
-                SpellUtil.spellCast(screen, GameScreen.context, spell, caster, subject, null, 0);
+                PartyMember subject = context.getParty().getMember(keycode - 7 - 1);
+                SpellUtil.spellCast(screen, context, spell, caster, subject, null, 0);
             } else {
                 screen.log("Not a player!");
             }
@@ -129,7 +131,7 @@ public class SpellInputProcessor extends InputAdapter implements Constants {
                 screen.logAppend(dir.toString());
             }
 
-            SpellUtil.spellCast(screen, GameScreen.context, spell, caster, null, dir, 0);
+            SpellUtil.spellCast(screen, context, spell, caster, null, dir, 0);
             Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
             return false;
         }
@@ -140,7 +142,7 @@ public class SpellInputProcessor extends InputAdapter implements Constants {
         @Override
         public boolean keyUp(int keycode) {
             if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_8) {
-                SpellUtil.spellCast(screen, GameScreen.context, spell, caster, null, null, keycode - 7 - 1);
+                SpellUtil.spellCast(screen, context, spell, caster, null, null, keycode - 7 - 1);
             } else {
                 screen.log("what?");
             }

@@ -1,12 +1,12 @@
 package vendor;
 
-import objects.Party;
 import ultima.Constants.GuildItemType;
+import ultima.Context;
 
 public class GuildVendor extends BaseVendor {
 
-    public GuildVendor(Vendor vendor, Party party) {
-        super(vendor, party);
+    public GuildVendor(Vendor vendor, Context context) {
+        super(vendor, context);
     }
 
     @Override

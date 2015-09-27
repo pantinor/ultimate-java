@@ -26,7 +26,7 @@ public class SpellUtil implements Constants {
         if (caster == null || spell == null || screen == null) {
             return false;
         }
-        
+
         switch (spell) {
             case AWAKEN:
             case CURE:
@@ -78,10 +78,12 @@ public class SpellUtil implements Constants {
         }
 
         caster.adjustMagic(spell.getMp());
-        
-        OnCompletionListener ocl = new OnCompletionListener() {
-            @Override
-            public void onCompletion(Music music) {
+
+        SequenceAction seq = Actions.action(SequenceAction.class);
+        seq.addAction(Actions.run(new PlaySoundAction(spell.getSound())));
+        seq.addAction(Actions.delay(0.5f));
+        seq.addAction(Actions.run(new Runnable() {
+            public void run() {
                 switch (spell) {
 
                     case AWAKEN:
@@ -115,7 +117,7 @@ public class SpellUtil implements Constants {
                         spellEnergyField(dir);
                         break;
                     case WINDS:
-                        spellWinds(dir);
+                        spellWinds(screen, dir);
                         break;
                     case BLINK:
                         spellBlink(screen, dir);
@@ -164,15 +166,11 @@ public class SpellUtil implements Constants {
                         break;
                     default:
                         break;
-
                 }
-
-                music.setOnCompletionListener(null);
-
             }
-        };
-
-        Sounds.play(spell.getSound(), ocl);
+        }));
+        
+        screen.getStage().addAction(seq);
 
         return true;
     }
@@ -207,7 +205,7 @@ public class SpellUtil implements Constants {
         if (screen.scType == ScreenType.MAIN) {
 
             GameScreen gameScreen = (GameScreen) screen;
-            BaseMap bm = GameScreen.context.getCurrentMap();
+            BaseMap bm = screen.context.getCurrentMap();
 
             Vector3 v = gameScreen.getCurrentMapCoords();
             int x = (int) v.x;
@@ -346,7 +344,7 @@ public class SpellUtil implements Constants {
             combatScreen.replaceTile("dungeon_floor", x, y);
 
         } else if (screen.scType == ScreenType.DUNGEON) {
-            
+
             DungeonScreen dngScreen = (DungeonScreen) screen;
             int x = (Math.round(dngScreen.currentPos.x) - 1);
             int y = (Math.round(dngScreen.currentPos.z) - 1);
@@ -366,8 +364,8 @@ public class SpellUtil implements Constants {
 
             DungeonTileModelInstance dispellable = null;
             for (DungeonTileModelInstance dmi : dngScreen.modelInstances) {
-                if (dmi.getTile().getValue() >= DungeonTile.FIELD_POISON.getValue() && 
-                    dmi.getTile().getValue() <= DungeonTile.FIELD_SLEEP.getValue()) {
+                if (dmi.getTile().getValue() >= DungeonTile.FIELD_POISON.getValue()
+                        && dmi.getTile().getValue() <= DungeonTile.FIELD_SLEEP.getValue()) {
                     if (dmi.x == x && dmi.y == y && dmi.getLevel() == dngScreen.currentLevel) {
                         dispellable = dmi;
                         break;
@@ -394,20 +392,18 @@ public class SpellUtil implements Constants {
     }
 
     public static void spellGate(BaseScreen screen, int phase) {
-
         if (screen.scType == ScreenType.MAIN) {
-            GameScreen gameScreen = (GameScreen) screen;
-            for (Moongate g : GameScreen.context.getCurrentMap().getMoongates()) {
+            GameScreen gsc = (GameScreen) screen;
+            for (Moongate g : gsc.context.getCurrentMap().getMoongates()) {
                 if (g.getPhase() == phase) {
                     Vector3 dest = new Vector3(g.getX(), g.getY(), 0);
-                    gameScreen.newMapPixelCoords = gameScreen.getMapPixelCoords((int) dest.x, (int) dest.y);
-                    BaseMap bm = GameScreen.context.getCurrentMap();
-                    gameScreen.recalcFOV(bm, (int) dest.x, (int) dest.y);
+                    gsc.newMapPixelCoords = gsc.getMapPixelCoords((int) dest.x, (int) dest.y);
+                    BaseMap bm = gsc.context.getCurrentMap();
+                    gsc.recalcFOV(bm, (int) dest.x, (int) dest.y);
                     break;
                 }
             }
         }
-
     }
 
     public static void spellHeal(PartyMember subject) {
@@ -481,8 +477,8 @@ public class SpellUtil implements Constants {
                         /* Deal maximum damage to creature */
                         Utils.dealDamage(caster, cr, 0xFF);
 
-                        Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
-                        Drawable d = new Drawable(combatScreen.combatMap, cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+                        Tile tile = Ultima4.baseTileSet.getTileByName("hit_flash");
+                        Drawable d = new Drawable(combatScreen.combatMap, cr.currentX, cr.currentY, tile, Ultima4.standardAtlas);
                         d.setX(cr.currentPos.x);
                         d.setY(cr.currentPos.y);
                         d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));
@@ -495,8 +491,8 @@ public class SpellUtil implements Constants {
                         if (cr.getHP() > 23) {
                             Utils.dealDamage(caster, cr, cr.getHP() - 23);
 
-                            Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
-                            Drawable d = new Drawable(combatScreen.combatMap, cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+                            Tile tile = Ultima4.baseTileSet.getTileByName("hit_flash");
+                            Drawable d = new Drawable(combatScreen.combatMap, cr.currentX, cr.currentY, tile, Ultima4.standardAtlas);
                             d.setX(cr.currentPos.x);
                             d.setY(cr.currentPos.y);
                             d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));
@@ -539,8 +535,8 @@ public class SpellUtil implements Constants {
             for (Creature cr : combatScreen.combatMap.getCreatures()) {
                 if (cr.getUndead() && Utils.rand.nextInt(2) == 0) {
 
-                    Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
-                    Drawable d = new Drawable(combatScreen.combatMap, cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+                    Tile tile = Ultima4.baseTileSet.getTileByName("hit_flash");
+                    Drawable d = new Drawable(combatScreen.combatMap, cr.currentX, cr.currentY, tile, Ultima4.standardAtlas);
                     d.setX(cr.currentPos.x);
                     d.setY(cr.currentPos.y);
 
@@ -576,8 +572,8 @@ public class SpellUtil implements Constants {
         }
     }
 
-    public static void spellWinds(Direction fromdir) {
-        GameScreen.context.setWindDirection(fromdir);
+    public static void spellWinds(BaseScreen screen, Direction fromdir) {
+        screen.context.setWindDirection(fromdir);
     }
 
     public static void spellXit(BaseScreen screen, PartyMember caster) {
@@ -585,12 +581,12 @@ public class SpellUtil implements Constants {
             DungeonScreen dngScreen = (DungeonScreen) screen;
             screen.log("Leaving " + dngScreen.dngMap.getLabel());
             if (dngScreen.dngMap == Maps.HYTHLOTH) {
-                if (GameScreen.context.getParty().getSaveGame().balloonfound == 0) {
+                if (screen.context.getParty().getSaveGame().balloonfound == 0) {
                     dngScreen.gameScreen.addBalloonActor(233, 242);
-                    GameScreen.context.getParty().getSaveGame().balloonx = 233;
-                    GameScreen.context.getParty().getSaveGame().balloony = 242;
+                    screen.context.getParty().getSaveGame().balloonx = 233;
+                    screen.context.getParty().getSaveGame().balloony = 242;
                 }
-                GameScreen.context.getParty().getSaveGame().balloonfound = 1;
+                screen.context.getParty().getSaveGame().balloonfound = 1;
                 dngScreen.gameScreen.newMapPixelCoords = dngScreen.gameScreen.getMapPixelCoords(239, 240);
             }
             if (DungeonScreen.mainGame != null) {
@@ -695,13 +691,13 @@ public class SpellUtil implements Constants {
 
             SequenceAction seq = Actions.action(SequenceAction.class);
 
-            for (final Creature cr : GameScreen.context.getCurrentMap().getCreatures()) {
+            for (final Creature cr : screen.context.getCurrentMap().getCreatures()) {
 
                 /* Deal maximum damage to creature */
                 Utils.dealDamage(caster, cr, 0xFF);
 
-                Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
-                Drawable d = new Drawable(GameScreen.context.getCurrentMap(), cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+                Tile tile = Ultima4.baseTileSet.getTileByName("hit_flash");
+                Drawable d = new Drawable(screen.context.getCurrentMap(), cr.currentX, cr.currentY, tile, Ultima4.standardAtlas);
                 d.setX(cr.currentPos.x);
                 d.setY(cr.currentPos.y);
                 d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));
@@ -711,7 +707,7 @@ public class SpellUtil implements Constants {
                 seq.addAction(Actions.run(new Runnable() {
                     @Override
                     public void run() {
-                        GameScreen.context.getCurrentMap().getCreatures().remove(cr);
+                        screen.context.getCurrentMap().getCreatures().remove(cr);
                     }
                 }));
 
@@ -746,8 +742,8 @@ public class SpellUtil implements Constants {
                     Utils.dealDamage(caster, cr, cr.getHP() / 2);
                 }
 
-                Tile tile = GameScreen.baseTileSet.getTileByName("hit_flash");
-                Drawable d = new Drawable(combatScreen.combatMap, cr.currentX, cr.currentY, tile, GameScreen.standardAtlas);
+                Tile tile = Ultima4.baseTileSet.getTileByName("hit_flash");
+                Drawable d = new Drawable(combatScreen.combatMap, cr.currentX, cr.currentY, tile, Ultima4.standardAtlas);
                 d.setX(cr.currentPos.x);
                 d.setY(cr.currentPos.y);
                 d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));

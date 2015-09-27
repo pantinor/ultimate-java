@@ -3,14 +3,15 @@ package vendor;
 import com.badlogic.gdx.math.Vector3;
 
 import objects.Creature;
-import objects.Party;
 import ultima.Constants.CreatureType;
+import ultima.Context;
 import ultima.GameScreen;
+import ultima.Ultima4;
 
 public class HorseService extends BaseVendor {
 
-    public HorseService(Vendor vendor, Party party) {
-        super(vendor, party);
+    public HorseService(Vendor vendor, Context context) {
+        super(vendor, context);
     }
 
     @Override
@@ -34,7 +35,7 @@ public class HorseService extends BaseVendor {
                 party.adjustGold(-currentSelectedItem.getPrice());
                 displayToScreen("Here, a better breed thou shalt not find ever!");
                 if (screen != null) {
-                    Creature cr = GameScreen.creatures.getInstance(CreatureType.horse, GameScreen.standardAtlas);
+                    Creature cr = Ultima4.creatures.getInstance(CreatureType.horse, Ultima4.standardAtlas);
                     Vector3 v = screen.getCurrentMapCoords();
                     cr.currentX = (int) v.x;
                     cr.currentY = (int) v.y;

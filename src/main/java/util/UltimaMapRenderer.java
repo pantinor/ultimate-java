@@ -28,7 +28,6 @@ import objects.BaseMap.DoorStatus;
 import objects.Creature;
 import objects.Person;
 import ultima.Constants;
-import ultima.GameScreen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -41,10 +40,12 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import ultima.Context;
 
 public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constants {
 
     private BaseMap bm;
+    private Context context;
     private SpreadFOV fov;
     float stateTime = 0;
 
@@ -52,10 +53,10 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
     TextureRegion brick_floor;
     TextureRegion locked_door;
     
-    public UltimaMapRenderer(TextureAtlas atlas, BaseMap bm, TiledMap map, float unitScale) {
+    public UltimaMapRenderer(Context context, TextureAtlas atlas, BaseMap bm, TiledMap map, float unitScale) {
         super(map, unitScale);
         this.bm = bm;
-
+        this.context = context;
         this.fov = new SpreadFOV(bm.getWidth(), bm.getHeight(), bm.getBorderbehavior() == MapBorderBehavior.wrap);
 
         if (atlas != null) {
@@ -246,7 +247,7 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
 
     private float getColor(Color batchColor, int x, int y) {
 
-        if (GameScreen.context != null && GameScreen.context.getTransportContext() == TransportContext.BALLOON) {
+        if (context != null && context.getTransportContext() == TransportContext.BALLOON) {
             return Color.toFloatBits(batchColor.r, batchColor.g, batchColor.b, 1f);
         }
 

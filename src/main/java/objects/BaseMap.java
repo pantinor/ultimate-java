@@ -24,6 +24,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import ultima.Context;
+import ultima.Ultima4;
 import util.PartyDeathException;
 
 @XmlRootElement(name = "map")
@@ -513,8 +515,8 @@ public class BaseMap implements Constants {
                     case ATTACK_AVATAR: {
                         int dist = Utils.movementDistance(borderbehavior, width, height, p.getX(), p.getY(), avatarX, avatarY);
                         if (dist <= 1) {
-                            Maps cm = GameScreen.context.getCombatMap(p.getEmulatingCreature(), this, p.getX(), p.getY(), avatarX, avatarY);
-                            Creature attacker = GameScreen.creatures.getInstance(p.getEmulatingCreature().getTile(), GameScreen.standardAtlas);
+                            Maps cm = screen.context.getCombatMap(p.getEmulatingCreature(), this, p.getX(), p.getY(), avatarX, avatarY);
+                            Creature attacker = Ultima4.creatures.getInstance(p.getEmulatingCreature().getTile(), Ultima4.standardAtlas);
                             attacker.currentX = p.getX();
                             attacker.currentY = p.getY();
                             attacker.currentPos = screen.getMapPixelCoords(p.getX(), p.getY());
@@ -522,12 +524,12 @@ public class BaseMap implements Constants {
                             p.setRemovedFromMap(true);
                             continue;
                         }
-                        int mask = getValidMovesMask(p.getX(), p.getY(), p.getEmulatingCreature(), avatarX, avatarY);
+                        int mask = getValidMovesMask(screen.context, p.getX(), p.getY(), p.getEmulatingCreature(), avatarX, avatarY);
                         dir = Utils.getPath(borderbehavior, width, height, avatarX, avatarY, mask, true, p.getX(), p.getY());
                     }
                     break;
                     case FOLLOW_AVATAR: {
-                        int mask = getValidMovesMask(p.getX(), p.getY(), p.getEmulatingCreature(), avatarX, avatarY);
+                        int mask = getValidMovesMask(screen.context, p.getX(), p.getY(), p.getEmulatingCreature(), avatarX, avatarY);
                         dir = Utils.getPath(borderbehavior, width, height, avatarX, avatarY, mask, true, p.getX(), p.getY());
                     }
                     break;
@@ -540,7 +542,7 @@ public class BaseMap implements Constants {
                         if (p.isTalking()) {
                             continue;
                         }
-                        dir = Direction.getRandomValidDirection(getValidMovesMask(p.getX(), p.getY(), p.getEmulatingCreature(), avatarX, avatarY));
+                        dir = Direction.getRandomValidDirection(getValidMovesMask(screen.context, p.getX(), p.getY(), p.getEmulatingCreature(), avatarX, avatarY));
                     }
                     break;
                     default:
@@ -595,7 +597,7 @@ public class BaseMap implements Constants {
                 int broadsidesDirs = Direction.getBroadsidesDirectionMask(cr.sailDir);
                 if (relDirMask > 0 && (dist == 3 || dist == 2) && Direction.isDirInMask(relDirMask, broadsidesDirs)) {
                     Direction fireDir = Direction.getByMask(relDirMask);
-                    AttackVector av = Utils.enemyfireCannon(surfaceMapStage, this, fireDir, cr.currentX, cr.currentY, avatarX, avatarY);
+                    AttackVector av = Utils.enemyfireCannon(screen.context, surfaceMapStage, this, fireDir, cr.currentX, cr.currentY, avatarX, avatarY);
                     Utils.animateCannonFire(screen, screen.projectilesStage, this, av, cr.currentX, cr.currentY, false);
                     continue;
                 } else if (relDirMask > 0 && (dist == 3 || dist == 2) && !Direction.isDirInMask(relDirMask, broadsidesDirs) && Utils.rand.nextInt(2) == 0) {
@@ -615,28 +617,28 @@ public class BaseMap implements Constants {
 
                 if (cr.getWontattack()) {
                     if (cr.getTile() == CreatureType.whirlpool) {
-                        GameScreen.context.damageShip(-1, 10);
+                        screen.context.damageShip(-1, 10);
                         //teleport to lock lake
                         screen.newMapPixelCoords = screen.getMapPixelCoords(127, 78);
                         i.remove();
                         continue;
                     } else if (cr.getTile() == CreatureType.twister) {
-                        if (GameScreen.context.getTransportContext() == TransportContext.SHIP) {
-                            GameScreen.context.damageShip(10, 30);
-                        } else if (GameScreen.context.getTransportContext() != TransportContext.BALLOON) {
-                            GameScreen.context.getParty().damageParty(0, 75);
+                        if (screen.context.getTransportContext() == TransportContext.SHIP) {
+                            screen.context.damageShip(10, 30);
+                        } else if (screen.context.getTransportContext() != TransportContext.BALLOON) {
+                            screen.context.getParty().damageParty(0, 75);
                         }
                         continue;
                     }
                 } else {
-                    Maps cm = GameScreen.context.getCombatMap(cr, this, cr.currentX, cr.currentY, avatarX, avatarY);
+                    Maps cm = screen.context.getCombatMap(cr, this, cr.currentX, cr.currentY, avatarX, avatarY);
                     screen.attackAt(cm, cr);
                     break;
                 }
 
             }
 
-            int mask = getValidMovesMask(cr.currentX, cr.currentY, cr, avatarX, avatarY);
+            int mask = getValidMovesMask(screen.context, cr.currentX, cr.currentY, cr, avatarX, avatarY);
             Direction dir = null;
             if (cr.getWontattack()) {
                 dir = Direction.getRandomValidDirection(mask);
@@ -707,11 +709,11 @@ public class BaseMap implements Constants {
         return blocked;
     }
 
-    public int getValidMovesMask(int x, int y) {
-        return getValidMovesMask(x, y, null, 0, 0);
+    public int getValidMovesMask(Context context, int x, int y) {
+        return getValidMovesMask(context, x, y, null, 0, 0);
     }
 
-    public int getValidMovesMask(int x, int y, Creature cr, int avatarX, int avatarY) {
+    public int getValidMovesMask(Context context, int x, int y, Creature cr, int avatarX, int avatarY) {
 
         int mask = 0;
 
@@ -722,10 +724,10 @@ public class BaseMap implements Constants {
             Tile east = getTile(x + 1 >= width - 1 ? 0 : x + 1, y);
             Tile west = getTile(x - 1 < 0 ? width - 1 : x - 1, y);
 
-            mask = addToMask(Direction.NORTH, mask, north, x, y - 1 < 0 ? height - 1 : y - 1, cr, avatarX, avatarY);
-            mask = addToMask(Direction.SOUTH, mask, south, x, y + 1 >= height ? 0 : y + 1, cr, avatarX, avatarY);
-            mask = addToMask(Direction.EAST, mask, east, x + 1 >= width - 1 ? 0 : x + 1, y, cr, avatarX, avatarY);
-            mask = addToMask(Direction.WEST, mask, west, x - 1 < 0 ? width - 1 : x - 1, y, cr, avatarX, avatarY);
+            mask = addToMask(context,Direction.NORTH, mask, north, x, y - 1 < 0 ? height - 1 : y - 1, cr, avatarX, avatarY);
+            mask = addToMask(context,Direction.SOUTH, mask, south, x, y + 1 >= height ? 0 : y + 1, cr, avatarX, avatarY);
+            mask = addToMask(context,Direction.EAST, mask, east, x + 1 >= width - 1 ? 0 : x + 1, y, cr, avatarX, avatarY);
+            mask = addToMask(context,Direction.WEST, mask, west, x - 1 < 0 ? width - 1 : x - 1, y, cr, avatarX, avatarY);
 
         } else {
 
@@ -734,17 +736,17 @@ public class BaseMap implements Constants {
             Tile east = getTile(x + 1, y);
             Tile west = getTile(x - 1, y);
 
-            mask = addToMask(Direction.NORTH, mask, north, x, y - 1, cr, avatarX, avatarY);
-            mask = addToMask(Direction.SOUTH, mask, south, x, y + 1, cr, avatarX, avatarY);
-            mask = addToMask(Direction.EAST, mask, east, x + 1, y, cr, avatarX, avatarY);
-            mask = addToMask(Direction.WEST, mask, west, x - 1, y, cr, avatarX, avatarY);
+            mask = addToMask(context,Direction.NORTH, mask, north, x, y - 1, cr, avatarX, avatarY);
+            mask = addToMask(context,Direction.SOUTH, mask, south, x, y + 1, cr, avatarX, avatarY);
+            mask = addToMask(context,Direction.EAST, mask, east, x + 1, y, cr, avatarX, avatarY);
+            mask = addToMask(context,Direction.WEST, mask, west, x - 1, y, cr, avatarX, avatarY);
         }
 
         return mask;
 
     }
 
-    private int addToMask(Direction dir, int mask, Tile tile, int x, int y, Creature cr, int avatarX, int avatarY) {
+    private int addToMask(Context context, Direction dir, int mask, Tile tile, int x, int y, Creature cr, int avatarX, int avatarY) {
         if (tile != null) {
 
             TileRule rule = tile.getRule();
@@ -767,7 +769,7 @@ public class BaseMap implements Constants {
                         canmove = true;
                     }
                 } else {
-                    TransportContext tc = GameScreen.context.getTransportContext();
+                    TransportContext tc = context.getTransportContext();
                     if (tc == null || id != Maps.WORLD.getId() || tc == TransportContext.FOOT) {
                         if (!rule.has(TileAttrib.unwalkable) || rule == TileRule.ship || rule.has(TileAttrib.chest) || rule == TileRule.horse || rule == TileRule.balloon) {
                             canmove = true;

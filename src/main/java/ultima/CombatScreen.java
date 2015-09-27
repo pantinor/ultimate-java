@@ -73,7 +73,6 @@ public class CombatScreen extends BaseScreen {
     private CreatureType crType;
     private CreatureSet creatureSet;
 
-    public Context context;
     public Party party;
 
     private TiledMap tmap;
@@ -269,7 +268,7 @@ public class CombatScreen extends BaseScreen {
 
     public void setAmbushingMonsters(BaseScreen returnScreen, int x, int y, TextureAtlas a1) {
 
-        CreatureType ct = GameScreen.creatures.getRandomAmbushing();
+        CreatureType ct = Ultima4.creatures.getRandomAmbushing();
         fillCreatureTable(ct);
 
         MapLayer mLayer = tmap.getLayers().get("Monster Positions");
@@ -419,7 +418,7 @@ public class CombatScreen extends BaseScreen {
                 return false;
             } else if (keycode == Keys.C) {
                 log("Cast Spell (A-Z): ");
-                Gdx.input.setInputProcessor(new SpellInputProcessor(this, stage, active.currentX, active.currentY, ap));
+                Gdx.input.setInputProcessor(new SpellInputProcessor(this, context, stage, active.currentX, active.currentY, ap));
                 return false;
             } else if (keycode == Keys.U) {
                 Tile tile = combatMap.getTile(active.currentX, active.currentY);
@@ -510,13 +509,13 @@ public class CombatScreen extends BaseScreen {
         if (name == null) {
             return;
         }
-        TextureRegion texture = GameScreen.standardAtlas.findRegion(name);
+        TextureRegion texture = Ultima4.standardAtlas.findRegion(name);
         TiledMapTileLayer layer = (TiledMapTileLayer) tmap.getLayers().get("Map Layer");
         Cell cell = layer.getCell(x, 11 - 1 - y);
         TiledMapTile tmt = new StaticTiledMapTile(texture);
         tmt.setId(y * 11 + x);
         cell.setTile(tmt);
-        combatMap.setTile(GameScreen.baseTileSet.getTileByName(name), x, y);
+        combatMap.setTile(Ultima4.baseTileSet.getTileByName(name), x, y);
     }
 
     private boolean preMove(Creature active, Direction dir) {
@@ -562,7 +561,7 @@ public class CombatScreen extends BaseScreen {
 
         } else {
 
-            int mask = combatMap.getValidMovesMask(x, y);
+            int mask = combatMap.getValidMovesMask(context, x, y);
             if (!Direction.isDirInMask(dir, mask)) {
                 Sounds.play(Sound.BLOCKED);
                 return false;
@@ -679,8 +678,10 @@ public class CombatScreen extends BaseScreen {
 
     public void end() {
 
-        boolean isWon = combatMap.getCreatures().isEmpty();
-        returnScreen.endCombat(isWon, combatMap, wounded);
+        if (returnScreen != null) {
+            boolean isWon = combatMap.getCreatures().isEmpty();
+            returnScreen.endCombat(isWon, combatMap, wounded);
+        }
 
         combatMap.setCombatPlayers(null);
         party.reset();
@@ -1033,7 +1034,7 @@ public class CombatScreen extends BaseScreen {
         int nx = cr.currentX;
         int ny = cr.currentY;
 
-        int mask = combatMap.getValidMovesMask(nx, ny, cr, -1, -1);
+        int mask = combatMap.getValidMovesMask(context, nx, ny, cr, -1, -1);
         Direction dir;
 
         if (action == CombatAction.FLEE) {

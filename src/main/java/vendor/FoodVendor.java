@@ -1,15 +1,14 @@
 package vendor;
 
-import objects.Party;
 import ultima.Constants.InventoryType;
-import ultima.GameScreen;
+import ultima.Context;
 
 public class FoodVendor extends BaseVendor {
 
     Item food;
 
-    public FoodVendor(Vendor vendor, Party party) {
-        super(vendor, party);
+    public FoodVendor(Vendor vendor, Context context) {
+        super(vendor, context);
         for (Item i : vendor.getInventoryItems()) {
             if (i.getType() == InventoryType.FOOD) {
                 food = i;
@@ -103,7 +102,7 @@ public class FoodVendor extends BaseVendor {
         boolean ret = false;
 
         if (food.getPrice() * currentCount > party.getSaveGame().gold) {
-            displayToScreen("You can only afford " + Math.round(GameScreen.context.getParty().getSaveGame().gold / food.getPrice()) + " packs.");
+            displayToScreen("You can only afford " + Math.round(party.getSaveGame().gold / food.getPrice()) + " packs.");
         } else {
             ret = true;
         }
