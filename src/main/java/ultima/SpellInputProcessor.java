@@ -12,7 +12,7 @@ public class SpellInputProcessor extends InputAdapter implements Constants {
 
     private final BaseScreen screen;
     private final Stage stage;
-    private int player;
+    private int player = -1;
     private Spell spell;
     private final int currentX;
     private final int currentY;

@@ -105,6 +105,8 @@ public class ConversationDialog extends Window implements Constants {
                                     } else {
                                         scrollPane.add("Thou art not " + (join == CannotJoinError.JOIN_NOT_VIRTUOUS ? virtue.getDescription() : "experienced") + " enough for me to join thee.");
                                     }
+                                } else {
+                                    scrollPane.add("I cannot join thee.");
                                 }
 
                             } else {

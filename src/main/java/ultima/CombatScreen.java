@@ -468,7 +468,12 @@ public class CombatScreen extends BaseScreen {
 
     private void checkTileAffects(PartyMember ap, int x, int y) throws PartyDeathException {
         
-        TileEffect effect = combatMap.getTile(x, y).getRule().getEffect();
+        Tile tile = combatMap.getTile(x, y);
+        if (tile == null || tile.getRule() == null) {
+            return;
+        }
+        
+        TileEffect effect = tile.getRule().getEffect();
         context.getParty().applyEffect(ap, effect);
         if (effect == TileEffect.FIRE || effect == TileEffect.LAVA) {
             Sounds.play(Sound.FIREFIELD);
