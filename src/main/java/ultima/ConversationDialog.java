@@ -34,7 +34,7 @@ public class ConversationDialog extends Window implements Constants {
     boolean cancelHide;
     Actor previousKeyboardFocus, previousScrollFocus;
     FocusListener focusListener;
-    BaseScreen screen;
+    GameScreen screen;
     Person person;
     BaseVendor vendor;
     Stage stage;
@@ -47,7 +47,7 @@ public class ConversationDialog extends Window implements Constants {
     LogScrollPane scrollPane;
     Topic previousTopic;
 
-    public ConversationDialog(Person p, BaseScreen screen, Stage stage) {
+    public ConversationDialog(Person p, GameScreen screen, Stage stage) {
         super("", Ultima4.skin.get("dialog", WindowStyle.class));
         setSkin(Ultima4.skin);
         this.stage = stage;
@@ -57,6 +57,9 @@ public class ConversationDialog extends Window implements Constants {
     }
 
     private void initialize() {
+        
+        screen.gameTimer.active = false;
+
         setModal(true);
 
         defaults().space(10);
@@ -339,6 +342,7 @@ public class ConversationDialog extends Window implements Constants {
         }
 
         Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
+        screen.gameTimer.active = true;
 
         if (screen.context.getCurrentMap().getCity() != null) {
             screen.context.getCurrentMap().getCity().resetTalkingFlags();

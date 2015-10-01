@@ -130,9 +130,9 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
                     if (p != null && (p.getConversation() != null || p.getRole() != null)) {
                         Gdx.input.setInputProcessor(stage);
                         if (p.getRole() != null && p.getRole().getInventoryType() != null && p.getRole().getInventoryType() == InventoryType.TINKER) {
-                            dialog = new TinkerDialog(screen.context.getParty(), screen, stage, Ultima4.skin).show();
+                            dialog = new TinkerDialog(screen.context.getParty(), (GameScreen)screen, stage, Ultima4.skin).show();
                         } else {
-                            dialog = new ConversationDialog(p, screen, stage).show(stage);
+                            dialog = new ConversationDialog(p, (GameScreen)screen, stage).show(stage);
                         }
                     } else {
                         screen.log("Funny, no response! ");
@@ -198,6 +198,8 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
 
             if (dialog == null) {
                 Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
+            } else {
+                return false;
             }
 
         } else if (screen.scType == ScreenType.SHRINE) {

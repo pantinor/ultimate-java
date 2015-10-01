@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.Array;
 import objects.Party;
 import ultima.BaseScreen;
 import ultima.Constants;
+import ultima.GameScreen;
 import ultima.Sound;
 import ultima.Sounds;
 
@@ -37,7 +38,7 @@ public class TinkerDialog extends Window implements Constants {
     FocusListener focusListener;
 
     Party party;
-    BaseScreen screen;
+    GameScreen screen;
     Stage stage;
 
     List<String> ownedList;
@@ -55,7 +56,7 @@ public class TinkerDialog extends Window implements Constants {
     Table internalTable;
     Table buttonTable;
 
-    public TinkerDialog(Party party, BaseScreen screen, Stage stage, Skin skin) {
+    public TinkerDialog(Party party, GameScreen screen, Stage stage, Skin skin) {
         super("", skin.get("dialog", WindowStyle.class));
         setSkin(skin);
         this.skin = skin;
@@ -66,6 +67,9 @@ public class TinkerDialog extends Window implements Constants {
     }
 
     private void initialize() {
+        
+        screen.gameTimer.active = false;
+
         setModal(true);
 
         internalTable = new Table(skin);

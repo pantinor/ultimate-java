@@ -79,7 +79,7 @@ public class GameScreen extends BaseScreen {
 
     public SecondaryInputProcessor sip;
 
-    GameTimer gameTimer = new GameTimer();
+    public GameTimer gameTimer = new GameTimer();
 
     public GameScreen(Ultima4 mainGame) {
 
@@ -157,9 +157,9 @@ public class GameScreen extends BaseScreen {
         balloonAnim = new Animation(0.25f, tmp);
     }
 
-    class GameTimer implements Runnable {
+    public class GameTimer implements Runnable {
 
-        boolean active = true;
+        public boolean active = true;
 
         @Override
         public void run() {
