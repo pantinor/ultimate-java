@@ -94,7 +94,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
             }
         });
         jourButt.setX(515);
-        jourButt.setY(24);
+        jourButt.setY(15);
         stage.addActor(jourButt);
 
         TextButton bookButt = new TextButton("Book", Ultima4.skin, "wood");
@@ -105,7 +105,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
             }
         });
         bookButt.setX(615);
-        bookButt.setY(24);
+        bookButt.setY(15);
         
         stage.addActor(bookButt);
     }
