@@ -5,6 +5,8 @@ import ultima.GameScreen;
 import util.Utils;
 
 public class InnService extends BaseVendor {
+    
+    public boolean rentedRoom = false;
 
     public InnService(Vendor vendor, Context context) {
         super(vendor, context);
@@ -37,6 +39,7 @@ public class InnService extends BaseVendor {
                 if (Utils.rand.nextInt(4) == 0) {
                     displayToScreen("Oh, and don't mind the strange noises, it's only rats!");
                 }
+                rentedRoom = true;
                 return false;
             case DECLINE_LODGING:
                 displayToScreen("Then you have come to the wrong place! Good day.");

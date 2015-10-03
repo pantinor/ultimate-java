@@ -46,7 +46,6 @@ import ultima.Constants.TileRule;
 import ultima.Constants.Virtue;
 import ultima.StartScreen;
 import util.SpreadFOV;
-import util.Utils;
 import vendor.VendorClass;
 import vendor.VendorClassSet;
 
@@ -58,6 +57,7 @@ import objects.JournalEntry;
 import org.testng.annotations.Test;
 import ultima.Constants.MapType;
 import static ultima.DungeonScreen.DUNGEON_MAP;
+import util.Utils;
 
 public class TestJaxb {
 
@@ -221,8 +221,8 @@ public class TestJaxb {
 
     @Test
     public void parseTlkFiles() throws Exception {
-        List<Person> people = Utils.getPeople("lcb_1.ult", Maps.COVE, null);
-        List<Conversation> cons = Utils.getDialogs("lcb_1.tlk");
+        List<Person> people = Utils.getPeople("skara.ult", Maps.SKARABRAE, null);
+        List<Conversation> cons = Utils.getDialogs("skara.tlk");
 
         for (Person p : people) {
             if (p != null) {
@@ -233,9 +233,23 @@ public class TestJaxb {
                 }
             }
         }
+        
         for (Person p : people) {
             System.out.println(p);
         }
+        
+        for (Conversation c : cons) {
+            Person per = null;
+            for (Person p : people) {
+                if (c.getIndex() == p.getDialogId()) {
+                    per = p;
+                }
+            }
+            if (per == null) {
+                System.out.println("Extra Dialog: " + c);
+            }
+        }
+
 
         //System.out.printf("Latitude [%s' %s]", (char) ((int) 54 / 16 + 'A'), (char) ((int) 54 % 16 + 'A'));
         //System.out.printf(" Longitude [%s' %s]\n", (char) ((int) 182 / 16 + 'A'), (char) ((int) 182 % 16 + 'A'));

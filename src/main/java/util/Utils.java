@@ -1177,6 +1177,9 @@ public class Utils implements Constants {
                 if (map == Maps.CASTLE_OF_LORD_BRITISH_1 && people[i].getId() == 29) {
                     people[i].setConversation(new HawkwindConversation());
                 }
+                if (map == Maps.SKARABRAE && people[i].getId() == 10) {
+                    people[i].setRemovedFromMap(true);//isaac
+                }
             }
         }
 

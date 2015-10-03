@@ -66,7 +66,7 @@ public class Conversation {
 
     public Topic matchTopic(String query) {
         for (Topic t : topics) {
-            if (query.toLowerCase().contains(t.getQuery().toLowerCase())) {
+            if (query.toLowerCase().contains(t.getQuery().toLowerCase().trim())) {
                 return t;
             }
         }

@@ -1075,7 +1075,7 @@ public class DungeonScreen extends BaseScreen {
             sip.setinitialKeyCode(keycode, tile, x, y);
 
         } else if (keycode == Keys.H) {
-            CombatScreen.holeUp(this.dngMap, x, y, this, context, Ultima4.creatures, Ultima4.standardAtlas);
+            CombatScreen.holeUp(this.dngMap, x, y, this, context, Ultima4.creatures, Ultima4.standardAtlas, false);
             return false;
 
         } else if (keycode == Keys.V) {

@@ -28,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
+import vendor.InnService;
 
 public class ConversationDialog extends Window implements Constants {
 
@@ -347,6 +348,21 @@ public class ConversationDialog extends Window implements Constants {
         if (screen.context.getCurrentMap().getCity() != null) {
             screen.context.getCurrentMap().getCity().resetTalkingFlags();
         }
+        
+        if (vendor != null && vendor instanceof InnService) {
+            InnService inn = (InnService) vendor;
+            if (inn.rentedRoom) {
+                SequenceAction seq = Actions.action(SequenceAction.class);
+                seq.addAction(Actions.delay(1f));
+                seq.addAction(Actions.run(new Runnable() {
+                    public void run() {
+                        CombatScreen.holeUp(Maps.get(screen.context.getCurrentMap().getId()), 0, 0, screen, 
+                                screen.context, Ultima4.creatures, Ultima4.standardAtlas, true);
+                    }
+                }));
+                screen.getStage().addAction(seq);
+            }
+        }
 
     }
 
@@ -355,6 +371,7 @@ public class ConversationDialog extends Window implements Constants {
     }
 
     protected InputListener ignoreTouchDown = new InputListener() {
+        @Override
         public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
             event.cancel();
             return false;

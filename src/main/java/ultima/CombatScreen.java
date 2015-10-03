@@ -57,6 +57,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import objects.Person;
 import util.PartyDeathException;
 import util.XORShiftRandom;
 
@@ -1259,11 +1260,12 @@ public class CombatScreen extends BaseScreen {
         }
     }
 
-    public static void holeUp(Maps contextMap, final int x, final int y, final BaseScreen rs, final Context context, CreatureSet cs, final TextureAtlas sa) {
+    public static void holeUp(Maps contextMap, final int x, final int y, final BaseScreen rs, 
+            final Context context, CreatureSet cs, final TextureAtlas sa, boolean inn) {
 
         Ultima4.hud.add("Hole up & Camp!");
 
-        if (context.getCurrentMap().getCity() != null) {
+        if (!inn && context.getCurrentMap().getCity() != null) {
             Ultima4.hud.add("Only outside or in the dungeon!");
             return;
         }
@@ -1280,19 +1282,21 @@ public class CombatScreen extends BaseScreen {
 
         Ultima4.hud.add("Resting");
 
-        final BaseMap campMap;
+        final Maps campMap;
         TiledMap tmap;
         if (contextMap == Maps.WORLD) {
-            campMap = Maps.CAMP_CON.getMap();
-            tmap = new UltimaTiledMapLoader(Maps.CAMP_CON, sa, campMap.getWidth(), campMap.getHeight(), tilePixelWidth, tilePixelHeight).load();
+            campMap = Maps.CAMP_CON;
+        } else if (inn) {
+            campMap = Maps.INN_CON;
         } else {
-            campMap = Maps.CAMP_DNG.getMap();
-            tmap = new UltimaTiledMapLoader(Maps.CAMP_DNG, sa, campMap.getWidth(), campMap.getHeight(), tilePixelWidth, tilePixelHeight).load();
+            campMap = Maps.CAMP_DNG;
         }
+        
+        tmap = new UltimaTiledMapLoader(campMap, sa, campMap.getMap().getWidth(), campMap.getMap().getHeight(), tilePixelWidth, tilePixelHeight).load();
 
         context.setCurrentTiledMap(tmap);
 
-        final CombatScreen sc = new CombatScreen(rs, context, contextMap, campMap, tmap, null, cs, sa);
+        final CombatScreen sc = new CombatScreen(rs, context, contextMap, campMap.getMap(), tmap, null, cs, sa);
 
         mainGame.setScreen(sc);
 
@@ -1309,7 +1313,7 @@ public class CombatScreen extends BaseScreen {
             }));
         }
 
-        if (rand.nextInt(8) == 0) {
+        if (!inn && rand.nextInt(8) == 0) {
 
             seq.addAction(Actions.run(new Runnable() {
                 public void run() {
@@ -1321,6 +1325,7 @@ public class CombatScreen extends BaseScreen {
         } else {
 
             seq.addAction(Actions.run(new Runnable() {
+                @Override
                 public void run() {
 
                     for (int i = 0; i < context.getParty().getMembers().size(); i++) {
@@ -1348,6 +1353,20 @@ public class CombatScreen extends BaseScreen {
 
                 }
             }));
+            
+            if (inn && contextMap == Maps.SKARABRAE && rand.nextInt(3) == 0) {
+                //show isaac
+                for (Person p : context.getCurrentMap().getCity().getPeople()) {
+                    if (p.getId() == 10) {
+                        p.setRemovedFromMap(false);
+                        p.setStart_x(27);
+                        p.setX(27);
+                        p.setStart_y(12);
+                        p.setY(12);
+                        p.setMovement(ObjectMovementBehavior.WANDER);
+                    }
+                }
+            }
 
         }
 

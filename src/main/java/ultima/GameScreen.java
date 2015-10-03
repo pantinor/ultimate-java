@@ -246,7 +246,7 @@ public class GameScreen extends BaseScreen {
             
             //load the surface world first
             loadNextMap(Maps.WORLD, sg.x, sg.y);
-            //loadNextMap(Maps.WORLD, 141, 90);
+            //loadNextMap(Maps.WORLD, 22, 128);
 
             //load the dungeon if save game starts in dungeon
             if (Maps.get(sg.location) != Maps.WORLD) {
@@ -628,7 +628,7 @@ public class GameScreen extends BaseScreen {
 
         } else if (keycode == Keys.H) {
 
-            CombatScreen.holeUp(Maps.WORLD, (int) v.x, (int) v.y, this, context, Ultima4.creatures, Ultima4.standardAtlas);
+            CombatScreen.holeUp(Maps.WORLD, (int) v.x, (int) v.y, this, context, Ultima4.creatures, Ultima4.standardAtlas, false);
             return false;
 
         } else if (keycode == Keys.K || keycode == Keys.D) {
