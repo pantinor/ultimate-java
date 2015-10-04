@@ -229,7 +229,7 @@ public class GameScreen extends BaseScreen {
 //            sg.sextants = 1;
 
 //            party.getMember(0).getPlayer().status = StatusType.GOOD;
-//            party.getMember(0).getPlayer().weapon = WeaponType.MYSTICSWORD;
+//            party.getMember(0).getPlayer().weapon = WeaponType.MAGICAXE;
 //            party.getMember(0).getPlayer().armor = ArmorType.MYSTICROBE;
 //            for (int i = 1; i < 16; i++) {
 //                party.getSaveGame().weapons[i] = 2;

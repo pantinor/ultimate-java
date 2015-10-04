@@ -59,6 +59,7 @@ public class Ultima4 extends Game {
     public static VendorClassSet vendorClassSet;
     public static TextureAtlas standardAtlas;
     
+    public static TextureRegion magicHitTile;
     public static TextureRegion hitTile;
     public static TextureRegion missTile;
     public static TextureRegion corpse;
@@ -124,6 +125,7 @@ public class Ultima4 extends Game {
             standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/tiles-enhanced-vga-atlas.txt"));
 
             hitTile = Ultima4.standardAtlas.findRegion("hit_flash");
+            magicHitTile = Ultima4.standardAtlas.findRegion("magic_flash");
             missTile = Ultima4.standardAtlas.findRegion("miss_flash");
             corpse = Ultima4.standardAtlas.findRegion("corpse");
 

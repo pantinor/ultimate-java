@@ -49,10 +49,10 @@
 	<tile name="shepherd" rule="person" animation="frame" index="46" />
 	<tile name="shepherd" rule="person" animation="frame" index="47" />
 	<tile name="column" rule="solid" usesReplacementTileAsBackground="true" index="48" />
-	<tile name="solids1" rule="solid_attackover" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="49" />
-	<tile name="solids2" rule="solid_attackover" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="50" />
-	<tile name="solids3" rule="solid_attackover" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="51" />
-	<tile name="solids4" rule="solid_attackover" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="52" />
+	<tile name="solids1" rule="solid" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="49" />
+	<tile name="solids2" rule="solid" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="50" />
+	<tile name="solids3" rule="solid" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="51" />
+	<tile name="solids4" rule="solid" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="52" />
 	<tile name="shipmast" rule="solid" index="53" />
 	<tile name="shipwheel" rule="solid" index="54" />
 	<tile name="rocks" rule="solid" usesReplacementTileAsBackground="true" index="55" />
@@ -72,7 +72,7 @@
 	<tile name="energy_field" rule="energy_field" animation="scroll" tiledInDungeon="true" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="69" />
 	<tile name="fire_field" rule="fire_field" animation="scroll" tiledInDungeon="true" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="70" />
 	<tile name="sleep_field" rule="sleep_field" animation="scroll" tiledInDungeon="true" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true" index="71" />
-	<tile name="solid" rule="solid_attackover" index="72" />
+	<tile name="solid" rule="solid" index="72" />
 	<tile name="secret_door" rule="secret_door" opaque="true" index="73" />
 	<tile name="altar" rule="none" usesReplacementTileAsBackground="true" index="74" />
 	<tile name="campfire" rule="solid" animation="campfire" usesReplacementTileAsBackground="true" index="75" />

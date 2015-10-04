@@ -58,6 +58,7 @@ import org.testng.annotations.Test;
 import ultima.Constants.MapType;
 import static ultima.DungeonScreen.DUNGEON_MAP;
 import util.Utils;
+import util.XORShiftRandom;
 
 public class TestJaxb {
 
@@ -493,7 +494,7 @@ public class TestJaxb {
 
     }
 
-    //@Test
+    @Test
     public void testNibbles() throws Exception {
         byte[] data = new byte[4];
         data[1] = (byte) 0x85;
@@ -501,6 +502,14 @@ public class TestJaxb {
         int y = data[1] & 0x0f;
 
         int z = x;
+        
+        
+        Random rand = new XORShiftRandom();
+        for (int j=0;j<10;j++) {
+            int v = 99 + (rand.nextInt(256) & 119);
+            int f = v;
+        }
+
     }
 
     //@Test
@@ -648,7 +657,7 @@ public class TestJaxb {
 
     }
 
-    @Test
+    //@Test
     public void testStartQuestions() throws Exception {
 
         Map<ClassType, Integer> dist = new HashMap<>();

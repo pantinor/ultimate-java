@@ -696,7 +696,7 @@ public class BaseMap implements Constants {
         boolean blocked = false;
         if (rule != null) {
             //projectiles cannot go thru walls, but can over water or if they can be attacked over, like certain solids
-            blocked = rule.has(TileAttrib.unwalkable) && !rule.has(TileAttrib.canattackover) && !rule.has(TileAttrib.swimmable);
+            blocked = rule.has(TileAttrib.unwalkable) && !rule.has(TileAttrib.rangeattackover);
         }
         if (checkForCreatures) {
             for (Creature cre : creatures) {

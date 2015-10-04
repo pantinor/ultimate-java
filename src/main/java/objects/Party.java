@@ -456,14 +456,14 @@ public class Party extends Observable implements Constants {
                     if (player.status == StatusType.DEAD || player.hp == player.hpMax) {
                         return false;
                     }
-                    player.hp += 75 + (rand.nextInt(0x100) % 0x19);
+                    player.hp += 75 + (rand.nextInt(256) % 25);
                     break;
 
                 case CAMPHEAL:
                     if (player.status == StatusType.DEAD || player.hp == player.hpMax) {
                         return false;
                     }
-                    player.hp += 99 + (rand.nextInt(0x100) & 0x77);
+                    player.hp += 99 + (rand.nextInt(256) & 119);
                     break;
 
                 case INNHEAL:
@@ -744,8 +744,7 @@ public class Party extends Observable implements Constants {
                 adjustKarmaMin(newKarma, Virtue.SACRIFICE, -2, 1);
                 break;
             case KILLED_EVIL:
-                // gain one valor half the time, zero the rest
-                adjustKarmaMax(newKarma, Virtue.VALOR, rand.nextInt(1), maxVal);
+                adjustKarmaMax(newKarma, Virtue.VALOR, rand.nextInt(2), maxVal);
                 break;
             case FLED_GOOD:
                 adjustKarmaMax(newKarma, Virtue.COMPASSION, 2, maxVal);

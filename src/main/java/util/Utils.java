@@ -46,6 +46,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Region;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FileTextureData;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -173,7 +174,9 @@ public class Utils implements Constants {
             boolean blocked = combatMap.isTileBlockedForRangedAttack(nx, ny, checkForCreatures);
 
             Tile tile = combatMap.getTile(nx, ny);
-            boolean canAttackOverSolid = (tile != null && tile.getRule() == TileRule.solid_attackover && weaponCanAttackThroughObjects);
+            
+            boolean canAttackOverSolid = (tile != null && tile.getRule() != null 
+                    && tile.getRule().has(TileAttrib.halberdattackover) && weaponCanAttackThroughObjects);
 
             if (!blocked || canAttackOverSolid || isCannonBall) {
                 path.add(new AttackVector(nx, ny));
@@ -334,16 +337,21 @@ public class Utils implements Constants {
     public static void animateAttack(Stage stage, final CombatScreen scr, PartyMember attacker, Direction dir, int x, int y, int range) {
 
         final AttackVector av = Utils.attack(scr.combatMap, attacker, dir, x, y, range);
+        
+        boolean magicHit = attacker.getPlayer().weapon.getWeapon().getHittile().equals("magic_flash");
 
-        final ProjectileActor p = new ProjectileActor(scr, Color.RED, x, y, av.result);
+        final ProjectileActor p = new ProjectileActor(scr, magicHit?Color.CYAN:Color.RED, x, y, av.result);
 
         Vector3 v = scr.getMapPixelCoords(av.x, av.y);
+        
+        final TextureRegion hitTile = (magicHit ? Ultima4.magicHitTile : Ultima4.hitTile);
 
         p.addAction(sequence(moveTo(v.x, v.y, av.distance * .1f), new Action() {
+            @Override
             public boolean act(float delta) {
                 switch (p.res) {
                     case HIT:
-                        p.resultTexture = Ultima4.hitTile;
+                        p.resultTexture = hitTile;
                         break;
                     case MISS:
                         p.resultTexture = Ultima4.missTile;
@@ -428,7 +436,7 @@ public class Utils implements Constants {
 
                 switch (p.res) {
                     case HIT:
-                        p.resultTexture = Ultima4.hitTile;
+                        p.resultTexture = Ultima4.magicHitTile;
                         break;
                     case MISS:
                         p.resultTexture = Ultima4.missTile;

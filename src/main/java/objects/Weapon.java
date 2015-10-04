@@ -22,7 +22,7 @@ public class Weapon {
     private boolean attackthroughobjects;
     private boolean choosedistance;
     private boolean dontshowtravel;
-    private String hittile;
+    private String hittile = "none";
     private String leavetile;
     private boolean lose;
     private boolean losewhenranged;
