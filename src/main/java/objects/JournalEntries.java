@@ -1,7 +1,5 @@
 package objects;
 
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -45,14 +43,9 @@ public class JournalEntries {
         }
     }
 
-    public Array<JournalEntry> toArray(Skin skin) {
-
+    public Array<JournalEntry> toArray() {
         Array<JournalEntry> ar = new Array<>();
-
         for (JournalEntry e : entries) {
-            CheckBox cb = new CheckBox("", skin);
-            cb.setChecked(e.getFinished());
-            e.setCheckbox(cb);
             ar.add(e);
         }
         return ar;
@@ -62,7 +55,6 @@ public class JournalEntries {
         this.entries.clear();
         for (int i = 0; i < ar.size; i++) {
             JournalEntry e = ar.get(i);
-            e.setFinished(e.getCheckbox().isChecked());
             this.entries.add(e);
         }
     }

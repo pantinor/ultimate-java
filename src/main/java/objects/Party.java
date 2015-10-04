@@ -825,11 +825,13 @@ public class Party extends Observable implements Constants {
     private void adjustKarmaMax(int[] karma, Virtue v, int value, int[] max) {
         int n = Utils.adjustValueMax(karma[v.ordinal()], value, max[v.ordinal()]);
         karma[v.ordinal()] = n;
+        v.adjustProgress(n);
     }
 
     private void adjustKarmaMin(int[] karma, Virtue v, int value, int min) {
         int n = Utils.adjustValueMin(karma[v.ordinal()], value, min);
         karma[v.ordinal()] = n;
+        v.adjustProgress(n);
     }
 
     public void endTurn(MapType mapType) throws PartyDeathException {

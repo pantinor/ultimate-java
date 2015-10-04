@@ -1,28 +1,23 @@
 package objects;
 
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement(name = "entry")
 public class JournalEntry {
 
     private String name;
     private String location;
-    private boolean finished;
     private String text;
-    private CheckBox checkbox;
 
     public JournalEntry() {
 
     }
 
-    public JournalEntry(String name, String loc, boolean fin, String t) {
+    public JournalEntry(String name, String loc, String t) {
         this.name = name;
         this.location = loc;
-        this.finished = fin;
         this.text = t;
     }
 
@@ -45,24 +40,6 @@ public class JournalEntry {
     }
 
     @XmlAttribute
-    public boolean getFinished() {
-        return finished;
-    }
-
-    public void setFinished(boolean finished) {
-        this.finished = finished;
-    }
-
-    @XmlTransient
-    public CheckBox getCheckbox() {
-        return checkbox;
-    }
-
-    public void setCheckbox(CheckBox checkbox) {
-        this.checkbox = checkbox;
-    }
-
-    @XmlAttribute
     public String getText() {
         return text;
     }
@@ -73,7 +50,7 @@ public class JournalEntry {
 
     @Override
     public String toString() {
-        return "JournalEntry{" + "name=" + name + ", location=" + location + ", finished=" + finished + ", text=" + text + '}';
+        return "JournalEntry{" + "name=" + name + ", location=" + location + ", text=" + text + '}';
     }
 
     @Override

@@ -171,7 +171,7 @@ public class Context implements Constants {
         texts.add(sb);
 
         for (StringBuilder b : texts) {
-            JournalEntry je = new JournalEntry(name, map.getLabel(), false, b.toString().trim());
+            JournalEntry je = new JournalEntry(name, map.getLabel(), b.toString().trim());
             this.journalEntries.add(je);
         }
     }

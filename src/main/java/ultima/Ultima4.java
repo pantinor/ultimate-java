@@ -8,6 +8,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -40,6 +42,8 @@ public class Ultima4 extends Game {
     public static LogDisplay hud;
     public static Texture backGround;
     public static BitmapFont font;
+    public static BitmapFont smallFont;
+
     public static StartScreen startScreen;
     public static Skin skin;
 
@@ -77,8 +81,12 @@ public class Ultima4 extends Game {
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/fonts/lindberg.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        
         parameter.size = 16;
         font = generator.generateFont(parameter);
+        
+        parameter.size = 10;
+        smallFont = generator.generateFont(parameter);
 
         parameter.size = 24;
         BitmapFont fontLarger = generator.generateFont(parameter);
@@ -134,6 +142,15 @@ public class Ultima4 extends Game {
             creatures.init();
             weapons.init();
             armors.init();
+            
+            Constants.Virtue.HONESTY.setBar(new TextureRegion(fillRectangle(200, 9, Color.CYAN)));
+            Constants.Virtue.COMPASSION.setBar(new TextureRegion(fillRectangle(200, 9, Color.ORANGE)));
+            Constants.Virtue.VALOR.setBar(new TextureRegion(fillRectangle(200, 9, Color.FIREBRICK)));
+            Constants.Virtue.JUSTICE.setBar(new TextureRegion(fillRectangle(200, 9, Color.BLUE)));
+            Constants.Virtue.SACRIFICE.setBar(new TextureRegion(fillRectangle(200, 9, Color.RED)));
+            Constants.Virtue.HONOR.setBar(new TextureRegion(fillRectangle(200, 9, Color.PURPLE)));
+            Constants.Virtue.SPIRITUALITY.setBar(new TextureRegion(fillRectangle(200, 9, Color.YELLOW)));
+            Constants.Virtue.HUMILITY.setBar(new TextureRegion(fillRectangle(200, 9, Color.OLIVE)));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -143,6 +160,15 @@ public class Ultima4 extends Game {
 
         setScreen(startScreen);
 
+    }
+    
+    private static Texture fillRectangle(int width, int height, Color color) {
+        Pixmap pix = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+        pix.setColor(color);
+        pix.fillRectangle(0, 0, width, height);
+        Texture t = new Texture(pix);
+        pix.dispose();
+        return t;
     }
 
 }

@@ -255,6 +255,10 @@ public class GameScreen extends BaseScreen {
                 //loadNextMap(Maps.DESTARD, 0, 0, 5, 5, 0, Direction.NORTH, true);
                 //loadNextMap(Maps.DELVE_SORROWS, 0, 0, 3, 19, 1, Direction.EAST, true);
             }
+            
+            for (Virtue v : Virtue.values()) {
+                v.adjustProgress(sg.karma[v.ordinal()]);
+            }
 
             party.setTransport(Ultima4.baseTileSet.getTileByIndex(sg.transport));
 
@@ -520,7 +524,7 @@ public class GameScreen extends BaseScreen {
         if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
             batch.draw(moonAtlas.findRegion("phase_" + trammelphase), 360, Ultima4.SCREEN_HEIGHT - 25, 25, 25);
             batch.draw(moonAtlas.findRegion("phase_" + feluccaphase), 380, Ultima4.SCREEN_HEIGHT - 25, 25, 25);
-            Ultima4.font.draw(batch, "Wind  " + context.getWindDirection().toString(), 305, 36);
+            Ultima4.smallFont.draw(batch, "Wind " + context.getWindDirection().toString(), 415, Ultima4.SCREEN_HEIGHT - 10);
         }
 
         if (context.getAura().getType() != AuraType.NONE) {

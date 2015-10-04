@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -32,13 +31,11 @@ public class JournalList extends Widget implements Cullable {
     private float textOffsetX, textOffsetY;
     private final BitmapFont font;
     private final TextField filterField;
-    private final CheckBox activeFilter;
     
-    public JournalList(Skin skin, TextField filterField, CheckBox cb, Array<JournalEntry> items) {
+    public JournalList(Skin skin, TextField filterField, Array<JournalEntry> items) {
 
         this.font = skin.get("default-font", BitmapFont.class);
         this.filterField = filterField;
-        this.activeFilter = cb;
         
         this.items = items;
         this.filteredIndex = new int[items.size];
@@ -95,10 +92,6 @@ public class JournalList extends Widget implements Cullable {
             return;
         }
         
-        if (x < 25) {
-            je.getCheckbox().setChecked(!je.getCheckbox().isChecked());
-        }
-
         selection.choose(je);
     }
 
@@ -157,13 +150,6 @@ public class JournalList extends Widget implements Cullable {
                 } else {
                     filteredIndex[i] = -1;
                 }
-            } else if (this.activeFilter.isChecked()) {
-                if (item.getCheckbox().isChecked()) {
-                    filteredIndex[i] = count;
-                    count ++;
-                } else {
-                    filteredIndex[i] = -1;
-                }
             } else {
                     filteredIndex[i] = i;
             }
@@ -183,21 +169,18 @@ public class JournalList extends Widget implements Cullable {
                     font.setColor(fontColorSelected.r, fontColorSelected.g, fontColorSelected.b, fontColorSelected.a * parentAlpha);
                 }
 
-                item.getCheckbox().setX(x + textOffsetX + 2);
-                item.getCheckbox().setY(y + itemY - textOffsetY - 15);
-                item.getCheckbox().draw(batch, font.getColor().a);
-
-                font.draw(batch, item.getLocation(), x + 30 + textOffsetX, y + itemY - textOffsetY);
+                font.draw(batch, item.getLocation(), x + textOffsetX, y + itemY - textOffsetY);
                 
                 font.setColor(Color.YELLOW);
-                font.draw(batch, item.getName(), x + 30 + 100 + textOffsetX, y + itemY - textOffsetY);
+                font.draw(batch, item.getName(), x + 100 + textOffsetX, y + itemY - textOffsetY);
                 font.setColor(Color.WHITE);
 
-                font.draw(batch, item.getText(), x + 30 + 200 + textOffsetX, y + itemY - textOffsetY);
+                font.draw(batch, item.getText(), x + 200 + textOffsetX, y + itemY - textOffsetY);
 
                 if (selected) {
                     font.setColor(fontColorUnselected.r, fontColorUnselected.g, fontColorUnselected.b, fontColorUnselected.a * parentAlpha);
                 }
+                
             } else if (itemY < cullingArea.y) {
                 break;
             }

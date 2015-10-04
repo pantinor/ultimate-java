@@ -60,7 +60,7 @@ portal
   index: 0
 white-bead
   rotate: false
-  xy: 490, 1904
+  xy: 340, 1715
   size: 8, 12
   orig: 8, 12
   offset: 0, 0

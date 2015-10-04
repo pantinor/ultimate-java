@@ -9,6 +9,7 @@ import objects.Weapon;
 import org.apache.commons.lang3.StringUtils;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -737,6 +738,7 @@ public interface Constants {
         private int loc;
         private Color color;
         private String baseVirtues;
+        private TextureRegion progressBar;
 
         private Virtue(String abbr, String d, String ab, int loc, Color color, String bv) {
             this.abbr = abbr;
@@ -778,6 +780,28 @@ public interface Constants {
 
         public String getBaseVirtues() {
             return this.baseVirtues;
+        }
+        
+        public void setBar(TextureRegion tr) {
+            this.progressBar = tr;
+        }
+        
+        public TextureRegion getBar() {
+            return this.progressBar;
+        }
+        
+        public void adjustProgress(int current) {
+            double percent = (double)current / 100;
+            double bar = percent * (double) 200;
+            if (current < 0) {
+                bar = 0;
+            }
+            if (bar > 200) {
+                bar = 200;
+            }
+            if (this.progressBar != null) {
+                this.progressBar.setRegion(0, 0, (int) bar, 9);
+            }
         }
     }
 

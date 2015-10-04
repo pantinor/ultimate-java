@@ -39,11 +39,7 @@ public class JournalScreen implements Screen, InputProcessor, Constants {
         filterField.setX(56);
         filterField.setY(Gdx.graphics.getHeight() - 32);
 
-        CheckBox cb = new CheckBox("Show Active", skin);
-        cb.setX(256);
-        cb.setY(Gdx.graphics.getHeight() - 32);
-
-        list = new JournalList(skin, filterField, cb, this.entries.toArray(skin));
+        list = new JournalList(skin, filterField, this.entries.toArray());
 
         ScrollPane sp = new ScrollPane(list, skin);
         sp.setX(16);
@@ -69,7 +65,6 @@ public class JournalScreen implements Screen, InputProcessor, Constants {
 
         stage.addActor(filterLabel);
         stage.addActor(filterField);
-        stage.addActor(cb);
         stage.addActor(exit);
         stage.addActor(sp);
 

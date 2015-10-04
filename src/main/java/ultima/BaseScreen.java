@@ -14,6 +14,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -93,7 +94,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
                 mainGame.setScreen(new JournalScreen(mainGame, BaseScreen.this, Ultima4.skin, context.getJournal()));
             }
         });
-        jourButt.setX(515);
+        jourButt.setX(530);
         jourButt.setY(15);
         stage.addActor(jourButt);
 
@@ -104,10 +105,35 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
                 mainGame.setScreen(new BookScreen(mainGame, BaseScreen.this, Ultima4.skin));
             }
         });
-        bookButt.setX(615);
+        bookButt.setX(625);
         bookButt.setY(15);
         
         stage.addActor(bookButt);
+        
+        int y = 42;
+        for (int j=0;j<8;j++) {
+            Virtue v = Constants.Virtue.values()[j];
+            int x = (j<4?58:316);
+            y = y - 12;
+            if (y < 0) y = 42;
+            VirtueBarDrawable bar = new VirtueBarDrawable(v);
+            bar.setX(x);
+            bar.setY(y);
+            stage.addActor(bar);
+        }
+
+    }
+    
+    private class VirtueBarDrawable extends Actor {
+        private Virtue v;
+        public VirtueBarDrawable(Virtue v) {
+            this.v = v;
+        }
+        @Override
+        public void draw(Batch batch, float parentAlpha) {
+            batch.draw(v.getBar(), getX(), getY());
+            Ultima4.smallFont.draw(batch, v.getAbbr(), getX() - 30, getY() + 8);
+        }
     }
 
     @Override

@@ -102,10 +102,10 @@ public class TestJaxb {
         marshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
         
         JournalEntries entries = new JournalEntries();
-        entries.add(new JournalEntry("john", "yew", true, "whatever"));
+        entries.add(new JournalEntry("john", "yew", "whatever"));
         marshaller.marshal(entries, file);
         
-        entries.add(new JournalEntry("fred", "minoc", false, "whatever"));
+        entries.add(new JournalEntry("fred", "minoc", "whatever"));
         marshaller.marshal(entries, file);
         
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
@@ -648,10 +648,10 @@ public class TestJaxb {
 
     }
 
-    //@Test
+    @Test
     public void testStartQuestions() throws Exception {
 
-        Map<ClassType, Integer> dist = new HashMap<ClassType, Integer>();
+        Map<ClassType, Integer> dist = new HashMap<>();
         for (ClassType ct : ClassType.values()) {
             dist.put(ct, 0);
         }
@@ -660,12 +660,13 @@ public class TestJaxb {
             StartScreen.questionRound = 0;
             StartScreen.initQuestionTree();
 
-            //		System.out.println("INIT\n");
-            //		for (int i = 0; i < 15; i++) {
-            //			System.out.println(i + ") " + Virtue.get(StartScreen.questionTree[i]));
-            //		}
+            System.out.println("INIT\n");
+            for (int i = 0; i < 15; i++) {
+                    System.out.println(i + ") " + Virtue.get(StartScreen.questionTree[i]));
+            }
+            
             while (!StartScreen.doQuestion(new Random().nextInt(2))) {
-                //printQuestionDesc(StartScreen.questionRound);
+                printQuestionDesc(StartScreen.questionRound);
             }
 
             //		System.out.println("\nANSWERS\n");
