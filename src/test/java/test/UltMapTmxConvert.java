@@ -49,9 +49,9 @@ public class UltMapTmxConvert implements ApplicationListener {
             ms.init(ts);
             
             //load the atlas and determine the tile indexes per tilemap position
-            FileHandle f = new FileHandle("assets/tilemaps/tiles-enhanced-vga-atlas.txt");
+            FileHandle f = new FileHandle("assets/tilemaps/latest-atlas.txt");
             TextureAtlasData atlas = new TextureAtlasData(f, f.parent(), false);
-            int png_grid_width = 20;
+            int png_grid_width = 24;
             Tile[] mapTileIds = new Tile[png_grid_width * Constants.tilePixelWidth + 1];
             for (Region r : atlas.getRegions()) {
                 int x = r.left / r.width;
@@ -93,12 +93,9 @@ public class UltMapTmxConvert implements ApplicationListener {
                     data.append(findTileMapId(mapTileIds, t.getName())).append(",");
                     count++;
                     total++;
-                    if (count > png_grid_width * 32) {
+                    if (count > 32) {
                         data.append("\n");
                         count = 1;
-                    }
-                    if (total > png_grid_width * 32 * 24 * 32) {
-                        break;
                     }
                 }
 
@@ -138,7 +135,7 @@ public class UltMapTmxConvert implements ApplicationListener {
                 }
                 p = p.substring(0, p.length() - 2);
 
-                Formatter c = new Formatter(map.getFname(), "tiles-enhanced-vga.png", map.getWidth(), map.getHeight(),
+                Formatter c = new Formatter(map.getFname(), "latest.png", map.getWidth(), map.getHeight(),
                         Constants.tilePixelWidth, Constants.tilePixelWidth, d, p, people);
 
                 String tmxFName = String.format("tmx/map_%s_%s.tmx", map.getId(), map.getCity().getName().replace(" ", ""));
@@ -238,7 +235,7 @@ public class UltMapTmxConvert implements ApplicationListener {
             String template = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                     + "<map version=\"1.0\" orientation=\"orthogonal\" width=\"%s\" height=\"%s\" tilewidth=\"%s\" tileheight=\"%s\" backgroundcolor=\"#000000\">\n"
                     + "<tileset firstgid=\"1\" name=\"%s\" tilewidth=\"%s\" tileheight=\"%s\">\n"
-                    + "<image source=\"%s\" width=\"640\" height=\"768\"/>\n</tileset>\n"
+                    + "<image source=\"%s\" width=\"768\" height=\"768\"/>\n</tileset>\n"
                     + "<layer name=\"Map Layer\" width=\"%s\" height=\"%s\">\n"
                     + "<data encoding=\"csv\">\n%s\n</data>\n</layer>\n"
                     + "<layer name=\"People Layer\" width=\"%s\" height=\"%s\">\n"

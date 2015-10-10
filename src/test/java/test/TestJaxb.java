@@ -51,6 +51,8 @@ import vendor.VendorClassSet;
 
 import com.badlogic.gdx.math.Vector3;
 import com.google.common.io.LittleEndianDataInputStream;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 import javax.xml.bind.Marshaller;
 import objects.JournalEntries;
 import objects.JournalEntry;
@@ -222,8 +224,8 @@ public class TestJaxb {
 
     @Test
     public void parseTlkFiles() throws Exception {
-        List<Person> people = Utils.getPeople("skara.ult", Maps.SKARABRAE, null);
-        List<Conversation> cons = Utils.getDialogs("skara.tlk");
+        List<Person> people = Utils.getPeople("paws.ult", Maps.PAWS, null);
+        List<Conversation> cons = Utils.getDialogs("paws.tlk");
 
         for (Person p : people) {
             if (p != null) {
@@ -704,6 +706,17 @@ public class TestJaxb {
         String v1 = Virtue.get(StartScreen.questionTree[round * 2]).toString().toLowerCase();
         String v2 = Virtue.get(StartScreen.questionTree[round * 2 + 1]).toString().toLowerCase();
         System.out.println(String.format("round: %d %s %d and %s %d", round, v1.toString(), (round * 2), v2.toString(), (round * 2 + 1)));
+    }
+    
+    //@Test
+    public void makeImageOutlines() throws Exception {
+        File file = new File("assets/tilemaps/latest.png");
+        BufferedImage fr = ImageIO.read(file);
+        
+        BufferedImage out = ImageTransparency.makeOutline(fr.getSubimage(256, 32, 32, 32));
+        
+        ImageIO.write(out, "PNG", new File("outlined.png"));
+        
     }
 
     //@Test

@@ -56,9 +56,9 @@ public class WorldMapTmxConvert implements ApplicationListener {
             Tile[] tiles = map.getTiles();
 
             //load the atlas and determine the tile indexes per tilemap position
-            FileHandle f = new FileHandle("assets/tilemaps/tiles-enhanced-vga-atlas.txt");
+            FileHandle f = new FileHandle("assets/tilemaps/latest-atlas.txt");
             TextureAtlasData atlas = new TextureAtlasData(f, f.parent(), false);
-            int png_grid_width = 20;
+            int png_grid_width = 24;
             Tile[] mapTileIds = new Tile[png_grid_width * Constants.tilePixelWidth + 1];
             for (Region r : atlas.getRegions()) {
                 int x = r.left / r.width;
@@ -76,12 +76,9 @@ public class WorldMapTmxConvert implements ApplicationListener {
                 data.append(findTileId(mapTileIds, t.getName())).append(",");
                 count++;
                 total++;
-                if (count > png_grid_width * 32) {
+                if (count > 256) {
                     data.append("\n");
                     count = 1;
-                }
-                if (total > png_grid_width * 32 * 24 * 32) {
-                    break;
                 }
             }
 
@@ -143,7 +140,7 @@ public class WorldMapTmxConvert implements ApplicationListener {
             String ml = moongateBuffer.toString();
             ml = ml.substring(0, ml.length() - 2);
 
-            Formatter c = new Formatter(map.getFname(), "tiles-enhanced-vga.png",
+            Formatter c = new Formatter(map.getFname(), "latest.png",
                     map.getWidth(), map.getHeight(),
                     Constants.tilePixelWidth, Constants.tilePixelWidth,
                     dl, pl, ml,
@@ -298,7 +295,7 @@ public class WorldMapTmxConvert implements ApplicationListener {
             return String.format(template,
                     mapWidth, mapHeight, tileWidth, tileHeight,
                     tilesetName, tileWidth, tileHeight,
-                    imageSource, 640, 768,
+                    imageSource, 768, 768,
                     mapWidth, mapHeight, dataLayer,
                     mapWidth, mapHeight, portalLayer,
                     mapWidth, mapHeight, moongateLayer,

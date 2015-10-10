@@ -43,7 +43,7 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 
     Batch batch;
 
-    static int screenWidth = 800;
+    static int screenWidth = 1000;
     static int screenHeight = 800;
 
     int dim = 32;
@@ -77,7 +77,7 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
         pixmap.fillRectangle(w, dim - w, dim - 2 * w, w);
         box = new Texture(pixmap);
 
-        Texture tx = new Texture(Gdx.files.internal("assets/tilemaps/tiles-enhanced-vga.png"));
+        Texture tx = new Texture(Gdx.files.internal("assets/tilemaps/latest.png"));
         canvasGridWidth = tx.getWidth() / dim;
         canvasGridHeight = tx.getHeight() / dim;
 
@@ -315,7 +315,7 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
         System.out.println("Writing: number of sprites: " + packedRects.size());
 
         try {
-            mrp.writePackFileWithRects(new File("."), "sprites-atlas.txt", packedRects, "assets/tilemaps/tiles-enhanced-vga.png");
+            mrp.writePackFileWithRects(new File("."), "sprites-atlas.txt", packedRects, "assets/tilemaps/latest.png");
         } catch (IOException e) {
             e.printStackTrace();
         }
