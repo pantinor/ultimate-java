@@ -775,8 +775,8 @@ public class Utils implements Constants {
             }
         }
 
-        java.awt.Image tmp = canvas.getScaledInstance(16 * 32, 16 * 32, Image.SCALE_AREA_AVERAGING);
-        BufferedImage scaledCanvas = new BufferedImage(16 * 32, 16 * 32, BufferedImage.TYPE_INT_ARGB);
+        java.awt.Image tmp = canvas.getScaledInstance(20 * 32, 20 * 32, Image.SCALE_AREA_AVERAGING);
+        BufferedImage scaledCanvas = new BufferedImage(20 * 32, 20 * 32, BufferedImage.TYPE_INT_ARGB);
         scaledCanvas.getGraphics().drawImage(tmp, 0, 0, null);
 
         Pixmap p = Utils.createPixmap(scaledCanvas.getWidth(), scaledCanvas.getHeight(), scaledCanvas, 0, 0);
@@ -806,8 +806,8 @@ public class Utils implements Constants {
                 }
             }
 
-            java.awt.Image tmp = canvas.getScaledInstance(16 * 32, 16 * 32, Image.SCALE_AREA_AVERAGING);
-            BufferedImage scaledCanvas = new BufferedImage(16 * 32, 16 * 32, BufferedImage.TYPE_INT_ARGB);
+            java.awt.Image tmp = canvas.getScaledInstance(20 * 32, 20 * 32, Image.SCALE_AREA_AVERAGING);
+            BufferedImage scaledCanvas = new BufferedImage(20 * 32, 20 * 32, BufferedImage.TYPE_INT_ARGB);
             scaledCanvas.getGraphics().drawImage(tmp, 0, 0, null);
 
             Pixmap p = createPixmap(
@@ -873,8 +873,8 @@ public class Utils implements Constants {
         //add avatar in the middle
         canvas.getGraphics().fillRect((32 * 64) / 2, (32 * 64) / 2, 32, 32);
 
-        java.awt.Image tmp = canvas.getScaledInstance(16 * 32, 16 * 32, Image.SCALE_AREA_AVERAGING);
-        BufferedImage scaledCanvas = new BufferedImage(16 * 32, 16 * 32, BufferedImage.TYPE_INT_ARGB);
+        java.awt.Image tmp = canvas.getScaledInstance(20 * 32, 20 * 32, Image.SCALE_AREA_AVERAGING);
+        BufferedImage scaledCanvas = new BufferedImage(20 * 32, 20 * 32, BufferedImage.TYPE_INT_ARGB);
         scaledCanvas.getGraphics().drawImage(tmp, 0, 0, null);
 
         Pixmap p = createPixmap(
@@ -896,7 +896,7 @@ public class Utils implements Constants {
         int imgHeight = image.getHeight();
 
         Pixmap pix = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pix.setColor(0f, 0f, 0f, .85f);
+        pix.setColor(0f, 0f, 0f, 1f);
         pix.fillRectangle(0, 0, width, height);
 
         int[] pixels = image.getRGB(0, 0, imgWidth, imgHeight, null, 0, width);
@@ -988,9 +988,9 @@ public class Utils implements Constants {
 
         TiledMapTileLayer ml = (TiledMapTileLayer) tm.getLayers().get(map.getId() + "-map");
         if (ml != null) {
-            FileHandle f = new FileHandle("assets/tilemaps/tiles-enhanced-vga-atlas.txt");
+            FileHandle f = new FileHandle("assets/tilemaps/latest-atlas.txt");
             TextureAtlas.TextureAtlasData atlas = new TextureAtlas.TextureAtlasData(f, f.parent(), false);
-            int png_grid_width = 20;
+            int png_grid_width = 24;
             Tile[] mapTileIds = new Tile[png_grid_width * Constants.tilePixelWidth + 1];
             for (Region r : atlas.getRegions()) {
                 int x = r.left / r.width;

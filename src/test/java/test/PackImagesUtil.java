@@ -160,7 +160,7 @@ public class PackImagesUtil {
 
         TexturePacker tp = new TexturePacker(settings);
 
-        File file = new File("assets\\tilemaps\\hires.png");
+        File file = new File("C:\\Users\\Paul\\Desktop\\water\\shapes.png");
 
         BufferedImage fr = ImageIO.read(file);
         for (int y=0;y<fr.getHeight();y+=32) {

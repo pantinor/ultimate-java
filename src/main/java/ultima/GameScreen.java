@@ -140,12 +140,13 @@ public class GameScreen extends BaseScreen {
         corpseAnim = new Animation(0.25f, tmp2);
 
         tmp = new Array<>(4);
-        AtlasRegion ar = new AtlasRegion(horse.get(1));
+        AtlasRegion ar = new AtlasRegion(horse.get(0));
         ar.flip(true, false);
+        tmp.add(horse.get(0));
+        tmp.add(horse.get(0));
         tmp.add(ar);
-        tmp.add(horse.get(1));
-        tmp.add(horse.get(1));
-        tmp.add(horse.get(1));
+
+        tmp.add(horse.get(0));
         horseAnim = new Animation(0.25f, tmp);
 
         shipAnim = new Animation(0.25f, ship);
@@ -219,9 +220,9 @@ public class GameScreen extends BaseScreen {
 //            party.join(NpcDefaults.Jaana.name());
 //
 //            sg.food = 30000;
-//            sg.gold = 999;
+            sg.gold = 999;
 //            sg.keys = 20;
-//            sg.gems = 15;
+            sg.gems = 15;
 //            sg.moves = 2800;
 //            sg.stones = 0xff;
 //            sg.runes = 0xff;
@@ -246,13 +247,13 @@ public class GameScreen extends BaseScreen {
             
             //load the surface world first
             loadNextMap(Maps.WORLD, sg.x, sg.y);
-            //loadNextMap(Maps.WORLD, 22, 128);
+            //loadNextMap(Maps.WORLD, 141, 90);
 
             //load the dungeon if save game starts in dungeon
             if (Maps.get(sg.location) != Maps.WORLD) {
                 loadNextMap(Maps.get(sg.location), sg.x, sg.y, sg.x, sg.y, sg.dnglevel, Direction.getByValue(sg.orientation + 1), true);
                 //loadNextMap(Maps.ABYSS, 0, 0, 5, 5, 0, Direction.SOUTH, true);
-                //loadNextMap(Maps.DESTARD, 0, 0, 5, 5, 0, Direction.NORTH, true);
+                //loadNextMap(Maps.DESTARD, 0, 0, 3, 5, 3, Direction.SOUTH, true);
                 //loadNextMap(Maps.DELVE_SORROWS, 0, 0, 3, 19, 1, Direction.EAST, true);
             }
             

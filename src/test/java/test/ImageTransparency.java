@@ -23,7 +23,6 @@ import javax.imageio.ImageIO;
  * @author Paul
  *
  */
-@SuppressWarnings("restriction")
 public class ImageTransparency {
 
     public static int MARKER_RED;
@@ -34,7 +33,7 @@ public class ImageTransparency {
         final String inputFileName = "C:\\Users\\Paul\\Desktop\\sprites\\queen.bmp";
         final String outputFileName = "C:\\Users\\Paul\\Desktop\\sprites\\queen.copy.png";
 
-		// final String inputFileName =
+        // final String inputFileName =
         // "F:\\work\\life-game\\src\\main\\resources\\arno-walking.png";
         // final String outputFileName =
         // "C:\\Users\\Paul\\Desktop\\sprites\\arno-walking.png";
@@ -246,6 +245,72 @@ public class ImageTransparency {
         int nh = maxy - miny;
 
         return t.getSubimage(minx, miny, nw, nh);
+    }
+
+    public static BufferedImage makeOutline(BufferedImage originalImage) {
+        
+        BufferedImage clone = new BufferedImage(originalImage.getWidth(), originalImage.getHeight(), originalImage.getType());
+        Graphics2D g2d = clone.createGraphics();
+        g2d.drawImage(originalImage, 0, 0, null);
+        g2d.dispose();
+        
+        WritableRaster original = originalImage.getRaster();
+        WritableRaster canvas = clone.getRaster();
+
+
+        double[] black = new double[]{0, 0, 0, 255};
+        double[] alpha = new double[]{0, 0, 0, 0};
+
+        double[] pv = new double[4];
+        double[] dv = new double[4];
+        int x0 = 0;
+        int x1 = originalImage.getWidth();
+        int y0 = 0;
+        int y1 = originalImage.getHeight();
+
+        for (int y = y0; y < y1; y++) {
+            for (int x = x0; x < x1; x++) {
+                original.getPixel(x, y, pv);
+                if (!Arrays.equals(pv, alpha)) {
+                    checkAdjacents(original, canvas, x, y, x1, y1);
+                }
+            }
+        }
+
+        return clone;
+    }
+
+    private static void checkAdjacents(WritableRaster original, WritableRaster r, int x, int y, int maxx, int maxy) {
+
+        double[] black = new double[]{0, 0, 0, 255};
+        double[] alpha = new double[]{0, 0, 0, 0};
+        double[] dv = new double[4];
+
+        if (x < maxx - 1) {
+            original.getPixel(x + 1, y, dv);
+            if (Arrays.equals(dv, alpha)) {
+                r.setPixel(x + 1, y, black);
+            }
+        }
+        if (x > 0) {
+            original.getPixel(x - 1, y, dv);
+            if (Arrays.equals(dv, alpha)) {
+                r.setPixel(x - 1, y, black);
+            }
+        }
+        if (y < maxy - 1) {
+            original.getPixel(x, y + 1, dv);
+            if (Arrays.equals(dv, alpha)) {
+                r.setPixel(x, y + 1, black);
+            }
+        }
+        if (y > 0) {
+            original.getPixel(x, y - 1, dv);
+            if (Arrays.equals(dv, alpha)) {
+                r.setPixel(x, y - 1, black);
+            }
+        }
+
     }
 
 }

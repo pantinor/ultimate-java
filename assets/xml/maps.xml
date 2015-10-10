@@ -204,7 +204,7 @@
 			<personrole type="TAVERN" role="" id="28" />
 			<personrole type="TAVERN" role="" id="29" />
 			<personrole type="REAGENT" role="" id="27" />
-			<personrole type="HORSE" role="" id="17" />
+			<personrole type="HORSE" role="" id="0" />
 		</city>
 		<label name="greedrune" x="29" y="29" />
 	</map>

@@ -109,8 +109,8 @@ public class DungeonScreen extends BaseScreen {
     public static final int DIM = 11;
     public static final int OFST = DIM;
     public static final int MM_BKGRND_DIM = DIM * 8 + OFST * 2;
-    public static final int xalignMM = 10;
-    public static final int yalignMM = 10;
+    public static final int xalignMM = 32;
+    public static final int yalignMM = 64;
 
     public int currentLevel = 0;
     public Vector3 currentPos;
@@ -293,17 +293,17 @@ public class DungeonScreen extends BaseScreen {
                 {
                     int y = 0;
                     for (int x = 0; x < DUNGEON_MAP; x++) {//bottom across the top
-                        DungeonTile tile = dungeonTiles[i][x][y + DUNGEON_MAP - 1];
+                        DungeonTile tile = dungeonTiles[i][x][y + DUNGEON_MAP - 1];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
                         addBlock(i, tile, x + .5f, .5f, y - .5f);
 
-                        tile = dungeonTiles[i][x][y + DUNGEON_MAP - 2];
+                        tile = dungeonTiles[i][x][y + DUNGEON_MAP - 2];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
                         addBlock(i, tile, x + .5f, .5f, y - 1.5f);
                     }
                     for (int x = 0; x < DUNGEON_MAP; x++) {//top across the bottom
-                        DungeonTile tile = dungeonTiles[i][x][y];
+                        DungeonTile tile = dungeonTiles[i][x][y];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
                         addBlock(i, tile, x + .5f, .5f, y + .5f + DUNGEON_MAP);
 
-                        tile = dungeonTiles[i][x][y + 1];
+                        tile = dungeonTiles[i][x][y + 1];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
                         addBlock(i, tile, x + .5f, .5f, y + .5f + DUNGEON_MAP + 1);
                     }
 
@@ -311,17 +311,17 @@ public class DungeonScreen extends BaseScreen {
                 {
                     int x = 0;
                     for (int y = 0; y < DUNGEON_MAP; y++) {
-                        DungeonTile tile = dungeonTiles[i][x][y];
+                        DungeonTile tile = dungeonTiles[i][x][y];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
                         addBlock(i, tile, x + .5f + DUNGEON_MAP, .5f, y + .5f);
 
-                        tile = dungeonTiles[i][x + 1][y];
+                        tile = dungeonTiles[i][x + 1][y];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
                         addBlock(i, tile, x + .5f + DUNGEON_MAP + 1, .5f, y + .5f);
                     }
                     for (int y = 0; y < DUNGEON_MAP; y++) {
-                        DungeonTile tile = dungeonTiles[i][x + DUNGEON_MAP - 1][y];
+                        DungeonTile tile = dungeonTiles[i][x + DUNGEON_MAP - 1][y];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
                         addBlock(i, tile, x - .5f, .5f, y + .5f);
 
-                        tile = dungeonTiles[i][x + DUNGEON_MAP - 2][y];
+                        tile = dungeonTiles[i][x + DUNGEON_MAP - 2][y];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
                         addBlock(i, tile, x - 1.5f, .5f, y + .5f);
                     }
                 }

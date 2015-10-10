@@ -344,7 +344,7 @@
 	</vendorClass>
 
 	<vendorClass type="HORSE" music="SHOPPING">
-		<vendor id="PAWS" type="HORSE" owner="Burrich" personId="18">
+		<vendor id="PAWS" type="HORSE" owner="Burrich" personId="0">
 			<item type="HORSE" name="horse" choice="y" price="100" />
 		</vendor>
 	</vendorClass>

@@ -1488,7 +1488,8 @@ public interface Constants {
         daemon(49, 3, 4),
         hydra(50),
         dragon(51),
-        balron(52);
+        balron(52),
+        fire_field(59);
 
         private int intValue;
         private int dungeonSpawnWeight;
