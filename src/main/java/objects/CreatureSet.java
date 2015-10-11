@@ -65,6 +65,14 @@ public class CreatureSet {
                 if (type == CreatureType.pirate_ship) {
                     //newCr.setAnim(new Animation(frameRate, tr));
                 }
+                
+                if (type == CreatureType.twister) {
+                    newCr.setAnim(new Animation(.2f, tr));
+                }
+                
+                if (type == CreatureType.whirlpool) {
+                    newCr.setAnim(new Animation(.3f, tr));
+                }
 
                 return newCr;
             }

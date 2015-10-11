@@ -112,11 +112,6 @@ public class JournalScreen implements Screen, InputProcessor, Constants {
 
     @Override
     public boolean keyUp(int i) {
-        if (mainGame != null) {
-            this.entries.fromArray(this.list.getItems());
-            mainGame.setScreen(returnScreen);
-            dispose();
-        }
         return false;
     }
 

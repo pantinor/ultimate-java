@@ -2081,6 +2081,20 @@ whirlpool
   orig: 32, 32
   offset: 0, 0
   index: 1
+whirlpool
+  rotate: false
+  xy: 640, 160
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+whirlpool
+  rotate: false
+  xy: 672, 160
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 3
 wisp
   rotate: false
   xy: 736, 480
