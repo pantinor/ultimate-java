@@ -62,8 +62,8 @@ public class TestMain extends Game {
 
             sg.players[0].weapon = WeaponType.SLING;
 
-            TiledMap tmap = new UltimaTiledMapLoader(Maps.INN_CON, Ultima4.standardAtlas, Maps.INN_CON.getMap().getWidth(), Maps.INN_CON.getMap().getHeight(), 32, 32).load();
-            CombatScreen sc = new CombatScreen(null, context, Maps.WORLD, Maps.INN_CON.getMap(), tmap, CreatureType.balron, Ultima4.creatures, Ultima4.standardAtlas);
+            TiledMap tmap = new UltimaTiledMapLoader(Maps.MARSH_CON, Ultima4.standardAtlas, Maps.MARSH_CON.getMap().getWidth(), Maps.MARSH_CON.getMap().getHeight(), 32, 32).load();
+            CombatScreen sc = new CombatScreen(null, context, Maps.WORLD, Maps.MARSH_CON.getMap(), tmap, CreatureType.balron, Ultima4.creatures, Ultima4.standardAtlas);
             
             setScreen(sc);
             //atlas = a1;

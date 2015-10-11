@@ -220,9 +220,9 @@ public class GameScreen extends BaseScreen {
 //            party.join(NpcDefaults.Jaana.name());
 //
 //            sg.food = 30000;
-            sg.gold = 999;
+//            sg.gold = 999;
 //            sg.keys = 20;
-            sg.gems = 15;
+//            sg.gems = 15;
 //            sg.moves = 2800;
 //            sg.stones = 0xff;
 //            sg.runes = 0xff;
@@ -284,6 +284,29 @@ public class GameScreen extends BaseScreen {
 
             if (sg.balloonfound == 1 && context.getTransportContext() != TransportContext.BALLOON) {
                 addBalloonActor(sg.balloonx, sg.balloony);
+            }
+            
+            //load objects to surface stage
+            for (int i=0;i<24;i++) {
+                if (sg.objects_save_tileids[i] != 0 && sg.objects_save_x[i] != 0 && sg.objects_save_y[i] != 0) {
+                    Tile t = Ultima4.baseTileSet.getTileByIndex(sg.objects_save_tileids[i] & 0xff);
+                    Drawable d = new Drawable(Maps.WORLD.getMap(), sg.objects_save_x[i] & 0xff, sg.objects_save_y[i] & 0xff, t, Ultima4.standardAtlas);
+                    Vector3 v = getMapPixelCoords(sg.objects_save_x[i] & 0xff, sg.objects_save_y[i] & 0xff);
+                    d.setX(v.x);
+                    d.setY(v.y);
+                    mapObjectsStage.addActor(d);
+                }
+            }
+            //load monsters to surface map
+            for (int i=0;i<8;i++) {
+                if (sg.monster_save_tileids[i] != 0 && sg.monster_save_x[i] != 0 && sg.monster_save_y[i] != 0) {
+                    Tile t = Ultima4.baseTileSet.getTileByIndex(sg.monster_save_tileids[i] & 0xff);
+                    Creature cr = Ultima4.creatures.getInstance(CreatureType.get(t.getName()), Ultima4.standardAtlas);
+                    cr.currentX = sg.monster_save_x[i] & 0xff;
+                    cr.currentY = sg.monster_save_y[i] & 0xff;
+                    cr.currentPos = getMapPixelCoords(cr.currentX, cr.currentY);
+                    Maps.WORLD.getMap().addCreature(cr);
+                }
             }
 
         }

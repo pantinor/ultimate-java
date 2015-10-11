@@ -12,6 +12,8 @@ import objects.Portal;
 import objects.Tile;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -144,7 +146,7 @@ public class Context implements Constants {
     }
 
     public void loadJournalEntries() {
-        
+
         try {
             File file = new File("journal.save");
             JAXBContext jaxbContext = JAXBContext.newInstance(JournalEntries.class);
@@ -153,11 +155,11 @@ public class Context implements Constants {
         } catch (Exception e) {
             this.journalEntries = new JournalEntries();
         }
-        
+
     }
-    
+
     public void addEntry(String name, Maps map, String text) {
-        
+
         String[] words = text.split("\\s+");
         StringBuilder sb = new StringBuilder();
         List<StringBuilder> texts = new ArrayList<>();
@@ -197,23 +199,58 @@ public class Context implements Constants {
 
         party.getSaveGame().location = map.getId();
 
+        Stage surfaceStage = Maps.WORLD.getMap().getSurfaceMapStage();
+        if (surfaceStage != null) {
+            party.getSaveGame().resetMonsters();
+            Drawable[] objects = new Drawable[24];
+            int count = 0;
+            for (Actor a : surfaceStage.getActors()) {
+                if (a instanceof Drawable) {
+                    Drawable d = (Drawable) a;
+                    objects[count] = d;
+                    if (count > 23) {
+                        break;
+                    }
+                    count++;
+                }
+            }
+            for (int i = 0; i < 24; i++) {
+                if (objects[i] != null) {
+                    party.getSaveGame().objects_save_tileids[i] = (byte) objects[i].getTile().getIndex();
+                    party.getSaveGame().objects_save_x[i] = (byte) objects[i].getCx();
+                    party.getSaveGame().objects_save_y[i] = (byte) objects[i].getCy();
+                }
+            }
+
+            List<Creature> monsters = Maps.WORLD.getMap().getCreatures();
+            for (int i = 0; i < 8 && monsters.size() > i; i++) {
+                Tile tile = Ultima4.baseTileSet.getTileByName(monsters.get(i).getTile().toString());
+                if (tile == null) {
+                    continue;
+                }
+                party.getSaveGame().monster_save_tileids[i] = (byte) tile.getIndex();
+                party.getSaveGame().monster_save_x[i] = (byte) monsters.get(i).currentX;
+                party.getSaveGame().monster_save_y[i] = (byte) monsters.get(i).currentY;
+            }
+        }
+
         try {
             party.getSaveGame().write(PARTY_SAV_BASE_FILENAME);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         try {
             File file = new File("journal.save");
             JAXBContext jaxbContext = JAXBContext.newInstance(JournalEntries.class);
             Marshaller marshaller = jaxbContext.createMarshaller();
-            marshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(this.journalEntries, file);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     public JournalEntries getJournal() {
         return this.journalEntries;
     }
@@ -370,6 +407,7 @@ public class Context implements Constants {
 
             if (pm.getPlayer().dex + 25 < rand.nextInt(100)) {
                 if (trapType == TileEffect.LAVA) {/* bomb trap */
+
                     party.applyEffect(trapType);
                 } else {
                     pm.applyEffect(trapType);

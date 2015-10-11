@@ -40,7 +40,7 @@ public class SaveGame implements Constants {
     public int[] mixtures = new int[SPELL_MAX];
 
     public int lastrage = 0;
-    
+
     public int items = 0;
     public int x = 0;
     public int y = 0;
@@ -72,9 +72,26 @@ public class SaveGame implements Constants {
     //see Constants.Maps enum for locations
     public int location = 0;
 
+    public byte[] monster_save_tileids = new byte[8];
+    public byte[] monster_save_x = new byte[8];
+    public byte[] monster_save_y = new byte[8];
+
+    public byte[] objects_save_tileids = new byte[24];
+    public byte[] objects_save_x = new byte[24];
+    public byte[] objects_save_y = new byte[24];
+
     private final Random rand = new XORShiftRandom();
 
     Texture zstatsBox;
+    
+    public void resetMonsters() {
+        monster_save_tileids = new byte[8];
+        monster_save_x = new byte[8];
+        monster_save_y = new byte[8];
+        objects_save_tileids = new byte[24];
+        objects_save_x = new byte[24];
+        objects_save_y = new byte[24];
+    }
 
     public void write(String strFilePath) throws Exception {
 
@@ -144,6 +161,30 @@ public class SaveGame implements Constants {
         dos.writeShort(balloonx);
         dos.writeShort(balloony);
         dos.writeByte(lastrage);
+
+        dos.writeByte(0);
+        dos.writeByte(0);
+        dos.writeByte(0);
+
+        for (byte b : monster_save_tileids) {
+            dos.writeByte(b);
+        }
+        for (byte b : objects_save_tileids) {
+            dos.writeByte(b);
+        }
+        for (byte b : monster_save_x) {
+            dos.writeByte(b);
+        }
+        for (byte b : objects_save_x) {
+            dos.writeByte(b);
+        }
+        for (byte b : monster_save_y) {
+            dos.writeByte(b);
+        }
+        for (byte b : objects_save_y) {
+            dos.writeByte(b);
+        }
+
         dos.close();
 
     }
@@ -156,7 +197,7 @@ public class SaveGame implements Constants {
             dis = new LittleEndianDataInputStream(is);
         } catch (Exception e) {
             throw new Exception("Could not read save game file.");
-			//is = this.getClass().getResourceAsStream("/data/" + PARTY_SAV_BASE_FILENAME);
+            //is = this.getClass().getResourceAsStream("/data/" + PARTY_SAV_BASE_FILENAME);
             //dis = new LittleEndianDataInputStream(is);
         }
         read(dis);
@@ -226,12 +267,37 @@ public class SaveGame implements Constants {
         balloonx = dis.readShort() & 0xff;
         balloony = dis.readShort() & 0xff;
         lastrage = dis.readByte() & 0xff;
+        
+        dis.readByte();
+        dis.readByte();
+        dis.readByte();
+
+        for (int i = 0; i < monster_save_tileids.length; i++) {
+            monster_save_tileids[i] = dis.readByte();
+        }
+        for (int i = 0; i < objects_save_tileids.length; i++) {
+            objects_save_tileids[i] = dis.readByte();
+        }
+        for (int i = 0; i < monster_save_x.length; i++) {
+            monster_save_x[i] = dis.readByte();
+        }
+        for (int i = 0; i < objects_save_x.length; i++) {
+            objects_save_x[i] = dis.readByte();
+        }
+        for (int i = 0; i < monster_save_y.length; i++) {
+            monster_save_y[i] = dis.readByte();
+        }
+        for (int i = 0; i < objects_save_y.length; i++) {
+            objects_save_y[i] = dis.readByte();
+        }
+
+        dis.close();
+
         /* workaround of U4DOS bug to retain savegame compatibility */
         if (location == 0 && dnglevel == 0) {
             dnglevel = (short) 0xFFFF;
         }
 
-        dis.close();
     }
 
     /**
@@ -531,7 +597,9 @@ public class SaveGame implements Constants {
         }
 
         for (Item item : Constants.Item.values()) {
-            if (!item.isVisible()) continue;
+            if (!item.isVisible()) {
+                continue;
+            }
             sb4.append((this.items & (1 << item.ordinal())) > 0 ? item.getDesc() + "|" : "");
         }
 
