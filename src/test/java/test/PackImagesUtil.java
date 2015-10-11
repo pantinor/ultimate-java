@@ -150,8 +150,8 @@ public class PackImagesUtil {
     public static void main(String[] argv) throws Exception {
         
         Settings settings = new Settings();
-        settings.maxWidth = 32*24;
-        settings.maxHeight = 32*48;
+        settings.maxWidth = 192*8;
+        settings.maxHeight = 192*8;
         settings.paddingX = 0;
         settings.paddingY = 0;
         settings.fast = true;
@@ -160,15 +160,17 @@ public class PackImagesUtil {
 
         TexturePacker tp = new TexturePacker(settings);
 
-        File file = new File("C:\\Users\\Paul\\Desktop\\water\\shapes.png");
+        File file = new File("C:\\Users\\Paul\\Desktop\\water\\Exp_type_B.png");
 
         BufferedImage fr = ImageIO.read(file);
-        for (int y=0;y<fr.getHeight();y+=32) {
-            BufferedImage sub = fr.getSubimage(0, y, 32, 32);
-            tp.addImage(sub, "im_"+y);
+        int count = 0;
+        for (int x=0;x<fr.getWidth();x+=192) {
+            count++;
+            BufferedImage sub = fr.getSubimage(x, 0, 192, 192);
+            tp.addImage(sub, "expl"+count);
         }
 
-        tp.pack(new File("."), "hires");
+        tp.pack(new File("."), "Exp_type_B");
 
         System.out.println("done");
     }

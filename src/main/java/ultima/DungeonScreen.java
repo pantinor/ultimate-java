@@ -72,7 +72,7 @@ public class DungeonScreen extends BaseScreen {
     private SpriteBatch batch;
     private DecalBatch decalBatch;
 
-    public CameraInputController inputController;
+    //public CameraInputController inputController;
 
     public AssetManager assets;
 
@@ -191,9 +191,9 @@ public class DungeonScreen extends BaseScreen {
 
         decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
 
-        inputController = new CameraInputController(camera);
-        inputController.rotateLeftKey = inputController.rotateRightKey = inputController.forwardKey = inputController.backwardKey = 0;
-        inputController.translateUnits = 30f;
+//        inputController = new CameraInputController(camera);
+//        inputController.rotateLeftKey = inputController.rotateRightKey = inputController.forwardKey = inputController.backwardKey = 0;
+//        inputController.translateUnits = 30f;
 
         ModelBuilder builder = new ModelBuilder();
         lightModel = builder.createSphere(.1f, .1f, .1f, 10, 10, new Material(ColorAttribute.createDiffuse(1, 1, 1, 1)), Usage.Position);
@@ -476,8 +476,8 @@ public class DungeonScreen extends BaseScreen {
             batch.draw(miniMap, xalignMM, yalignMM);
         }
         Ultima4.hud.render(batch, context.getParty());
-        Ultima4.font.draw(batch, this.dngMap.getLabel(), 315, Ultima4.SCREEN_HEIGHT - 10);
-        Ultima4.font.draw(batch, "Level " + (currentLevel + 1), 305, 36);
+        Ultima4.font.draw(batch, this.dngMap.getLabel(), 315, Ultima4.SCREEN_HEIGHT - 7);
+        Ultima4.font.draw(batch, "Level " + (currentLevel + 1), 515, Ultima4.SCREEN_HEIGHT - 7);
         if (showZstats > 0) {
             context.getParty().getSaveGame().renderZstats(showZstats, Ultima4.font, batch, Ultima4.SCREEN_HEIGHT);
         }

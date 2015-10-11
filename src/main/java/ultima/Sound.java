@@ -33,6 +33,7 @@ public enum Sound {
     ROCKS("StoneRain.ogg", false, 0.3f),
     WIND("tornado.ogg", false, 0.3f),
     CANNON("cannon.mp3", false, 0.3f),
+    SPIRITS("AncientSpirits.ogg", false, 0.3f),
     RAGE("RageOfGod.ogg", false, 0.3f),
     //music
     OUTSIDE("music3.ogg", true, 0.1f),

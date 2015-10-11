@@ -11,6 +11,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.utils.Array;
 import objects.ArmorSet;
 import objects.CreatureSet;
 import objects.Drawable;
@@ -64,6 +66,10 @@ public class Ultima4 extends Game {
     public static TextureRegion missTile;
     public static TextureRegion corpse;
     
+    public static Animation explosionLarge;
+    public static Animation explosion;
+    public static Animation cloud;
+
     public static Drawable balloon;
 
     public static void main(String[] args) {
@@ -128,7 +134,19 @@ public class Ultima4 extends Game {
             magicHitTile = Ultima4.standardAtlas.findRegion("magic_flash");
             missTile = Ultima4.standardAtlas.findRegion("miss_flash");
             corpse = Ultima4.standardAtlas.findRegion("corpse");
-
+            
+            TextureAtlas tmp = new TextureAtlas(Gdx.files.internal("assets/graphics/explosion-atlas.txt"));
+            Array<TextureAtlas.AtlasRegion> ar = tmp.findRegions("expl");
+            explosion = new Animation(.2f, ar);
+            
+            tmp = new TextureAtlas(Gdx.files.internal("assets/graphics/Exp_type_B.atlas"));
+            ar = tmp.findRegions("im");
+            explosionLarge = new Animation(.1f, ar);
+            
+            tmp = new TextureAtlas(Gdx.files.internal("assets/graphics/cloud-atlas.txt"));
+            ar = tmp.findRegions("cloud");
+            cloud = new Animation(.2f, ar);
+            
             baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);
             baseTileSet.setMaps();
 

@@ -548,7 +548,7 @@ public class GameScreen extends BaseScreen {
         if (context.getCurrentMap().getId() == Maps.WORLD.getId()) {
             batch.draw(moonAtlas.findRegion("phase_" + trammelphase), 360, Ultima4.SCREEN_HEIGHT - 25, 25, 25);
             batch.draw(moonAtlas.findRegion("phase_" + feluccaphase), 380, Ultima4.SCREEN_HEIGHT - 25, 25, 25);
-            Ultima4.smallFont.draw(batch, "Wind " + context.getWindDirection().toString(), 415, Ultima4.SCREEN_HEIGHT - 10);
+            Ultima4.font.draw(batch, "Wind " + context.getWindDirection().toString(), 415, Ultima4.SCREEN_HEIGHT - 7);
         }
 
         if (context.getAura().getType() != AuraType.NONE) {

@@ -40,7 +40,8 @@ public class SaveGame implements Constants {
     public int[] mixtures = new int[SPELL_MAX];
 
     public int lastrage = 0;
-
+    public int lastmask = 0;
+    
     public int items = 0;
     public int x = 0;
     public int y = 0;
@@ -161,8 +162,7 @@ public class SaveGame implements Constants {
         dos.writeShort(balloonx);
         dos.writeShort(balloony);
         dos.writeByte(lastrage);
-
-        dos.writeByte(0);
+        dos.writeByte(lastmask);
         dos.writeByte(0);
         dos.writeByte(0);
 
@@ -267,8 +267,7 @@ public class SaveGame implements Constants {
         balloonx = dis.readShort() & 0xff;
         balloony = dis.readShort() & 0xff;
         lastrage = dis.readByte() & 0xff;
-        
-        dis.readByte();
+        lastmask = dis.readByte() & 0xff;
         dis.readByte();
         dis.readByte();
 

@@ -66,7 +66,6 @@ import com.badlogic.gdx.utils.UBJsonReader;
 import objects.Portal;
 import static ultima.BaseScreen.mainGame;
 import ultima.Context;
-import ultima.DungeonScreen;
 import ultima.MixtureScreen;
 import util.PartyDeathException;
 
@@ -83,7 +82,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
     private SpriteBatch batch;
     private DecalBatch decalBatch;
 
-    public CameraInputController inputController;
+    //public CameraInputController inputController;
 
     public AssetManager assets;
     BitmapFont font;
@@ -134,7 +133,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(new InputMultiplexer(this, stage, inputController));
+        Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));//inputController));
         context.getParty().addObserver(this);
     }
 
@@ -185,9 +184,9 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
         decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
 
-        inputController = new CameraInputController(camera);
-        inputController.rotateLeftKey = inputController.rotateRightKey = inputController.forwardKey = inputController.backwardKey = 0;
-        inputController.translateUnits = 30f;
+//        inputController = new CameraInputController(camera);
+//        inputController.rotateLeftKey = inputController.rotateRightKey = inputController.forwardKey = inputController.backwardKey = 0;
+//        inputController.translateUnits = 30f;
 
         ModelBuilder builder = new ModelBuilder();
 
@@ -361,7 +360,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         batch.draw(Ultima4.backGround, 0, 0);
 
         Ultima4.hud.render(batch, context.getParty());
-        Ultima4.font.draw(batch, "Level " + (currentLevel + 1) + " facing " + currentDir, 305, 36);
+        Ultima4.font.draw(batch, "Level " + (currentLevel + 1) + " facing " + currentDir, 305, Ultima4.SCREEN_HEIGHT - 7);
         if (showZstats > 0) {
             context.getParty().getSaveGame().renderZstats(showZstats, Ultima4.font, batch, Ultima4.SCREEN_HEIGHT);
         }

@@ -12,9 +12,9 @@ import util.Utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Music.OnCompletionListener;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
@@ -744,6 +744,57 @@ public class SpellUtil implements Constants {
         }
 
     }
+    
+    public static void useMaskOfMinax(BaseScreen screen, PartyMember caster) {
+
+        if (screen.scType == ScreenType.COMBAT) {
+
+            final CombatScreen combatScreen = (CombatScreen) screen;
+
+            final SequenceAction seq = Actions.action(SequenceAction.class);
+
+            for (Creature cr : combatScreen.combatMap.getCreatures()) {
+
+                if (Utils.rand.nextInt(3) == 0) {
+                    /* Deal maximum damage to creature */
+                    Utils.dealDamage(caster, cr, 0xFF);
+                } else {
+                    if (cr.getHP() > 23) {
+                        Utils.dealDamage(caster, cr, cr.getHP() * (3/4));
+                    } else {
+                        Utils.dealDamage(caster, cr, 15);
+                    }
+                }
+
+                Actor d = new CloudDrawable();
+                d.setX(cr.currentPos.x - 16);
+                d.setY(cr.currentPos.y - 16);
+                d.addAction(Actions.sequence(Actions.delay(2f), Actions.removeActor()));
+
+                seq.addAction(Actions.run(new PlaySoundAction(Sound.SPIRITS)));
+                seq.addAction(Actions.run(new AddActorAction(combatScreen.getStage(), d)));
+                seq.addAction(Actions.run(new PlaySoundAction(Sound.NPC_STRUCK)));
+
+                if (cr.getDamageStatus() == CreatureStatus.DEAD) {
+                    seq.addAction(Actions.run(combatScreen.new RemoveCreatureAction(cr)));
+                }
+
+            }
+
+            seq.addAction(Actions.run(new Runnable() {
+                @Override
+                public void run() {
+                    combatScreen.finishPlayerTurn();
+                }
+            }));
+
+            combatScreen.getStage().addAction(seq);
+
+        } else {
+            Sounds.play(Sound.ERROR);
+        }
+
+    }
 
     public static void useRageOfGod(BaseScreen screen, PartyMember caster) {
 
@@ -768,12 +819,12 @@ public class SpellUtil implements Constants {
                     Utils.dealDamage(caster, cr, cr.getHP() / 2);
                 }
 
-                Tile tile = Ultima4.baseTileSet.getTileByName("hit_flash");
-                Drawable d = new Drawable(combatScreen.combatMap, cr.currentX, cr.currentY, tile, Ultima4.standardAtlas);
-                d.setX(cr.currentPos.x);
-                d.setY(cr.currentPos.y);
-                d.addAction(Actions.sequence(Actions.delay(.4f), Actions.fadeOut(.2f), Actions.removeActor()));
+                Actor d = new ExplosionLargeDrawable();
+                d.setX(cr.currentPos.x - 32*3 + 16);
+                d.setY(cr.currentPos.y - 32*3 + 16);
+                d.addAction(Actions.sequence(Actions.delay(2f), Actions.removeActor()));
 
+                seq.addAction(Actions.run(new PlaySoundAction(Sound.RAGE)));
                 seq.addAction(Actions.run(new AddActorAction(combatScreen.getStage(), d)));
                 seq.addAction(Actions.run(new PlaySoundAction(Sound.NPC_STRUCK)));
 
@@ -790,20 +841,39 @@ public class SpellUtil implements Constants {
                 }
             }));
 
-            OnCompletionListener ocl = new OnCompletionListener() {
-                @Override
-                public void onCompletion(Music music) {
-                    music.setOnCompletionListener(null);
-                    combatScreen.getStage().addAction(seq);
-                }
-            };
-
-            Sounds.play(Sound.RAGE, ocl);
+            combatScreen.getStage().addAction(seq);
 
         } else {
             Sounds.play(Sound.ERROR);
         }
 
+    }
+    
+    private static class CloudDrawable extends Actor {
+        float stateTime;
+        @Override
+        public void draw(Batch batch, float parentAlpha) {
+            stateTime += Gdx.graphics.getDeltaTime();
+            batch.draw(Ultima4.cloud.getKeyFrame(stateTime, false), getX(), getY(), 64, 64);
+        }
+    }
+    
+    private static class ExplosionDrawable extends Actor {
+        float stateTime;
+        @Override
+        public void draw(Batch batch, float parentAlpha) {
+            stateTime += Gdx.graphics.getDeltaTime();
+            batch.draw(Ultima4.explosion.getKeyFrame(stateTime, false), getX(), getY(), 64, 64);
+        }
+    }
+    
+    private static class ExplosionLargeDrawable extends Actor {
+        float stateTime;
+        @Override
+        public void draw(Batch batch, float parentAlpha) {
+            stateTime += Gdx.graphics.getDeltaTime();
+            batch.draw(Ultima4.explosionLarge.getKeyFrame(stateTime, false), getX(), getY(), 192, 192);
+        }
     }
 
 }

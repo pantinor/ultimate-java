@@ -280,9 +280,18 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
                         buffer = new StringBuilder();
                         StoneColorsInputAdapter scia = new StoneColorsInputAdapter(combatScreen);
                         Gdx.input.setInputProcessor(scia);
-
+                    } else if (useItem.startsWith("mask")) {
+                        if (combatScreen.party.getSaveGame().moves - combatScreen.party.getSaveGame().lastmask >= 4) {
+                            screen.log("Use Mask of Minax!");
+                            PartyMember attacker = combatScreen.party.getActivePartyMember();
+                            SpellUtil.useMaskOfMinax(combatScreen, attacker);
+                            combatScreen.party.getSaveGame().lastmask = combatScreen.party.getSaveGame().moves;
+                        } else {
+                            screen.log("no effect!");
+                        }
+                        Gdx.input.setInputProcessor(new InputMultiplexer(screen, stage));
                     } else if (useItem.startsWith("rage")) {
-                        if (combatScreen.party.getSaveGame().moves - combatScreen.party.getSaveGame().lastrage >= 16) {
+                        if (combatScreen.party.getSaveGame().moves - combatScreen.party.getSaveGame().lastrage >= 6) {
                             screen.log("Use Rage of God!");
                             PartyMember attacker = combatScreen.party.getActivePartyMember();
                             SpellUtil.useRageOfGod(combatScreen, attacker);
