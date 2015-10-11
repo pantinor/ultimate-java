@@ -36,6 +36,7 @@ public enum Sound {
     SPIRITS("AncientSpirits.ogg", false, 0.3f),
     RAGE("RageOfGod.ogg", false, 0.3f),
     //music
+    SPLASH("Shrines.mp3", true, 0.1f),
     OUTSIDE("music3.ogg", true, 0.1f),
     TOWNS("music2.ogg", true, 0.1f),
     SHRINES("music2.ogg", true, 0.1f),

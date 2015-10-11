@@ -222,7 +222,7 @@ public class TestJaxb {
 
     }
 
-    @Test
+    //@Test
     public void parseTlkFiles() throws Exception {
         List<Person> people = Utils.getPeople("paws.ult", Maps.PAWS, null);
         List<Conversation> cons = Utils.getDialogs("paws.tlk");

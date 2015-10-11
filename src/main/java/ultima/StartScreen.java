@@ -157,6 +157,8 @@ public class StartScreen implements Screen, InputProcessor, Constants {
         stage.addActor(journey);
         
         Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
+        
+        Ultima4.music = Sounds.play(Sound.SPLASH, Ultima4.musicVolume);
 
     }
 
