@@ -34,7 +34,6 @@ public class UltimaTiledMapLoader implements Constants {
     public UltimaTiledMapLoader(Maps gameMap, TextureAtlas atlas, int mapWidth, int mapHeight, int tileWidth, int tileHeight) {
         this.atlas = atlas;
         this.gameMap = gameMap;
-
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
         this.tileWidth = tileWidth;
@@ -161,6 +160,69 @@ public class UltimaTiledMapLoader implements Constants {
             this.startX = startX;
             this.startY = startY;
         }
+    }
+    
+    /**
+     * For splash screen.
+     * 
+     * @param startX
+     * @param startY
+     * @param endX
+     * @param endY
+     * @return 
+     */
+    public TiledMap load(int startX, int startY, int endX, int endY) {
+
+        TiledMap map = new TiledMap();
+
+        MapProperties mapProperties = map.getProperties();
+        mapProperties.put("name", gameMap.toString());
+        mapProperties.put("id", gameMap.getId());
+        mapProperties.put("orientation", "orthogonal");
+        mapProperties.put("width", mapWidth);
+        mapProperties.put("height", mapHeight);
+        mapProperties.put("tilewidth", tileWidth);
+        mapProperties.put("tileheight", tileHeight);
+        mapProperties.put("backgroundcolor", "#000000");
+
+        TiledMapTileLayer layer = new TiledMapTileLayer(mapWidth, mapHeight, tileWidth, tileHeight);
+        layer.setName("Map Layer");
+        layer.setVisible(true);
+
+        int dx=0, dy=0;
+        for (int y = startY; y < endY; y++) {
+            for (int x = startX; x < endX; x++) {
+                Tile ct = gameMap.getMap().getTile(x, y);
+                Cell cell = new Cell();
+
+                Array<TextureAtlas.AtlasRegion> tileRegions = atlas.findRegions(ct.getName());
+                Array<StaticTiledMapTile> ar = new Array<>();
+                for (TextureAtlas.AtlasRegion r : tileRegions) {
+                    ar.add(new StaticTiledMapTile(r));
+                }
+                if (ar.size == 0) {
+                    System.out.println(ct.getName());
+                }
+
+                TiledMapTile tmt = null;
+                if (tileRegions.size > 1) {
+                    tmt = new AnimatedTiledMapTile(.7f, ar);
+                } else {
+                    tmt = ar.first();
+                }
+
+                tmt.setId(dy * mapWidth + dx);
+                cell.setTile(tmt);
+                layer.setCell(dx, mapHeight - 1 - dy, cell);
+                dx++;
+            }
+            dx=0;
+            dy++;
+        }
+
+        map.getLayers().add(layer);
+
+        return map;
     }
 
 }

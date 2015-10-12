@@ -14,6 +14,8 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -23,6 +25,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -30,9 +35,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import java.io.File;
 import static ultima.Constants.PARTY_SAV_BASE_FILENAME;
+import static ultima.Ultima4.backGround;
 import static ultima.Ultima4.skin;
+import util.UltimaTiledMapLoader;
 import util.XORShiftRandom;
 
 public class StartScreen implements Screen, InputProcessor, Constants {
@@ -42,12 +50,12 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
     Animation beast1;
     Animation beast2;
-    
+
     TextButton init;
     TextButton journey;
     Stage stage;
 
-    Sprite title;
+    Texture title;
     BitmapFont font;
     static TextureAtlas ta;
     TextureRegion storyTexture;
@@ -80,6 +88,9 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
     float time = 0;
     Batch batch;
+    OrthogonalTiledMapRenderer splashRenderer;
+    OrthographicCamera camera;
+    Viewport viewPort;
 
     Ultima4 mainGame;
 
@@ -114,11 +125,12 @@ public class StartScreen implements Screen, InputProcessor, Constants {
         beast2 = new Animation(0.25f, tmp2);
 
         ta = new TextureAtlas(Gdx.files.internal("assets/graphics/initial-atlas.txt"));
-        title = ta.createSprite("title");
+        
+        title = new Texture(Gdx.files.internal("assets/graphics/splash.png"));
 
         font = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_24.fnt"));
         font.setColor(Color.WHITE);
-        
+
         init = new TextButton("New Game", skin, "wood");
         init.addListener(new ChangeListener() {
             @Override
@@ -129,10 +141,10 @@ public class StartScreen implements Screen, InputProcessor, Constants {
             }
         });
         init.setX(330);
-        init.setY(250);
+        init.setY(Ultima4.SCREEN_HEIGHT - 350);
         init.setWidth(150);
         init.setHeight(25);
-        
+
         journey = new TextButton("Journey Onward", skin, "wood");
         journey.addListener(new ChangeListener() {
             @Override
@@ -146,18 +158,25 @@ public class StartScreen implements Screen, InputProcessor, Constants {
             }
         });
         journey.setX(530);
-        journey.setY(250);
+        journey.setY(Ultima4.SCREEN_HEIGHT - 350);
         journey.setWidth(150);
         journey.setHeight(25);
 
+        UltimaTiledMapLoader loader = new UltimaTiledMapLoader(Maps.WORLD, Ultima4.standardAtlas, 19, 8, tilePixelWidth, tilePixelHeight);
+        TiledMap splashMap = loader.load(222, 130, 222 + 19, 130 + 8);
+        splashRenderer = new OrthogonalTiledMapRenderer(splashMap);
+        camera = new OrthographicCamera(19 * tilePixelWidth, 8 * tilePixelHeight);
+        camera.position.set(tilePixelWidth * 10, tilePixelHeight * 8, 0);
+        viewPort = new ScreenViewport(camera);
+
         batch = new SpriteBatch();
-        
-        stage = new Stage(new ScreenViewport(), batch);
+
+        stage = new Stage();
         stage.addActor(init);
         stage.addActor(journey);
-        
+
         Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
-        
+
         Ultima4.music = Sounds.play(Sound.SPLASH, Ultima4.musicVolume);
 
     }
@@ -168,43 +187,53 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        batch.begin();
-
-        batch.draw(beast1.getKeyFrame(time, true), 0, Ultima4.SCREEN_HEIGHT - 31 * 2, 48 * 2, 31 * 2);
-        batch.draw(beast2.getKeyFrame(time, true), Ultima4.SCREEN_WIDTH - 48 * 2, Ultima4.SCREEN_HEIGHT - 31 * 2, 48 * 2, 31 * 2);
-
         float x = Ultima4.SCREEN_WIDTH / 2 - 320;
         float y = 100;
         float width = 640;
         float height = 50;
 
         if (state == State.INIT) {
-            
-            batch.draw(title, Ultima4.SCREEN_WIDTH / 2 - title.getWidth() / 2, 150);
-            
+
+            camera.update();
+
+            splashRenderer.setView(camera.combined, 0, 0, 19 * tilePixelWidth, 8 * tilePixelHeight);
+            splashRenderer.render();
+
+            batch.begin();
+            batch.draw(title, 0, 0);
+            font.draw(batch, "In another world, in a time to come.", 320, Ultima4.SCREEN_HEIGHT - 295);
+            font.draw(batch, "LIBGDX Conversion by Paul Antinori", 300, 84);
+            font.draw(batch, "Copyright 1987 Lord British", 350, 48);
+            batch.draw(beast1.getKeyFrame(time, true), 0, Ultima4.SCREEN_HEIGHT - 31 * 2, 48 * 2, 31 * 2);
+            batch.draw(beast2.getKeyFrame(time, true), Ultima4.SCREEN_WIDTH - 48 * 2, Ultima4.SCREEN_HEIGHT - 31 * 2, 48 * 2, 31 * 2);
             batch.end();
+
             stage.act();
             stage.draw();
-            batch.begin();
-            
-            font.draw(batch, "In another world, in a time to come.", 320, 315);
-            font.draw(batch, "Conversion by Paul Antinori", 350, 96);
-            font.draw(batch, "Copyright 1987 Lord British", 350, 64);
 
         } else if (state == State.ASK_NAME) {
-            batch.draw(title, Ultima4.SCREEN_WIDTH / 2 - title.getWidth() / 2, 150);
 
+            batch.begin();
+            batch.draw(title, 0, 0);
             font.draw(batch, "By what name shalt thou be known", 320, 315);
             font.draw(batch, "in this world and time?", 320, 290);
             font.draw(batch, nameBuffer.toString(), 320, 265);
-            
+            batch.draw(beast1.getKeyFrame(time, true), 0, Ultima4.SCREEN_HEIGHT - 31 * 2, 48 * 2, 31 * 2);
+            batch.draw(beast2.getKeyFrame(time, true), Ultima4.SCREEN_WIDTH - 48 * 2, Ultima4.SCREEN_HEIGHT - 31 * 2, 48 * 2, 31 * 2);
+            batch.end();
+
             Gdx.input.setInputProcessor(nia);
 
         } else if (state == State.ASK_SEX) {
-            batch.draw(title, Ultima4.SCREEN_WIDTH / 2 - title.getWidth() / 2, 150);
 
+            batch.begin();
+            batch.draw(title, 0, 0);
             font.draw(batch, "Art thou Male or Female?", 320, 315);
             font.draw(batch, sexBuffer.toString(), 320, 275);
+            batch.draw(beast1.getKeyFrame(time, true), 0, Ultima4.SCREEN_HEIGHT - 31 * 2, 48 * 2, 31 * 2);
+            batch.draw(beast2.getKeyFrame(time, true), Ultima4.SCREEN_WIDTH - 48 * 2, Ultima4.SCREEN_HEIGHT - 31 * 2, 48 * 2, 31 * 2);
+            batch.end();
+
             Gdx.input.setInputProcessor(sia);
 
         } else if (state == State.TELL_STORY) {
@@ -227,17 +256,24 @@ public class StartScreen implements Screen, InputProcessor, Constants {
                 storyTexture = ta.findRegion("abacus");
             }
 
+            batch.begin();
+            batch.draw(beast1.getKeyFrame(time, true), 0, Ultima4.SCREEN_HEIGHT - 31 * 2, 48 * 2, 31 * 2);
+            batch.draw(beast2.getKeyFrame(time, true), Ultima4.SCREEN_WIDTH - 48 * 2, Ultima4.SCREEN_HEIGHT - 31 * 2, 48 * 2, 31 * 2);
             batch.draw(storyTexture, Ultima4.SCREEN_WIDTH / 2 - 320, 200, 640, 304);
 
             GlyphLayout layout = new GlyphLayout(font, initScripts[storyInd], Color.WHITE, width, Align.left, true);
             x += width / 2 - layout.width / 2;
             y += height / 2 + layout.height / 2;
             font.draw(batch, layout, x, y);
+            batch.end();
 
             Gdx.input.setInputProcessor(stia);
 
         } else if (state == State.ASK_QUESTIONS || state == State.DONE) {
-
+            
+            batch.begin();
+            batch.draw(beast1.getKeyFrame(time, true), 0, Ultima4.SCREEN_HEIGHT - 31 * 2, 48 * 2, 31 * 2);
+            batch.draw(beast2.getKeyFrame(time, true), Ultima4.SCREEN_WIDTH - 48 * 2, Ultima4.SCREEN_HEIGHT - 31 * 2, 48 * 2, 31 * 2);
             batch.draw(storyTexture, Ultima4.SCREEN_WIDTH / 2 - 320, 200, 640, 304);
 
             for (Sprite b : beads) {
@@ -289,10 +325,9 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
                 Gdx.input.setInputProcessor(dia);
             }
-
+            
+            batch.end();
         }
-
-        batch.end();
 
     }
 
@@ -548,7 +583,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
     @Override
     public void resize(int width, int height) {
-
+        viewPort.update(width, height, false);
     }
 
     @Override

@@ -2,13 +2,6 @@ initial-screens.png
 format: RGBA8888
 filter: Nearest, Nearest
 repeat: none
-title
-  rotate: false
-  xy: 0, 1730
-  size: 656, 535
-  orig: 656, 535
-  offset: 0, 0
-  index: 0
 tree
   rotate: false
   xy: 5, 1575
