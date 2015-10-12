@@ -526,7 +526,10 @@ public class Party extends Observable implements Constants {
             if (i >= 16) {
                 return false;
             }
+            
+            //check if they are going bare hands
             if (i == 0) {
+                //take off the old and put it in inventory
                 if (player.weapon.ordinal() != 0) {
                     party.getSaveGame().weapons[player.weapon.ordinal()]++;
                 }
@@ -534,17 +537,25 @@ public class Party extends Observable implements Constants {
                 return true;
             }
 
+            //check if they are already wearing it
             if (player.weapon.ordinal() == i) {
                 return true;
             }
 
+            //check if it is in the inventory
             if (party.getSaveGame().weapons[i] <= 0) {
                 return false;
             }
 
+            //check if they can wear it
             WeaponType wt = WeaponType.get(i);
             if (!wt.getWeapon().canUse(player.klass)) {
                 return false;
+            }
+                        
+            //take off the old and put it in inventory
+            if (player.weapon.ordinal() != 0) {
+                party.getSaveGame().weapons[player.weapon.ordinal()]++;
             }
 
             player.weapon = wt;
@@ -553,29 +564,40 @@ public class Party extends Observable implements Constants {
         }
 
         public boolean wearArmor(int i) {
+            
             if (i >= 8) {
                 return false;
             }
-
+            
+            //check if they are going naked
             if (i == 0) {
+                //take off the old and put it in inventory
                 if (player.armor.ordinal() != 0) {
                     party.getSaveGame().armor[player.armor.ordinal()]++;
                 }
                 player.armor = ArmorType.NONE;
                 return true;
             }
-
+            
+            //check if they are already wearing it
             if (player.armor.ordinal() == i) {
                 return true;
             }
-
+            
+            //check if it is in the inventory
             if (party.getSaveGame().armor[i] <= 0) {
                 return false;
             }
-
+            
+            //check if they can wear it
             ArmorType at = ArmorType.get(i);
             if (!at.getArmor().canUse(player.klass)) {
                 return false;
+            }
+            
+            //take off the old and put it in inventory
+            if (player.armor.ordinal() != 0) {
+                party.getSaveGame().armor[player.armor.ordinal()]++;
             }
 
             player.armor = at;

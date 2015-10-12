@@ -424,14 +424,17 @@ public class CombatScreen extends BaseScreen {
                 return false;
             } else if (keycode == Keys.U) {
                 Tile tile = combatMap.getTile(active.currentX, active.currentY);
-                if (tile.getIndex() == 74 || (party.getSaveGame().items & Item.RAGE_GOD.getLoc()) > 0) { //altar or rage of god
+                if (tile.getIndex() == 74 //altar
+                        || (party.getSaveGame().items & Item.RAGE_GOD.getLoc()) > 0 
+                        || (party.getSaveGame().items & Item.MASK_MINAX.getLoc()) > 0) { //altar or rage of god
                     log("Use which item: ");
                     log("");
                     Gdx.input.setInputProcessor(sip);
                     sip.setinitialKeyCode(keycode, combatMap, active.currentX, active.currentY);
                     return false;
+                } else {
+                    log("Nothing to use!");
                 }
-
             } else if (keycode == Keys.R) {
                 Gdx.input.setInputProcessor(new ReadyWearInputAdapter(ap, true));
                 return false;
@@ -1198,9 +1201,8 @@ public class CombatScreen extends BaseScreen {
     //for dungeon room chests only
     public void getChest(int index, int x, int y) {
         try {
-            Tile chest = combatMap.getTile(x, y);
-
-            if (chest != null) {
+            Tile tile = combatMap.getTile(x, y);
+            if (tile != null && tile.getIndex() == 60) {
                 PartyMember pm = context.getParty().getMember(index);
                 context.getChestTrapHandler(pm);
                 log(String.format("The Chest Holds: %d Gold", context.getParty().getChestGold()));
@@ -1222,17 +1224,17 @@ public class CombatScreen extends BaseScreen {
             this.ready = ready;
             this.pm = pm;
 
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             if (ready) {
                 for (char ch = 'a'; ch <= 'p'; ch++) {
                     if (pm.getParty().getSaveGame().weapons[ch - 'a'] > 0) {
-                        sb.append(Character.toUpperCase(ch) + " - " + WeaponType.get(ch - 'a'));
+                        sb.append(Character.toUpperCase(ch)).append(" - ").append(WeaponType.get(ch - 'a'));
                     }
                 }
             } else {
                 for (char ch = 'a'; ch <= 'h'; ch++) {
                     if (pm.getParty().getSaveGame().armor[ch - 'a'] > 0) {
-                        sb.append(Character.toUpperCase(ch) + " - " + ArmorType.get(ch - 'a'));
+                        sb.append(Character.toUpperCase(ch)).append(" - ").append(ArmorType.get(ch - 'a'));
                     }
                 }
             }
