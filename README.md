@@ -12,8 +12,10 @@ The Devil's Guard and Delve of Sorrows areas are original content.
 
 Download binary here: https://dl.dropboxusercontent.com/u/84215797/ultimate-java-1.0.1-bin.zip
 
+![screenshot of the example](https://raw.github.com/pantinor/ultimate-java/master/shot4.png)
+
+![screenshot of the example](https://raw.github.com/pantinor/ultimate-java/master/shot1.png)
+
 ![screenshot of the example](https://raw.github.com/pantinor/ultimate-java/master/shot2.png)
 
 ![screenshot of the example](https://raw.github.com/pantinor/ultimate-java/master/shot3.png)
-
-![screenshot of the example](https://raw.github.com/pantinor/ultimate-java/master/shot1.png)
