@@ -20,6 +20,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.AnimatedTiledMapTile;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.utils.Array;
+import objects.TileSet;
 
 public class UltimaTiledMapLoader implements Constants {
 
@@ -161,38 +162,48 @@ public class UltimaTiledMapLoader implements Constants {
             this.startY = startY;
         }
     }
-    
-    /**
-     * For splash screen.
-     * 
-     * @param startX
-     * @param startY
-     * @param endX
-     * @param endY
-     * @return 
-     */
-    public TiledMap load(int startX, int startY, int endX, int endY) {
+
+    //for intro map
+    public TiledMap load(byte[] bytes, int width, int height, TileSet ts, int tileDim) {
+
+        this.mapWidth = width;
+        this.mapHeight = height;
+
+        Tile[] tiles = new Tile[width * height];
+        int pos = 0;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int index = bytes[pos] & 0xff; // convert a byte to an unsigned int value
+                pos++;
+                Tile tile = ts.getTileByIndex(index);
+                if (tile == null) {
+                    System.out.println("Tile index cannot be found: " + index + " using index 129 for black space.");
+                    tile = ts.getTileByIndex(129);
+                }
+                tiles[x + y * width] = tile;
+            }
+        }
 
         TiledMap map = new TiledMap();
 
         MapProperties mapProperties = map.getProperties();
-        mapProperties.put("name", gameMap.toString());
-        mapProperties.put("id", gameMap.getId());
+        mapProperties.put("name", "none");
+        mapProperties.put("id", "none");
         mapProperties.put("orientation", "orthogonal");
         mapProperties.put("width", mapWidth);
         mapProperties.put("height", mapHeight);
-        mapProperties.put("tilewidth", tileWidth);
-        mapProperties.put("tileheight", tileHeight);
+        mapProperties.put("tilewidth", tileDim);
+        mapProperties.put("tileheight", tileDim);
         mapProperties.put("backgroundcolor", "#000000");
 
         TiledMapTileLayer layer = new TiledMapTileLayer(mapWidth, mapHeight, tileWidth, tileHeight);
         layer.setName("Map Layer");
         layer.setVisible(true);
 
-        int dx=0, dy=0;
-        for (int y = startY; y < endY; y++) {
-            for (int x = startX; x < endX; x++) {
-                Tile ct = gameMap.getMap().getTile(x, y);
+        int dx = 0, dy = 0;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                Tile ct = tiles[x + y * width];
                 Cell cell = new Cell();
 
                 Array<TextureAtlas.AtlasRegion> tileRegions = atlas.findRegions(ct.getName());
@@ -216,7 +227,7 @@ public class UltimaTiledMapLoader implements Constants {
                 layer.setCell(dx, mapHeight - 1 - dy, cell);
                 dx++;
             }
-            dx=0;
+            dx = 0;
             dy++;
         }
 

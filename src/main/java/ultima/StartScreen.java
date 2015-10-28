@@ -26,10 +26,15 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.tiles.AnimatedTiledMapTile;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
@@ -37,8 +42,12 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import objects.Tile;
+import org.apache.commons.io.IOUtils;
 import static ultima.Constants.PARTY_SAV_BASE_FILENAME;
-import static ultima.Ultima4.backGround;
 import static ultima.Ultima4.skin;
 import util.UltimaTiledMapLoader;
 import util.XORShiftRandom;
@@ -91,9 +100,10 @@ public class StartScreen implements Screen, InputProcessor, Constants {
     OrthogonalTiledMapRenderer splashRenderer;
     OrthographicCamera camera;
     Viewport viewPort;
-
+    TiledMap splashMap;
     Ultima4 mainGame;
-
+    IntroAnim animator = new IntroAnim();
+    
     public enum State {
 
         INIT,
@@ -125,7 +135,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
         beast2 = new Animation(0.25f, tmp2);
 
         ta = new TextureAtlas(Gdx.files.internal("assets/graphics/initial-atlas.txt"));
-        
+
         title = new Texture(Gdx.files.internal("assets/graphics/splash.png"));
 
         font = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_24.fnt"));
@@ -162,11 +172,11 @@ public class StartScreen implements Screen, InputProcessor, Constants {
         journey.setWidth(150);
         journey.setHeight(25);
 
-        UltimaTiledMapLoader loader = new UltimaTiledMapLoader(Maps.WORLD, Ultima4.standardAtlas, 19, 8, tilePixelWidth, tilePixelHeight);
-        TiledMap splashMap = loader.load(222, 130, 222 + 19, 130 + 8);
+        UltimaTiledMapLoader loader = new UltimaTiledMapLoader(Maps.WORLD, Ultima4.standardAtlas, 19, 5, tilePixelWidth, tilePixelHeight);
+        splashMap = loader.load(intromap, 19, 5, Ultima4.baseTileSet, tilePixelWidth);
         splashRenderer = new OrthogonalTiledMapRenderer(splashMap);
-        camera = new OrthographicCamera(19 * tilePixelWidth, 8 * tilePixelHeight);
-        camera.position.set(tilePixelWidth * 10, tilePixelHeight * 8, 0);
+        camera = new OrthographicCamera(19 * tilePixelWidth, 5 * tilePixelHeight);
+        camera.position.set(tilePixelWidth * 10, tilePixelHeight * 6, 0);
         viewPort = new ScreenViewport(camera);
 
         batch = new SpriteBatch();
@@ -174,6 +184,11 @@ public class StartScreen implements Screen, InputProcessor, Constants {
         stage = new Stage();
         stage.addActor(init);
         stage.addActor(journey);
+
+        SequenceAction seq1 = Actions.action(SequenceAction.class);
+        seq1.addAction(Actions.delay(.1f));
+        seq1.addAction(Actions.run(animator));
+        stage.addAction(Actions.forever(seq1));
 
         Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
 
@@ -196,7 +211,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
             camera.update();
 
-            splashRenderer.setView(camera.combined, 0, 0, 19 * tilePixelWidth, 8 * tilePixelHeight);
+            splashRenderer.setView(camera.combined, 0, 0, 19 * tilePixelWidth, 5 * tilePixelHeight);
             splashRenderer.render();
 
             batch.begin();
@@ -270,7 +285,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
             Gdx.input.setInputProcessor(stia);
 
         } else if (state == State.ASK_QUESTIONS || state == State.DONE) {
-            
+
             batch.begin();
             batch.draw(beast1.getKeyFrame(time, true), 0, Ultima4.SCREEN_HEIGHT - 31 * 2, 48 * 2, 31 * 2);
             batch.draw(beast2.getKeyFrame(time, true), Ultima4.SCREEN_WIDTH - 48 * 2, Ultima4.SCREEN_HEIGHT - 31 * 2, 48 * 2, 31 * 2);
@@ -325,7 +340,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
                 Gdx.input.setInputProcessor(dia);
             }
-            
+
             batch.end();
         }
 
@@ -598,7 +613,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
     @Override
     public void hide() {
-
+        stage.clear();
     }
 
     @Override
@@ -639,6 +654,99 @@ public class StartScreen implements Screen, InputProcessor, Constants {
     @Override
     public boolean scrolled(int amount) {
         return false;
+    }
+
+    private class IntroAnim implements Runnable {
+
+        Identifier[] objMap = new Identifier[5 * 19];
+        int moveind = 0;
+
+        public IntroAnim() {
+            for (int x = 0; x < 5 * 19; x++) {
+                objMap[x] = new Identifier();
+            }
+        }
+
+        @Override
+        public void run() {
+
+            if (moveind >= movesCommands.length) {
+                moveind = 0;
+                return;
+            }
+
+            int command = movesCommands[moveind] >> 4;
+            int data = movesCommands[moveind] & 0xf;
+
+            if (command >= 0 && command <= 4) {
+                if (objMap[data].x != -1) {
+                    int idx = intromap[objMap[data].x + objMap[data].y * 19] & 0xff;
+                    drawCell(idx, objMap[data].x, objMap[data].y, 0);
+                }
+                objMap[data].x = movesCommands[moveind + 1] & 0x1f;
+                objMap[data].y = command;
+                objMap[data].idx = movesData[data] & 0xff;
+                
+                int frame = movesCommands[moveind + 1] >> 5;
+                drawCell(objMap[data].idx, objMap[data].x, objMap[data].y, frame);
+                moveind += 2;
+            } else if (command == 7) {
+                int idx = intromap[objMap[data].x + objMap[data].y * 19] & 0xff;
+                drawCell(idx, objMap[data].x, objMap[data].y, 0);
+                moveind++;
+            } else {
+                moveind++;
+            }
+
+        }
+
+        private void drawCell(int idx, int x, int y, int frame) {
+            Tile tile = Ultima4.baseTileSet.getTileByIndex(idx);
+
+            TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+            Array<TextureAtlas.AtlasRegion> tileRegions = Ultima4.standardAtlas.findRegions(tile.getName());
+            Array<StaticTiledMapTile> ar = new Array<>();
+            for (TextureAtlas.AtlasRegion r : tileRegions) {
+                ar.add(new StaticTiledMapTile(r));
+            }
+
+            TiledMapTile tmt = ar.first();
+            if (tile.getIndex() == 128 || tile.getIndex() == 16 || tile.getIndex() == 64) {
+                tmt = ar.get(frame);
+            } else if (tileRegions.size > 1) {
+                tmt = new AnimatedTiledMapTile(.7f, ar);
+            }
+
+            tmt.setId(y * 19 + x);
+            cell.setTile(tmt);
+            ((TiledMapTileLayer) splashMap.getLayers().get(0)).setCell(x, 5 - 1 - y, cell);
+        }
+    }
+
+    private class Identifier {
+
+        int idx = -1, x = -1, y = -1;
+    }
+
+    public static final int INTRO_MAP_OFFSET = 30339;
+    public static final int INTRO_SCRIPT_TABLE_SIZE = 548;
+    public static final int INTRO_SCRIPT_TABLE_OFFSET = 30434;
+    public static final int INTRO_BASETILE_TABLE_SIZE = 15;
+    public static final int INTRO_BASETILE_TABLE_OFFSET = 16584;
+    public static final byte[] intromap = new byte[19 * 5];
+    public static final byte[] movesCommands = new byte[INTRO_SCRIPT_TABLE_SIZE];
+    public static final byte[] movesData = new byte[INTRO_BASETILE_TABLE_SIZE];
+
+    static {
+        try {
+            InputStream is = new FileInputStream("assets/data/title.exe");
+            byte[] tmp = IOUtils.toByteArray(is);
+            System.arraycopy(tmp, INTRO_MAP_OFFSET, intromap, 0, 19 * 5);
+            System.arraycopy(tmp, INTRO_SCRIPT_TABLE_OFFSET, movesCommands, 0, INTRO_SCRIPT_TABLE_SIZE);
+            System.arraycopy(tmp, INTRO_BASETILE_TABLE_OFFSET, movesData, 0, INTRO_BASETILE_TABLE_SIZE);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
 }

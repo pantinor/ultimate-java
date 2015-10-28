@@ -728,7 +728,6 @@ public class Party extends Observable implements Constants {
 
         switch (action) {
             case FOUND_ITEM:
-                //only increment HONOR for found items
                 adjustKarmaMax(newKarma, Virtue.HONOR, 5, maxVal);
                 break;
             case STOLE_CHEST:
@@ -740,6 +739,7 @@ public class Party extends Observable implements Constants {
             case GAVE_TO_BEGGAR:
                 timeLimited = 1;
                 adjustKarmaMax(newKarma, Virtue.COMPASSION, 2, maxVal);
+                adjustKarmaMax(newKarma, Virtue.HONOR, 3, maxVal);
                 break;
             case BRAGGED:
                 adjustKarmaMin(newKarma, Virtue.HUMILITY, -5, 1);
@@ -758,8 +758,8 @@ public class Party extends Observable implements Constants {
                 break;
             case ATTACKED_GOOD:
                 adjustKarmaMin(newKarma, Virtue.COMPASSION, -5, 1);
-                adjustKarmaMin(newKarma, Virtue.JUSTICE, -5, 1);
-                adjustKarmaMin(newKarma, Virtue.HONOR, -5, 1);
+                adjustKarmaMin(newKarma, Virtue.JUSTICE, -3, 1);
+                adjustKarmaMin(newKarma, Virtue.HONOR, -3, 1);
                 break;
             case HEALTHY_FLED_EVIL:
                 adjustKarmaMin(newKarma, Virtue.VALOR, -2, 1);

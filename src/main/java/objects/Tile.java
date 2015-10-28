@@ -126,7 +126,7 @@ public class Tile {
 
     @Override
     public String toString() {
-        return String.format("Tile [name=%s, rule=%s]", name, rule);
+        return String.format("Tile [name=%s, idx=%s]", name, index);
     }
 
     public boolean walkable() {

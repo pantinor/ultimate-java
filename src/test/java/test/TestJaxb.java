@@ -96,21 +96,21 @@ public class TestJaxb {
             System.out.println(t);
         }
     }
-    
+
     //@Test
     public void testJournal() throws Exception {
         File file = new File("journal.save.test");
         JAXBContext jaxbContext = JAXBContext.newInstance(JournalEntries.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
-        
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
         JournalEntries entries = new JournalEntries();
         entries.add(new JournalEntry("john", "yew", "whatever"));
         marshaller.marshal(entries, file);
-        
+
         entries.add(new JournalEntry("fred", "minoc", "whatever"));
         marshaller.marshal(entries, file);
-        
+
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         JournalEntries entries2 = (JournalEntries) jaxbUnmarshaller.unmarshal(file);
         for (JournalEntry t : entries2.getEntries()) {
@@ -236,11 +236,11 @@ public class TestJaxb {
                 }
             }
         }
-        
+
         for (Person p : people) {
             System.out.println(p);
         }
-        
+
         for (Conversation c : cons) {
             Person per = null;
             for (Person p : people) {
@@ -253,10 +253,8 @@ public class TestJaxb {
             }
         }
 
-
         //System.out.printf("Latitude [%s' %s]", (char) ((int) 54 / 16 + 'A'), (char) ((int) 54 % 16 + 'A'));
         //System.out.printf(" Longitude [%s' %s]\n", (char) ((int) 182 / 16 + 'A'), (char) ((int) 182 % 16 + 'A'));
-
     }
 
     //@Test
@@ -496,7 +494,7 @@ public class TestJaxb {
 
     }
 
-    @Test
+    //@Test
     public void testNibbles() throws Exception {
         byte[] data = new byte[4];
         data[1] = (byte) 0x85;
@@ -504,10 +502,9 @@ public class TestJaxb {
         int y = data[1] & 0x0f;
 
         int z = x;
-        
-        
+
         Random rand = new XORShiftRandom();
-        for (int j=0;j<10;j++) {
+        for (int j = 0; j < 10; j++) {
             int v = 99 + (rand.nextInt(256) & 119);
             int f = v;
         }
@@ -673,9 +670,9 @@ public class TestJaxb {
 
             System.out.println("INIT\n");
             for (int i = 0; i < 15; i++) {
-                    System.out.println(i + ") " + Virtue.get(StartScreen.questionTree[i]));
+                System.out.println(i + ") " + Virtue.get(StartScreen.questionTree[i]));
             }
-            
+
             while (!StartScreen.doQuestion(new Random().nextInt(2))) {
                 printQuestionDesc(StartScreen.questionRound);
             }
@@ -707,16 +704,16 @@ public class TestJaxb {
         String v2 = Virtue.get(StartScreen.questionTree[round * 2 + 1]).toString().toLowerCase();
         System.out.println(String.format("round: %d %s %d and %s %d", round, v1.toString(), (round * 2), v2.toString(), (round * 2 + 1)));
     }
-    
+
     //@Test
     public void makeImageOutlines() throws Exception {
         File file = new File("assets/tilemaps/latest.png");
         BufferedImage fr = ImageIO.read(file);
-        
+
         BufferedImage out = ImageTransparency.makeOutline(fr.getSubimage(256, 32, 32, 32));
-        
+
         ImageIO.write(out, "PNG", new File("outlined.png"));
-        
+
     }
 
     //@Test
@@ -752,13 +749,22 @@ public class TestJaxb {
     //@Test
     public void testUnrar() throws Exception {
 
-        File filename = new File("C:\\Users\\Paul\\Desktop\\water\\Ocean_ice_stones_desert.rar");
-        File outDir = new File("C:\\Users\\Paul\\Desktop\\water");
+        File f1 = new File("C:\\Users\\Paul\\Downloads\\ult3src.part01.rar");
+        File f2 = new File("C:\\Users\\Paul\\Downloads\\ult3src.part02.rar");
+        File f3 = new File("C:\\Users\\Paul\\Downloads\\ult3src.part03.rar");
+        File f4 = new File("C:\\Users\\Paul\\Downloads\\ult3src.part04.rar");
 
-        ExtractRARArchive.extractArchive(filename, outDir);
-        
+        File outDir1 = new File("C:\\Users\\Paul\\Desktop\\water\\rar\\f1");
+        File outDir2 = new File("C:\\Users\\Paul\\Desktop\\water\\rar\\f2");
+        File outDir3 = new File("C:\\Users\\Paul\\Desktop\\water\\rar\\f3");
+        File outDir4 = new File("C:\\Users\\Paul\\Desktop\\water\\rar\\f4");
+
+        ExtractRARArchive.extractArchive(f1, outDir1);
+        ExtractRARArchive.extractArchive(f2, outDir2);
+        ExtractRARArchive.extractArchive(f3, outDir3);
+        ExtractRARArchive.extractArchive(f4, outDir4);
+
+
     }
-    
-
 
 }

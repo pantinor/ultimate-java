@@ -153,8 +153,9 @@ public class SecondaryInputProcessor extends InputAdapter implements Constants {
             } else if (initialKeyCode == Keys.J) {
 
                 screen.logAppend(dir.toString());
-                if (bm.unlockDoor(x, y)) {
+                if (screen.context.getParty().getSaveGame().keys > 0 && bm.unlockDoor(x, y)) {
                     screen.log("Unlocked!");
+                    screen.context.getParty().getSaveGame().keys --;
                 } else {
                     screen.log("Can't!");
                 }
