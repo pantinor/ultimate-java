@@ -2,7 +2,6 @@ package vendor;
 
 import ultima.Constants.InventoryType;
 import ultima.Context;
-import ultima.GameScreen;
 import vendor.BaseVendor.ConvState;
 
 public class TavernService extends BaseVendor {

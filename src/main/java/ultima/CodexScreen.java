@@ -579,7 +579,7 @@ public class CodexScreen extends BaseScreen {
         return modelInstance;
     }
 
-    public ModelInstance getFigure(float x, float y, float z, float rotation) {
+    private ModelInstance getFigure(float x, float y, float z, float rotation) {
         ModelInstance instance = new ModelInstance(avatarModel, x, y, z);
         instance.nodes.get(0).scale.set(.01f, .01f, .01f);
         instance.transform.rotate(new Vector3(0, 1, 0), rotation);

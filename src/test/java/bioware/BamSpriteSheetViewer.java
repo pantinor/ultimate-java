@@ -48,7 +48,7 @@ public class BamSpriteSheetViewer extends InputAdapter implements ApplicationLis
         font = new BitmapFont();
 
         batch = new SpriteBatch();
-        atlas = new TextureAtlas(Gdx.files.absolute(BAMDIR + "METN.txt"));
+        atlas = new TextureAtlas(Gdx.files.absolute(BAMDIR + "UVOLG.txt"));
         //atlas = new TextureAtlas(Gdx.files.internal("bioware-sprites-2"));
         for (AtlasRegion ar : atlas.getRegions()) {
             if (!animNames.contains(ar.name)) {

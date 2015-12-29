@@ -53,6 +53,17 @@ public class SpreadFOV implements FOVSolver {
         lightMap[startx][starty] = force; //make the starting space full power
 
         lightSurroundings(startx, starty);
+        
+        if (startx>1&&starty>1) lightMap[startx-1][starty-1] = force;
+        if (starty>1) lightMap[startx][starty-1] = force;
+        if (startx<lightMap.length-1&&starty>1) lightMap[startx+1][starty-1] = force;
+        
+        if (startx>1) lightMap[startx-1][starty] = force;
+        if (startx<lightMap.length-11) lightMap[startx+1][starty] = force;
+        
+        if (startx>1&&starty<lightMap[0].length-1) lightMap[startx-1][starty+1] = force;
+        if (starty<lightMap[0].length-1) lightMap[startx][starty+1] = force;
+        if (startx<lightMap.length-1&&starty<lightMap[0].length-1) lightMap[startx+1][starty+1] = force;
 
         return lightMap;
     }
