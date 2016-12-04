@@ -128,20 +128,26 @@ public class UltimaMapRenderer extends BatchTiledMapRenderer implements Constant
                 if (bm.getBorderbehavior() == MapBorderBehavior.wrap) {
 
                     int cx = col;
+                    boolean wrapped = false;
                     if (col < 0) {
                         cx = layerWidth + col;
+                        wrapped = true;
                     } else if (col >= layerWidth) {
                         cx = col - layerWidth;
+                        wrapped = true;
                     }
+                    
                     int cy = row;
                     if (row < 0) {
                         cy = layerHeight + row;
+                        wrapped = true;
                     } else if (row >= layerHeight) {
                         cy = row - layerHeight;
+                        wrapped = true;
                     }
 
                     cell = layer.getCell(cx, cy);
-                    color = getColor(batchColor, cx, layerHeight - cy - 1);
+                    color = wrapped ? getColor(batchColor, -1, -1) : getColor(batchColor, cx, layerHeight - cy - 1);
 
                 } else {
                     cell = layer.getCell(col, row);
