@@ -57,12 +57,12 @@ public class GameScreen extends BaseScreen {
 
     TextureAtlas moonAtlas;
     
-    public static Animation mainAvatar;
-    public static Animation avatarAnim;
-    public static Animation corpseAnim;
-    public static Animation horseAnim;
-    public static Animation shipAnim;
-    public static Animation balloonAnim;
+    public static Animation<TextureRegion> mainAvatar;
+    public static Animation<TextureRegion> avatarAnim;
+    public static Animation<TextureRegion> corpseAnim;
+    public static Animation<TextureRegion> horseAnim;
+    public static Animation<TextureRegion> shipAnim;
+    public static Animation<TextureRegion> balloonAnim;
     public static int avatarDirection = Direction.WEST.getVal();
 
     TiledMap map;
@@ -127,35 +127,34 @@ public class GameScreen extends BaseScreen {
         Array<AtlasRegion> ship = Ultima4.standardAtlas.findRegions("ship");
         Array<AtlasRegion> balloon = Ultima4.standardAtlas.findRegions("balloon");
 
-        Array<AtlasRegion> tmp = new Array<>(4);
+        AtlasRegion[] tmp = new AtlasRegion[4];
         for (int i = 0; i < 4; i++) {
-            tmp.add(avatar.get(0));
+            tmp[i] = avatar.get(0);
         }
-        avatarAnim = new Animation(0.25f, tmp);
+        avatarAnim = new Animation<>(0.25f, tmp);
 
-        Array<AtlasRegion> tmp2 = new Array<>(4);
+        AtlasRegion[] tmp2 = new AtlasRegion[4];
         for (int i = 0; i < 4; i++) {
-            tmp2.add(corps.get(0));
+            tmp2[i] = corps.get(0);
         }
-        corpseAnim = new Animation(0.25f, tmp2);
+        corpseAnim = new Animation<>(0.25f, tmp2);
 
-        tmp = new Array<>(4);
+        AtlasRegion[] tmp3 = new AtlasRegion[4];
         AtlasRegion ar = new AtlasRegion(horse.get(0));
         ar.flip(true, false);
-        tmp.add(horse.get(0));
-        tmp.add(horse.get(0));
-        tmp.add(ar);
+        tmp3[0] = horse.get(0);
+        tmp3[1] = horse.get(0);
+        tmp3[2] = ar;
+        tmp3[3] = horse.get(0);
+        horseAnim = new Animation<>(0.25f, tmp3);
 
-        tmp.add(horse.get(0));
-        horseAnim = new Animation(0.25f, tmp);
+        shipAnim = new Animation<>(0.25f, ship);
 
-        shipAnim = new Animation(0.25f, ship);
-
-        tmp = new Array<>(4);
+        AtlasRegion[] tmp4 = new AtlasRegion[4];
         for (int i = 0; i < 4; i++) {
-            tmp.add(balloon.get(0));
+            tmp4[i] = balloon.get(0);
         }
-        balloonAnim = new Animation(0.25f, tmp);
+        balloonAnim = new Animation<>(0.25f, tmp4);
     }
 
     public class GameTimer implements Runnable {

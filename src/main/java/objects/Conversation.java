@@ -14,8 +14,8 @@ public class Conversation {
     protected String description;
     protected int respAffectsHumility;
     protected List<Topic> topics = new ArrayList<>();
-    
-    public static final String[] standardQuery = {"job", "health", "look", "name","give", "join"};
+
+    public static final String[] standardQuery = {"job", "health", "look", "name", "give", "join"};
 
     public Conversation() {
 
@@ -54,7 +54,7 @@ public class Conversation {
         }
 
     }
-        
+
     public boolean isStandardQuery(String query) {
         for (String st : standardQuery) {
             if (query.toLowerCase().contains(st)) {
@@ -72,11 +72,11 @@ public class Conversation {
         }
         return null;
     }
-    
+
     public void setMap(Maps m) {
         this.map = m;
     }
-    
+
     public Maps getMap() {
         return map;
     }
@@ -137,9 +137,25 @@ public class Conversation {
         this.topics = topics;
     }
 
+    public String toXMLString(Maps m) {
+        String format = "    <conversation map=\"%s\" name=\"%s\" pronoun=\"%s\" description=\"%s\">\n"
+                + "%s"
+                + "    </conversation>\n";
+
+        StringBuilder topicsXML = new StringBuilder();
+        for (Topic t : topics) {
+            if (t.phrase == null || t.phrase.length() < 1 || t.query == null || t.query.length() < 1) {
+            } else {
+                topicsXML.append(t.toXMLString());
+            }
+        }
+
+        return String.format(format, m, name, pronoun, description, topicsXML.toString());
+    }
+
     @Override
     public String toString() {
-        return String.format("\n\tConversation [index=%s, name=%s, pronoun=%s, turnAwayProb=%s, description=%s, respAffectsHumility=%s, topics=%s]", 
+        return String.format("\n\tConversation [index=%s, name=%s, pronoun=%s, turnAwayProb=%s, description=%s, respAffectsHumility=%s, topics=%s]",
                 index, name, pronoun, turnAwayProb, description, respAffectsHumility, topics);
     }
 
@@ -223,6 +239,16 @@ public class Conversation {
 
         public void setLbHeal(boolean lbHeal) {
             this.lbHeal = lbHeal;
+        }
+
+        public String toXMLString() {
+            String format = "        <topic query=\"%s\"\n"
+                    + "               phrase=\"%s\" \n"
+                    + "               question=\"%s\"\n"
+                    + "               no=\"%s\"\n"
+                    + "               yes=\"%s\" />\n";
+
+            return String.format(format, query, phrase, question == null ? "" : question, yesResponse == null ? "" : yesResponse, noResponse == null ? "" : noResponse).replace("&", "and");
         }
 
         @Override

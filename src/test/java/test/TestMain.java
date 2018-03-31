@@ -8,12 +8,15 @@ import ultima.Constants.WeaponType;
 import ultima.Context;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import ultima.CombatScreen;
 import ultima.Constants.CreatureType;
@@ -23,7 +26,7 @@ import util.UltimaTiledMapLoader;
 
 public class TestMain extends Game {
 
-    Animation a1,a2,a3;
+    Animation<TextureRegion> a1,a2,a3;
     Texture tr;
 
     float time = 0;
@@ -72,10 +75,10 @@ public class TestMain extends Game {
 
             batch2 = new SpriteBatch();
             
-//            atlas = new TextureAtlas(Gdx.files.internal("sprites-atlas.txt"));
-//
-//            a1 = new Animation(0.45f, atlas.findRegions("shallows"));
-//            a2 = new Animation(0.45f, atlas.findRegions("water"));
+            TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("sprites-atlas.txt"));
+            a1 = new Animation(0.45f, atlas.findRegions("shallows"));
+            TextureRegion[] frames = a1.getKeyFrames();
+            a2 = new Animation(0.45f, atlas.findRegions("water"));
 //            a3 = new Animation(0.45f, atlas.findRegions("sea"));
         
         } catch (Exception e) {

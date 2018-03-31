@@ -128,10 +128,10 @@ public class AnimationPixMapPacker implements Disposable {
         rect.y += borderPixels;
         currPage.rects.put(name, rect);
 
-        Blending blending = Pixmap.getBlending();
-        Pixmap.setBlending(Blending.None);
+        Blending blending = image.getBlending();
+        image.setBlending(Blending.None);
         this.currPage.image.drawPixmap(image, (int) rect.x, (int) rect.y);
-        Pixmap.setBlending(blending);
+        image.setBlending(blending);
 
         currPage.addedRects.add(name);
         return rect;

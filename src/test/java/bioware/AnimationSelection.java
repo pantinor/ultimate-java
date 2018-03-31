@@ -11,10 +11,12 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class AnimationSelection extends InputAdapter implements ApplicationListener {
 
@@ -110,7 +112,7 @@ public class AnimationSelection extends InputAdapter implements ApplicationListe
         font.draw(batch, key, 10, 800 - 30);
 
         synchronized (mutex) {
-            Animation anim = store.gdxAnimations.get(key);
+            Animation<TextureRegion> anim = store.gdxAnimations.get(key);
             batch.draw(anim.getKeyFrame(time, true), 100, 800 - 200);
         }
 

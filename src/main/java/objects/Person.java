@@ -1,5 +1,6 @@
 package objects;
 
+import com.badlogic.gdx.graphics.Texture;
 import ultima.Constants;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -132,7 +133,7 @@ public class Person implements Constants {
         this.conversation = conversation;
     }
 
-    public Animation getAnim() {
+    public Animation<TextureRegion> getAnim() {
         return anim;
     }
 

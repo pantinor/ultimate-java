@@ -23,6 +23,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import ultima.Context;
 import ultima.Ultima4;
 import util.PartyDeathException;
@@ -57,7 +59,7 @@ public class BaseMap implements Constants {
     private Dungeon dungeon;
     private Shrine shrine;
 
-    private List<Creature> creatures = new ArrayList<>();
+    private final List<Creature> creatures = new ArrayList<>();
     private List<PartyMember> combatPlayers;
     private Stage surfaceMapStage;
 
@@ -69,7 +71,7 @@ public class BaseMap implements Constants {
     //otherwise cannot catch up and talk to the character
     private long wanderFlag = 0;
 
-    private List<DoorStatus> doors = new ArrayList<>();
+    private final List<DoorStatus> doors = new ArrayList<>();
 
     public Moongate getMoongate(int phase) {
         if (moongates == null) {
@@ -464,7 +466,7 @@ public class BaseMap implements Constants {
                 if (arr.size > 1) {
                     //random rate between 1 and 4
                     int frameRate = Utils.getRandomBetween(1, 4);
-                    p.setAnim(new Animation(frameRate, arr));
+                    p.setAnim(new Animation<>(frameRate, arr));
                 }
 
                 Vector3 pixelPos = screen.getMapPixelCoords(p.getStart_x(), p.getStart_y());
@@ -1328,6 +1330,7 @@ public class BaseMap implements Constants {
         this.combatPlayers = combatPlayers;
     }
 
+    @XmlTransient
     public Stage getSurfaceMapStage() {
         return surfaceMapStage;
     }

@@ -56,7 +56,7 @@ public class CreatureSet {
                 TextureRegion reg = tr.get(fr);
 
                 //newCr.setAnim(new Animation(frameRate, reg));
-                newCr.setAnim(new Animation(frameRate, tr));
+                newCr.setAnim(new Animation<>(frameRate, tr));
 
                 Decal d = Decal.newDecal(reg, true);
                 d.setScale(.018f);
@@ -67,11 +67,11 @@ public class CreatureSet {
                 }
                 
                 if (type == CreatureType.twister) {
-                    newCr.setAnim(new Animation(.2f, tr));
+                    newCr.setAnim(new Animation<>(.2f, tr));
                 }
                 
                 if (type == CreatureType.whirlpool) {
-                    newCr.setAnim(new Animation(.3f, tr));
+                    newCr.setAnim(new Animation<>(.3f, tr));
                 }
 
                 return newCr;

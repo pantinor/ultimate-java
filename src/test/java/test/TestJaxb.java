@@ -224,32 +224,59 @@ public class TestJaxb {
 
     //@Test
     public void parseTlkFiles() throws Exception {
-        List<Person> people = Utils.getPeople("paws.ult", Maps.PAWS, null);
-        List<Conversation> cons = Utils.getDialogs("paws.tlk");
 
-        for (Person p : people) {
-            if (p != null) {
-                for (Conversation c : cons) {
-                    if (c.getIndex() == p.getDialogId()) {
-                        p.setConversation(c);
+        TileSet baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);
+        baseTileSet.setMaps();
+
+        MapSet maps = (MapSet) Utils.loadXml("maps.xml", MapSet.class);
+
+        for (BaseMap map : maps.getMaps()) {
+
+            if (map.getCity() == null || map.getCity().getTlk_fname() == null) {
+                continue;
+            }
+
+            List<Person> people;
+            try {
+                people = Utils.getPeople(map.getFname(), Maps.get(map.getId()), null);
+            } catch (Exception e) {
+                continue;
+            }
+
+            List<Conversation> cons = Utils.getDialogs(map.getCity().getTlk_fname());
+
+            if (people == null) {
+                continue;
+            }
+
+            for (Person p : people) {
+                if (p != null) {
+                    for (Conversation c : cons) {
+                        if (c.getIndex() == p.getDialogId()) {
+                            p.setConversation(c);
+                        }
                     }
                 }
             }
-        }
 
-        for (Person p : people) {
-            System.out.println(p);
-        }
-
-        for (Conversation c : cons) {
-            Person per = null;
             for (Person p : people) {
-                if (c.getIndex() == p.getDialogId()) {
-                    per = p;
-                }
+                //System.out.println(p);
             }
-            if (per == null) {
-                System.out.println("Extra Dialog: " + c);
+
+            for (Conversation c : cons) {
+                System.out.println(c.toXMLString(Maps.get(map.getId())));
+            }
+
+            for (Conversation c : cons) {
+                Person per = null;
+                for (Person p : people) {
+                    if (c.getIndex() == p.getDialogId()) {
+                        per = p;
+                    }
+                }
+                if (per == null) {
+                    //System.out.println("Extra Dialog: " + c);
+                }
             }
         }
 
@@ -763,7 +790,6 @@ public class TestJaxb {
         ExtractRARArchive.extractArchive(f2, outDir2);
         ExtractRARArchive.extractArchive(f3, outDir3);
         ExtractRARArchive.extractArchive(f4, outDir4);
-
 
     }
 

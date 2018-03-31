@@ -57,8 +57,8 @@ public class StartScreen implements Screen, InputProcessor, Constants {
     public static int[] beast1FrameIndexes = {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 1, 2, 3, 4, 1, 2, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 9, 10, 9, 10, 9, 10, 11, 11, 11, 11, 12, 12, 13, 13, 12, 13, 12, 13, 12, 11, 11, 11, 0, 0, 1, 2, 3, 4, 1, 2, 5, 6, 7, 8, 5, 6, 7, 8, 9, 10, 11, 11, 11, 0, 0, 14, 14, 14, 15, 16, 16, 16, 17, 17, 17, 16, 16, 16, 17, 17, 17, 16, 16, 16, 15, 14, 14, 0, 0, 11, 11, 11};
     public static int[] beast2FrameIndexes = {1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5, 6, 5, 6, 5, 6, 4, 7, 8, 9, 10, 9, 8, 7, 8, 9, 10, 11, 12, 11, 12, 13, 11, 12, 13, 1, 13, 1, 14, 1, 15, 1, 14, 1, 15, 10, 9, 8, 16, 17, 16, 17, 16, 17, 9, 8, 7, 4, 3, 2, 0};
 
-    Animation beast1;
-    Animation beast2;
+    Animation<TextureRegion> beast1;
+    Animation<TextureRegion> beast2;
 
     TextButton init;
     TextButton journey;

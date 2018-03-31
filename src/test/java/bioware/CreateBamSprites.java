@@ -12,6 +12,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -67,7 +68,7 @@ public class CreateBamSprites extends InputAdapter implements ApplicationListene
 //        animNamesMap.put("MWER", "STAND1-1");
 //        animNamesMap.put("MWFM", "STAND1-1");
 
-        Map<String, Animation> imgMap = new HashMap<>();
+        Map<String, Animation<TextureRegion>> imgMap = new HashMap<>();
 
         for (String bamName : animNamesMap.keySet()) {
 

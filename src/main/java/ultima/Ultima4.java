@@ -66,9 +66,9 @@ public class Ultima4 extends Game {
     public static TextureRegion missTile;
     public static TextureRegion corpse;
     
-    public static Animation explosionLarge;
-    public static Animation explosion;
-    public static Animation cloud;
+    public static Animation<TextureRegion> explosionLarge;
+    public static Animation<TextureRegion> explosion;
+    public static Animation<TextureRegion> cloud;
 
     public static Drawable balloon;
 
@@ -137,15 +137,15 @@ public class Ultima4 extends Game {
             
             TextureAtlas tmp = new TextureAtlas(Gdx.files.internal("assets/graphics/explosion-atlas.txt"));
             Array<TextureAtlas.AtlasRegion> ar = tmp.findRegions("expl");
-            explosion = new Animation(.2f, ar);
+            explosion = new Animation<>(.2f, ar);
             
             tmp = new TextureAtlas(Gdx.files.internal("assets/graphics/Exp_type_B.atlas"));
             ar = tmp.findRegions("im");
-            explosionLarge = new Animation(.1f, ar);
+            explosionLarge = new Animation<>(.1f, ar);
             
             tmp = new TextureAtlas(Gdx.files.internal("assets/graphics/cloud-atlas.txt"));
             ar = tmp.findRegions("cloud");
-            cloud = new Animation(.2f, ar);
+            cloud = new Animation<>(.2f, ar);
             
             baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);
             baseTileSet.setMaps();

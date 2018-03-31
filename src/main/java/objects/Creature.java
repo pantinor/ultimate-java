@@ -1,5 +1,6 @@
 package objects;
 
+import com.badlogic.gdx.graphics.Texture;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -10,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import ultima.Constants;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
 import util.XORShiftRandom;
@@ -479,7 +481,7 @@ public class Creature implements Constants {
     }
 
     @XmlTransient
-    public Animation getAnim() {
+    public Animation<TextureRegion> getAnim() {
         return anim;
     }
 

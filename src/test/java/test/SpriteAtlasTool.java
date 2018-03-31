@@ -43,10 +43,10 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 
     Batch batch;
 
-    static int screenWidth = 1000;
-    static int screenHeight = 800;
+    static int screenWidth = 1920;
+    static int screenHeight = 768;
 
-    int dim = 32;
+    int dim = 48;
     int canvasGridWidth;
     int canvasGridHeight;
 
@@ -77,7 +77,7 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
         pixmap.fillRectangle(w, dim - w, dim - 2 * w, w);
         box = new Texture(pixmap);
 
-        Texture tx = new Texture(Gdx.files.internal("assets/tilemaps/latest.png"));
+        Texture tx = new Texture(Gdx.files.absolute("D:\\work\\gdx-andius\\src\\main\\resources\\assets\\data\\uf_heroes.png"));
         canvasGridWidth = tx.getWidth() / dim;
         canvasGridHeight = tx.getHeight() / dim;
 
@@ -96,11 +96,10 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 
         final List<MyListItem> list = new List<>(skin);
         try {
-            TileSet ts = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);
-            MyListItem[] tileNames = new MyListItem[ts.getTiles().size()];
+            MyListItem[] tileNames = new MyListItem[Tile.values().length];
             int x = 0;
-            for (Tile t : ts.getTiles()) {
-                tileNames[x] = new MyListItem(t.getName(), 0, 0);
+            for (Tile t : Tile.values()) {
+                tileNames[x] = new MyListItem(t.toString(), 0, 0);
                 x++;
             }
             list.setItems(tileNames);
@@ -127,10 +126,10 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
 
         Table table = new Table(skin);
         table.defaults().pad(2);
-        table.add(makeButton).expandX().left().width(150);
+        table.add(makeButton).expandX().left().width(175);
         table.row();
-        table.add(scrollPane).expandX().left().width(150).maxHeight(screenHeight);
-        table.setPosition(screenWidth - 150, 0);
+        table.add(scrollPane).expandX().left().width(175).maxHeight(screenHeight);
+        table.setPosition(screenWidth - 175, 0);
         table.setFillParent(true);
 
         stage.addActor(table);
@@ -157,7 +156,7 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
             String n = (String) (it.name.length() > 1 ? it.name.subSequence(0, 2) : it.name);
 
             batch.draw(box, it.x * dim, screenHeight - (it.y * dim) - dim);
-            font.draw(batch, n, it.x * dim + 5, screenHeight - (it.y * dim) - dim + (dim/2));
+            font.draw(batch, n, it.x * dim + 5, screenHeight - (it.y * dim) - dim + (dim / 2));
         }
 
         batch.end();
@@ -331,12 +330,18 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
             java.util.List<String> lines = FileUtils.readLines(new File("sprites-atlas.txt"));
             for (int i = 4; i < lines.size(); i += 7) {
                 String name = lines.get(i).trim();
+                try {
+                    if (Tile.valueOf(name) == null) {
+                        continue;
+                    }
+                } catch (Exception e) {
+                    continue;
+                }
                 String xy = lines.get(i + 2).trim();
                 String[] sp = xy.split(":|,| ");
-                //System.out.println(name + " "  + sp[2] + "," + sp[4]);
 
-                int mx = Integer.parseInt(sp[2]) / 32;
-                int my = Integer.parseInt(sp[4]) / 32;
+                int mx = Integer.parseInt(sp[2]) / dim;
+                int my = Integer.parseInt(sp[4]) / dim;
                 MyListItem item = new MyListItem(name, mx, my);
                 gridItems.add(item);
             }
@@ -344,6 +349,143 @@ public class SpriteAtlasTool extends InputAdapter implements ApplicationListener
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+    }
+
+    public enum Tile {
+
+        WIZARD,
+        CLERIC,
+        PALADIN,
+        RANGER,
+        BARBARIAN,
+        THIEF,
+        DRUID,
+        TORTURER,
+        FIGHTER,
+        SWASHBUCKLER,
+        KNIGHT,
+        WITCH,
+        BAT_MAJOR,
+        BAT_MINOR,
+        SPIDER_MAJOR,
+        SPIDER_MINOR,
+        BLACK_WIDOW_MAJOR,
+        BLACK_WIDOW_MINOR,
+        DWARF_FIGHTER,
+        SKELETON,
+        SKELETON_SWORDSMAN,
+        LICHE,
+        SKELETON_ARCHER,
+        ORC,
+        ORC_SHIELDSMAN,
+        TROLL,
+        OGRE_SHAMAN,
+        OGRE,
+        ORC_SHAMAN,
+        RAT_MAJOR,
+        RAT_MINOR,
+        ZOMBIE_GREEN,
+        ZOMBIE_BLUE,
+        WRAITH,
+        DWARF_CLERIC,
+        DWARF_LORD,
+        MINOTAUR,
+        VAMPIRE_RED,
+        VAMPIRE_BLUE,
+        SORCERER,
+        SORCERER_EVIL,
+        WOLF_BLACK,
+        WOLF_BROWN,
+        MERMAN_SWORDSMAN,
+        MERMAN_PIKE,
+        MERMAN_SHAMAN,
+        MERMAN_SWORDSMAN_BLUE,
+        MERMAN_PIKE_BLUE,
+        MERMAN_SHAMAN_BLUE,
+        GAZER,
+        GAZER_BLUE,
+        PHANTOM_BLUE,
+        PHANTOM_RED,
+        PHANTOM_GREY,
+        PIXIE,
+        PIXIE_RED,
+        DEMON_RED,
+        DEMON_BLUE,
+        DEMON_GREEN,
+        ANGEL,
+        DARK_ANGEL,
+        HALFLING,
+        HALFLING_RANGER,
+        HALFLING_SHIELDSMAN,
+        HALFLING_WIZARD,
+        WISP_MAJOR,
+        WISP_MINOR,
+        DRAGON_BLACK,
+        DRAGON_RED,
+        DRAGON_BLUE,
+        DRAGON_GREEN,
+        HAWK_WHITE,
+        HAWK_BROWN,
+        CROW,
+        MUMMY,
+        MUMMY_KING,
+        GOLEM_STONE,
+        GOLEM_FIRE,
+        GOLEM_EARTH,
+        GOLEM_ICE,
+        GOLEM_MUD,
+        COBRA_MAJOR,
+        COBRA_MINOR,
+        KING_RED,
+        QUEEN_RED,
+        KING_BLUE,
+        QUEEN_BLUE,
+        BEETLE_BLACK,
+        BEETLE_RED,
+        BEETLE_BLACK_MINOR,
+        BEETLE_RED_MINOR,
+        GHOST_MINOR,
+        GHOST_MAJOR,
+        SLIME_GREEN,
+        SLIME_RED,
+        SLIME_PURPLE,
+        GRUB_MINOR,
+        GRUB_MAJOR,
+        ELEMENTAL_PURPLE,
+        ELEMENTAL_BLUE,
+        ELEMENTAL_ORANGE,
+        ELEMENTAL_CYAN,
+        ELEMENTAL_BROWN,
+        BUTTERFLY_WHITE,
+        BUTTERFLY_RED,
+        BUTTERFLY_BLACK,
+        FROG_GREEN,
+        FROG_BLUE,
+        FROG_BROWN,
+        INSECT_SWARM,
+        MIMIC,
+        SHOPKEEPER_BROWN,
+        SHOPKEEPER_BLOND,
+        BLOOD_PRIEST,
+        BARBARIAN_AXE,
+        DEMON_LORD,
+        DARK_WIZARD,
+        FIGHTER_RED,
+        HOLY_AVENGER,
+        SWASHBUCKLER_BLUE,
+        DEATH_KNIGHT,
+        BRAWLER,
+        BRAWLER_DARK,
+        BRAWLER_BLOND,
+        ELVEN_SWORDSMAN_GREEN,
+        ELVEN_WIZARD_GREEN,
+        ELVEN_ARCHER_GREEN,
+        ELVEN_SWORDSMAN_BLUE,
+        ELVEN_WIZARD_BLUE,
+        ELVEN_ARCHER_BLUE,
+        
+        ;
 
     }
 

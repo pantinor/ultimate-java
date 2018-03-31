@@ -14,7 +14,7 @@ import util.Utils;
 public class MapSet {
 
     private List<BaseMap> maps = null;
-
+    
     @XmlElement(name = "map")
     public List<BaseMap> getMaps() {
         return maps;
