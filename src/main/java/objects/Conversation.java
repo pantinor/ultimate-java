@@ -153,6 +153,22 @@ public class Conversation {
         return String.format(format, m, name, pronoun, description, topicsXML.toString());
     }
 
+    public String toXMLString2(Maps m) {
+        String format = "<conversation map=\"%s\" name=\"%s\" description=\"%s\">\n"
+                + "%s"
+                + "</conversation>\n";
+
+        StringBuilder topicsXML = new StringBuilder();
+        for (Topic t : topics) {
+            if (t.phrase == null || t.phrase.length() < 1 || t.query == null || t.query.length() < 1) {
+            } else {
+                topicsXML.append(t.toXMLString2());
+            }
+        }
+
+        return String.format(format, m, name, description, topicsXML.toString());
+    }
+
     @Override
     public String toString() {
         return String.format("\n\tConversation [index=%s, name=%s, pronoun=%s, turnAwayProb=%s, description=%s, respAffectsHumility=%s, topics=%s]",
@@ -249,6 +265,23 @@ public class Conversation {
                     + "               yes=\"%s\" />\n";
 
             return String.format(format, query, phrase, question == null ? "" : question, yesResponse == null ? "" : yesResponse, noResponse == null ? "" : noResponse).replace("&", "and");
+        }
+
+        public String toXMLString2() {
+
+            String labelFormat = "<label id=\"0\" query=\"%s\">\n"
+                    + "<topic query=\"default\" phrase=\"%s\"/>\n"
+                    + "<topic query=\"y\" phrase=\"%s\"/>\n"
+                    + "</label>\n";
+
+            String format = "<topic query=\"%s\" phrase=\"%s %s\" />\n%s";
+            
+            String ph = phrase.replace(">", "").replace("<", "").replace("\"", "'").replace("&", "and");
+            String yr = yesResponse == null ? "" : yesResponse.replace(">", "").replace("<", "").replace("\"", "'").replace("&", "and");
+            String nr = noResponse == null ? "" : noResponse.replace(">", "").replace("<", "").replace("\"", "'").replace("&", "and");
+
+            return String.format(format, query, ph, question == null ? "" : "%0%",
+                    question != null ? String.format(labelFormat, question, nr, yr) : "");
         }
 
         @Override

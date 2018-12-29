@@ -222,7 +222,7 @@ public class TestJaxb {
 
     }
 
-    //@Test
+    @Test
     public void parseTlkFiles() throws Exception {
 
         TileSet baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);
@@ -264,7 +264,7 @@ public class TestJaxb {
             }
 
             for (Conversation c : cons) {
-                System.out.println(c.toXMLString(Maps.get(map.getId())));
+                System.out.println(c.toXMLString2(Maps.get(map.getId())));
             }
 
             for (Conversation c : cons) {

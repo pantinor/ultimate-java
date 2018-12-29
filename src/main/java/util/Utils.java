@@ -42,6 +42,7 @@ import ultima.Constants.DungeonTile;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -174,8 +175,8 @@ public class Utils implements Constants {
             boolean blocked = combatMap.isTileBlockedForRangedAttack(nx, ny, checkForCreatures);
 
             Tile tile = combatMap.getTile(nx, ny);
-            
-            boolean canAttackOverSolid = (tile != null && tile.getRule() != null 
+
+            boolean canAttackOverSolid = (tile != null && tile.getRule() != null
                     && tile.getRule().has(TileAttrib.halberdattackover) && weaponCanAttackThroughObjects);
 
             if (!blocked || canAttackOverSolid || isCannonBall) {
@@ -337,13 +338,13 @@ public class Utils implements Constants {
     public static void animateAttack(Stage stage, final CombatScreen scr, PartyMember attacker, Direction dir, int x, int y, int range) {
 
         final AttackVector av = Utils.attack(scr.combatMap, attacker, dir, x, y, range);
-        
+
         boolean magicHit = attacker.getPlayer().weapon.getWeapon().getHittile().equals("magic_flash");
 
-        final ProjectileActor p = new ProjectileActor(scr, magicHit?Color.CYAN:Color.RED, x, y, av.result);
+        final ProjectileActor p = new ProjectileActor(scr, magicHit ? Color.CYAN : Color.RED, x, y, av.result);
 
         Vector3 v = scr.getMapPixelCoords(av.x, av.y);
-        
+
         final TextureRegion hitTile = (magicHit ? Ultima4.magicHitTile : Ultima4.hitTile);
 
         p.addAction(sequence(moveTo(v.x, v.y, av.distance * .1f), new Action() {
@@ -519,7 +520,7 @@ public class Utils implements Constants {
         if (creature == null) {
             return res;
         }
-        
+
         if (spell == Spell.SLEEP) {
             if (!"sleep".equals(creature.getResists())) {
                 Sounds.play(Sound.NPC_STRUCK);
@@ -532,21 +533,21 @@ public class Utils implements Constants {
                 return AttackResult.MISS;
             }
         }
-        
+
         if (spell == Spell.FIREBALL) {
             if ("fire".equals(creature.getResists())) {
                 Sounds.play(Sound.EVADE);
                 Ultima4.hud.add("Resisted!\n");
                 return AttackResult.MISS;
             }
-        } 
+        }
 
         Sounds.play(Sound.NPC_STRUCK);
-        
+
         int attackDamage = ((minDamage >= 0) && (minDamage < maxDamage))
                 ? rand.nextInt((maxDamage + 1) - minDamage) + minDamage
                 : maxDamage;
-        
+
         dealDamage(attacker, creature, attackDamage);
 
         return AttackResult.HIT;
@@ -982,8 +983,7 @@ public class Utils implements Constants {
         List<Person> people = new ArrayList<>();
         Tile[] tiles = new Tile[map.getWidth() * map.getHeight()];
 
-
-        TmxMapLoader loader = new TmxMapLoader(); 
+        TmxMapLoader loader = new TmxMapLoader();
         TiledMap tm = loader.load("assets/tilemaps/" + tmxFile);
 
         TiledMapTileLayer ml = (TiledMapTileLayer) tm.getLayers().get(map.getId() + "-map");
@@ -1056,7 +1056,6 @@ public class Utils implements Constants {
                 }
 
             }
-
 
         }
 
@@ -1227,6 +1226,49 @@ public class Utils implements Constants {
             v = min;
         }
         return v;
+    }
+
+    public static BufferedImage toBufferedImage(Pixmap pixmap) {
+        return toBufferedImage(pixmap, toBufferedImageType(pixmap.getFormat()));
+    }
+
+    public static BufferedImage toBufferedImage(Pixmap pixmap, int bufferedImageType) {
+        final int iw = pixmap.getWidth();
+        final int ih = pixmap.getHeight();
+
+        BufferedImage result = new BufferedImage(iw, ih, bufferedImageType);
+        for (int y = 0; y < ih; y++) {
+            for (int x = 0; x < iw; x++) {
+                int rgba8888 = pixmap.getPixel(x, y);
+
+                int r = (int) ((rgba8888 & 0xff000000) >> 24);
+                int g = (int) ((rgba8888 & 0x00ff0000) >> 16);
+                int b = (int) ((rgba8888 & 0x0000ff00) >> 8);
+                int a = (int) (rgba8888 & 0x000000ff);
+
+                int argb = (a << 24) | (r  << 16) | (g << 8) | b ;
+
+                result.setRGB(x, y, argb);
+            }
+        }
+        return result;
+    }
+
+    public static int toBufferedImageType(Format format) {
+        switch (format) {
+            case Intensity:
+            case Alpha:
+                return BufferedImage.TYPE_BYTE_GRAY;
+            case RGB565:
+            case RGB888:
+                return BufferedImage.TYPE_3BYTE_BGR;
+            case LuminanceAlpha:
+            case RGBA4444:
+            case RGBA8888:
+                return BufferedImage.TYPE_INT_ARGB;
+            default:
+                throw new IllegalArgumentException("Unsupported format: " + format);
+        }
     }
 
 }
