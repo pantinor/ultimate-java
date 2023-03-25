@@ -83,7 +83,7 @@ public class CombatScreen extends BaseScreen {
     private SecondaryInputProcessor sip;
 
     private Viewport mapViewPort;
-    
+
     private boolean wounded;
 
     public CombatScreen(BaseScreen returnScreen, Context context, Maps contextMap,
@@ -108,10 +108,10 @@ public class CombatScreen extends BaseScreen {
         MapProperties prop = tmap.getProperties();
         mapPixelHeight = prop.get("height", Integer.class) * tilePixelHeight;
 
-        camera = new OrthographicCamera(11*tilePixelWidth, 11*tilePixelHeight);
-        
+        camera = new OrthographicCamera(11 * tilePixelWidth, 11 * tilePixelHeight);
+
         mapViewPort = new ScreenViewport(camera);
-        
+
         stage = new Stage();
         stage.setViewport(mapViewPort);
 
@@ -301,7 +301,7 @@ public class CombatScreen extends BaseScreen {
         returnScreen.currentEncounter.currentPos = returnScreen.getMapPixelCoords(x, y);
 
     }
-    
+
     @Override
     public Vector3 getMapPixelCoords(int x, int y) {
         Vector3 v = new Vector3(x * tilePixelWidth, mapPixelHeight - y * tilePixelHeight - tilePixelHeight, 0);
@@ -319,17 +319,17 @@ public class CombatScreen extends BaseScreen {
         time += delta;
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        
-        camera.position.set(newMapPixelCoords.x+5*tilePixelWidth,newMapPixelCoords.y,0);
+
+        camera.position.set(newMapPixelCoords.x + 5 * tilePixelWidth, newMapPixelCoords.y, 0);
 
         camera.update();
-        
-        renderer.setView(camera.combined, 
-                camera.position.x - tilePixelWidth*10, //this is voodoo
-                camera.position.y - tilePixelHeight*10, 
-                Ultima4.MAP_WIDTH, 
+
+        renderer.setView(camera.combined,
+                camera.position.x - tilePixelWidth * 10, //this is voodoo
+                camera.position.y - tilePixelHeight * 10,
+                Ultima4.MAP_WIDTH,
                 Ultima4.MAP_HEIGHT);
-        
+
         renderer.render();
 
         renderer.getBatch().begin();
@@ -344,7 +344,7 @@ public class CombatScreen extends BaseScreen {
             if (p.combatCr == null || p.combatCr.currentPos == null || p.fled) {
                 continue;
             }
-            
+
             if (p.getPlayer().status != StatusType.DEAD && p.getPlayer().status != StatusType.SLEEPING) {
                 renderer.getBatch().draw(p.combatCr.getAnim().getKeyFrame(time, true), p.combatCr.currentPos.x, p.combatCr.currentPos.y);
             } else {
@@ -374,7 +374,7 @@ public class CombatScreen extends BaseScreen {
         stage.draw();
 
     }
-    
+
     @Override
     public void resize(int width, int height) {
         mapViewPort.update(width, height, false);
@@ -425,7 +425,7 @@ public class CombatScreen extends BaseScreen {
             } else if (keycode == Keys.U) {
                 Tile tile = combatMap.getTile(active.currentX, active.currentY);
                 if (tile.getIndex() == 74 //altar
-                        || (party.getSaveGame().items & Item.RAGE_GOD.getLoc()) > 0 
+                        || (party.getSaveGame().items & Item.RAGE_GOD.getLoc()) > 0
                         || (party.getSaveGame().items & Item.MASK_MINAX.getLoc()) > 0) { //altar or rage of god
                     log("Use which item: ");
                     log("");
@@ -471,12 +471,12 @@ public class CombatScreen extends BaseScreen {
     }
 
     private void checkTileAffects(PartyMember ap, int x, int y) throws PartyDeathException {
-        
+
         Tile tile = combatMap.getTile(x, y);
         if (tile == null || tile.getRule() == null) {
             return;
         }
-        
+
         TileEffect effect = tile.getRule().getEffect();
         context.getParty().applyEffect(ap, effect);
         if (effect == TileEffect.FIRE || effect == TileEffect.LAVA) {
@@ -486,7 +486,7 @@ public class CombatScreen extends BaseScreen {
         } else if (effect == TileEffect.SLEEP) {
             Sounds.play(Sound.SLEEP);
         }
-        
+
         DungeonRoom room = (DungeonRoom) tmap.getProperties().get("dungeonRoom");
         if (room != null) {
             for (int i = 0; i < 4; i++) {
@@ -863,7 +863,7 @@ public class CombatScreen extends BaseScreen {
                 if (Utils.attackHit(creature, target) == AttackResult.HIT) {
                     Sounds.play(Sound.PC_STRUCK);
                     wounded = true;
-                    
+
                     if (!Utils.dealDamage(creature, target)) {
                         target = null;
                     }
@@ -871,7 +871,7 @@ public class CombatScreen extends BaseScreen {
                     if (target != null) {
                         if (creature.stealsFood() && rand.nextInt(8) == 0) {
                             Sounds.play(Sound.NEGATIVE_EFFECT);
-                            party.adjustFood(-(rand.nextInt(10)*1000));
+                            party.adjustFood(-(rand.nextInt(10) * 1000));
                         }
 
                         if (creature.stealsGold() && rand.nextInt(8) == 0) {
@@ -898,9 +898,9 @@ public class CombatScreen extends BaseScreen {
             }
 
             case TELEPORT: {//only wisp teleports
-	        boolean valid = false;
-	        int rx=0, ry=0, count=0;
-	        while (!valid && count < 5) {
+                boolean valid = false;
+                int rx = 0, ry = 0, count = 0;
+                while (!valid && count < 5) {
                     rx = rand.nextInt(combatMap.getWidth());
                     ry = rand.nextInt(combatMap.getHeight());
                     Tile t = combatMap.getTile(rx, ry);
@@ -912,11 +912,11 @@ public class CombatScreen extends BaseScreen {
                         }
                     }
                     count++;
- 	        }
+                }
                 if (valid) {
                     moveCreature(action, creature, rx, ry);
                 }
-	        break;
+                break;
             }
 
             case RANGED: {
@@ -925,7 +925,7 @@ public class CombatScreen extends BaseScreen {
                 int dirmask = Utils.getRelativeDirection(MapBorderBehavior.fixed, combatMap.getWidth(), combatMap.getHeight(), target.combatCr.currentX, target.combatCr.currentY, creature.currentX, creature.currentY);
 
                 Sounds.play(Sound.NPC_ATTACK);
-                
+
                 List<AttackVector> path = Utils.getDirectionalActionPath(combatMap, dirmask, creature.currentX, creature.currentY, 1, 11, false, false, false);
                 for (AttackVector v : path) {
                     if (rangedAttackAt(v, creature)) {
@@ -1026,10 +1026,12 @@ public class CombatScreen extends BaseScreen {
         /* ok, now we've got the nearest party member.  Now, see if they're close enough */
         if (nearestPartyMember(cr.currentX, cr.currentY, dist, false) != null) {
             if ((dist.getVal() < 5) && !cr.getVisible()) {
-                cr.setVisible(true); /* show yourself */
+                cr.setVisible(true);
+                /* show yourself */
 
             } else if (dist.getVal() >= 5) {
-                cr.setVisible(false); /* hide and take no action! */
+                cr.setVisible(false);
+                /* hide and take no action! */
 
             }
         }
@@ -1262,7 +1264,7 @@ public class CombatScreen extends BaseScreen {
         }
     }
 
-    public static void holeUp(Maps contextMap, final int x, final int y, final BaseScreen rs, 
+    public static void holeUp(Maps contextMap, final int x, final int y, final BaseScreen rs,
             final Context context, CreatureSet cs, final TextureAtlas sa, boolean inn) {
 
         Ultima4.hud.add("Hole up & Camp!");
@@ -1293,7 +1295,7 @@ public class CombatScreen extends BaseScreen {
         } else {
             campMap = Maps.CAMP_DNG;
         }
-        
+
         tmap = new UltimaTiledMapLoader(campMap, sa, campMap.getMap().getWidth(), campMap.getMap().getHeight(), tilePixelWidth, tilePixelHeight).load();
 
         context.setCurrentTiledMap(tmap);
@@ -1355,7 +1357,7 @@ public class CombatScreen extends BaseScreen {
 
                 }
             }));
-            
+
             if (inn && contextMap == Maps.SKARABRAE && rand.nextInt(3) == 0) {
                 //show isaac
                 for (Person p : context.getCurrentMap().getCity().getPeople()) {

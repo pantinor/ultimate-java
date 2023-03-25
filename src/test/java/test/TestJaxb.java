@@ -732,33 +732,6 @@ public class TestJaxb {
         System.out.println(String.format("round: %d %s %d and %s %d", round, v1.toString(), (round * 2), v2.toString(), (round * 2 + 1)));
     }
 
-    //@Test
-    public void makeImageOutlines() throws Exception {
-        File file = new File("assets/tilemaps/latest.png");
-        BufferedImage fr = ImageIO.read(file);
-
-        BufferedImage out = ImageTransparency.makeOutline(fr.getSubimage(256, 32, 32, 32));
-
-        ImageIO.write(out, "PNG", new File("outlined.png"));
-
-    }
-
-    //@Test
-    public void testCoords() throws Exception {
-
-//	6 0 Creature [id=21, name=Sea Serpent, tile=sea_serpent, currentX=213, currentY=2 currentPos=[6816.0, 8096.0, 0.0]]
-//			6 0 Creature [id=19, name=Nixie, tile=nixie, currentX=212, currentY=1 currentPos=[6784.0, 8128.0, 0.0]]
-//			6 0 Creature [id=23, name=Whirlpool, tile=whirlpool, currentX=215, currentY=8 currentPos=[6880.0, 7904.0, 0.0]]
-        System.out.println(getMapPixelCoords(213, 2));
-        System.out.println(getMapPixelCoords(212, 1));
-        System.out.println(getMapPixelCoords(215, 8));
-
-        for (Direction dir : Direction.values()) {
-            System.out.println(dir + " " + Direction.getBroadsidesDirectionMask(dir));
-        }
-
-    }
-
     public int yDownPixel(float y) {
         return (int) (256 * 32 - y - 32);
     }
@@ -771,26 +744,6 @@ public class TestJaxb {
                 0);
 
         return v;
-    }
-
-    //@Test
-    public void testUnrar() throws Exception {
-
-        File f1 = new File("C:\\Users\\Paul\\Downloads\\ult3src.part01.rar");
-        File f2 = new File("C:\\Users\\Paul\\Downloads\\ult3src.part02.rar");
-        File f3 = new File("C:\\Users\\Paul\\Downloads\\ult3src.part03.rar");
-        File f4 = new File("C:\\Users\\Paul\\Downloads\\ult3src.part04.rar");
-
-        File outDir1 = new File("C:\\Users\\Paul\\Desktop\\water\\rar\\f1");
-        File outDir2 = new File("C:\\Users\\Paul\\Desktop\\water\\rar\\f2");
-        File outDir3 = new File("C:\\Users\\Paul\\Desktop\\water\\rar\\f3");
-        File outDir4 = new File("C:\\Users\\Paul\\Desktop\\water\\rar\\f4");
-
-        ExtractRARArchive.extractArchive(f1, outDir1);
-        ExtractRARArchive.extractArchive(f2, outDir2);
-        ExtractRARArchive.extractArchive(f3, outDir3);
-        ExtractRARArchive.extractArchive(f4, outDir4);
-
     }
 
 }

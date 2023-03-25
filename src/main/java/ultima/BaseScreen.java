@@ -34,32 +34,32 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
     protected BaseScreen returnScreen;
     public Context context;
     protected Stage stage;
-    
+
     protected float time = 0;
     protected Random rand = new XORShiftRandom();
 
     protected int mapPixelHeight;
     public Vector3 newMapPixelCoords;
-    
+
     protected Viewport viewport = new ScreenViewport();
 
     protected Camera camera;
-    
+
     protected int showZstats = 0;
 
     protected Vector2 currentMousePos;
 
     protected Creature currentEncounter;
-    
+
     /**
      * translate map tile coords to world pixel coords
      */
-    public abstract Vector3 getMapPixelCoords(int x, int y) ;
+    public abstract Vector3 getMapPixelCoords(int x, int y);
 
     /**
      * get the map coords at the camera center
      */
-    public abstract Vector3 getCurrentMapCoords() ;
+    public abstract Vector3 getCurrentMapCoords();
 
     @Override
     public void dispose() {
@@ -85,7 +85,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
 
     public void endCombat(boolean isWon, BaseMap combatMap, boolean wounded) {
     }
-    
+
     public final void addButtons() {
         TextButton jourButt = new TextButton("Journal", Ultima4.skin, "wood");
         jourButt.addListener(new ChangeListener() {
@@ -107,15 +107,17 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
         });
         bookButt.setX(625);
         bookButt.setY(15);
-        
+
         stage.addActor(bookButt);
-        
+
         int y = 42;
-        for (int j=0;j<8;j++) {
+        for (int j = 0; j < 8; j++) {
             Virtue v = Constants.Virtue.values()[j];
-            int x = (j<4?58:316);
+            int x = (j < 4 ? 58 : 316);
             y = y - 12;
-            if (y < 0) y = 42;
+            if (y < 0) {
+                y = 42;
+            }
             VirtueBarDrawable bar = new VirtueBarDrawable(v);
             bar.setX(x);
             bar.setY(y);
@@ -123,12 +125,15 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
         }
 
     }
-    
+
     private class VirtueBarDrawable extends Actor {
+
         private Virtue v;
+
         public VirtueBarDrawable(Virtue v) {
             this.v = v;
         }
+
         @Override
         public void draw(Batch batch, float parentAlpha) {
             batch.draw(v.getBar(), getX(), getY());
@@ -229,7 +234,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
     }
 
     @Override
-    public boolean scrolled(int amount) {
+    public boolean scrolled(float f, float f1) {
         return false;
     }
 

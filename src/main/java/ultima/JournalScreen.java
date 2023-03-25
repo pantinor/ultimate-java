@@ -141,7 +141,7 @@ public class JournalScreen implements Screen, InputProcessor, Constants {
     }
 
     @Override
-    public boolean scrolled(int i) {
+    public boolean scrolled(float f, float f1) {
         return false;
     }
 

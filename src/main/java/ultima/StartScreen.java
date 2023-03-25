@@ -652,7 +652,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
     }
 
     @Override
-    public boolean scrolled(int amount) {
+    public boolean scrolled(float f, float f1) {
         return false;
     }
 

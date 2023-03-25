@@ -6,6 +6,11 @@
     <groupId>ultimate-java</groupId>
     <artifactId>ultimate-java</artifactId>
     <version>1.0.1</version>
+    
+    <properties>
+        <maven.compiler.source>13</maven.compiler.source>
+        <maven.compiler.target>13</maven.compiler.target>
+    </properties>
 
     <repositories>
         <repository>
@@ -45,29 +50,29 @@
         <dependency>
             <groupId>com.badlogicgames.gdx</groupId>
             <artifactId>gdx</artifactId>
-            <version>1.9.8</version>
+            <version>1.11.0</version>
         </dependency>
         <dependency>
             <groupId>com.badlogicgames.gdx</groupId>
             <artifactId>gdx-backend-lwjgl</artifactId>
-            <version>1.9.8</version>
+            <version>1.11.0</version>
         </dependency>
         <dependency>
             <groupId>com.badlogicgames.gdx</groupId>
             <artifactId>gdx-platform</artifactId>
-            <version>1.9.8</version>
+            <version>1.11.0</version>
             <classifier>natives-desktop</classifier>
         </dependency>
         <dependency>
             <groupId>com.badlogicgames.gdx</groupId>
             <artifactId>gdx-freetype</artifactId>
-            <version>1.9.8</version>
+            <version>1.11.0</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.badlogicgames.gdx</groupId>
             <artifactId>gdx-freetype-platform</artifactId>
-            <version>1.9.8</version>
+            <version>1.11.0</version>
             <classifier>natives-desktop</classifier>
         </dependency>
         <dependency>
@@ -174,8 +179,4 @@
         </plugins>
 
     </build>
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
 </project>
