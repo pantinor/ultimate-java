@@ -12,11 +12,6 @@ The Devil's Guard and Delve of Sorrows areas are original content.
 
 Most of the graphics and sounds are also borrowed from other sources such as xu4 and Spectromancer.
 
-Download binary here: https://dl.dropboxusercontent.com/u/84215797/ultimate-java-1.0.1-bin.zip
-To run this, you will need to install java first (if not already installed), and then extract 
-the binary zip archive and double click on the main jar file.  
-The save game file (PARTY.SAV) is compatible with the original as well.
-
 ![screenshot of the example](https://raw.github.com/pantinor/ultimate-java/master/shot4.png)
 
 ![screenshot of the example](https://raw.github.com/pantinor/ultimate-java/master/shot1.png)
