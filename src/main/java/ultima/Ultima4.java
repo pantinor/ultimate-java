@@ -86,13 +86,13 @@ public class Ultima4 extends Game {
     @Override
     public void create() {
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.classpath("assets/fonts/lindberg.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.classpath("assets/fonts/gnuolane.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         
-        parameter.size = 16;
+        parameter.size = 18;
         font = generator.generateFont(parameter);
         
-        parameter.size = 10;
+        parameter.size = 12;
         smallFont = generator.generateFont(parameter);
 
         parameter.size = 24;
