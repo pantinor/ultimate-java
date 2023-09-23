@@ -26,6 +26,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -65,6 +66,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.UBJsonReader;
 import objects.Portal;
 import static ultima.BaseScreen.mainGame;
+import ultima.Constants;
 import ultima.Context;
 import ultima.MixtureScreen;
 import util.PartyDeathException;
@@ -144,7 +146,9 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
 
     public void init() {
 
-        assets = new AssetManager();
+        FileHandleResolver resolver = new Constants.ClasspathResolver();
+
+        assets = new AssetManager(resolver);
         assets.load("assets/graphics/dirt.png", Texture.class);
         assets.load("assets/graphics/map.png", Texture.class);
         assets.load("assets/graphics/Stone_Masonry.jpg", Texture.class);
@@ -160,13 +164,13 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         assets.get("assets/graphics/dirt.png", Texture.class).setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 
         ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader());
-        fountainModel = gloader.loadModel(Gdx.files.internal("assets/graphics/fountain2.g3db"));
-        ladderModel = gloader.loadModel(Gdx.files.internal("assets/graphics/ladder.g3db"));
-        chestModel = gloader.loadModel(Gdx.files.internal("assets/graphics/chest.g3db"));
-        orbModel = gloader.loadModel(Gdx.files.internal("assets/graphics/orb.g3db"));
-        altarModel = gloader.loadModel(Gdx.files.internal("assets/graphics/altar.g3db"));
-        rocksModel = gloader.loadModel(Gdx.files.internal("assets/graphics/rocks.g3db"));
-        campfireModel = gloader.loadModel(Gdx.files.internal("assets/graphics/campfire.g3db"));
+        fountainModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/fountain2.g3db"));
+        ladderModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/ladder.g3db"));
+        chestModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/chest.g3db"));
+        orbModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/orb.g3db"));
+        altarModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/altar.g3db"));
+        rocksModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/rocks.g3db"));
+        campfireModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/campfire.g3db"));
 
         font = new BitmapFont();
         font.setColor(Color.WHITE);
@@ -196,7 +200,7 @@ public class StaticGeneratedDungeonScreen extends BaseScreen {
         try {
 
             int TILE_SIZE = 16;
-            FileHandle f = new FileHandle("assets/tilemaps/tiles-vga-atlas.txt");
+            FileHandle f = resolver.resolve("assets/tilemaps/tiles-vga-atlas.txt");
             TextureAtlasData a = new TextureAtlasData(f, f.parent(), false);
             mapTileIds = new String[a.getRegions().size + 1];
             for (Region r : a.getRegions()) {

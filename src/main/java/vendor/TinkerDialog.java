@@ -51,7 +51,7 @@ public class TinkerDialog extends Window implements Constants {
 
     public static int width = 400;
     public static int height = 300;
-    static BitmapFont font = new BitmapFont(Gdx.files.internal("assets/fonts/corsiva-20.fnt"), false);
+    static BitmapFont font = new BitmapFont(Gdx.files.classpath("assets/fonts/corsiva-20.fnt"), false);
 
     Table internalTable;
     Table buttonTable;

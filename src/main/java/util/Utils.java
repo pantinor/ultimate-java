@@ -1,5 +1,6 @@
 package util;
 
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
@@ -90,7 +91,7 @@ public class Utils implements Constants {
             return;
         }
 
-        InputStream is = new FileInputStream("assets/data/" + fname);
+        InputStream is = Utils.class.getResourceAsStream("/assets/data/" + fname);
         byte[] bytes = IOUtils.toByteArray(is);
 
         Tile[] tiles = new Tile[map.getWidth() * map.getHeight()];
@@ -930,7 +931,7 @@ public class Utils implements Constants {
     public static List<Conversation> getDialogs(String fname) {
         byte[] bytes;
         try {
-            InputStream is = new FileInputStream("assets/data/" + fname);
+            InputStream is = Utils.class.getResourceAsStream("/assets/data/" + fname);
             bytes = IOUtils.toByteArray(is);
         } catch (Exception e) {
             e.printStackTrace();
@@ -982,13 +983,14 @@ public class Utils implements Constants {
     public static void setTMXMap(BaseMap map, Maps id, String tmxFile, TileSet ts) {
         List<Person> people = new ArrayList<>();
         Tile[] tiles = new Tile[map.getWidth() * map.getHeight()];
-
+        
+        FileHandleResolver resolver = new Constants.ClasspathResolver();
         TmxMapLoader loader = new TmxMapLoader();
         TiledMap tm = loader.load("assets/tilemaps/" + tmxFile);
 
         TiledMapTileLayer ml = (TiledMapTileLayer) tm.getLayers().get(map.getId() + "-map");
         if (ml != null) {
-            FileHandle f = new FileHandle("assets/tilemaps/latest-atlas.txt");
+            FileHandle f = resolver.resolve("assets/tilemaps/latest-atlas.txt");
             TextureAtlas.TextureAtlasData atlas = new TextureAtlas.TextureAtlasData(f, f.parent(), false);
             int png_grid_width = 24;
             Tile[] mapTileIds = new Tile[png_grid_width * Constants.tilePixelWidth + 1];
@@ -1072,7 +1074,7 @@ public class Utils implements Constants {
     public static List<Person> getPeople(String fname, Maps map, TileSet ts) {
         byte[] bytes;
         try {
-            InputStream is = new FileInputStream("assets/data/" + fname);
+            InputStream is = Utils.class.getResourceAsStream("/assets/data/" + fname);
             bytes = IOUtils.toByteArray(is);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1195,7 +1197,7 @@ public class Utils implements Constants {
     }
 
     public static Object loadXml(String fname, Class<?> clazz) throws Exception {
-        InputStream is = new FileInputStream("assets/xml/" + fname);
+        InputStream is = Utils.class.getResourceAsStream("/assets/xml/" + fname);
         JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         return jaxbUnmarshaller.unmarshal(is);
@@ -1246,7 +1248,7 @@ public class Utils implements Constants {
                 int b = (int) ((rgba8888 & 0x0000ff00) >> 8);
                 int a = (int) (rgba8888 & 0x000000ff);
 
-                int argb = (a << 24) | (r  << 16) | (g << 8) | b ;
+                int argb = (a << 24) | (r << 16) | (g << 8) | b;
 
                 result.setRGB(x, y, argb);
             }

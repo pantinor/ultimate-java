@@ -152,10 +152,10 @@ public class CodexScreen extends BaseScreen {
         assets.update(2000);
 
         ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader());
-        altarModel = gloader.loadModel(Gdx.files.internal("assets/graphics/altar.g3db"));
-        avatarModel = gloader.loadModel(Gdx.files.internal("assets/graphics/avatar.g3db"));
+        altarModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/altar.g3db"));
+        avatarModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/avatar.g3db"));
 
-        font = new BitmapFont(Gdx.files.internal("assets/fonts/corsiva-20.fnt"), false);
+        font = new BitmapFont(Gdx.files.classpath("assets/fonts/corsiva-20.fnt"), false);
         font.setColor(Color.WHITE);
 
         environment = new Environment();

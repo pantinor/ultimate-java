@@ -76,7 +76,7 @@ public class ShrineScreen extends BaseScreen {
         
         stage = new Stage();
         stage.setViewport(mapViewPort);
-        runeVisionAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/runes-visions.atlas"));
+        runeVisionAtlas = new TextureAtlas(Gdx.files.classpath("assets/tilemaps/runes-visions.atlas"));
 
         Vector3 v1 = getMapPixelCoords(5, 10);
         Vector3 v2 = getMapPixelCoords(5, 9);

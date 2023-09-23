@@ -1,5 +1,8 @@
 package ultima;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.files.FileHandle;
 import objects.Armor;
 import objects.BaseMap;
 import objects.Creature;
@@ -1812,6 +1815,15 @@ public interface Constants {
         public void run() {
             Sounds.play(s);
         }
+    }
+    
+        public class ClasspathResolver implements FileHandleResolver {
+
+        @Override
+        public FileHandle resolve(String fileName) {
+            return Gdx.files.classpath(fileName);
+        }
+
     }
     
 }

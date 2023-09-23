@@ -93,7 +93,7 @@ public class GameScreen extends BaseScreen {
         //textures for the moongates
         moongateTextures = Ultima4.standardAtlas.findRegions("moongate");
         //textures for the phases of  the moon
-        moonAtlas = new TextureAtlas(Gdx.files.internal("assets/graphics/moon-atlas.txt"));
+        moonAtlas = new TextureAtlas(Gdx.files.classpath("assets/graphics/moon-atlas.txt"));
 
         batch = new SpriteBatch();
             //batch.enableBlending();

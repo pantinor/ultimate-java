@@ -55,7 +55,7 @@ public class Sounds {
     public static Music play(Sound sound, float volume) {
         Music m = sounds.get(sound);
         if (m == null) {
-            m = Gdx.audio.newMusic(Gdx.files.internal("assets/sound/" + sound.getFile()));
+            m = Gdx.audio.newMusic(Gdx.files.classpath("assets/sound/" + sound.getFile()));
             sounds.put(sound, m);
         }
         m.setLooping(sound.getLooping());
@@ -67,7 +67,7 @@ public class Sounds {
     public static Music play(Sound sound, OnCompletionListener ocl) {
         Music m = sounds.get(sound);
         if (m == null) {
-            m = Gdx.audio.newMusic(Gdx.files.internal("assets/sound/" + sound.getFile()));
+            m = Gdx.audio.newMusic(Gdx.files.classpath("assets/sound/" + sound.getFile()));
             m.setVolume(sound.getVolume());
             m.setLooping(sound.getLooping());
 

@@ -16,11 +16,6 @@
     <fileSets>
 
         <fileSet>
-            <directory>${project.basedir}/assets</directory>
-            <outputDirectory>/assets</outputDirectory>
-        </fileSet>
-		
-        <fileSet>
             <directory>${project.build.directory}</directory>
             <outputDirectory></outputDirectory>
             <includes>

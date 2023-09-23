@@ -42,7 +42,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import objects.Tile;
@@ -120,7 +119,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
         this.mainGame = mainGame;
 
-        TextureAtlas ba = new TextureAtlas(Gdx.files.internal("assets/graphics/beasties-atlas.txt"));
+        TextureAtlas ba = new TextureAtlas(Gdx.files.classpath("assets/graphics/beasties-atlas.txt"));
         Array<AtlasRegion> anim1 = ba.findRegions("beast");
         Array<AtlasRegion> anim2 = ba.findRegions("dragon");
         Array<AtlasRegion> tmp1 = new Array<>(beast1FrameIndexes.length);
@@ -134,11 +133,11 @@ public class StartScreen implements Screen, InputProcessor, Constants {
         beast1 = new Animation(0.25f, tmp1);
         beast2 = new Animation(0.25f, tmp2);
 
-        ta = new TextureAtlas(Gdx.files.internal("assets/graphics/initial-atlas.txt"));
+        ta = new TextureAtlas(Gdx.files.classpath("assets/graphics/initial-atlas.txt"));
 
-        title = new Texture(Gdx.files.internal("assets/graphics/splash.png"));
+        title = new Texture(Gdx.files.classpath("assets/graphics/splash.png"));
 
-        font = new BitmapFont(Gdx.files.internal("assets/fonts/Calisto_24.fnt"));
+        font = new BitmapFont(Gdx.files.classpath("assets/fonts/Calisto_24.fnt"));
         font.setColor(Color.WHITE);
 
         init = new TextButton("New Game", skin, "wood");
@@ -739,7 +738,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
 
     static {
         try {
-            InputStream is = new FileInputStream("assets/data/title.exe");
+            InputStream is = StartScreen.class.getResourceAsStream("/assets/data/title.exe");
             byte[] tmp = IOUtils.toByteArray(is);
             System.arraycopy(tmp, INTRO_MAP_OFFSET, intromap, 0, 19 * 5);
             System.arraycopy(tmp, INTRO_SCRIPT_TABLE_OFFSET, movesCommands, 0, INTRO_SCRIPT_TABLE_SIZE);

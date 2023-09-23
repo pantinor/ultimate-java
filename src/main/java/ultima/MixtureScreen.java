@@ -66,8 +66,8 @@ public class MixtureScreen implements Screen, Constants {
         this.skin = skin;
         
         try {
-            spellDescs.addAll(FileUtils.readLines(Gdx.files.internal("assets/data/spells.txt").file()));
-            reagDescs.addAll(FileUtils.readLines(Gdx.files.internal("assets/data/reagents.txt").file()));
+            spellDescs.addAll(FileUtils.readLines(Gdx.files.classpath("assets/data/spells.txt").file()));
+            reagDescs.addAll(FileUtils.readLines(Gdx.files.classpath("assets/data/reagents.txt").file()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -292,7 +292,7 @@ public class MixtureScreen implements Screen, Constants {
         spellLabel.setX(515);
         spellLabel.setY(0);
         
-        stage.addActor(new Image(new Texture(Gdx.files.internal("assets/graphics/alchemy.png"))));
+        stage.addActor(new Image(new Texture(Gdx.files.classpath("assets/graphics/alchemy.png"))));
         stage.addActor(reagLabel);
         stage.addActor(spellLabel);
         stage.addActor(internalTable);

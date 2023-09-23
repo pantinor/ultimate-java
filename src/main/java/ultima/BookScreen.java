@@ -23,8 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.commons.io.FileUtils;
-import static ultima.Ultima4.font;
+import org.apache.commons.io.IOUtils;
 
 public class BookScreen extends InputAdapter implements Screen, Constants {
 
@@ -35,63 +34,63 @@ public class BookScreen extends InputAdapter implements Screen, Constants {
     private final java.util.Map<Integer, Page> pages = new HashMap<>();
 
     private int currentPage = 0;
-    
+
     public BookScreen(Ultima4 mainGame, BaseScreen returnScreen, Skin skin) {
         this.returnScreen = returnScreen;
         this.mainGame = mainGame;
         this.stage = new Stage();
-        
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/fonts/lindberg.ttf"));
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.classpath("assets/fonts/lindberg.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        
+
         parameter.size = 18;
         BitmapFont fontLarger = generator.generateFont(parameter);
-        
+
         generator.dispose();
-        
+
         Label.LabelStyle labs = new Label.LabelStyle(skin.get("default", Label.LabelStyle.class));
         labs.font = fontLarger;
         labs.background = null;
-        
-        addPages(fontLarger, 0, "assets/data/commands.txt", labs);
-        addPages(fontLarger, labels.size(), "assets/data/book.txt", labs);
-        
+
+        addPages(fontLarger, 0, "/assets/data/commands.txt", labs);
+        addPages(fontLarger, labels.size(), "/assets/data/book.txt", labs);
+
         if (labels.size() % 2 != 0) {
-            labels.add(new Label("",labs));
+            labels.add(new Label("", labs));
         }
-        
+
         int x = 0;
         for (Label l : labels) {
             l.setWrap(true);
             l.setAlignment(Align.topLeft, Align.left);
             l.setWidth(460);
             l.setHeight(600);
-            l.setX(x%2==0?35:525);
+            l.setX(x % 2 == 0 ? 35 : 525);
             l.setY(145);
             x++;
         }
-        
+
         int idx = 0;
-        for (int i=0;i<labels.size();i+=2) {
-            Page page = new Page(idx, labels.get(i), labels.get(i+1));
+        for (int i = 0; i < labels.size(); i += 2) {
+            Page page = new Page(idx, labels.get(i), labels.get(i + 1));
             pages.put(idx, page);
             idx++;
         }
-        
-        Skin imgBtnSkin = new Skin(Gdx.files.internal("assets/skin/imgBtn.json"));
+
+        Skin imgBtnSkin = new Skin(Gdx.files.classpath("assets/skin/imgBtn.json"));
         ImageButton left = new ImageButton(imgBtnSkin, "left");
         ImageButton right = new ImageButton(imgBtnSkin, "right");
         left.setX(512 - 64);
         left.setY(16);
         right.setX(512 + 64);
         right.setY(16);
-        
+
         left.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 pages.get(currentPage).left.remove();
                 pages.get(currentPage).right.remove();
-                currentPage --;
+                currentPage--;
                 if (currentPage < 0) {
                     currentPage = 0;
                 }
@@ -99,34 +98,34 @@ public class BookScreen extends InputAdapter implements Screen, Constants {
                 stage.addActor(pages.get(currentPage).right);
             }
         });
-        
+
         right.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 pages.get(currentPage).left.remove();
                 pages.get(currentPage).right.remove();
-                currentPage ++;
+                currentPage++;
                 if (currentPage >= pages.size()) {
-                    currentPage = pages.size()-1;
+                    currentPage = pages.size() - 1;
                 }
                 stage.addActor(pages.get(currentPage).left);
                 stage.addActor(pages.get(currentPage).right);
             }
         });
-        
+
         CheckBox.CheckBoxStyle cbs = new CheckBox.CheckBoxStyle(skin.get("default", CheckBox.CheckBoxStyle.class));
         cbs.font = fontLarger;
         cbs.fontColor = Color.BLUE;
-        
+
         CheckBox cb = new CheckBox("Enable Music", cbs);
         cb.setX(32);
         cb.setY(16);
         cb.setChecked(Ultima4.playMusic);
-        
+
         cb.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                CheckBox cb = (CheckBox)actor;
+                CheckBox cb = (CheckBox) actor;
                 if (cb.isChecked()) {
                     Ultima4.playMusic = true;
                     if (Ultima4.music != null) {
@@ -140,20 +139,20 @@ public class BookScreen extends InputAdapter implements Screen, Constants {
                 }
             }
         });
-        
-        stage.addActor(new Image(new Texture(Gdx.files.internal("assets/graphics/scroll.png"))));
+
+        stage.addActor(new Image(new Texture(Gdx.files.classpath("assets/graphics/scroll.png"))));
         stage.addActor(pages.get(0).left);
         stage.addActor(pages.get(0).right);
-        
+
         stage.addActor(left);
         stage.addActor(right);
         stage.addActor(cb);
 
     }
-    
+
     private void addPages(BitmapFont font, int pageStart, String fn, Label.LabelStyle labs) {
         try {
-            List<String> lines = FileUtils.readLines(Gdx.files.internal(fn).file());
+            List<String> lines = IOUtils.readLines(BookScreen.class.getResourceAsStream(fn));
             int page = pageStart;
             GlyphLayout gl = new GlyphLayout(font, "");
             StringBuilder sb = new StringBuilder();
@@ -205,7 +204,7 @@ public class BookScreen extends InputAdapter implements Screen, Constants {
     @Override
     public void dispose() {
     }
-    
+
     @Override
     public boolean keyUp(int i) {
         if (mainGame != null) {
@@ -213,17 +212,19 @@ public class BookScreen extends InputAdapter implements Screen, Constants {
         }
         return false;
     }
-    
+
     private class Page {
+
         int page;
         Label left;
         Label right;
+
         public Page(int page, Label left, Label right) {
             this.page = page;
             this.left = left;
             this.right = right;
         }
-        
+
     }
 
 }

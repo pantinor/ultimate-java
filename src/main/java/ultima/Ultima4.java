@@ -86,7 +86,7 @@ public class Ultima4 extends Game {
     @Override
     public void create() {
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/fonts/lindberg.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.classpath("assets/fonts/lindberg.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         
         parameter.size = 16;
@@ -100,7 +100,7 @@ public class Ultima4 extends Game {
 
         generator.dispose();
 
-        skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
+        skin = new Skin(Gdx.files.classpath("assets/skin/uiskin.json"));
         skin.remove("default-font", BitmapFont.class);
         skin.add("default-font", font, BitmapFont.class);
         skin.add("journal", font, BitmapFont.class);
@@ -126,24 +126,24 @@ public class Ultima4 extends Game {
 
         try {
 
-            backGround = new Texture(Gdx.files.internal("assets/graphics/frame.png"));
+            backGround = new Texture(Gdx.files.classpath("assets/graphics/frame.png"));
 
-            standardAtlas = new TextureAtlas(Gdx.files.internal("assets/tilemaps/latest-atlas.txt"));
+            standardAtlas = new TextureAtlas(Gdx.files.classpath("assets/tilemaps/latest-atlas.txt"));
 
             hitTile = Ultima4.standardAtlas.findRegion("hit_flash");
             magicHitTile = Ultima4.standardAtlas.findRegion("magic_flash");
             missTile = Ultima4.standardAtlas.findRegion("miss_flash");
             corpse = Ultima4.standardAtlas.findRegion("corpse");
             
-            TextureAtlas tmp = new TextureAtlas(Gdx.files.internal("assets/graphics/explosion-atlas.txt"));
+            TextureAtlas tmp = new TextureAtlas(Gdx.files.classpath("assets/graphics/explosion-atlas.txt"));
             Array<TextureAtlas.AtlasRegion> ar = tmp.findRegions("expl");
             explosion = new Animation<>(.2f, ar);
             
-            tmp = new TextureAtlas(Gdx.files.internal("assets/graphics/Exp_type_B.atlas"));
+            tmp = new TextureAtlas(Gdx.files.classpath("assets/graphics/Exp_type_B.atlas"));
             ar = tmp.findRegions("im");
             explosionLarge = new Animation<>(.1f, ar);
             
-            tmp = new TextureAtlas(Gdx.files.internal("assets/graphics/cloud-atlas.txt"));
+            tmp = new TextureAtlas(Gdx.files.classpath("assets/graphics/cloud-atlas.txt"));
             ar = tmp.findRegions("cloud");
             cloud = new Animation<>(.2f, ar);
             

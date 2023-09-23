@@ -1,6 +1,5 @@
 package ultima;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,6 +24,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
@@ -72,7 +72,6 @@ public class DungeonScreen extends BaseScreen {
     private DecalBatch decalBatch;
 
     //public CameraInputController inputController;
-
     public AssetManager assets;
 
     //3d models
@@ -128,7 +127,7 @@ public class DungeonScreen extends BaseScreen {
         this.gameScreen = gameScreen;
         this.stage = new Stage();
         sip = new SecondaryInputProcessor(this, stage);
-        
+
         addButtons();
 
         init();
@@ -147,7 +146,9 @@ public class DungeonScreen extends BaseScreen {
 
     public void init() {
 
-        assets = new AssetManager();
+        FileHandleResolver resolver = new Constants.ClasspathResolver();
+
+        assets = new AssetManager(resolver);
         assets.load("assets/graphics/dirt.png", Texture.class);
         assets.load("assets/graphics/map.png", Texture.class);
         assets.load("assets/graphics/Stone_Masonry.jpg", Texture.class);
@@ -160,12 +161,12 @@ public class DungeonScreen extends BaseScreen {
         //convert the collada dae format to the g3db format (do not use the obj format)
         //C:\Users\Paul\Desktop\blender>fbx-conv-win32.exe -o G3DB ./Chess/pawn.dae ./pawn.g3db
         ModelLoader<?> gloader = new G3dModelLoader(new UBJsonReader());
-        fountainModel = gloader.loadModel(Gdx.files.internal("assets/graphics/fountain2.g3db"));
-        ladderModel = gloader.loadModel(Gdx.files.internal("assets/graphics/ladder.g3db"));
-        chestModel = gloader.loadModel(Gdx.files.internal("assets/graphics/chest.g3db"));
-        orbModel = gloader.loadModel(Gdx.files.internal("assets/graphics/orb.g3db"));
-        altarModel = gloader.loadModel(Gdx.files.internal("assets/graphics/altar.g3db"));
-        //blocksModel = gloader.loadModel(Gdx.files.internal("assets/graphics/box.g3db"));
+        fountainModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/fountain2.g3db"));
+        ladderModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/ladder.g3db"));
+        chestModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/chest.g3db"));
+        orbModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/orb.g3db"));
+        altarModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/altar.g3db"));
+        //blocksModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/box.g3db"));
 
         Pixmap pixmap = new Pixmap(MM_BKGRND_DIM, MM_BKGRND_DIM, Format.RGBA8888);
         pixmap.setColor(0.8f, 0.7f, 0.5f, .8f);
@@ -182,9 +183,9 @@ public class DungeonScreen extends BaseScreen {
 
         modelBatch = new ModelBatch();
         batch = new SpriteBatch();
-        
+
         camera = new PerspectiveCamera(67, Ultima4.MAP_WIDTH, Ultima4.MAP_HEIGHT);
-        
+
         camera.near = 0.1f;
         camera.far = 1000f;
 
@@ -193,7 +194,6 @@ public class DungeonScreen extends BaseScreen {
 //        inputController = new CameraInputController(camera);
 //        inputController.rotateLeftKey = inputController.rotateRightKey = inputController.forwardKey = inputController.backwardKey = 0;
 //        inputController.translateUnits = 30f;
-
         ModelBuilder builder = new ModelBuilder();
         lightModel = builder.createSphere(.1f, .1f, .1f, 10, 10, new Material(ColorAttribute.createDiffuse(1, 1, 1, 1)), Usage.Position);
         lightModel.nodes.get(0).parts.get(0).setRenderable(pLight = new Renderable());
@@ -212,7 +212,7 @@ public class DungeonScreen extends BaseScreen {
         }
 
         try {
-            InputStream is = new FileInputStream("assets/data/" + dungeonFileName.toLowerCase());
+            InputStream is = DungeonScreen.class.getResourceAsStream("/assets/data/" + dungeonFileName.toLowerCase());
             byte[] bytes = IOUtils.toByteArray(is);
 
             int pos = 0;
@@ -292,17 +292,29 @@ public class DungeonScreen extends BaseScreen {
                 {
                     int y = 0;
                     for (int x = 0; x < DUNGEON_MAP; x++) {//bottom across the top
-                        DungeonTile tile = dungeonTiles[i][x][y + DUNGEON_MAP - 1];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
+                        DungeonTile tile = dungeonTiles[i][x][y + DUNGEON_MAP - 1];
+                        if (tile == DungeonTile.CHEST) {
+                            tile = DungeonTile.FLOOR;
+                        }
                         addBlock(i, tile, x + .5f, .5f, y - .5f);
 
-                        tile = dungeonTiles[i][x][y + DUNGEON_MAP - 2];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
+                        tile = dungeonTiles[i][x][y + DUNGEON_MAP - 2];
+                        if (tile == DungeonTile.CHEST) {
+                            tile = DungeonTile.FLOOR;
+                        }
                         addBlock(i, tile, x + .5f, .5f, y - 1.5f);
                     }
                     for (int x = 0; x < DUNGEON_MAP; x++) {//top across the bottom
-                        DungeonTile tile = dungeonTiles[i][x][y];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
+                        DungeonTile tile = dungeonTiles[i][x][y];
+                        if (tile == DungeonTile.CHEST) {
+                            tile = DungeonTile.FLOOR;
+                        }
                         addBlock(i, tile, x + .5f, .5f, y + .5f + DUNGEON_MAP);
 
-                        tile = dungeonTiles[i][x][y + 1];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
+                        tile = dungeonTiles[i][x][y + 1];
+                        if (tile == DungeonTile.CHEST) {
+                            tile = DungeonTile.FLOOR;
+                        }
                         addBlock(i, tile, x + .5f, .5f, y + .5f + DUNGEON_MAP + 1);
                     }
 
@@ -310,17 +322,29 @@ public class DungeonScreen extends BaseScreen {
                 {
                     int x = 0;
                     for (int y = 0; y < DUNGEON_MAP; y++) {
-                        DungeonTile tile = dungeonTiles[i][x][y];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
+                        DungeonTile tile = dungeonTiles[i][x][y];
+                        if (tile == DungeonTile.CHEST) {
+                            tile = DungeonTile.FLOOR;
+                        }
                         addBlock(i, tile, x + .5f + DUNGEON_MAP, .5f, y + .5f);
 
-                        tile = dungeonTiles[i][x + 1][y];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
+                        tile = dungeonTiles[i][x + 1][y];
+                        if (tile == DungeonTile.CHEST) {
+                            tile = DungeonTile.FLOOR;
+                        }
                         addBlock(i, tile, x + .5f + DUNGEON_MAP + 1, .5f, y + .5f);
                     }
                     for (int y = 0; y < DUNGEON_MAP; y++) {
-                        DungeonTile tile = dungeonTiles[i][x + DUNGEON_MAP - 1][y];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
+                        DungeonTile tile = dungeonTiles[i][x + DUNGEON_MAP - 1][y];
+                        if (tile == DungeonTile.CHEST) {
+                            tile = DungeonTile.FLOOR;
+                        }
                         addBlock(i, tile, x - .5f, .5f, y + .5f);
 
-                        tile = dungeonTiles[i][x + DUNGEON_MAP - 2][y];if (tile == DungeonTile.CHEST) tile = DungeonTile.FLOOR;
+                        tile = dungeonTiles[i][x + DUNGEON_MAP - 2][y];
+                        if (tile == DungeonTile.CHEST) {
+                            tile = DungeonTile.FLOOR;
+                        }
                         addBlock(i, tile, x - 1.5f, .5f, y + .5f);
                     }
                 }
@@ -412,7 +436,7 @@ public class DungeonScreen extends BaseScreen {
             mi.model.dispose();
         }
     }
-    
+
     @Override
     public Vector3 getMapPixelCoords(int x, int y) {
         return null;
@@ -428,7 +452,7 @@ public class DungeonScreen extends BaseScreen {
 
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
-        
+
         lightFactor += Gdx.graphics.getDeltaTime();
         float lightSize = 4.75f + 0.25f * (float) Math.sin(lightFactor) + .2f * MathUtils.random();
 
@@ -437,7 +461,7 @@ public class DungeonScreen extends BaseScreen {
         fixedLight.set(ll.x, ll.y, ll.z, currentPos.x, currentPos.y + .35f, currentPos.z, lightSize);
         ((ColorAttribute) pLight.material.get(ColorAttribute.Diffuse)).color.set(fixedLight.color);
         pLight.worldTransform.setTranslation(fixedLight.position);
-        
+
         Gdx.gl.glViewport(32, 64, Ultima4.MAP_WIDTH, Ultima4.MAP_HEIGHT);
 
         camera.update();
@@ -467,7 +491,7 @@ public class DungeonScreen extends BaseScreen {
         decalBatch.flush();
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        
+
         batch.begin();
         batch.draw(Ultima4.backGround, 0, 0);
         if (showMiniMap) {
@@ -481,12 +505,12 @@ public class DungeonScreen extends BaseScreen {
             context.getParty().getSaveGame().renderZstats(showZstats, Ultima4.font, batch, Ultima4.SCREEN_HEIGHT);
         }
         batch.end();
-        
+
         stage.act();
         stage.draw();
 
     }
-    
+
     public void addBlock(int level, DungeonTile tile, float tx, float ty, float tz) {
         ModelBuilder builder = new ModelBuilder();
         if (tile == DungeonTile.WALL) {
@@ -870,7 +894,7 @@ public class DungeonScreen extends BaseScreen {
                         y = 0;
                     }
                 }
-                
+
                 DungeonTile tile = dungeonTiles[currentLevel][x][y];
                 try {
                     if (tile != DungeonTile.WALL) {
@@ -1006,7 +1030,7 @@ public class DungeonScreen extends BaseScreen {
                     y = 7;
                 }
             }
-            
+
             try {
                 move(dungeonTiles[currentLevel][x][y], x, y);
             } catch (PartyDeathException e) {
@@ -1137,7 +1161,7 @@ public class DungeonScreen extends BaseScreen {
     }
 
     private void move(DungeonTile tile, int x, int y) throws PartyDeathException {
-        
+
         if (tile != DungeonTile.WALL && tile != DungeonTile.FIELD_ENERGY) {
             currentPos = new Vector3(x + .5f, .5f, y + .5f);
             camera.position.set(currentPos);
@@ -1165,9 +1189,9 @@ public class DungeonScreen extends BaseScreen {
             enterRoom(loc, Direction.reverse(currentDir));
             return;
         }
-        
+
         finishTurn(x, y);
-    } 
+    }
 
     private void checkTileAffects(DungeonTile tile, int x, int y) throws PartyDeathException {
         switch (tile) {
@@ -1202,7 +1226,7 @@ public class DungeonScreen extends BaseScreen {
                 break;
         }
     }
-    
+
     @Override
     public void finishTurn(int currentX, int currentY) {
         context.getAura().passTurn();
@@ -1271,7 +1295,7 @@ public class DungeonScreen extends BaseScreen {
             pm.getPlayer().intel = n;
             damage += 200;
         }
-        
+
         Sounds.play(Sound.LIGHTNING);
 
         try {
