@@ -102,7 +102,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
     TiledMap splashMap;
     Ultima4 mainGame;
     IntroAnim animator = new IntroAnim();
-    
+
     public enum State {
 
         INIT,
@@ -646,6 +646,11 @@ public class StartScreen implements Screen, InputProcessor, Constants {
     }
 
     @Override
+    public boolean touchCancelled(int i, int i1, int i2, int i3) {
+        return false;
+    }
+
+    @Override
     public boolean mouseMoved(int screenX, int screenY) {
         return false;
     }
@@ -685,7 +690,7 @@ public class StartScreen implements Screen, InputProcessor, Constants {
                 objMap[data].x = movesCommands[moveind + 1] & 0x1f;
                 objMap[data].y = command;
                 objMap[data].idx = movesData[data] & 0xff;
-                
+
                 int frame = movesCommands[moveind + 1] >> 5;
                 drawCell(objMap[data].idx, objMap[data].x, objMap[data].y, frame);
                 moveind += 2;

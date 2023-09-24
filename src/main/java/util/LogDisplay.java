@@ -26,7 +26,7 @@ public class LogDisplay {
     static final int LOG_AREA_TOP = 384;
 
     static final int LOG_X = 736;
-    
+
     public LogDisplay(BitmapFont font) {
         this.font = font;
     }
@@ -63,7 +63,6 @@ public class LogDisplay {
 
     public void render(Batch batch, Party party) {
 
-
         int food = party.getSaveGame().food / 100;
         font.setColor(food < 5 ? Color.RED : Color.WHITE);
         font.draw(batch, "Food  " + food, LOG_X + 8, 438);
@@ -79,7 +78,7 @@ public class LogDisplay {
             PartyMember pm = party.getMember(i);
 
             String s = (i + 1) + " - " + pm.getPlayer().name;
-            String d = pm.getPlayer().hp + "" + pm.getPlayer().status.getValue();
+            String d = String.format("HP %d MP %d ST %s", pm.getPlayer().hp, pm.getPlayer().mp, pm.getPlayer().status.getValue());
 
             font.setColor(i == party.getActivePlayer() ? new Color(.35f, .93f, 0.91f, 1) : Color.WHITE);
             if (pm.getPlayer().status == StatusType.POISONED) {
@@ -93,7 +92,7 @@ public class LogDisplay {
             }
 
             font.draw(batch, s, LOG_X + 8, y);
-            font.draw(batch, d, LOG_X + 8 + 110, y);
+            font.draw(batch, d, LOG_X + 8 + 100, y);
 
             y = y - 24;
 

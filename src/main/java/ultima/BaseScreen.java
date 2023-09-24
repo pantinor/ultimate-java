@@ -234,6 +234,11 @@ public abstract class BaseScreen implements Screen, InputProcessor, Constants, O
     }
 
     @Override
+    public boolean touchCancelled(int i, int i1, int i2, int i3) {
+        return false;
+    }
+
+    @Override
     public boolean scrolled(float f, float f1) {
         return false;
     }

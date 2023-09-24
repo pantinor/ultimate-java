@@ -98,7 +98,7 @@ public interface Constants {
         THORANGUARD_2(62, "Thoranguard"),
         DEVILS_GUARD_1(63, "Devil's Guard"),
         DEVILS_GUARD_2(64, "Devil's Guard");
-        
+
         private int id;
         private String label;
         private BaseMap baseMap;
@@ -527,7 +527,7 @@ public interface Constants {
     }
 
     public enum DungeonTile {
-
+        
         NOTHING(0x00, "Nothing", "brick_floor", true),
         FLOOR(0x00, "Floor", "brick_floor", true),
         WATER(0x00, "Water", "water", true),
@@ -540,7 +540,7 @@ public interface Constants {
         ORB(0x70, "Magic Orb", "magic_flash", true),
         LIGHT(0, "Light", "miss_flash", true),
         MOONGATE(0, "Moongate", "moongate", true),
-        ALTAR(0, "Altar", "altar", true),
+        ALTAR(0xB0, "Altar", "altar", true),
         CHEST(0x40, "Treasure Chest", "chest", true),
         FIRE(0x40, "Fireplace", "campfire", true),
         WIND_TRAP(0x80, "Winds/Darknes Trap", "hit_flash", true),
@@ -784,17 +784,17 @@ public interface Constants {
         public String getBaseVirtues() {
             return this.baseVirtues;
         }
-        
+
         public void setBar(TextureRegion tr) {
             this.progressBar = tr;
         }
-        
+
         public TextureRegion getBar() {
             return this.progressBar;
         }
-        
+
         public void adjustProgress(int current) {
-            double percent = (double)current / 100;
+            double percent = (double) current / 100;
             double bar = percent * (double) 200;
             if (current < 0) {
                 bar = 0;
@@ -1104,7 +1104,7 @@ public interface Constants {
             this.mask = mask;
             this.mp = mp;
         }
-        
+
         private Spell(String desc, int mask, int mp, Sound snd) {
             this.desc = desc;
             this.mask = mask;
@@ -1132,7 +1132,7 @@ public interface Constants {
         public int getMp() {
             return mp;
         }
-        
+
         public Sound getSound() {
             return sound;
         }
@@ -1558,7 +1558,8 @@ public interface Constants {
         P5(228, 227, Direction.SOUTH), /* O'D" O'E" */
         P6(229, 225, Direction.SOUTH), /* O'B" O'F" */
         P7(229, 223, Direction.NORTH), /* N'P" O'F" */
-        P8(228, 222, Direction.NORTH); /* N'O" O'E" */
+        P8(228, 222, Direction.NORTH);
+        /* N'O" O'E" */
 
         private int x;
         private int y;
@@ -1816,8 +1817,8 @@ public interface Constants {
             Sounds.play(s);
         }
     }
-    
-        public class ClasspathResolver implements FileHandleResolver {
+
+    public class ClasspathResolver implements FileHandleResolver {
 
         @Override
         public FileHandle resolve(String fileName) {
@@ -1825,5 +1826,5 @@ public interface Constants {
         }
 
     }
-    
+
 }

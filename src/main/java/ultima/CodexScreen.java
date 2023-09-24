@@ -3,7 +3,6 @@ package ultima;
 import java.util.ArrayList;
 import java.util.List;
 
-import ultima.Constants.Direction;
 import util.CodexLogDisplay;
 
 import com.badlogic.gdx.Gdx;
@@ -14,7 +13,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -33,7 +31,6 @@ import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
@@ -43,6 +40,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.UBJsonReader;
 import objects.Party;
 import objects.SaveGame;
+import static ultima.BaseScreen.mainGame;
 
 public class CodexScreen extends BaseScreen {
 
@@ -132,8 +130,8 @@ public class CodexScreen extends BaseScreen {
 
         wordOfPassage,
         codexQuestions,
-        endText,
-        done;
+        done,
+        disposing;
     }
 
     public CodexScreen(Screen returnScreen, Party party) {
@@ -201,17 +199,7 @@ public class CodexScreen extends BaseScreen {
         instance2.nodes.get(0).scale.set(.005f, .005f, .005f);
         instance2.calculateTransforms();
         modelInstances.add(instance2);
-
         modelInstances.add(getFigure(4.5f, 0.528f, 3f, 0));
-//		modelInstances.add(getFigure(4.0f, 0.528f, 2f, -10));
-//		modelInstances.add(getFigure(3.5f, 0.528f, 3f, 30));
-//		
-//		modelInstances.add(getFigure(4.5f, 0.528f, 1.5f, -5));
-//		modelInstances.add(getFigure(3.2f, 0.528f, 2.2f, 30));
-//		
-//		modelInstances.add(getFigure(6.5f, 0.528f, 2f, -20));
-//		modelInstances.add(getFigure(7.0f, 0.528f, 2.3f, -30));
-//		modelInstances.add(getFigure(7.2f, 0.528f, 2.8f, -40));
 
         currentPos = new Vector3(5.5f, 2f, 0f);
         camera.position.set(currentPos);
@@ -228,28 +216,26 @@ public class CodexScreen extends BaseScreen {
 
             SequenceAction seq = Actions.action(SequenceAction.class);
             seq.addAction(Actions.delay(5f));
-            seq.addAction(Actions.run(new Runnable() {
-                public void run() {
-                    logs.add("You use yor key of three parts.");
-                }
+            seq.addAction(Actions.run(() -> {
+                logs.add("You use your Key of Three Parts.");
             }));
+
             seq.addAction(Actions.delay(5f));
-            seq.addAction(Actions.run(new Runnable() {
-                public void run() {
-                    logs.add("A voice rings out:");
-                    logs.add("What is the Word of Passage?");
-                    logs.add(" ");
-                    CodexInputAdapter cia = new CodexInputAdapter();
-                    Gdx.input.setInputProcessor(cia);
-                }
+
+            seq.addAction(Actions.run(() -> {
+                logs.add("A voice rings out:");
+                logs.add("What is the Word of Passage?");
+                logs.add(" ");
+                CodexInputAdapter cia = new CodexInputAdapter();
+                Gdx.input.setInputProcessor(cia);
             }));
+
             stage.addAction(seq);
 
         }
 
-		//createAxes();
     }
-    
+
     @Override
     public void show() {
         Gdx.input.setInputProcessor(new InputMultiplexer(this, stage, inputController));
@@ -261,26 +247,20 @@ public class CodexScreen extends BaseScreen {
     }
 
     @Override
-    public boolean keyUp(int keycode) {
-
-        if (state == State.endText) {
-            state = State.done;
-            SequenceAction seq = Actions.action(SequenceAction.class);
-            for (final String s : text1) {
-                seq.addAction(Actions.delay(5f));
-                seq.addAction(Actions.run(new Runnable() {
-                    public void run() {
-                        logs.add(s);
-                    }
-                }));
-            }
-            seq.addAction(Actions.run(new Runnable() {
-                public void run() {
-                    mainGame.setScreen(Ultima4.startScreen);
-                }
-            }));
-            stage.addAction(seq);
+    public void dispose() {
+        modelBatch.dispose();
+        batch.dispose();
+        stage.dispose();
+        for (ModelInstance mi : floor) {
+            mi.model.dispose();
         }
+        for (ModelInstance mi : modelInstances) {
+            mi.model.dispose();
+        }
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
         return false;
     }
 
@@ -370,12 +350,14 @@ public class CodexScreen extends BaseScreen {
         stage.act();
         stage.draw();
 
-        //modelBatch.render(axesInstance);
-        batch.begin();
-        logs.render(batch);
-        batch.end();
+        if (state != State.disposing) {
 
-        nextPiece();
+            batch.begin();
+            logs.render(batch);
+            batch.end();
+
+            nextPiece();
+        }
 
     }
 
@@ -422,11 +404,34 @@ public class CodexScreen extends BaseScreen {
                         inputBuffer = new StringBuilder();
                         codexQuestionCount++;
                         if (codexQuestionCount == CodexQuestion.infinity.ordinal()) {
-                            logs.add("The ground rumbles beneath your feet.");
+                            logs.add("The ground rumbles beneath your feet!");
                             Sounds.play(Sound.TREMOR);
                         } else if (codexQuestionCount > CodexQuestion.infinity.ordinal()) {
-                            state = State.endText;
+
+                            state = State.done;
+
                             Gdx.input.setInputProcessor(new InputMultiplexer(CodexScreen.this, stage, inputController));
+
+                            SequenceAction seq = Actions.action(SequenceAction.class);
+
+                            for (final String s : text1) {
+                                seq.addAction(Actions.delay(5f));
+
+                                seq.addAction(Actions.run(() -> {
+                                    logs.add(s);
+                                }));
+                            }
+
+                            seq.addAction(Actions.run(() -> {
+                                state = State.disposing;
+                            }));
+
+                            seq.addAction(Actions.run(() -> {
+                                mainGame.setScreen(Ultima4.startScreen);
+                            }));
+
+                            stage.addAction(seq);
+
                             return false;
                         } else {
                             Sounds.play(Sound.POSITIVE_EFFECT);
@@ -452,64 +457,25 @@ public class CodexScreen extends BaseScreen {
     }
 
     private void codexEject(String text) {
-        logs.add(text);
 
         SequenceAction seq = Actions.action(SequenceAction.class);
-        seq.addAction(Actions.run(new Runnable() {
-            public void run() {
-                Sounds.play(Sound.NEGATIVE_EFFECT);
-            }
+
+        seq.addAction(Actions.run(() -> {
+            logs.add(text);
+            Sounds.play(Sound.NEGATIVE_EFFECT);
         }));
+
         seq.addAction(Actions.delay(3f));
-        seq.addAction(Actions.run(new Runnable() {
-            public void run() {
-                mainGame.setScreen(returnScreen);
-            }
+
+        seq.addAction(Actions.run(() -> {
+            state = State.disposing;
         }));
+
+        seq.addAction(Actions.run(() -> {
+            mainGame.setScreen(returnScreen);
+        }));
+
         stage.addAction(seq);
-    }
-
-    final float GRID_MIN = -1 * 12;
-    final float GRID_MAX = 1 * 12;
-    final float GRID_STEP = 1;
-    public Model axesModel;
-    public ModelInstance axesInstance;
-
-    private void createAxes() {
-        ModelBuilder modelBuilder = new ModelBuilder();
-        modelBuilder.begin();
-        // grid
-        MeshPartBuilder builder = modelBuilder.part("grid", GL30.GL_LINES, Usage.Position | Usage.ColorUnpacked, new Material());
-        builder.setColor(Color.LIGHT_GRAY);
-        for (float t = GRID_MIN; t <= GRID_MAX; t += GRID_STEP) {
-            builder.line(t, 0, GRID_MIN, t, 0, GRID_MAX);
-            builder.line(GRID_MIN, 0, t, GRID_MAX, 0, t);
-        }
-        // axes
-        builder = modelBuilder.part("axes", GL30.GL_LINES, Usage.Position | Usage.ColorUnpacked, new Material());
-        builder.setColor(Color.RED);
-        builder.line(0, 0, 0, 500, 0, 0);
-        builder.setColor(Color.GREEN);
-        builder.line(0, 0, 0, 0, 500, 0);
-        builder.setColor(Color.BLUE);
-        builder.line(0, 0, 0, 0, 0, 500);
-        axesModel = modelBuilder.end();
-        axesInstance = new ModelInstance(axesModel);
-    }
-
-    private ModelInstance fillCircle(float radius, Vector3 c, float cz, Color color) {
-
-        Model model = null;
-        ModelBuilder mb = new ModelBuilder();
-        mb.begin();
-        MeshPartBuilder part = mb.part("circle", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(color)));
-        part.circle(radius, 32, c, new Vector3(0, 1, 0));
-        model = mb.end();
-
-        ModelInstance modelInstance = new ModelInstance(model);
-        modelInstance.transform.setToTranslation(0, cz, 0);
-
-        return modelInstance;
     }
 
     private ModelInstance createCylinder(float width, float height, float x, float y, float z, Color color) {
@@ -517,39 +483,6 @@ public class CodexScreen extends BaseScreen {
         Model sf = mb.createCylinder(width, height, width, 32, new Material(ColorAttribute.createDiffuse(color), ColorAttribute.createSpecular(color), new BlendingAttribute(0.8f)), Usage.Position | Usage.Normal);
         ModelInstance modelInstance = new ModelInstance(sf);
         modelInstance.transform.setToTranslation(x, y, z);
-        return modelInstance;
-    }
-
-    private ModelInstance createCircle(float radius, float thickness, Vector3 c, float cz, Color color) {
-
-        Model model = null;
-        ModelBuilder mb = new ModelBuilder();
-        mb.begin();
-        MeshPartBuilder part = mb.part("circle", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(color)));
-        part.ellipse(radius, radius, radius - thickness, radius - thickness, 32, c, new Vector3(0, 1, 0));
-        model = mb.end();
-
-        ModelInstance modelInstance = new ModelInstance(model);
-        modelInstance.transform.setToTranslation(0, cz, 0);
-
-        return modelInstance;
-    }
-
-    private ModelInstance createLine(float sx, float sy, float ex, float ey, float z, Color color) {
-
-        Model model = null;
-        ModelBuilder mb = new ModelBuilder();
-        mb.begin();
-
-        MeshPartBuilder builder = mb.part("line", GL30.GL_LINES, Usage.Position | Usage.ColorUnpacked, new Material());
-        builder.setColor(color);
-        builder.line(sx, 0, sy, ex, 0, ey);
-
-        model = mb.end();
-
-        ModelInstance modelInstance = new ModelInstance(model);
-        modelInstance.transform.setToTranslation(0, z, 0);
-
         return modelInstance;
     }
 
@@ -588,20 +521,6 @@ public class CodexScreen extends BaseScreen {
     }
 
     @Override
-    public void dispose() {
-        modelBatch.dispose();
-        batch.dispose();
-        stage.dispose();
-        for (ModelInstance mi : floor) {
-            mi.model.dispose();
-        }
-        for (ModelInstance mi : modelInstances) {
-            mi.model.dispose();
-        }
-        font.dispose();
-    }
-
-    @Override
     public void finishTurn(int currentX, int currentY) {
 
     }
@@ -610,7 +529,7 @@ public class CodexScreen extends BaseScreen {
     public void partyDeath() {
 
     }
-    
+
     @Override
     public Vector3 getMapPixelCoords(int x, int y) {
         return null;

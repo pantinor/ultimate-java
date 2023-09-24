@@ -985,7 +985,7 @@ public class Utils implements Constants {
         Tile[] tiles = new Tile[map.getWidth() * map.getHeight()];
         
         FileHandleResolver resolver = new Constants.ClasspathResolver();
-        TmxMapLoader loader = new TmxMapLoader();
+        TmxMapLoader loader = new TmxMapLoader(resolver);
         TiledMap tm = loader.load("assets/tilemaps/" + tmxFile);
 
         TiledMapTileLayer ml = (TiledMapTileLayer) tm.getLayers().get(map.getId() + "-map");

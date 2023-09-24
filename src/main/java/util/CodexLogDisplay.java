@@ -20,7 +20,7 @@ public class CodexLogDisplay {
     BitmapFont font;
 
     int width = 400;
-    int height = 100;
+    int height = 150;
 
     public CodexLogDisplay(BitmapFont font) {
 
@@ -35,33 +35,31 @@ public class CodexLogDisplay {
     }
 
     public void append(String s) {
-        synchronized (logs) {
-            if (logs.size() == 0) {
-                logs.add("");
-            }
-            String l = logs.get(logs.size() - 1);
-            l = l + s;
-            logs.remove(logs.size() - 1);
-            logs.add(l);
+        if (logs.isEmpty()) {
+            logs.add("");
         }
+        String l = logs.get(logs.size() - 1);
+        l = l + s;
+        logs.remove(logs.size() - 1);
+        logs.add(l);
     }
 
     public void logDeleteLastChar() {
-        synchronized (logs) {
-            if (logs.size() == 0) {
-                return;
-            }
-            String l = logs.get(logs.size() - 1);
-            l = l.substring(0, l.length() - 1);
-            logs.remove(logs.size() - 1);
-            logs.add(l);
+        if (logs.isEmpty()) {
+            return;
         }
+        String l = logs.get(logs.size() - 1);
+        l = l.substring(0, l.length() - 1);
+        logs.remove(logs.size() - 1);
+        logs.add(l);
     }
 
     public void add(String s) {
-        synchronized (logs) {
-            logs.add(s);
-        }
+        logs.add(s);
+    }
+
+    public void clear() {
+        this.logs.clear();
     }
 
     public void render(Batch batch) {
@@ -70,19 +68,21 @@ public class CodexLogDisplay {
 
         int h = 20;
         float y = 500 + 10;
+        
+        if (!logs.isEmpty()) {
 
-        synchronized (logs) {
             ReverseListIterator iter = new ReverseListIterator(logs);
             while (iter.hasNext()) {
                 String next = (String) iter.next();
                 GlyphLayout layout = new GlyphLayout(font, next, Color.WHITE, width - 20, Align.left, true);
-                y = y + layout.height + 4;
-                h += layout.height + 4;
+                y = y + layout.height + 6;
+                h += layout.height + 6;
                 if (h > height + 20) {
                     break;
                 }
                 font.draw(batch, layout, 220, y);
             }
         }
+
     }
 }

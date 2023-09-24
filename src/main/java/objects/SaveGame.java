@@ -41,7 +41,7 @@ public class SaveGame implements Constants {
 
     public int lastrage = 0;
     public int lastmask = 0;
-    
+
     public int items = 0;
     public int x = 0;
     public int y = 0;
@@ -84,7 +84,7 @@ public class SaveGame implements Constants {
     private final Random rand = new XORShiftRandom();
 
     Texture zstatsBox;
-    
+
     public void resetMonsters() {
         monster_save_tileids = new byte[8];
         monster_save_x = new byte[8];
@@ -205,92 +205,99 @@ public class SaveGame implements Constants {
 
     public void read(LittleEndianDataInputStream dis) throws Exception {
 
-        unknown1 = dis.readInt();
-        moves = dis.readInt();
+        try {
+            unknown1 = dis.readInt();
+            moves = dis.readInt();
 
-        for (int i = 0; i < 8; i++) {
-            players[i] = new SaveGamePlayerRecord();
-            players[i].read(dis);
+            for (int i = 0; i < 8; i++) {
+                players[i] = new SaveGamePlayerRecord();
+                players[i].read(dis);
+            }
+
+            food = dis.readInt();
+            gold = dis.readShort() & 0xff;
+
+            for (int i = 0; i < 8; i++) {
+                karma[i] = dis.readShort() & 0xff;
+            }
+
+            torches = dis.readShort() & 0xff;
+            gems = dis.readShort() & 0xff;
+            keys = dis.readShort() & 0xff;
+            sextants = dis.readShort() & 0xff;
+
+            for (int i = 0; i < 8; i++) {
+                armor[i] = dis.readShort() & 0xff;
+            }
+            
+            for (int i = 0; i < 16; i++) {
+                weapons[i] = dis.readShort() & 0xff;
+
+            }
+
+            for (int i = 0; i < 8; i++) {
+                reagents[i] = dis.readShort() & 0xff;
+            }
+
+            for (int i = 0; i < SPELL_MAX; i++) {
+                mixtures[i] = dis.readShort() & 0xff;
+            }
+
+            items = dis.readShort() & 0xff;
+            x = dis.readByte() & 0xff;
+            y = dis.readByte() & 0xff;
+            stones = dis.readByte() & 0xff;
+            runes = dis.readByte() & 0xff;
+            members = dis.readShort() & 0xff;
+            transport = dis.readShort() & 0xff;
+            balloonstate = dis.readShort() & 0xff;
+            trammelphase = dis.readShort() & 0xff;
+            feluccaphase = dis.readShort() & 0xff;
+            shiphull = dis.readShort() & 0xff;
+            lbintro = dis.readShort() & 0xff;
+            lastcamp = dis.readShort() & 0xff;
+            lastreagent = dis.readShort() & 0xff;
+            lastmeditation = dis.readShort() & 0xff;
+            lastvirtue = dis.readShort() & 0xff;
+            dngx = dis.readByte() & 0xff;
+            dngy = dis.readByte() & 0xff;
+            orientation = dis.readShort() & 0xff;
+            dnglevel = dis.readShort();
+            location = dis.readShort() & 0xff;
+            //here the normal save ends
+            
+            balloonfound = dis.readShort() & 0xff;
+            balloonx = dis.readShort() & 0xff;
+            balloony = dis.readShort() & 0xff;
+            lastrage = dis.readByte() & 0xff;
+            lastmask = dis.readByte() & 0xff;
+            dis.readByte();
+            dis.readByte();
+
+            for (int i = 0; i < monster_save_tileids.length; i++) {
+                monster_save_tileids[i] = dis.readByte();
+            }
+            for (int i = 0; i < objects_save_tileids.length; i++) {
+                objects_save_tileids[i] = dis.readByte();
+            }
+            for (int i = 0; i < monster_save_x.length; i++) {
+                monster_save_x[i] = dis.readByte();
+            }
+            for (int i = 0; i < objects_save_x.length; i++) {
+                objects_save_x[i] = dis.readByte();
+            }
+            for (int i = 0; i < monster_save_y.length; i++) {
+                monster_save_y[i] = dis.readByte();
+            }
+            for (int i = 0; i < objects_save_y.length; i++) {
+                objects_save_y[i] = dis.readByte();
+            }
+        } catch (Throwable t) {
+            //ignore
+        } finally {
+            dis.close();
         }
 
-        food = dis.readInt();
-        gold = dis.readShort() & 0xff;
-
-        for (int i = 0; i < 8; i++) {
-            karma[i] = dis.readShort() & 0xff;
-        }
-
-        torches = dis.readShort() & 0xff;
-        gems = dis.readShort() & 0xff;
-        keys = dis.readShort() & 0xff;
-        sextants = dis.readShort() & 0xff;
-
-        for (int i = 0; i < 8; i++) {
-            armor[i] = dis.readShort() & 0xff;
-        }
-
-        for (int i = 0; i < 16; i++) {
-            weapons[i] = dis.readShort() & 0xff;
-
-        }
-
-        for (int i = 0; i < 8; i++) {
-            reagents[i] = dis.readShort() & 0xff;
-        }
-
-        for (int i = 0; i < SPELL_MAX; i++) {
-            mixtures[i] = dis.readShort() & 0xff;
-        }
-
-        items = dis.readShort() & 0xff;
-        x = dis.readByte() & 0xff;
-        y = dis.readByte() & 0xff;
-        stones = dis.readByte() & 0xff;
-        runes = dis.readByte() & 0xff;
-        members = dis.readShort() & 0xff;
-        transport = dis.readShort() & 0xff;
-        balloonstate = dis.readShort() & 0xff;
-        trammelphase = dis.readShort() & 0xff;
-        feluccaphase = dis.readShort() & 0xff;
-        shiphull = dis.readShort() & 0xff;
-        lbintro = dis.readShort() & 0xff;
-        lastcamp = dis.readShort() & 0xff;
-        lastreagent = dis.readShort() & 0xff;
-        lastmeditation = dis.readShort() & 0xff;
-        lastvirtue = dis.readShort() & 0xff;
-        dngx = dis.readByte() & 0xff;
-        dngy = dis.readByte() & 0xff;
-        orientation = dis.readShort() & 0xff;
-        dnglevel = dis.readShort();
-        location = dis.readShort() & 0xff;
-        balloonfound = dis.readShort() & 0xff;
-        balloonx = dis.readShort() & 0xff;
-        balloony = dis.readShort() & 0xff;
-        lastrage = dis.readByte() & 0xff;
-        lastmask = dis.readByte() & 0xff;
-        dis.readByte();
-        dis.readByte();
-
-        for (int i = 0; i < monster_save_tileids.length; i++) {
-            monster_save_tileids[i] = dis.readByte();
-        }
-        for (int i = 0; i < objects_save_tileids.length; i++) {
-            objects_save_tileids[i] = dis.readByte();
-        }
-        for (int i = 0; i < monster_save_x.length; i++) {
-            monster_save_x[i] = dis.readByte();
-        }
-        for (int i = 0; i < objects_save_x.length; i++) {
-            objects_save_x[i] = dis.readByte();
-        }
-        for (int i = 0; i < monster_save_y.length; i++) {
-            monster_save_y[i] = dis.readByte();
-        }
-        for (int i = 0; i < objects_save_y.length; i++) {
-            objects_save_y[i] = dis.readByte();
-        }
-
-        dis.close();
 
         /* workaround of U4DOS bug to retain savegame compatibility */
         if (location == 0 && dnglevel == 0) {

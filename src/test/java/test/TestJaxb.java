@@ -51,8 +51,6 @@ import vendor.VendorClassSet;
 
 import com.badlogic.gdx.math.Vector3;
 import com.google.common.io.LittleEndianDataInputStream;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
 import javax.xml.bind.Marshaller;
 import objects.JournalEntries;
 import objects.JournalEntry;
@@ -625,6 +623,29 @@ public class TestJaxb {
 
     }
 
+    @Test
+    public void testDungeonTiles() throws Exception {
+
+        InputStream is = MapSet.class.getResourceAsStream("/assets/data/deceit.dng");
+        byte[] bytes = IOUtils.toByteArray(is);
+
+        int pos = 0;
+
+        for (int i = 0; i < DUNGEON_MAP; i++) {
+            System.out.println("-------------  " + i);
+            for (int y = 0; y < DUNGEON_MAP; y++) {
+                for (int x = 0; x < DUNGEON_MAP; x++) {
+                    int index = bytes[pos] & 0xff;
+                    pos++;
+                    DungeonTile tile = DungeonTile.getTileByValue(index);
+                    System.out.print("|" + Integer.toHexString(index) + ":" + tile + "|\t");
+                }
+                System.out.println();
+            }
+        }
+
+    }
+
     //@Test
     public void findStartsForDungeons() throws Exception {
 
@@ -638,7 +659,7 @@ public class TestJaxb {
             if (map.getType() != MapType.dungeon) {
                 continue;
             }
-            InputStream is = new FileInputStream("assets/data/" + map.getFname());
+            InputStream is = MapSet.class.getResourceAsStream("assets/data/" + map.getFname());
             byte[] bytes = IOUtils.toByteArray(is);
 
             int pos = 0;
