@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import objects.Party;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 public class MixtureScreen implements Screen, Constants {
 
@@ -66,8 +67,8 @@ public class MixtureScreen implements Screen, Constants {
         this.skin = skin;
         
         try {
-            spellDescs.addAll(FileUtils.readLines(Gdx.files.classpath("assets/data/spells.txt").file()));
-            reagDescs.addAll(FileUtils.readLines(Gdx.files.classpath("assets/data/reagents.txt").file()));
+            spellDescs.addAll(IOUtils.readLines(Gdx.files.classpath("assets/data/spells.txt").read()));
+            reagDescs.addAll(IOUtils.readLines(Gdx.files.classpath("assets/data/reagents.txt").read()));
         } catch (IOException e) {
             e.printStackTrace();
         }

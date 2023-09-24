@@ -626,21 +626,31 @@ public class TestJaxb {
     @Test
     public void testDungeonTiles() throws Exception {
 
-        InputStream is = MapSet.class.getResourceAsStream("/assets/data/deceit.dng");
-        byte[] bytes = IOUtils.toByteArray(is);
+        MapSet maps = (MapSet) Utils.loadXml("maps.xml", MapSet.class);
 
-        int pos = 0;
+        for (BaseMap map : maps.getMaps()) {
+            
+            if (map.getType() != MapType.dungeon) {
+                continue;
+            }
 
-        for (int i = 0; i < DUNGEON_MAP; i++) {
-            System.out.println("-------------  " + i);
-            for (int y = 0; y < DUNGEON_MAP; y++) {
-                for (int x = 0; x < DUNGEON_MAP; x++) {
-                    int index = bytes[pos] & 0xff;
-                    pos++;
-                    DungeonTile tile = DungeonTile.getTileByValue(index);
-                    System.out.print("|" + Integer.toHexString(index) + ":" + tile + "|\t");
+            InputStream is = MapSet.class.getResourceAsStream("/assets/data/" + map.getFname());
+            byte[] bytes = IOUtils.toByteArray(is);
+            System.out.println(map.getFname());
+
+            int pos = 0;
+
+            for (int i = 0; i < DUNGEON_MAP; i++) {
+                System.out.println("-------------  " + i);
+                for (int y = 0; y < DUNGEON_MAP; y++) {
+                    for (int x = 0; x < DUNGEON_MAP; x++) {
+                        int index = bytes[pos] & 0xff;
+                        pos++;
+                        DungeonTile tile = DungeonTile.getTileByValue(index);
+                        System.out.print("|" + Integer.toHexString(index) + ":" + tile + "|\t");
+                    }
+                    System.out.println();
                 }
-                System.out.println();
             }
         }
 

@@ -78,7 +78,6 @@ public class LogDisplay {
             PartyMember pm = party.getMember(i);
 
             String s = (i + 1) + " - " + pm.getPlayer().name;
-            String d = String.format("HP %d MP %d ST %s", pm.getPlayer().hp, pm.getPlayer().mp, pm.getPlayer().status.getValue());
 
             font.setColor(i == party.getActivePlayer() ? new Color(.35f, .93f, 0.91f, 1) : Color.WHITE);
             if (pm.getPlayer().status == StatusType.POISONED) {
@@ -91,8 +90,11 @@ public class LogDisplay {
                 font.setColor(Color.GRAY);
             }
 
-            font.draw(batch, s, LOG_X + 8, y);
-            font.draw(batch, d, LOG_X + 8 + 100, y);
+            int x = LOG_X + 8;
+            font.draw(batch, s, x, y);
+            font.draw(batch, "HP " + pm.getPlayer().hp, x += 100, y);
+            font.draw(batch, "MP " + pm.getPlayer().mp, x += 60, y);
+            font.draw(batch, "" + pm.getPlayer().status.getValue(), x += 60, y);
 
             y = y - 24;
 

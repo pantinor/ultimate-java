@@ -325,8 +325,8 @@ public class CombatScreen extends BaseScreen {
         camera.update();
 
         renderer.setView(camera.combined,
-                camera.position.x - tilePixelWidth * 10, //this is voodoo
-                camera.position.y - tilePixelHeight * 10,
+                camera.position.x - tilePixelWidth * 10,
+                camera.position.y - tilePixelHeight * 5,
                 Ultima4.MAP_WIDTH,
                 Ultima4.MAP_HEIGHT);
 

@@ -9,7 +9,6 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.CharBuffer;
 import java.util.ArrayList;
@@ -758,7 +757,7 @@ public class Utils implements Constants {
 
     public static Texture peerGem(TiledMapTileLayer layer, String[] ids, TextureAtlas atlas, int cx, int cy) throws Exception {
         FileTextureData d = (FileTextureData) (atlas.getRegions().first().getTexture().getTextureData());
-        BufferedImage sheet = ImageIO.read(d.getFileHandle().file());
+        BufferedImage sheet = ImageIO.read(d.getFileHandle().read());
         BufferedImage canvas = new BufferedImage(32 * layer.getWidth(), 32 * layer.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
         for (int y = 0; y < layer.getHeight(); y++) {
@@ -796,7 +795,7 @@ public class Utils implements Constants {
 
         if (map.getMap().getType() == MapType.city) {
             FileTextureData d = (FileTextureData) (atlas.getRegions().first().getTexture().getTextureData());
-            BufferedImage sheet = ImageIO.read(d.getFileHandle().file());
+            BufferedImage sheet = ImageIO.read(d.getFileHandle().read());
             BufferedImage canvas = new BufferedImage(32 * 32, 32 * 32, BufferedImage.TYPE_INT_ARGB);
 
             for (int y = 0; y < 32; y++) {
@@ -833,7 +832,7 @@ public class Utils implements Constants {
     //used for view gem on the world map only
     public static Texture peerGem(BaseMap worldMap, int avatarX, int avatarY, TextureAtlas atlas) throws Exception {
         FileTextureData d = (FileTextureData) (atlas.getRegions().first().getTexture().getTextureData());
-        BufferedImage sheet = ImageIO.read(d.getFileHandle().file());
+        BufferedImage sheet = ImageIO.read(d.getFileHandle().read());
         BufferedImage canvas = new BufferedImage(32 * 64, 32 * 64, BufferedImage.TYPE_INT_ARGB);
 
         int startX = avatarX - 32;

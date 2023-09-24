@@ -166,7 +166,6 @@ public class DungeonScreen extends BaseScreen {
         chestModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/chest.g3db"));
         orbModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/orb.g3db"));
         altarModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/altar.g3db"));
-        //blocksModel = gloader.loadModel(Gdx.files.classpath("assets/graphics/box.g3db"));
 
         Pixmap pixmap = new Pixmap(MM_BKGRND_DIM, MM_BKGRND_DIM, Format.RGBA8888);
         pixmap.setColor(0.8f, 0.7f, 0.5f, .8f);
@@ -176,7 +175,6 @@ public class DungeonScreen extends BaseScreen {
 
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.05f, 0.05f, 0.05f, 1f));
-        //environment.set(new ColorAttribute(ColorAttribute.Fog, 0.13f, 0.13f, 0.13f, 1f));
 
         fixedLight = new PointLight().set(1f, 0.8f, 0.6f, 4f, 4f, 4f, 5f);
         environment.add(fixedLight);
@@ -191,9 +189,6 @@ public class DungeonScreen extends BaseScreen {
 
         decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
 
-//        inputController = new CameraInputController(camera);
-//        inputController.rotateLeftKey = inputController.rotateRightKey = inputController.forwardKey = inputController.backwardKey = 0;
-//        inputController.translateUnits = 30f;
         ModelBuilder builder = new ModelBuilder();
         lightModel = builder.createSphere(.1f, .1f, .1f, 10, 10, new Material(ColorAttribute.createDiffuse(1, 1, 1, 1)), Usage.Position);
         lightModel.nodes.get(0).parts.get(0).setRenderable(pLight = new Renderable());

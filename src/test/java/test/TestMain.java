@@ -94,7 +94,7 @@ public class TestMain extends Game {
                 }
 
                 BufferedImage out = Utils.toBufferedImage(pixmap);
-                ImageIO.write(out, "PNG", new File("ultima-font.png"));
+                ImageIO.write(out, "PNG", new File("target/ultima-font.png"));
             }
 
             Ultima4 ult = new Ultima4();
@@ -114,24 +114,23 @@ public class TestMain extends Game {
             sg.players[0].hpMax = 700;
 
             party.join(NpcDefaults.Geoffrey.name());
-            sg.items |= Constants.Item.MASK_MINAX.getLoc();
-            sg.items |= Constants.Item.RAGE_GOD.getLoc();
-            sg.players[0].weapon = WeaponType.SLING;
+            //sg.items |= Constants.Item.MASK_MINAX.getLoc();
+            //sg.items |= Constants.Item.RAGE_GOD.getLoc();
+            //sg.players[0].weapon = WeaponType.SLING;
 
-            TiledMap tmap = new UltimaTiledMapLoader(Maps.BRUSH_CON, Ultima4.standardAtlas, Maps.BRUSH_CON.getMap().getWidth(), Maps.BRUSH_CON.getMap().getHeight(), 32, 32).load();
-            CombatScreen sc = new CombatScreen(null, context, Maps.WORLD, Maps.BRUSH_CON.getMap(), tmap, CreatureType.troll, Ultima4.creatures, Ultima4.standardAtlas);
+            TiledMap tmap = new UltimaTiledMapLoader(Maps.DNG6_CON, Ultima4.standardAtlas, Maps.DNG6_CON.getMap().getWidth(), Maps.DNG6_CON.getMap().getHeight(), 32, 32).load();
+            CombatScreen sc = new CombatScreen(null, context, Maps.WORLD, Maps.DNG6_CON.getMap(), tmap, CreatureType.troll, Ultima4.creatures, Ultima4.standardAtlas);
 
             setScreen(sc);
             //atlas = a1;
             //tr = Utils.peerGem(Maps.LYCAEUM, a1);
 
-            batch2 = new SpriteBatch();
+            //batch2 = new SpriteBatch();
 
-            TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("sprites-atlas.txt"));
-            a1 = new Animation(0.45f, atlas.findRegions("shallows"));
-            TextureRegion[] frames = a1.getKeyFrames();
-            a2 = new Animation(0.45f, atlas.findRegions("water"));
-//            a3 = new Animation(0.45f, atlas.findRegions("sea"));
+            //TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("sprites-atlas.txt"));
+            //a1 = new Animation(0.45f, atlas.findRegions("shallows"));
+            //TextureRegion[] frames = a1.getKeyFrames();
+            //a2 = new Animation(0.45f, atlas.findRegions("water"));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -139,41 +138,4 @@ public class TestMain extends Game {
 
     }
 
-//    @Override
-//    public void render() {
-//        time += Gdx.graphics.getDeltaTime();
-//
-//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//
-//        batch2.begin();
-//        
-//        int dim = 32;
-//        
-//        for (int x=0;x<3;x++) {
-//            for (int y=0;y<3;y++) {
-//                int dx = dim*x + 100;
-//                int dy = dim*y + 200;
-//                batch2.draw(a1.getKeyFrame(time, true),dx,dy);
-//            }
-//        }
-//        
-//        for (int x=0;x<3;x++) {
-//            for (int y=0;y<3;y++) {
-//                int dx = dim*x + 300;
-//                int dy = dim*y + 200;
-//                batch2.draw(a2.getKeyFrame(time, true),dx,dy);
-//            }
-//        }
-//                
-//        for (int x=0;x<3;x++) {
-//            for (int y=0;y<3;y++) {
-//                int dx = dim*x + 600;
-//                int dy = dim*y + 200;
-//                batch2.draw(a3.getKeyFrame(time, true),dx,dy);
-//            }
-//        }
-//
-//        batch2.end();
-//
-//    }
 }
