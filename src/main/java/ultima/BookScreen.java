@@ -151,24 +151,20 @@ public class BookScreen extends InputAdapter implements Screen, Constants {
     }
 
     private void addPages(BitmapFont font, int pageStart, String fn, Label.LabelStyle labs) {
-        try {
-            List<String> lines = IOUtils.readLines(BookScreen.class.getResourceAsStream(fn));
-            int page = pageStart;
-            GlyphLayout gl = new GlyphLayout(font, "");
-            StringBuilder sb = new StringBuilder();
-            for (String line : lines) {
-                sb.append(line).append("\n");
-                gl.setText(font, sb.toString().trim(), Color.WHITE, 450, Align.left, true);
-                if (gl.height > 600) {
-                    labels.add(new Label(sb.toString().trim(), labs));
-                    sb = new StringBuilder();
-                    page++;
-                }
+        List<String> lines = IOUtils.readLines(BookScreen.class.getResourceAsStream(fn));
+        int page = pageStart;
+        GlyphLayout gl = new GlyphLayout(font, "");
+        StringBuilder sb = new StringBuilder();
+        for (String line : lines) {
+            sb.append(line).append("\n");
+            gl.setText(font, sb.toString().trim(), Color.WHITE, 450, Align.left, true);
+            if (gl.height > 600) {
+                labels.add(new Label(sb.toString().trim(), labs));
+                sb = new StringBuilder();
+                page++;
             }
-            labels.add(new Label(sb.toString().trim(), labs));
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        labels.add(new Label(sb.toString().trim(), labs));
     }
 
     @Override

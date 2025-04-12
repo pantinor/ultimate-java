@@ -41,7 +41,7 @@ public enum Sound {
     TOWNS("Towns.mid", true, 0.1f),
     SHRINES("Shrines.mid", true, 0.1f),
     SHOPPING("Shopping.mid", true, 0.1f),
-    RULEBRIT("Rule_Brittania.mid", true, 0.1f),
+    RULEBRIT("Rule_Britannia.mid", true, 0.1f),
     FANFARE("Fanfare_Of_Lord_British.mid", true, 0.1f),
     DUNGEON("Dungeon.mid", true, 0.1f),
     COMBAT("Combat.mid", true, 0.1f),

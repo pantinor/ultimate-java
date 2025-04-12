@@ -4,9 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -24,7 +22,6 @@ import com.badlogic.gdx.utils.Align;
 import java.io.IOException;
 import java.util.ArrayList;
 import objects.Party;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 public class MixtureScreen implements Screen, Constants {
@@ -66,12 +63,8 @@ public class MixtureScreen implements Screen, Constants {
         this.party = party;
         this.skin = skin;
         
-        try {
-            spellDescs.addAll(IOUtils.readLines(Gdx.files.classpath("assets/data/spells.txt").read()));
-            reagDescs.addAll(IOUtils.readLines(Gdx.files.classpath("assets/data/reagents.txt").read()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        spellDescs.addAll(IOUtils.readLines(Gdx.files.classpath("assets/data/spells.txt").read()));
+        reagDescs.addAll(IOUtils.readLines(Gdx.files.classpath("assets/data/reagents.txt").read()));
 
         this.internalTable = new Table(skin);
         this.internalTable.defaults().pad(5);
