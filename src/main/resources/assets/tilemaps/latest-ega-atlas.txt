@@ -30,6 +30,90 @@ sea
   orig: 32, 32
   offset: 0, 0
   index: 3
+sea
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 4
+sea
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 5
+sea
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 6
+sea
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 7
+sea
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 8
+sea
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 9
+sea
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 10
+sea
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 11
+sea
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 12
+sea
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 13
+sea
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 14
+sea
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 15
 shallows
   rotate: false
   xy: 64, 0
@@ -58,6 +142,90 @@ shallows
   orig: 32, 32
   offset: 0, 0
   index: 3
+shallows
+  rotate: false
+  xy: 64, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 4
+shallows
+  rotate: false
+  xy: 64, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 5
+shallows
+  rotate: false
+  xy: 64, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 6
+shallows
+  rotate: false
+  xy: 64, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 7
+shallows
+  rotate: false
+  xy: 64, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 8
+shallows
+  rotate: false
+  xy: 64, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 9
+shallows
+  rotate: false
+  xy: 64, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 10
+shallows
+  rotate: false
+  xy: 64, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 11
+shallows
+  rotate: false
+  xy: 64, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 12
+shallows
+  rotate: false
+  xy: 64, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 13
+shallows
+  rotate: false
+  xy: 64, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 14
+shallows
+  rotate: false
+  xy: 64, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 15
 water
   rotate: false
   xy: 32, 0
@@ -86,6 +254,90 @@ water
   orig: 32, 32
   offset: 0, 0
   index: 3
+water
+  rotate: false
+  xy: 32, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 4
+water
+  rotate: false
+  xy: 32, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 5
+water
+  rotate: false
+  xy: 32, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 6
+water
+  rotate: false
+  xy: 32, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 7
+water
+  rotate: false
+  xy: 32, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 8
+water
+  rotate: false
+  xy: 32, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 9
+water
+  rotate: false
+  xy: 32, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 10
+water
+  rotate: false
+  xy: 32, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 11
+water
+  rotate: false
+  xy: 32, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 12
+water
+  rotate: false
+  xy: 32, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 13
+water
+  rotate: false
+  xy: 32, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 14
+water
+  rotate: false
+  xy: 32, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 15
 lava
   rotate: false
   xy: 384, 128
@@ -114,6 +366,34 @@ lava
   orig: 32, 32
   offset: 0, 0
   index: 3
+lava
+  rotate: false
+  xy: 384, 128
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 4
+lava
+  rotate: false
+  xy: 384, 128
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 5
+lava
+  rotate: false
+  xy: 384, 128
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 6
+lava
+  rotate: false
+  xy: 384, 128
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 7
 A
   rotate: false
   xy: 0, 192
@@ -2032,20 +2312,6 @@ twister
   orig: 32, 32
   offset: 0, 0
   index: 1
-twister
-  rotate: false
-  xy: 448, 256
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-twister
-  rotate: false
-  xy: 480, 256
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
 up_ladder
   rotate: false
   xy: 352, 32
@@ -2081,20 +2347,6 @@ whirlpool
   orig: 32, 32
   offset: 0, 0
   index: 1
-whirlpool
-  rotate: false
-  xy: 384, 256
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-whirlpool
-  rotate: false
-  xy: 416, 256
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
 wisp
   rotate: false
   xy: 384, 416

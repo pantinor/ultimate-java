@@ -39,10 +39,7 @@ import com.badlogic.gdx.utils.Align;
  */
 public class TestEgaAtlasRuntime extends Game {
 
-    private static final String[] ATLAS_CANDIDATES = {
-        "assets/tilemaps/latest-ega-atlas.txt",
-        "latest-ega-atlas.txt"
-    };
+    private static final String[] ATLAS_CANDIDATES = {"assets/tilemaps/latest-ega-atlas.txt", "latest-ega-atlas.txt"};
 
     private static final String PNG_NAME = "tiles-ega-32px.png";
 
@@ -51,7 +48,6 @@ public class TestEgaAtlasRuntime extends Game {
 
     private static final int TILE = 32;
     private static final int RUNTIME_COLS = 8;
-    private static final int RUNTIME_ROWS = 8;
     private static final int RUNTIME_SIZE = TILE * RUNTIME_COLS; // 256
 
     private static final int GRID_COLS = 5;
@@ -112,11 +108,7 @@ public class TestEgaAtlasRuntime extends Game {
         font = new BitmapFont();
 
         camera = new OrthographicCamera();
-        camera.setToOrtho(
-                false,
-                Gdx.graphics.getWidth(),
-                Gdx.graphics.getHeight()
-        );
+        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         installInput();
 
@@ -154,16 +146,13 @@ public class TestEgaAtlasRuntime extends Game {
             return assets;
         }
 
-        FileHandle root
-                = Gdx.files.internal(PNG_NAME);
+        FileHandle root = Gdx.files.internal(PNG_NAME);
 
         if (root.exists()) {
             return root;
         }
 
-        throw new IllegalStateException(
-                "Could not find " + PNG_NAME
-        );
+        throw new IllegalStateException("Could not find " + PNG_NAME);
     }
 
     private void forceNearest(TextureAtlas atlas) {
@@ -242,13 +231,7 @@ public class TestEgaAtlasRuntime extends Game {
                 return false;
             }
 
-            // Old LibGDX.
-            public boolean scrolled(int amount) {
-                scrollBy(amount * 82f);
-                return true;
-            }
-
-            // Newer LibGDX.
+            @Override
             public boolean scrolled(float amountX, float amountY) {
                 scrollBy(amountY * 82f);
                 return true;
@@ -256,186 +239,56 @@ public class TestEgaAtlasRuntime extends Game {
         });
     }
 
-    /**
-     * This is the routine intended to migrate later into Ultima4.java.
-     *
-     * It creates a temporary 256x256 runtime texture and repoints selected
-     * AtlasRegion objects into it. The original PNG stays untouched.
-     */
     private Texture installRuntimeAnimations(TextureAtlas atlas, FileHandle pngFile) {
         Pixmap source = new Pixmap(pngFile);
-
-        Pixmap runtime = new Pixmap(
-                RUNTIME_SIZE,
-                RUNTIME_SIZE,
-                Pixmap.Format.RGBA8888
-        );
+        Pixmap runtime = new Pixmap(RUNTIME_SIZE, RUNTIME_SIZE, Pixmap.Format.RGBA8888);
 
         runtime.setColor(0, 0, 0, 0);
         runtime.fill();
 
-        List<Binding> bindings = new ArrayList<Binding>();
+        List<Binding> bindings = new ArrayList<>();
 
         int slot = 0;
 
-        // 4-frame scrolling textures: 16 frames total.
-        String[] scrolling = {
-            "sea", "water", "shallows", "lava"
-        };
-
+        String[] scrolling = {"sea", "water", "shallows"};
         for (int n = 0; n < scrolling.length; n++) {
             String name = scrolling[n];
-
             List<AtlasRegion> frames = regions(atlas, name);
-
-            requireCount(name, frames, 4);
-
             Rect src = Rect.from(frames.get(0));
-
-            for (int frame = 0; frame < 4; frame++) {
+            for (int frame = 0; frame < 16; frame++) {
                 Point p = slot(slot++);
-
-                int shiftX = frame * 6;
-                int shiftY = name.equals("lava") ? frame * 2 : 0;
-
-                drawWrapped(
-                        source,
-                        src,
-                        runtime,
-                        p.x,
-                        p.y,
-                        shiftX,
-                        shiftY
-                );
-
+                int shiftX = 0;
+                int shiftY = frame * 2;
+                drawWrapped(source, src, runtime, p.x, p.y, shiftX, shiftY);
                 bindings.add(new Binding(frames.get(frame), p.x, p.y));
             }
         }
 
-        // 4 field effects x 8 frames = 32 frames.
-        String[] fields = {
-            "poison_field",
-            "energy_field",
-            "fire_field",
-            "sleep_field"
-        };
-
+        String[] fields = {"lava", "poison_field", "energy_field", "fire_field", "sleep_field"};
         for (int n = 0; n < fields.length; n++) {
             String name = fields[n];
-
             List<AtlasRegion> frames = regions(atlas, name);
-
-            requireCount(name, frames, 8);
-
             Rect src = Rect.from(frames.get(0));
-
             for (int frame = 0; frame < 8; frame++) {
                 Point p = slot(slot++);
-
-                drawField(
-                        source,
-                        src,
-                        runtime,
-                        p.x,
-                        p.y,
-                        frame
-                );
-
+                int shiftX = 0;
+                int shiftY = frame * -2;
+                drawWrapped(source, src, runtime, p.x, p.y, shiftX, shiftY);
                 bindings.add(new Binding(frames.get(frame), p.x, p.y));
             }
-        }
-
-        // Campfire: 8 frames.
-        {
-            List<AtlasRegion> frames = regions(atlas, "campfire");
-
-            requireCount("campfire", frames, 8);
-
-            Rect src = Rect.from(frames.get(0));
-
-            for (int frame = 0; frame < 8; frame++) {
-                Point p = slot(slot++);
-
-                drawCampfire(
-                        source,
-                        src,
-                        runtime,
-                        p.x,
-                        p.y,
-                        frame
-                );
-
-                bindings.add(new Binding(frames.get(frame), p.x, p.y));
-            }
-        }
-
-        // Whirlpool and twister: 2 groups x 4 = 8 frames.
-        String[] nativeTwo = {
-            "whirlpool", "twister"
-        };
-
-        for (int n = 0; n < nativeTwo.length; n++) {
-            String name = nativeTwo[n];
-
-            List<AtlasRegion> frames = regions(atlas, name);
-
-            requireCount(name, frames, 4);
-
-            Rect a = Rect.from(frames.get(0));
-            Rect b = Rect.from(frames.get(1));
-
-            for (int frame = 0; frame < 4; frame++) {
-                Point p = slot(slot++);
-
-                drawFromTwo(
-                        source,
-                        a,
-                        b,
-                        runtime,
-                        p.x,
-                        p.y,
-                        frame
-                );
-
-                bindings.add(new Binding(frames.get(frame), p.x, p.y));
-            }
-        }
-
-        if (slot != 64) {
-            source.dispose();
-            runtime.dispose();
-
-            throw new IllegalStateException(
-                    "Expected 64 generated frames but created " + slot
-            );
         }
 
         Texture result = new Texture(runtime);
-
-        result.setFilter(
-                TextureFilter.Nearest,
-                TextureFilter.Nearest
-        );
+        result.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 
         runtime.dispose();
         source.dispose();
 
-        // Repoint existing AtlasRegions; do NOT add/remove atlas records.
         for (int i = 0; i < bindings.size(); i++) {
             Binding b = bindings.get(i);
             AtlasRegion r = b.region;
-
-            TextureRegion runtimeRegion
-                    = new TextureRegion(
-                            result,
-                            b.x,
-                            b.y,
-                            TILE,
-                            TILE
-                    );
-
+            TextureRegion runtimeRegion = new TextureRegion(result, b.x, b.y, TILE, TILE);
             r.setRegion(runtimeRegion);
-
             r.packedWidth = TILE;
             r.packedHeight = TILE;
             r.originalWidth = TILE;
@@ -449,137 +302,18 @@ public class TestEgaAtlasRuntime extends Game {
         return result;
     }
 
-    private void drawWrapped(
-            Pixmap source,
-            Rect src,
-            Pixmap dest,
-            int dx,
-            int dy,
-            int shiftX,
-            int shiftY
-    ) {
+    private void drawWrapped(Pixmap source, Rect src, Pixmap dest, int dx, int dy, int shiftX, int shiftY) {
         for (int y = 0; y < TILE; y++) {
             for (int x = 0; x < TILE; x++) {
                 int sx = src.x + wrap(x + shiftX);
                 int sy = src.y + wrap(y + shiftY);
-
-                dest.drawPixel(
-                        dx + x,
-                        dy + y,
-                        source.getPixel(sx, sy)
-                );
-            }
-        }
-    }
-
-    private void drawField(
-            Pixmap source,
-            Rect src,
-            Pixmap dest,
-            int dx,
-            int dy,
-            int frame
-    ) {
-        for (int y = 0; y < TILE; y++) {
-            for (int x = 0; x < TILE; x++) {
-
-                int bandY = y / 4;
-                int bandX = x / 4;
-
-                int sx
-                        = src.x
-                        + wrap(
-                                x
-                                + frame * 2
-                                + (bandY % 4) * 2
-                        );
-
-                int sy
-                        = src.y
-                        + wrap(
-                                y
-                                + frame
-                                + ((bandX & 1) == 0 ? 0 : 2)
-                        );
-
-                dest.drawPixel(
-                        dx + x,
-                        dy + y,
-                        source.getPixel(sx, sy)
-                );
-            }
-        }
-    }
-
-    private void drawCampfire(
-            Pixmap source,
-            Rect src,
-            Pixmap dest,
-            int dx,
-            int dy,
-            int frame
-    ) {
-        // Bottom quarter remains completely stable.
-        final int stableY = 24;
-
-        for (int y = 0; y < TILE; y++) {
-            for (int x = 0; x < TILE; x++) {
-
-                int sx = x;
-                int sy = y;
-
-                if (y < stableY) {
-                    int wiggle = ((frame + y / 3) % 5) - 2;
-                    int lift = ((frame * 2 + x / 6) % 3) - 1;
-                    sx = wrap(x + wiggle);
-                    sy = clamp(y + lift, 0, stableY - 1);
-                }
-
-                dest.drawPixel(
-                        dx + x,
-                        dy + y,
-                        source.getPixel(src.x + sx, src.y + sy)
-                );
-            }
-        }
-    }
-
-    private void drawFromTwo(
-            Pixmap source,
-            Rect a,
-            Rect b,
-            Pixmap dest,
-            int dx,
-            int dy,
-            int frame
-    ) {
-        for (int y = 0; y < TILE; y++) {
-            for (int x = 0; x < TILE; x++) {
-
-                Rect chosen;
-
-                if (frame == 0) {
-                    chosen = a;
-                } else if (frame == 2) {
-                    chosen = b;
-                } else {
-                    boolean useB
-                            = (((x / 2) + (y / 2) + frame) & 1) == 0;
-
-                    chosen = useB ? b : a;
-                }
-
-                dest.drawPixel(
-                        dx + x,
-                        dy + y,
-                        source.getPixel(chosen.x + x, chosen.y + y)
-                );
+                dest.drawPixel(dx + x, dy + y, source.getPixel(sx, sy));
             }
         }
     }
 
     private List<AtlasRegion> regions(TextureAtlas atlas, String name) {
-        List<AtlasRegion> list = new ArrayList<AtlasRegion>();
+        List<AtlasRegion> list = new ArrayList<>();
 
         for (AtlasRegion r : atlas.getRegions()) {
             if (name.equals(r.name)) {
@@ -587,7 +321,7 @@ public class TestEgaAtlasRuntime extends Game {
             }
         }
 
-        Collections.sort(list, new Comparator<AtlasRegion>() {
+        Collections.sort(list, new Comparator<>() {
             @Override
             public int compare(AtlasRegion a, AtlasRegion b) {
                 if (a.index < b.index) {
@@ -598,22 +332,9 @@ public class TestEgaAtlasRuntime extends Game {
                 }
                 return 0;
             }
-        }
-        );
+        });
 
         return list;
-    }
-
-    private void requireCount(String name, List<AtlasRegion> frames, int count) {
-        if (frames.size() != count) {
-            throw new IllegalStateException(
-                    name
-                    + " expected "
-                    + count
-                    + " atlas frames but found "
-                    + frames.size()
-            );
-        }
     }
 
     private Point slot(int slot) {
@@ -625,25 +346,22 @@ public class TestEgaAtlasRuntime extends Game {
         return r < 0 ? r + TILE : r;
     }
 
-    private int clamp(int v, int min, int max) {
-        return v < min ? min : (v > max ? max : v);
-    }
 
     private List<Group> buildGroups(TextureAtlas atlas) {
-        Map<String, List<AtlasRegion>> map = new LinkedHashMap<String, List<AtlasRegion>>();
+        Map<String, List<AtlasRegion>> map = new LinkedHashMap<>();
 
         for (AtlasRegion r : atlas.getRegions()) {
             List<AtlasRegion> list = map.get(r.name);
 
             if (list == null) {
-                list = new ArrayList<AtlasRegion>();
+                list = new ArrayList<>();
                 map.put(r.name, list);
             }
 
             list.add(r);
         }
 
-        List<Group> result = new ArrayList<Group>();
+        List<Group> result = new ArrayList<>();
 
         for (Map.Entry<String, List<AtlasRegion>> e : map.entrySet()) {
             Collections.sort(e.getValue(), new Comparator<AtlasRegion>() {
@@ -689,28 +407,7 @@ public class TestEgaAtlasRuntime extends Game {
 
         batch.begin();
 
-        font.getData().setScale(1.0f);
-
         font.draw(batch, generatedMode ? "MODE: GENERATED RUNTIME ANIMATIONS" : "MODE: SOURCE / STATIC EGA", 12f, h - 10f);
-
-        font.getData().setScale(0.75f);
-
-        font.draw(
-                batch,
-                "T toggle source/generated   wheel or Up/Down scroll   Space pause   +/- speed   R reset   generated="
-                + generatedFrames
-                + "   records="
-                + atlas.getRegions().size,
-                12f,
-                h - 36f
-        );
-
-        font.draw(
-                batch,
-                "Animated runtime regions are marked [RUNTIME]. Static regions are marked [EGA]. PNG is never altered.",
-                12f,
-                h - 57f
-        );
 
         float gridTop = h - HEADER;
 
@@ -727,13 +424,7 @@ public class TestEgaAtlasRuntime extends Game {
                 continue;
             }
 
-            drawGroup(
-                    groups.get(i),
-                    x,
-                    bottom,
-                    cellW,
-                    CELL_H
-            );
+            drawGroup(groups.get(i), x, bottom, cellW, CELL_H);
         }
 
         batch.end();
@@ -744,50 +435,14 @@ public class TestEgaAtlasRuntime extends Game {
 
         int frame = count <= 1 ? 0 : ((int) (time / frameDuration)) % count;
 
-        AtlasRegion current
-                = group.frames.get(frame);
+        AtlasRegion current = group.frames.get(frame);
 
         float left = cellX + 10f;
         float labelY = cellBottom + cellHeight - 8f;
 
-        boolean runtime = current.getTexture() == runtimeTexture;
-
-        font.getData().setScale(0.82f);
-
-        font.draw(
-                batch,
-                group.name,
-                left,
-                labelY,
-                cellWidth - 20f,
-                Align.left,
-                false
-        );
-
-        font.getData().setScale(0.63f);
-
-        font.draw(
-                batch,
-                "frames="
-                + count
-                + " index="
-                + current.index
-                + " xy="
-                + current.getRegionX()
-                + ","
-                + current.getRegionY()
-                + (runtime ? " [RUNTIME]" : " [EGA]"),
-                left,
-                labelY - 19f
-        );
-
-        batch.draw(
-                current,
-                left,
-                cellBottom + 38f,
-                PREVIEW,
-                PREVIEW
-        );
+        font.draw(batch, group.name, left, labelY, cellWidth - 20f, Align.left, false);
+        font.draw(batch, "frames=" + count + " index=" + current.index + " xy=" + current.getRegionX() + "," + current.getRegionY(), left, labelY - 19f);
+        batch.draw(current, left, cellBottom + 38f, PREVIEW, PREVIEW);
 
         float stripX = left + PREVIEW + 10f;
         float stripY = cellBottom + 40f;
@@ -798,13 +453,7 @@ public class TestEgaAtlasRuntime extends Game {
             int line = i / perLine;
             int pos = i % perLine;
 
-            batch.draw(
-                    group.frames.get(i),
-                    stripX + pos * (MINI + GAP),
-                    stripY - line * (MINI + GAP),
-                    MINI,
-                    MINI
-            );
+            batch.draw(group.frames.get(i), stripX + pos * (MINI + GAP), stripY - line * (MINI + GAP), MINI, MINI);
         }
     }
 
@@ -876,10 +525,7 @@ public class TestEgaAtlasRuntime extends Game {
         }
 
         static Rect from(AtlasRegion r) {
-            return new Rect(
-                    r.getRegionX(),
-                    r.getRegionY()
-            );
+            return new Rect(r.getRegionX(), r.getRegionY());
         }
     }
 
