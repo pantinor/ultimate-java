@@ -793,34 +793,6 @@ campfire
   orig: 32, 32
   offset: 0, 0
   index: 3
-campfire
-  rotate: false
-  xy: 352, 128
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 4
-campfire
-  rotate: false
-  xy: 352, 128
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 5
-campfire
-  rotate: false
-  xy: 352, 128
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 6
-campfire
-  rotate: false
-  xy: 352, 128
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 7
 castle
   rotate: false
   xy: 352, 0

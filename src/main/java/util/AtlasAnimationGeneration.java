@@ -1,5 +1,6 @@
 package util;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,12 +12,13 @@ import java.util.Comparator;
 import java.util.List;
 
 public class AtlasAnimationGeneration {
-    
+
     private static final String[] SCROLLING = {"sea", "water", "shallows"};
     private static final String[] FIELDS = {"lava", "poison_field", "energy_field", "fire_field", "sleep_field"};
     private static final int SCROLLING_FRAMES = 16;
     private static final int FIELD_FRAMES = 8;
-    private static final int RUNTIME_FRAME_COUNT = SCROLLING.length * SCROLLING_FRAMES + FIELDS.length * FIELD_FRAMES;
+    private static final int CAMPFIRE_FRAMES = 4;
+    private static final int RUNTIME_FRAME_COUNT = SCROLLING.length * SCROLLING_FRAMES + FIELDS.length * FIELD_FRAMES + CAMPFIRE_FRAMES;
     private static final int TILE = 32;
     private static final int RUNTIME_COLS = 8;
     private static final int RUNTIME_WIDTH = TILE * RUNTIME_COLS;
@@ -57,6 +59,19 @@ public class AtlasAnimationGeneration {
                 drawWrapped(source, src, runtime, p.x, p.y, shiftX, shiftY);
                 bindings.add(new Binding(frames.get(frame), p.x, p.y));
             }
+        }
+
+        FileHandle campfirePng = Gdx.files.classpath("assets/tilemaps/campfire-anim-ega.png");
+        Pixmap campfire = new Pixmap(campfirePng);
+        try {
+            List<TextureAtlas.AtlasRegion> frames = regions(atlas, "campfire");
+            for (int frame = 0; frame < CAMPFIRE_FRAMES; frame++) {
+                Point p = slot(slot++);
+                runtime.drawPixmap(campfire, p.x, p.y, frame * TILE, 0, TILE, TILE);
+                bindings.add(new Binding(frames.get(frame), p.x, p.y));
+            }
+        } finally {
+            campfire.dispose();
         }
 
         Texture result = new Texture(runtime);
