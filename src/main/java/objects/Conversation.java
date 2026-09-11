@@ -169,6 +169,81 @@ public class Conversation {
         return String.format(format, m, name, description, topicsXML.toString());
     }
 
+    public String toJsonString() {
+        StringBuilder json = new StringBuilder();
+        json.append("{\n");
+        json.append("  \"name\": \"").append(escapeJson(name)).append("\",\n");
+        json.append("  \"description\": \"").append(escapeJson(description)).append("\",\n");
+        json.append("  \"story\": [");
+
+        boolean first = true;
+        for (Topic t : topics) {
+            if (t == null || t.getPhrase() == null || t.getPhrase().trim().isEmpty()) {
+                continue;
+            }
+
+            if (t.getQuery() != null && isStandardQuery(t.getQuery())) {
+                continue;
+            }
+
+            if (!first) {
+                json.append(",");
+            }
+
+            json.append("\n    \"").append(escapeJson(t.getPhrase().trim())).append("\"");
+            first = false;
+        }
+
+        if (!first) {
+            json.append("\n  ");
+        }
+
+        json.append("]\n");
+        json.append("}");
+
+        return json.toString();
+    }
+
+    private String escapeJson(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        StringBuilder escaped = new StringBuilder();
+        for (char c : value.toCharArray()) {
+            switch (c) {
+                case '\\':
+                    escaped.append("\\\\");
+                    break;
+                case '"':
+                    escaped.append("\\\"");
+                    break;
+                case '\n':
+                    escaped.append("\\n");
+                    break;
+                case '\r':
+                    escaped.append("\\r");
+                    break;
+                case '\t':
+                    escaped.append("\\t");
+                    break;
+                case '\b':
+                    escaped.append("\\b");
+                    break;
+                case '\f':
+                    escaped.append("\\f");
+                    break;
+                default:
+                    if (c < 0x20) {
+                        escaped.append(String.format("\\u%04x", (int) c));
+                    } else {
+                        escaped.append(c);
+                    }
+            }
+        }
+        return escaped.toString();
+    }
+
     @Override
     public String toString() {
         return String.format("\n\tConversation [index=%s, name=%s, pronoun=%s, turnAwayProb=%s, description=%s, respAffectsHumility=%s, topics=%s]",
@@ -275,7 +350,7 @@ public class Conversation {
                     + "</label>\n";
 
             String format = "<topic query=\"%s\" phrase=\"%s %s\" />\n%s";
-            
+
             String ph = phrase.replace(">", "").replace("<", "").replace("\"", "'").replace("&", "and");
             String yr = yesResponse == null ? "" : yesResponse.replace(">", "").replace("<", "").replace("\"", "'").replace("&", "and");
             String nr = noResponse == null ? "" : noResponse.replace(">", "").replace("<", "").replace("\"", "'").replace("&", "and");

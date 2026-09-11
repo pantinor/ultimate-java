@@ -106,6 +106,79 @@ public class Person implements Constants {
                 name, tile.getName(), start_x * 32, start_y * 32, id, tile.getName(), movement, start_x, start_y, dialogId);
     }
 
+    public String toTMX16String() {
+
+        String template = "<object name=\"%s\" type=\"%s\" x=\"%s\" y=\"%s\" width=\"16\" height=\"16\">\n"
+                + "<properties>\n"
+                + "<property name=\"movement\" value=\"%s\"/>\n"
+                + "<property name=\"icon\" value=\"%s\"/>\n"
+                + "</properties>\n"
+                + "</object>\n";
+
+        String type = null;
+        String name = conversation != null ? conversation.getName() : tile.getName();
+
+        if (conversation != null) {
+            type = movement == ObjectMovementBehavior.ATTACK_AVATAR ? "MONSTER" : "FRIENDLY";
+        } else {
+            if (role != null && role.getInventoryType() != null) {
+                if (null == role.getInventoryType()) {
+                    type = "FRIENDLY";
+                } else {
+                    switch (role.getInventoryType()) {
+                        case INN:
+                            type = "INNKEEPER";
+                            name = "Innkeeper";
+                            break;
+                        case TAVERN:
+                            type = "INNKEEPER";
+                            name = "Innkeeper";
+
+                            break;
+                        case HEALER:
+                            type = "TEMPLE";
+                            name = "Healer";
+
+                            break;
+                        case REAGENT:
+                            type = "TEMPLE";
+                            name = "Healer";
+
+                            break;
+                        case FOOD:
+                            type = "MERCHANT_PMO";
+                            name = "Merchant";
+
+                            break;
+                        case ARMOR:
+                            type = "MERCHANT_PMO";
+                            name = "Merchant";
+
+                            break;
+                        case WEAPON:
+                            type = "MERCHANT_PMO";
+                            name = "Merchant";
+
+                            break;
+                        default:
+                            type = "FRIENDLY";
+                            break;
+                    }
+                }
+            } else {
+                type = "FRIENDLY";
+            }
+        }
+
+        return String.format(template,
+                name,
+                type,
+                start_x * 16,
+                start_y * 16,
+                movement,
+                tileIndex);
+    }
+
     public String toTMXString48() {
 
         String template = "<object id=\"%s\" name=\"%s\" type=\"%s\" x=\"%s\" y=\"%s\" width=\"48\" height=\"48\">\n"
@@ -173,12 +246,12 @@ public class Person implements Constants {
                     tile.getName());
         }
     }
-   
+
     public static String toCamelCase(String s) {
         if (s == null) {
             return null;
         }
-        
+
         s = s.replace("_", " ");
 
         final StringBuilder ret = new StringBuilder(s.length());

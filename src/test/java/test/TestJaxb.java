@@ -193,23 +193,6 @@ public class TestJaxb {
     }
 
     //@Test
-    public void makeDialogXml() throws Exception {
-        File dir = new File("src/main/resources/xml");
-        File[] tlkxmlFiles = dir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith("tlk.xml");
-            }
-        });
-
-        for (File f : tlkxmlFiles) {
-            String t = FileUtils.readFileToString(f);
-            Utils.getDialogs(f.getName());
-            FileUtils.writeStringToFile(f, t);
-        }
-
-    }
-
-    //@Test
     public void renametolowercase() throws Exception {
         File dir = new File("assets/data/test");
         File[] files = dir.listFiles();
@@ -234,6 +217,12 @@ public class TestJaxb {
                 continue;
             }
 
+            List<String> list = java.util.Arrays.asList("paws", "minoc", "yew", "jhelom", "moonglow", "britain", "cove", "skara brae", "trinsic");
+
+            if (!list.contains(map.getCity().getName().toLowerCase())) {
+                continue;
+            }
+
             List<Person> people;
             try {
                 people = Utils.getPeople(map.getFname(), Maps.get(map.getId()), null);
@@ -242,6 +231,19 @@ public class TestJaxb {
             }
 
             List<Conversation> cons = Utils.getDialogs(map.getCity().getTlk_fname());
+
+            if (cons != null) {
+                System.out.println("*****");
+                System.out.println(map.getCity().getName());
+                for (Conversation c : cons) {
+                    System.out.println(c.toJsonString() + ",");
+                }
+            } else {
+                System.out.println("*****");
+                System.out.println(map.getCity().getName());
+                System.out.println("NONE");
+
+            }
 
             if (people == null) {
                 continue;
@@ -262,7 +264,7 @@ public class TestJaxb {
             }
 
             for (Conversation c : cons) {
-                System.out.println(c.toXMLString2(Maps.get(map.getId())));
+                //System.out.println(c.toXMLString2(Maps.get(map.getId())));
             }
 
             for (Conversation c : cons) {
@@ -629,7 +631,7 @@ public class TestJaxb {
         MapSet maps = (MapSet) Utils.loadXml("maps.xml", MapSet.class);
 
         for (BaseMap map : maps.getMaps()) {
-            
+
             if (map.getType() != MapType.dungeon) {
                 continue;
             }

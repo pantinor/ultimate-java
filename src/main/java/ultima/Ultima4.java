@@ -128,7 +128,7 @@ public class Ultima4 extends Game {
 
             backGround = new Texture(Gdx.files.classpath("assets/graphics/frame.png"));
 
-            standardAtlas = new TextureAtlas(Gdx.files.classpath("assets/tilemaps/latest-atlas.txt"));
+            standardAtlas = new TextureAtlas(Gdx.files.classpath("assets/tilemaps/latest-ega-atlas.txt"));
 
             hitTile = Ultima4.standardAtlas.findRegion("hit_flash");
             magicHitTile = Ultima4.standardAtlas.findRegion("magic_flash");
