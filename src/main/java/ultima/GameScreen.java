@@ -12,13 +12,10 @@ import objects.Party.PartyMember;
 import objects.Portal;
 import objects.SaveGame;
 import objects.Tile;
-
 import org.apache.commons.lang3.StringUtils;
-
 import util.UltimaMapRenderer;
 import util.UltimaTiledMapLoader;
 import util.Utils;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;

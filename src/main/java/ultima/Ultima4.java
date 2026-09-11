@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -30,6 +31,8 @@ import objects.Drawable;
 import objects.MapSet;
 import objects.TileSet;
 import objects.WeaponSet;
+import static util.AtlasAnimationGeneration.forceNearest;
+import static util.AtlasAnimationGeneration.installRuntimeAnimations;
 import util.Utils;
 import vendor.VendorClassSet;
 
@@ -60,12 +63,12 @@ public class Ultima4 extends Game {
     public static CreatureSet creatures;
     public static VendorClassSet vendorClassSet;
     public static TextureAtlas standardAtlas;
-    
+
     public static TextureRegion magicHitTile;
     public static TextureRegion hitTile;
     public static TextureRegion missTile;
     public static TextureRegion corpse;
-    
+
     public static Animation<TextureRegion> explosionLarge;
     public static Animation<TextureRegion> explosion;
     public static Animation<TextureRegion> cloud;
@@ -88,10 +91,10 @@ public class Ultima4 extends Game {
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.classpath("assets/fonts/gnuolane.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        
+
         parameter.size = 18;
         font = generator.generateFont(parameter);
-        
+
         parameter.size = 12;
         smallFont = generator.generateFont(parameter);
 
@@ -128,25 +131,29 @@ public class Ultima4 extends Game {
 
             backGround = new Texture(Gdx.files.classpath("assets/graphics/frame.png"));
 
-            standardAtlas = new TextureAtlas(Gdx.files.classpath("assets/tilemaps/latest-atlas.txt"));
+            FileHandle atlasFile = Gdx.files.classpath("assets/tilemaps/latest-ega-atlas.txt");
+            FileHandle pngFile = atlasFile.parent().child("tiles-ega-32px.png");
+            standardAtlas = new TextureAtlas(atlasFile);
+            forceNearest(standardAtlas);
+            installRuntimeAnimations(standardAtlas, pngFile);
 
             hitTile = Ultima4.standardAtlas.findRegion("hit_flash");
             magicHitTile = Ultima4.standardAtlas.findRegion("magic_flash");
             missTile = Ultima4.standardAtlas.findRegion("miss_flash");
             corpse = Ultima4.standardAtlas.findRegion("corpse");
-            
+
             TextureAtlas tmp = new TextureAtlas(Gdx.files.classpath("assets/graphics/explosion-atlas.txt"));
             Array<TextureAtlas.AtlasRegion> ar = tmp.findRegions("expl");
             explosion = new Animation<>(.2f, ar);
-            
+
             tmp = new TextureAtlas(Gdx.files.classpath("assets/graphics/Exp_type_B.atlas"));
             ar = tmp.findRegions("im");
             explosionLarge = new Animation<>(.1f, ar);
-            
+
             tmp = new TextureAtlas(Gdx.files.classpath("assets/graphics/cloud-atlas.txt"));
             ar = tmp.findRegions("cloud");
             cloud = new Animation<>(.2f, ar);
-            
+
             baseTileSet = (TileSet) Utils.loadXml("tileset-base.xml", TileSet.class);
             baseTileSet.setMaps();
 
@@ -162,7 +169,7 @@ public class Ultima4 extends Game {
             creatures.init();
             weapons.init();
             armors.init();
-            
+
             Constants.Virtue.HONESTY.setBar(new TextureRegion(fillRectangle(200, 9, Color.CYAN)));
             Constants.Virtue.COMPASSION.setBar(new TextureRegion(fillRectangle(200, 9, Color.ORANGE)));
             Constants.Virtue.VALOR.setBar(new TextureRegion(fillRectangle(200, 9, Color.FIREBRICK)));
@@ -181,7 +188,7 @@ public class Ultima4 extends Game {
         setScreen(startScreen);
 
     }
-    
+
     private static Texture fillRectangle(int width, int height, Color color) {
         Pixmap pix = new Pixmap(width, height, Pixmap.Format.RGBA8888);
         pix.setColor(color);

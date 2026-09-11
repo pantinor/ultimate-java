@@ -81,15 +81,13 @@ public class MapSet {
             }
 
             if (m.getType() == MapType.world || m.getType() == MapType.city) {
-
-                float[][] shadowMap = new float[m.getWidth()][m.getHeight()];
+                float[][] resistanceMap = new float[m.getWidth()][m.getHeight()];
                 for (int y = 0; y < m.getHeight(); y++) {
                     for (int x = 0; x < m.getWidth(); x++) {
-                        shadowMap[x][y] = (m.getTile(x, y).isOpaque() ? 1 : 0);
+                        resistanceMap[x][y] = m.getTile(x, y).isOpaque() ? 1f : 0f;
                     }
                 }
-
-                m.setShadownMap(shadowMap);
+                m.setShadownMap(resistanceMap);
             }
 
         }
